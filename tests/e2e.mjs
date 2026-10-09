@@ -109,15 +109,15 @@ const idx = (q) => L.indexOf(q.reponse);
 
 console.log('\nParcours participant');
 
-await step('Accueil épuré : titre et bouton « Commencer l\'aventure »', async () => {
+await step('Accueil épuré : titre et bouton « Lancer la partie »', async () => {
   assert(await has('CHRISTMAS QUEST'), 'titre absent');
   assert(!(await has('La quête du cadeau disparu')), 'texte superflu affiché');
-  assert(await has("Commencer l'aventure"), 'bouton absent');
+  assert(await has('Lancer la partie'), 'bouton absent');
   await noHorizontalScroll();
 });
 
 await step('Nom d\'équipe vide refusé, puis accepté', async () => {
-  await clickText("Commencer l'aventure");
+  await clickText('Lancer la partie');
   await answer('   ');
   assert(await has("Indiquez un nom d'équipe"), 'message d\'erreur absent');
   await answer('Les Testeurs');

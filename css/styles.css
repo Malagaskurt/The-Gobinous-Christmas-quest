@@ -154,10 +154,9 @@ img { max-width: 100%; }
 .btn .icon { width: 0.85em; height: 0.85em; flex: none; stroke-width: 2.6; }
 .btn:disabled { cursor: not-allowed; }
 .btn-red { background: var(--red); color: #fff; box-shadow: 0 5px 0 var(--red-deep), 0 12px 24px rgba(0, 0, 0, 0.3); }
-.btn-primary { background: var(--cream); color: var(--blue); box-shadow: 0 5px 0 #c9bba2, 0 12px 24px rgba(0, 0, 0, 0.25); }
+.btn-primary { background: var(--cyan); color: var(--night); box-shadow: 0 5px 0 #0078a0, 0 12px 24px rgba(0, 0, 0, 0.25); }
 .btn-red:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 var(--red-deep); }
-.btn-primary:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 #c9bba2; }
-.frame .btn-primary, .modal .btn-primary, .admin-card .btn-primary { background: var(--blue); color: #fff; box-shadow: 0 5px 0 var(--night-2); }
+.btn-primary:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 #0078a0; }
 .btn[aria-disabled="true"] { opacity: 0.4; transform: none; }
 .btn-secondary { background: transparent; color: var(--cream); box-shadow: inset 0 0 0 2px rgba(246, 239, 226, 0.6); }
 .frame .btn-secondary, .modal .btn-secondary, .admin-card .btn-secondary { color: var(--blue); box-shadow: inset 0 0 0 2px var(--blue); }
@@ -252,6 +251,7 @@ img { max-width: 100%; }
 .topbar-row.topbar-center { justify-content: center; }
 .topbar-mini { position: relative; padding: 12px var(--gutter) 6px; border-bottom: 0; }
 .topbar-sub { margin-top: 18px; }
+.topbar .clock { order: -1; }
 .brand { display: inline-flex; align-items: center; }
 .brand-logo { height: 28px; width: auto; display: block; }
 @media (min-width: 760px) { .topbar { padding-left: 36px; padding-right: 36px; } }

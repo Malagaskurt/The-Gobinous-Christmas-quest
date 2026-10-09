@@ -189,7 +189,7 @@
 
   /* Bandeau des écrans d'entrée : même univers que les écrans de jeu. */
   function miniHeader() {
-    return '<div class="garland" aria-hidden="true"></div><header class="topbar topbar-mini"><div class="topbar-row topbar-center">' + GQ.logo('clair', 'brand-logo') + '</div></header>';
+    return '<div class="garland" aria-hidden="true"></div>';
   }
   GQ.miniHeader = miniHeader;
 

@@ -93,8 +93,7 @@
       '<div class="garland" aria-hidden="true"></div>' +
       '<header class="topbar">' +
       '<div class="topbar-row">' +
-      '<a class="brand" href="#/" aria-label="Accueil">' + GQ.logo('clair', 'brand-logo') + '</a>' +
-      GQ.clockHtml() +
+      (GQ.clockHtml() || '<span></span>') +
       '<button type="button" class="link-btn" data-action="show-rules" aria-label="' + esc(T.general.regles) + '">' + GQ.icon('livre') + '</button>' +
       '</div>' +
       '<div class="topbar-row topbar-sub">' +

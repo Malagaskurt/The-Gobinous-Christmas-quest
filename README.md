@@ -26,7 +26,7 @@ Une seule direction artistique, identique de l'écran de chargement jusqu'à la 
 - **Tout ce qui est illustré est brodé en mailles** (rendu tricot généré par `js/knit.js`) : titres de chaque écran, pictogrammes des 5 quêtes (quiz, loupe, Tour Saint-Gobain, repère de lieu, cadeau), sapins, étoile, QR code, le lutin et le compte à rebours géant du quiz gelé.
 - **Guirlande tricotée** en haut de chaque écran, comme un fil rouge visuel.
 - **Contenus dans des cadres écrus à double filet** (introductions, énigmes, indices, réussites, fenêtres).
-- **En-tête de jeu** : logo blanc, chrono, et la progression représentée par les 5 pictogrammes de quêtes, qui s'allument au fur et à mesure.
+- **En-tête de jeu** : chrono à gauche, accès aux règles à droite, et la progression représentée par les 5 pictogrammes de quêtes, qui s'allument au fur et à mesure.
 - **« Comment jouer ? »** : carte du parcours. Une route enneigée serpente de DÉPART à la hotte, avec les 5 étapes illustrées, un QR code entre deux quêtes, et le lutin qui parcourt la route. En dessous, une légende de 3 règles clés.
 - **Le lutin farceur** a caché le cadeau. Il traverse l'écran de chargement, apparaît sous l'en-tête avec une bulle à certains moments (jamais par-dessus les boutons) et se promène de temps en temps. Répliques dans `config/textes.js` (`lutin`), fréquence dans `config/parametres.js` (`lutin`).
 - **Typographies** : Gotham (repli Montserrat), Arial, et VT323 pour les compteurs et les petites étiquettes.
