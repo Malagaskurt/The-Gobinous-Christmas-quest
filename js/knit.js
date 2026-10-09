@@ -335,6 +335,22 @@
     '.....www.........ccc....',
   ];
 
+  /* Sol enneigé avec petits sapins (bas de chaque écran), raccordable. */
+  var GROUND = [
+    '..C.................C...........',
+    '.......C.....b...........C......',
+    '............bbb.................',
+    '....c......bbbbb..........b.....',
+    '...ccc......bbb..........bbb....',
+    '..ccccc....bbwbb........bbbbb...',
+    '...ccc....bbbbbbb........bbb....',
+    '..ccwcc..bbbbbbbbb......bbbwb...',
+    '.ccccccc....RRR........bbbbbbb..',
+    '....R.......RRR...........R.....',
+    'CCwwwwwwwwwwwwwwwwCCwwwwwwwwwwww',
+    'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
+  ];
+
   Object.assign(GQ.knit, {
     PAL: KNIT_PAL,
     /* Titre brodé avec retour à la ligne automatique. */
@@ -365,6 +381,7 @@
 
   /* Arrière-plans partagés, exposés en variables CSS. */
   document.documentElement.style.setProperty('--knit-garland', css(svg(GARLAND, { wool: KNIT_PAL })));
+  document.documentElement.style.setProperty('--knit-ground', css(svg(GROUND, { wool: KNIT_PAL })));
 
   var root = document.documentElement.style;
   root.setProperty('--knit-plain', css(svg(PLAIN, { tile: true, bg: GAP })));

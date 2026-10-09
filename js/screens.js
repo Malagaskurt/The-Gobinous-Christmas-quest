@@ -183,7 +183,6 @@
         opt(A.accroche, '<p class="home-lead">' + t(A.accroche) + '</p>') +
         '</div>' +
         '<div class="home-cta">' + action + '</div>' +
-        '<div class="garland garland-flip" aria-hidden="true"></div>' +
         '</main>',
     };
   };

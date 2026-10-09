@@ -92,7 +92,8 @@
     if (!GQ.storageOk) {
       html += '<div class="storage-warning" role="alert">' + GQ.t(T.general.stockageIndisponible) + '</div>';
     }
-    html += scr.bare ? scr.html : GQ.header(GQ.state.quest) + '<main class="screen screen-quest paper">' + scr.html + '</main>';
+    html += scr.bare ? scr.html : GQ.header(GQ.state.quest) + '<main class="screen screen-quest">' + scr.html + '</main>';
+    if (scr.key !== 'redirect') html += '<div class="ground" aria-hidden="true"></div>';
     if (GQ.test.isActive() && parseRoute().name !== 'organisateur') {
       html += '<a class="test-bar" href="#/organisateur">Mode test</a>';
     }
