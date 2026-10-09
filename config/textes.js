@@ -30,7 +30,7 @@ window.GAME_CONFIG.textes = {
     titre: "Gobinous",
     titreSuite: "Christmas Quest",
     bouton: "Lancer la partie",
-    boutonReprendre: "Reprendre l'aventure",
+    boutonReprendre: "Reprendre la partie",
     partieEnCours: "Partie en cours : **{equipe}**",
     annee: "",
     surtitre: "",

@@ -16,7 +16,7 @@ window.GAME_CONFIG.parametres = {
    * Changer cette valeur repart d'une partie vierge sur tous les
    * téléphones (utile entre une répétition et le jour J, ou pour une
    * nouvelle édition). */
-  cleSauvegarde: "gobinous-quest-2026",
+  cleSauvegarde: "gobinous-quest-2026-v2",
 
   /* ---- Quête 1 : le grand quiz -------------------------------------- */
   quiz: {
