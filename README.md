@@ -113,7 +113,7 @@ Cette commande signale les erreurs de saisie (virgule oubliée, lettre de répon
 
 ## 6. Mode test organisateur
 
-Accès : ajoutez `#/organisateur` à l'adresse, puis saisissez le code (`parametres.modeTest.code`). Le mode test n'apparaît nulle part dans l'interface des participants. Il ne reste actif que dans l'onglet en cours.
+Accès : ajoutez `#/organisateur` à l'adresse, **ou touchez 5 fois rapidement le logo Saint-Gobain de l'accueil** (pratique sur téléphone ou dans un aperçu sans barre d'adresse), puis saisissez le code (`parametres.modeTest.code`). Le mode test n'apparaît nulle part dans l'interface des participants. Il ne reste actif que dans l'onglet en cours.
 
 Ce que permet le mode test :
 - consulter l'état de la partie (quête, phase, joker, tentatives du quiz, blocage, lieux) ;

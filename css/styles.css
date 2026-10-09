@@ -225,7 +225,7 @@ img { max-width: 100%; }
   padding: 0 var(--gutter);
 }
 .screen-home .garland { margin: 0 calc(-1 * var(--gutter)); }
-.home-logo { margin-top: auto; padding-top: 20px; }
+.home-logo { margin-top: auto; padding-top: 20px; cursor: default; -webkit-user-select: none; user-select: none; }
 .home-logo .logo { width: 116px; display: block; margin: 0 auto; }
 .home-hero { margin: 0; padding-top: 44px; }
 .home-title { margin: 0; }

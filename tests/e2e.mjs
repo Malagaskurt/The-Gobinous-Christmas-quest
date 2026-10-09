@@ -220,8 +220,11 @@ await step('Chrono global de 30 minutes affiché pendant le jeu', async () => {
 
 console.log('\nMode test organisateur');
 
-await step('Mode test : code incorrect refusé, code correct accepté', async () => {
-  await go(BASE + '#/organisateur');
+await step('Mode test : accès caché par 5 appuis sur le logo, code vérifié', async () => {
+  await go(BASE);
+  for (let i = 0; i < 5; i++) await page.click('[data-action="logo-tap"]');
+  await settle();
+  assert((await hash()) === '#/organisateur', `accès caché inopérant : ${await hash()}`);
   await settle();
   await answer('0000');
   assert(await has('Code incorrect'), 'code incorrect accepté');

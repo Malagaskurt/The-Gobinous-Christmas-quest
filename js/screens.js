@@ -172,7 +172,7 @@
       html:
         '<main class="screen-home">' +
         '<div class="garland" aria-hidden="true"></div>' +
-        '<div class="home-logo">' + GQ.logo('clair') + '</div>' +
+        '<div class="home-logo" data-action="logo-tap">' + GQ.logo('clair') + '</div>' +
         '<div class="home-hero">' +
         opt(A.surtitre, '<p class="kicker">' + t(A.surtitre) + '</p>') +
         '<h1 class="home-title" tabindex="-1"><span class="sr-only">' + t(A.titre) + ' ' + t(A.titreSuite) + '</span>' +
@@ -663,6 +663,21 @@
   function goQuest() { GQ.go('quete/' + GQ.state.quest); }
 
   actions.start = function () { GQ.go('equipe'); };
+
+  /* Accès organisateur caché : 5 appuis rapides sur le logo de l'accueil
+   * (utile quand la barre d'adresse n'est pas accessible). Le code du mode
+   * test reste demandé ; sans effet si le mode test est désactivé. */
+  var logoTaps = [];
+  actions['logo-tap'] = function () {
+    if (!(P.modeTest && P.modeTest.actif)) return;
+    var now = Date.now();
+    logoTaps = logoTaps.filter(function (t0) { return now - t0 < 2500; });
+    logoTaps.push(now);
+    if (logoTaps.length >= 5) {
+      logoTaps = [];
+      GQ.go('organisateur');
+    }
+  };
   actions['go-home'] = function () { GQ.go(''); };
   actions.resume = function () {
     var s = GQ.state;
