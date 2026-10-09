@@ -85,24 +85,23 @@
       var cls = s.finished || n < s.quest ? 'done' : n === s.quest ? 'current' : '';
       steps +=
         '<li class="step ' + cls + '"' + (n === currentQuest ? ' aria-current="step"' : '') + '>' +
-        '<span class="step-dot">' + (cls === 'done' ? GQ.icon('valide') : n) + '</span>' +
+        '<span class="step-dot"></span>' +
         '<span class="sr-only">' + esc(T.general.quete) + ' ' + n + (cls === 'done' ? ' (terminée)' : '') + '</span></li>';
     }
     var used = s.joker.used;
     return (
       '<header class="topbar">' +
+      '<div class="topbar-row">' +
       '<a class="brand" href="#/" aria-label="Accueil">' + GQ.logo('clair', 'brand-logo') + '</a>' +
       GQ.clockHtml() +
-      '<button type="button" class="link-btn" data-action="show-rules">' + GQ.icon('livre') + '<span>' + esc(T.general.regles) + '</span></button>' +
-      '</header>' +
-      '<div class="subbar">' +
-      '<div class="subbar-row">' +
-      '<span class="team-name" title="' + esc(s.team) + '">' + esc(T.general.equipe) + ' <b>' + esc(s.team) + '</b></span>' +
-      '<span class="joker-chip ' + (used ? 'is-used' : '') + '">' + GQ.icon('etoile') +
+      '<button type="button" class="link-btn" data-action="show-rules" aria-label="' + esc(T.general.regles) + '">' + GQ.icon('livre') + '</button>' +
+      '</div>' +
+      '<div class="topbar-row topbar-sub">' +
+      '<ol class="stepper" aria-label="Progression">' + steps + '</ol>' +
+      '<span class="joker-chip ' + (used ? 'is-used' : '') + '" title="' + esc(s.team) + '">' + GQ.icon('etoile') +
       esc(used ? T.joker.statutUtilise : T.joker.statutDisponible) + '</span>' +
       '</div>' +
-      '<ol class="stepper" aria-label="Progression">' + steps + '</ol>' +
-      '</div><div class="garland" aria-hidden="true"></div>'
+      '</header><div class="garland" aria-hidden="true"></div>'
     );
   };
 

@@ -148,28 +148,30 @@
   screens.home = function () {
     var A = T.accueil;
     var s = GQ.state;
+    var opt = function (v, html) { return String(v || '').trim() ? html : ''; };
     var action = s.team
       ? '<p class="home-resume">' + t(A.partieEnCours, { equipe: s.team }) + '</p>' + btn(esc(A.boutonReprendre) + icon('fleche'), 'resume', '', 'btn-red')
       : btn(esc(A.bouton) + icon('fleche'), 'start', '', 'btn-red');
+    var notes = opt(A.noteGauche + A.noteDroite, '<div class="home-notes"><p>' + t(A.noteGauche) + '</p><p>' + t(A.noteDroite) + '</p></div>');
     return {
       key: 'home',
       bare: true,
       elf: { walk: '.band', say: 'accueil' },
       html:
         '<main class="screen-home knit">' +
-        '<div class="home-top"><span class="corner corner-l" aria-hidden="true"></span><span class="pixel-text home-year">' + t(A.annee) + '</span><span class="corner corner-r" aria-hidden="true"></span></div>' +
+        '<div class="home-top"><span class="corner corner-l" aria-hidden="true"></span>' + opt(A.annee, '<span class="pixel-text home-year">' + t(A.annee) + '</span>') + '<span class="corner corner-r" aria-hidden="true"></span></div>' +
         '<div class="home-logo">' + GQ.logo('clair') + '</div>' +
         '<div class="home-hero">' +
         GQ.knit.img('star', 'home-star') +
-        '<p class="home-club">' + t(A.surtitre) + '</p>' +
+        opt(A.surtitre, '<p class="home-club">' + t(A.surtitre) + '</p>') +
         '<h1 class="home-title" tabindex="-1">' + GQ.knit.text(plain(A.titre), { cls: 'home-knit-title', outline: true }) +
         '<span class="pixel-text home-pixel">' + t(A.titreSuite) + '</span></h1>' +
-        '<p class="home-subtitle">' + t(A.sousTitre) + '</p>' +
+        opt(A.sousTitre, '<p class="home-subtitle">' + t(A.sousTitre) + '</p>') +
+        opt(A.accroche, '<p class="home-lead">' + t(A.accroche) + '</p>') +
         '</div>' +
-        '<p class="home-lead">' + t(A.accroche) + '</p>' +
         '<div class="home-cta">' + action + '</div>' +
         '<div class="band" aria-hidden="true"></div>' +
-        '<div class="home-notes">' + (A.noteGauche ? '<p>' + t(A.noteGauche) + '</p>' : '<p></p>') + (A.noteDroite ? '<p>' + t(A.noteDroite) + '</p>' : '') + '</div>' +
+        (notes || '<div class="home-spacer"></div>') +
         '</main>',
     };
   };
@@ -339,7 +341,7 @@
     return {
       key: 'q1-play-' + theme.id + '-' + cur.index,
       html:
-        questHead(1, theme.titre) +
+        '<h1 class="sr-only" tabindex="-1">' + t(QZ.titre) + ' · ' + t(theme.titre) + '</h1>' +
         progress(cur.index, total, function (i) { return cur.answers[i] != null; }) +
         questionCard(q) +
         choices(q, { scope: 'quiz', selected: cur.answers[cur.index] }) +
@@ -441,7 +443,7 @@
       var d = GQ.state.defi;
       var index = fb ? fb.index : d.index;
       var q = D.questions[index];
-      var html = questHead(3) +
+      var html = '<h1 class="sr-only" tabindex="-1">' + t(D.titre) + '</h1>' +
         progress(index, D.questions.length, function (i) { return i < d.index; }) +
         questionCard(q) +
         choices(q, { scope: 'defi', selected: GQ.ui.sel, tried: fb ? [] : d.tried, reveal: !!fb });

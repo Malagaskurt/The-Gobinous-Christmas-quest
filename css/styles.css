@@ -126,7 +126,7 @@ img { max-width: 100%; }
   font-weight: 700; text-transform: none; letter-spacing: 0; font-size: 0.9rem;
   text-decoration: underline; text-underline-offset: 3px;
 }
-.btn-abandon { font-size: 0.85rem; }
+.btn-abandon { font-size: 0.8rem; min-height: 40px; margin-top: 0.2rem; color: #8a94a8; }
 
 .btn-joker {
   margin: 0.3rem 0 1rem; min-height: 50px; text-transform: none; letter-spacing: 0;
@@ -146,7 +146,7 @@ img { max-width: 100%; }
   background: none; border: 0; padding: 8px 2px; cursor: pointer;
   font: 700 0.82rem var(--font-head); color: #fff;
 }
-.link-btn .icon { width: 1.15em; height: 1.15em; }
+.link-btn .icon { width: 1.5em; height: 1.5em; }
 
 .back-link {
   display: inline-flex; align-items: center; gap: 0.4em;
@@ -223,6 +223,10 @@ img { max-width: 100%; }
   background: var(--knit-band) repeat-x center / auto 162px;
   box-shadow: 0 -2px 0 rgba(0, 0, 0, 0.15), 0 2px 0 rgba(0, 0, 0, 0.15);
 }
+.home-spacer { height: calc(28px + env(safe-area-inset-bottom)); }
+/* Le titre et le bouton se centrent dans l'espace au-dessus de la bande. */
+.screen-home .home-hero { margin-top: auto; }
+.screen-home .home-cta { margin-top: 34px; margin-bottom: auto; }
 .home-notes { display: flex; justify-content: space-between; gap: 16px; padding: 16px 0 calc(22px + env(safe-area-inset-bottom)); margin-top: auto; }
 .home-notes p { margin: 0; max-width: 46%; font-size: 0.74rem; line-height: 1.35; text-align: left; opacity: 0.9; }
 .home-notes p:last-child { text-align: right; }
@@ -262,17 +266,14 @@ img { max-width: 100%; }
 
 .topbar {
   position: sticky; top: 0; z-index: 20;
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding: calc(10px + env(safe-area-inset-top)) var(--gutter) 10px;
+  padding: calc(10px + env(safe-area-inset-top)) var(--gutter) 12px;
   background: var(--navy); color: #fff;
 }
+.topbar-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.topbar-sub { margin-top: 10px; }
 .brand { display: inline-flex; align-items: center; }
 .brand-logo { height: 28px; width: auto; display: block; }
-.subbar { padding: 4px var(--gutter) 14px; background: var(--navy); color: rgba(255, 255, 255, 0.8); }
-.subbar-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 0.85rem; }
-@media (min-width: 760px) { .topbar, .subbar { padding-left: 36px; padding-right: 36px; } }
-.team-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-.team-name b { color: #fff; font-family: var(--font-head); }
+@media (min-width: 760px) { .topbar { padding-left: 36px; padding-right: 36px; } }
 
 .garland {
   height: 8px;
@@ -303,10 +304,9 @@ img { max-width: 100%; }
 .joker-chip.is-used { background: transparent; color: rgba(255, 255, 255, 0.55); box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3); }
 .joker-chip.is-used .icon { color: rgba(255, 255, 255, 0.4); fill: none; }
 
-.stepper { list-style: none; display: flex; gap: 6px; padding: 0; margin: 12px 0 0; }
+.stepper { list-style: none; display: flex; gap: 4px; padding: 0; margin: 0; flex: 1; }
 .step { flex: 1; }
-.step-dot { display: grid; place-items: center; height: 24px; border-radius: 4px; background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.5); font: 400 1.15rem/1 var(--font-pixel); }
-.step-dot .icon { width: 0.95rem; height: 0.95rem; stroke-width: 3; }
+.step-dot { display: block; height: 8px; background: rgba(255, 255, 255, 0.14); }
 .step.done .step-dot { background: var(--cream); color: var(--navy); }
 .step.current .step-dot { background: var(--cyan); color: #fff; }
 
@@ -389,14 +389,14 @@ img { max-width: 100%; }
 .feedback-ok { background: #e7f6fc; color: var(--navy); }
 
 /* QCM */
-.q-progress { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 1rem; }
+.q-progress { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 6px 0 1.4rem; }
 .q-count { font: 400 1.3rem/1 var(--font-pixel); letter-spacing: 0.04em; text-transform: uppercase; color: var(--navy); white-space: nowrap; }
 .dots { display: flex; gap: 5px; }
 .dot { width: 10px; height: 10px; background: var(--line); }
 .dot-done { background: var(--blue); }
 .dot-current { background: var(--cyan); }
 .question-card { margin-bottom: 1.1rem; }
-.question { font-size: 1.22rem; line-height: 1.4; margin: 0; }
+.question { font-size: 1.3rem; line-height: 1.4; margin: 0; }
 
 .choices { list-style: none; padding: 0; margin: 0; display: grid; gap: 11px; }
 .choice {

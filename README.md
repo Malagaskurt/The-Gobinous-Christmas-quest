@@ -21,7 +21,8 @@ Composants tiers inclus : les polices **Montserrat** (remplaçante libre de Goth
 ### Direction artistique : « le lutin farceur »
 
 - **Concept** : un lutin a caché le cadeau. Ce personnage en pixel art se promène de temps en temps sous l'en-tête et sur la bande tricotée de l'accueil. Il commente certaines étapes dans une bulle (réussite, thème raté, quiz gelé, départ vers un lieu) et répond quand on le touche. À la fin, il apparaît avec le cadeau. Ses répliques se modifient dans `config/textes.js` (`lutin`), sa fréquence dans `config/parametres.js` (`lutin`).
-- **Tricot uniquement au début** : l'écran de chargement et l'accueil reprennent l'univers du pull de Noël (maille bleue, titre brodé, bande de flocons et de sapins).
+- **Tricot uniquement au début** : l'écran de chargement et l'accueil reprennent l'univers du pull de Noël (maille bleue, titre brodé, bande de flocons et de sapins). L'accueil est volontairement épuré : logo, titre et bouton. Des textes facultatifs (sous-titre, accroche…) peuvent être réactivés dans `config/textes.js`.
+- **Écran des questions réduit à l'essentiel** : progression, question, réponses et bouton. L'en-tête est compact : logo, chrono, progression des quêtes, état du joker et accès aux règles.
 - **Écrans de jeu** : fond blanc, en-tête bleu nuit avec chrono à cristaux liquides et guirlande de pixels, cartes à ombre franche façon écran rétro, pictogrammes en pixel art, minuteur rétro pendant le gel du quiz.
 - **Typographies** : Gotham (repli Montserrat) et Arial, plus une seule police « informatique », VT323, pour les titres pixel, les compteurs et les bulles du lutin.
 - **Couleurs** : bleu Saint-Gobain #17428C, bleu clair #00ADE1, rouge de Noël #C8102E, laine écrue. Logo Saint-Gobain en blanc sur fond foncé, en bleu foncé sur fond clair.

@@ -83,6 +83,7 @@
   function walk(opts) {
     opts = opts || {};
     if (!enabled() || reduceMotion || state !== 'hidden' || busy()) return;
+    if (!opts.anchor && document.querySelector('.choices')) return; // pas pendant une question
     var h = 60;
     var top;
     if (opts.anchor) {

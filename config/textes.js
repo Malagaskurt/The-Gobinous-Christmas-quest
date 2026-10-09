@@ -19,20 +19,25 @@ window.GAME_CONFIG.textes = {
     texte: "Chargement de la quête",
   },
 
+  /* Accueil volontairement épuré : logo, titre, bouton.
+   * Les textes facultatifs ci-dessous s'affichent seulement s'ils sont
+   * remplis (laisser "" pour les masquer). Exemples :
+   *   annee: "Noël 2026"
+   *   surtitre: "The Gobinous Christmas Club"
+   *   sousTitre: "La quête du cadeau disparu · Saint-Gobain"
+   *   accroche: "Un cadeau de Noël a disparu ! Résolvez les quêtes en équipe pour retrouver la hotte." */
   accueil: {
-    annee: "Noël 2026",
-    surtitre: "The Gobinous Christmas Club",
     titre: "Gobinous",
     titreSuite: "Christmas Quest",
-    sousTitre: "La quête du cadeau disparu · Saint-Gobain",
-    accroche:
-      "Un cadeau de Noël a disparu ! Résolvez les quêtes en équipe pour retrouver la hotte.",
     bouton: "Commencer l'aventure",
     boutonReprendre: "Reprendre l'aventure",
-    partieEnCours: "Partie en cours sur ce téléphone : **{equipe}**",
-    /* Deux petites notes en bas de l'écran d'accueil (laisser "" pour masquer). */
-    noteGauche: "Un lutin farceur a caché le cadeau quelque part dans la Tour.",
-    noteDroite: "Durée : 30 minutes. Fous rires : non garantis, mais très probables.",
+    partieEnCours: "Partie en cours : **{equipe}**",
+    annee: "",
+    surtitre: "",
+    sousTitre: "",
+    accroche: "",
+    noteGauche: "",
+    noteDroite: "",
   },
 
   /* Répliques du lutin qui a caché le cadeau. Une liste [ ] = une réplique

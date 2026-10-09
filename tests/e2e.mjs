@@ -109,9 +109,9 @@ const idx = (q) => L.indexOf(q.reponse);
 
 console.log('\nParcours participant');
 
-await step('Accueil : titre, sous-titre et bouton « Commencer l\'aventure »', async () => {
+await step('Accueil épuré : titre et bouton « Commencer l\'aventure »', async () => {
   assert(await has('CHRISTMAS QUEST'), 'titre absent');
-  assert(await has('La quête du cadeau disparu'), 'sous-titre absent');
+  assert(!(await has('La quête du cadeau disparu')), 'texte superflu affiché');
   assert(await has("Commencer l'aventure"), 'bouton absent');
   await noHorizontalScroll();
 });
