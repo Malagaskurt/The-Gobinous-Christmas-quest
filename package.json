@@ -1,0 +1,14 @@
+{
+  "name": "gobinous-christmas-quest",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gobinous Christmas Quest — La quête du cadeau disparu · Saint-Gobain. Mini-site de jeu de Noël, statique et sans dépendance.",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "check": "node tools/check-config.mjs",
+    "test": "node tools/check-config.mjs && node tests/e2e.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

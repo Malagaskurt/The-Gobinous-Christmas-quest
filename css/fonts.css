@@ -1,0 +1,68 @@
+/* =====================================================================
+ * Polices — charte : Gotham (titres, interface), Lovelo Line (titres
+ * d'affichage), Arial (textes courants).
+ *
+ * Gotham et Lovelo Line sont des polices sous licence : elles ne sont
+ * pas incluses. Le site les utilise automatiquement si elles sont
+ * installées sur l'appareil ; sinon il bascule sur Montserrat (police
+ * libre proche de Gotham, licence SIL OFL, incluse dans assets/fonts/).
+ *
+ * Pour utiliser les fichiers officiels (si vous disposez des droits
+ * de diffusion web) : copiez-les dans assets/fonts/ puis décommentez
+ * les lignes url(...) correspondantes ci-dessous.
+ * ===================================================================== */
+
+@font-face {
+  font-family: "Gotham";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: local("Gotham Book"), local("Gotham-Book");
+  /* src: local("Gotham Book"), url("../assets/fonts/Gotham-Book.woff2") format("woff2"); */
+}
+@font-face {
+  font-family: "Gotham";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: local("Gotham Bold"), local("Gotham-Bold");
+  /* src: local("Gotham Bold"), url("../assets/fonts/Gotham-Bold.woff2") format("woff2"); */
+}
+@font-face {
+  font-family: "Lovelo Line";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: local("Lovelo Line"), local("LoveloLine-Bold"), local("Lovelo Line Bold");
+  /* src: local("Lovelo Line"), url("../assets/fonts/LoveloLine.woff2") format("woff2"); */
+}
+
+/* Montserrat (remplacement libre de Gotham) — SIL Open Font License 1.1 */
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("../assets/fonts/montserrat-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url("../assets/fonts/montserrat-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("../assets/fonts/montserrat-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  src: url("../assets/fonts/montserrat-latin-800-normal.woff2") format("woff2");
+}
