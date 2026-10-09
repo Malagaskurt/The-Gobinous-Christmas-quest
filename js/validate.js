@@ -88,6 +88,9 @@
       Q.defi.questions.forEach(function (q, qi) { checkMcq(q, 'Quête 3, question ' + (qi + 1), 3); });
     }
 
+    if (Q.enigme.aVerifier) report.toVerify.push('Quête 2, énigme — ' + Q.enigme.aVerifier);
+    if (Q.dernierIndice.aVerifier) report.toVerify.push('Quête 4, énigme finale — ' + Q.dernierIndice.aVerifier);
+
     // Lieux
     var L = cfg.lieux;
     var refs = [
@@ -116,6 +119,7 @@
       else if (codes[code]) err(pl + ' : le code QR "' + code + '" est déjà utilisé par le lieu ' + codes[code] + '.');
       codes[code] = id;
       if (id !== Q.dernierIndice.lieu && !String(p.indice || '').trim()) warn(pl + ' : aucun indice défini.');
+      if (p.aVerifier) report.toVerify.push(pl + ' — ' + p.aVerifier);
     });
 
     // Paramètres
@@ -123,6 +127,9 @@
     var pq = P.quiz || {};
     if (!(pq.tentativesAvantBlocage >= 1)) err('parametres.quiz.tentativesAvantBlocage doit être un nombre ≥ 1.');
     if (!(pq.dureeBlocageSecondes >= 0)) err('parametres.quiz.dureeBlocageSecondes doit être un nombre ≥ 0.');
+    if (P.gel && P.gel.actif !== false && !(P.gel.dureeSecondes >= 0)) {
+      err('parametres.gel.dureeSecondes doit être un nombre ≥ 0.');
+    }
     if (P.chrono && P.chrono.actif !== false && !(P.chrono.dureeMinutes > 0)) {
       err('parametres.chrono.dureeMinutes doit être un nombre de minutes > 0.');
     }

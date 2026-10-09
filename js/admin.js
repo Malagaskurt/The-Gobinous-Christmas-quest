@@ -142,8 +142,9 @@
         row('Chrono', s.clockStart ? GQ.mmss((GQ.clock() || { elapsed: 0 }).elapsed) + ' écoulées' : '<i>pas démarré</i>') +
         row('Quiz', (cur ? 'thème en cours : ' + esc(cur.titre) + ', question ' + (q.current.index + 1) + ', ' + q.current.answers.filter(function (a) { return a != null; }).length + ' réponse(s)<br>' : '') +
           q.attempts.length + ' tentative(s) · ' + q.failedSinceLock + ' échec(s) depuis le dernier blocage' +
-          (lock ? '<br><b>Bloqué encore ' + Math.ceil(lock / 1000) + ' s</b>' : '') +
+          (lock ? '<br><b>Bloqué encore ' + Math.ceil(lock / 1000) + ' s</b>' + (q.passAfterLock ? ' (validé d\'office ensuite)' : '') : '') +
           (q.wonTheme ? '<br>Thème réussi : ' + esc((GQ.theme(q.wonTheme) || {}).titre || q.wonTheme) : '')) +
+        row('Gel (quêtes 2 à 4)', GQ.freezeRemaining() ? '<b>gelé encore ' + Math.ceil(GQ.freezeRemaining() / 1000) + ' s</b>' : 'aucun') +
         row('Sauvegarde', GQ.storageOk ? 'localStorage (ce navigateur uniquement)' : '<b>indisponible</b> (navigation privée ?)') +
         '</table>' +
         '<div class="btn-row">' + '<button type="button" class="btn btn-small btn-primary" data-action="resume">Ouvrir la partie</button>' +
@@ -155,13 +156,17 @@
 
         '<section class="admin-card"><h2>Options de test</h2>' +
         '<label class="check"><input type="checkbox" data-action="test-opt" data-opt="showAnswers"' + (GQ.test.opt('showAnswers') ? ' checked' : '') + '> Afficher les bonnes réponses</label>' +
-        '<label class="check"><input type="checkbox" data-action="test-opt" data-opt="shortLock"' + (GQ.test.opt('shortLock') ? ' checked' : '') + '> Blocage court du quiz (' + (MT.dureeBlocageCourtSecondes || 15) + ' s au lieu de ' + P.quiz.dureeBlocageSecondes + ' s)</label>' +
+        '<label class="check"><input type="checkbox" data-action="test-opt" data-opt="shortLock"' + (GQ.test.opt('shortLock') ? ' checked' : '') + '> Blocage court du quiz et des gels (' + (MT.dureeBlocageCourtSecondes || 15) + ' s au lieu de ' + P.quiz.dureeBlocageSecondes + ' s)</label>' +
         '</section>' +
 
         '<section class="admin-card"><h2>Quiz</h2><div class="btn-row">' +
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-lock">Déclencher le blocage</button>' +
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-unlock">Lever le blocage</button>' +
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-reset-quiz">Effacer les tentatives</button>' +
+        '</div></section>' +
+
+        '<section class="admin-card"><h2>Gel après une erreur (quêtes 2 à 4)</h2><div class="btn-row">' +
+        '<button type="button" class="btn btn-small btn-secondary" data-action="test-unfreeze">Lever le gel</button>' +
         '</div></section>' +
 
         '<section class="admin-card"><h2>Chrono global</h2><div class="btn-row">' +
@@ -302,9 +307,7 @@
     if (!guard()) return;
     var q = GQ.state.quiz;
     if (q.current) GQ.quizAbandon();
-    q.lockTotal = GQ.lockDurationMs();
-    q.lockUntil = Date.now() + q.lockTotal;
-    q.failedSinceLock = 0;
+    GQ.quizLock();
     if (GQ.state.quest === 1 && GQ.state.phase[1] !== 'intro') GQ.state.phase[1] = 'themes';
     done('Quiz bloqué pendant ' + Math.round(q.lockTotal / 1000) + ' s.');
   };
@@ -323,6 +326,12 @@
     done('Blocage levé.');
   };
 
+  actions['test-unfreeze'] = function () {
+    if (!guard()) return;
+    GQ.state.gel = { until: 0, total: 0 };
+    done('Gel levé.');
+  };
+
   actions['test-reset-quiz'] = function () {
     if (!guard()) return;
     var q = GQ.state.quiz;
@@ -330,6 +339,7 @@
     q.attempts = [];
     q.failedSinceLock = 0;
     q.lockUntil = 0;
+    q.passAfterLock = false;
     if (GQ.state.quest === 1 && GQ.state.phase[1] !== 'intro') {
       q.wonTheme = null;
       GQ.state.phase[1] = 'themes';

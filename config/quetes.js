@@ -62,6 +62,7 @@ window.GAME_CONFIG.quetes = {
         choix: ["Isover", "Sekurit", "Weber"],
         reponse: "A",
         explication: "Isover isole les bâtiments pour limiter les pertes de chaleur et le bruit.",
+        indiceJoker: "Son nom évoque un « hiver » qu'on garde dehors.",
         aVerifier: "Question rédigée en attendant le contenu officiel : à faire valider.",
       },
       {
@@ -73,6 +74,7 @@ window.GAME_CONFIG.quetes = {
         ],
         reponse: "A",
         explication: "Les plaques de plâtre permettent d'aménager rapidement les espaces intérieurs.",
+        indiceJoker: "Regardez autour de vous : les murs des bureaux en sont souvent faits.",
         aVerifier: "Question rédigée en attendant le contenu officiel : à faire valider.",
       },
       {
@@ -84,6 +86,7 @@ window.GAME_CONFIG.quetes = {
         ],
         reponse: "A",
         explication: "Weber propose des mortiers techniques pour construire et rénover.",
+        indiceJoker: "Pensez au carreleur et au maçon.",
         aVerifier: "Question rédigée en attendant le contenu officiel : à faire valider.",
       },
     ],
@@ -106,10 +109,13 @@ window.GAME_CONFIG.quetes = {
       "Vous approchez du but. Il ne vous reste plus qu'une énigme pour découvrir où se cache la hotte.",
     boutonIntro: "Découvrir l'énigme finale",
 
+    /* Énigme SIMULÉE : sa réponse doit être le lieu FINAL de
+     * config/lieux.js (réponses acceptées : voir ce lieu). */
     enigme:
-      "[À CONFIGURER] Rédigez ici l'énigme finale. Sa réponse doit être le lieu où se cache la hotte (réponses acceptées : voir le lieu FINAL dans config/lieux.js).",
+      "Plus haut que les bureaux, plus près des étoiles,\nj'offre tout Paris en guise de toile.\nOn y prend l'air quand le soleil brille,\net le lutin y cache la hotte qui scintille.",
     label: "Où se cache la hotte ?",
-    indiceJoker: "[À CONFIGURER] Indice supplémentaire pour l'énigme finale.",
+    indiceJoker: "Prenez l'ascenseur et montez… jusqu'en haut !",
+    aVerifier: "Énigme simulée pour les tests : à remplacer avec le vrai lieu final.",
     lieu: "FINAL",
 
     reussiteTitre: "Vous avez trouvé la cachette de la hotte !",

@@ -23,13 +23,28 @@ window.GAME_CONFIG.parametres = {
     /* Nombre de thèmes échoués avant le blocage du quiz. */
     tentativesAvantBlocage: 2,
 
-    /* Durée du blocage, en secondes (180 = 3 minutes). */
-    dureeBlocageSecondes: 180,
+    /* Durée du blocage, en secondes. */
+    dureeBlocageSecondes: 50,
+
+    /* true → à la fin du blocage, le quiz est validé d'office : l'équipe
+     * n'a plus à répondre et passe directement à l'indice du lieu A.
+     * false → à la fin du blocage, l'équipe choisit un nouveau thème. */
+    valideApresBlocage: true,
 
     /* Les réponses ne sont pas corrigées question par question : l'équipe
      * découvre son score à la fin des 8 questions. Il faut 8/8 pour
      * valider un thème ; un thème raté ne peut plus être rejoué (sauf si
      * tous les thèmes ont été ratés). */
+  },
+
+  /* ---- Gel après une mauvaise réponse (quêtes 2, 3 et 4) -----------
+   * Chaque mauvaise réponse à l'énigme (quête 2), au défi (quête 3) ou à
+   * l'énigme finale (quête 4) gèle la saisie pendant dureeSecondes, avec
+   * un compte à rebours. L'équipe peut ensuite retenter.
+   * La saisie des lieux et des codes n'est pas concernée. */
+  gel: {
+    actif: true,
+    dureeSecondes: 50,
   },
 
   /* ---- Chrono global -------------------------------------------------
@@ -116,8 +131,8 @@ window.GAME_CONFIG.parametres = {
   modeTest: {
     actif: true,
     code: "1225", // ⚠ À PERSONNALISER
-    /* Durée du blocage du quiz quand l'option « Blocage court » est
-     * cochée dans le mode test, en secondes. */
+    /* Durée du blocage du quiz et du gel des quêtes quand l'option
+     * « Blocage court » est cochée dans le mode test, en secondes. */
     dureeBlocageCourtSecondes: 15,
   },
 };

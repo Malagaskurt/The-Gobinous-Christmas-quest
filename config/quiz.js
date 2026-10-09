@@ -51,7 +51,7 @@ window.GAME_CONFIG.quiz = {
     abandonTitre: "Abandonner ce thème ?",
     abandonTexte: "Ce thème sera compté comme une tentative échouée et ne pourra plus être rejoué.",
     abandonTexteBlocage:
-      "Ce thème sera compté comme une tentative échouée. Attention : le quiz sera alors bloqué pendant {minutes}.",
+      "Ce thème sera compté comme une tentative échouée. Attention : le quiz sera alors gelé pendant {minutes}, puis vous passerez à la suite.",
     abandonConfirmer: "Abandonner le thème",
     abandonAnnuler: "Continuer ce thème",
     resultatScore: "{score} bonne(s) réponse(s) sur {total}",
@@ -59,14 +59,16 @@ window.GAME_CONFIG.quiz = {
     echecTitreLoin: "Pas cette fois !", // 5 bonnes réponses ou moins
     echecTexte: "Il fallait 8 bonnes réponses sur 8. Ce thème est désormais fermé : choisissez-en un autre.",
     echecAvertissement: "Attention : un nouvel échec bloquera le quiz pendant {minutes}.",
-    echecBlocage: "C'est votre deuxième échec : le quiz est gelé pendant {minutes}.",
+    echecBlocage: "C'est votre deuxième échec : le quiz est gelé pendant {minutes}. Ensuite, le lutin vous laissera passer à la suite.",
     boutonAutreTheme: "Choisir un autre thème",
     boutonMinuteur: "Voir le minuteur",
     bloqueTitre: "Quiz gelé",
-    bloqueTexte: "Deux thèmes ratés : le quiz est gelé quelques minutes. Profitez-en pour échanger en équipe !",
-    bloqueCompteur: "Nouvelle tentative dans",
+    bloqueTexte: "Deux thèmes ratés : le quiz est gelé. À la fin du compte à rebours, vous passerez directement à la suite de l'aventure.",
+    bloqueCompteur: "Suite de l'aventure dans",
     reussiteTitre: "Quiz réussi !",
     reussiteTexte: "8 bonnes réponses sur 8 : votre premier indice est débloqué.",
+    reussiteApresGelTitre: "Le gel est levé !",
+    reussiteApresGelTexte: "Le lutin a eu pitié de vous : le quiz est validé. Votre premier indice est débloqué.",
     boutonIndice: "Découvrir le premier indice",
   },
 

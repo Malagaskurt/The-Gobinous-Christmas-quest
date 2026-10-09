@@ -289,38 +289,49 @@
   /* Quête 1 : le grand quiz                                             */
   /* ------------------------------------------------------------------ */
 
-  /* Blocage du quiz : compte à rebours géant en chiffres tricotés. */
-  function lockDevice(lock) {
-    var X = QZ.textes;
+  /* Blocage (quiz gelé ou gel après une erreur) : compte à rebours géant
+   * en chiffres tricotés. o = { titre, texte, compteur } */
+  function lockDevice(lock, o) {
     return (
-      '<div class="lock" role="timer" aria-label="' + esc(X.bloqueCompteur) + '">' +
+      '<div class="lock" role="timer" aria-label="' + esc(o.compteur) + '">' +
       GQ.knit.icon('flake', 'lock-ico') +
-      '<p class="kicker">' + esc(X.bloqueTitre) + '</p>' +
-      '<div class="lock-digits" data-countdown>' + lockDigits(GQ.mmss(lock + 999)) + '</div>' +
-      '<p class="lock-text">' + t(X.bloqueTexte) + '</p>' +
+      '<p class="kicker">' + esc(o.titre) + '</p>' +
+      '<div class="lock-digits" data-countdown>' + lockDigits(GQ.mmss(lock + 999), o.compteur) + '</div>' +
+      '<p class="lock-text">' + t(o.texte) + '</p>' +
       '</div>'
     );
   }
 
-  function lockDigits(label) {
-    var X = QZ.textes;
-    return '<span class="sr-only">' + esc(X.bloqueCompteur) + ' ' + label + '</span>' +
+  function lockDigits(label, compteur) {
+    return '<span class="sr-only">' + esc(compteur) + ' ' + label + '</span>' +
       GQ.knit.text(label, { alt: '', color: '#E4323A', outline: true, cls: 'lock-img' });
   }
 
-  function startCountdown() {
+  function startCountdown(left, compteur) {
     var last = '';
     GQ.every(250, function () {
-      var left = GQ.quizLockRemaining();
-      if (!left) { GQ.render(); return; }
-      var label = GQ.mmss(left + 999);
+      var ms = left();
+      if (!ms) { GQ.uiReset(); GQ.render(); return; }
+      var label = GQ.mmss(ms + 999);
       var el = document.querySelector('[data-countdown]');
       if (el && label !== last) {
         last = label;
-        el.innerHTML = lockDigits(label);
+        el.innerHTML = lockDigits(label, compteur);
       }
     });
   }
+
+  function quizLockTexts() {
+    var X = QZ.textes;
+    return { titre: X.bloqueTitre, texte: X.bloqueTexte, compteur: X.bloqueCompteur };
+  }
+
+  /* Gel après une mauvaise réponse (quêtes 2 à 4). */
+  function freezeTexts() {
+    var G = T.general;
+    return { titre: G.gelTitre, texte: G.gelTexte, compteur: G.gelCompteur };
+  }
+  function freezeAfter() { startCountdown(GQ.freezeRemaining, T.general.gelCompteur); }
 
   function quizThemes() {
     var X = QZ.textes;
@@ -330,7 +341,7 @@
     var failed = GQ.failedThemeIds();
     var html = questHead(1) + '<h2 class="section-title">' + t(X.choixTitre) + '</h2>';
     if (lock) {
-      html += lockDevice(lock);
+      html += lockDevice(lock, quizLockTexts());
     } else if (q.failedSinceLock > 0) {
       html += '<p class="attempts">' + icon('cadenas') + t(X.tentatives, { n: q.failedSinceLock, max: maxFail }) + '</p>';
     }
@@ -351,7 +362,7 @@
       key: 'q1-themes' + (lock ? '-lock' : ''),
       elf: lock ? { say: 'blocage' } : null,
       html: html,
-      after: lock ? startCountdown : null,
+      after: lock ? function () { startCountdown(GQ.quizLockRemaining, QZ.textes.bloqueCompteur); } : null,
     };
   }
 
@@ -401,6 +412,7 @@
   }
 
   function quest1() {
+    GQ.quizCheckPass();
     var ph = GQ.state.phase[1];
     var X = QZ.textes;
     if (ph === 'intro') return introScreen(1);
@@ -408,14 +420,16 @@
     if (ph === 'result') return quizResult();
     if (ph === 'success') {
       var r = GQ.state.quiz.lastResult;
+      var forced = !!(r && r.forced);
       return {
         key: 'q1-success',
         celebrate: true,
         elf: { say: 'reussite' },
         html: successBlock({
-          score: r ? r.score + '/' + r.total : '8/8',
-          title: X.reussiteTitre,
-          html: '<p>' + t(X.reussiteTexte) + '</p>',
+          art: forced ? GQ.knit.icon('flake', 'success-ico') : undefined,
+          score: forced ? '' : r ? r.score + '/' + r.total : '8/8',
+          title: forced ? X.reussiteApresGelTitre : X.reussiteTitre,
+          html: '<p>' + t(forced ? X.reussiteApresGelTexte : X.reussiteTexte) + '</p>',
           cta: btn(esc(X.boutonIndice) + icon('fleche'), 'to-place', ' data-n="1"'),
         }),
       };
@@ -432,13 +446,19 @@
   function enigmaScreen(n) {
     var qc = GQ.questCfg(n);
     var expected = n === 2 ? qc.reponses : GQ.place(GQ.finalPlaceId()).reponsesAcceptees;
+    var gel = GQ.freezeRemaining();
     return {
-      key: 'q' + n + '-enigma',
+      key: 'q' + n + '-enigma' + (gel ? '-gel' : ''),
+      elf: gel ? { say: 'blocage' } : null,
+      after: gel ? freezeAfter : null,
       html:
         questHead(n) +
+        (gel ? lockDevice(gel, freezeTexts()) : '') +
         frame('<p class="card-label">' + icon('etoile') + 'Énigme</p><p class="riddle">' + t(qc.enigme) + '</p>') +
         GQ.jokerBlock('q' + n, qc.indiceJoker) +
-        textAnswer({ form: 'enigma', label: qc.label || T.general.votreReponse, button: T.general.validerReponse, expected: expected, attrs: ' data-n="' + n + '"' }),
+        (gel
+          ? ''
+          : textAnswer({ form: 'enigma', label: qc.label || T.general.votreReponse, button: T.general.validerReponse, expected: expected, attrs: ' data-n="' + n + '"' })),
     };
   }
 
@@ -471,10 +491,18 @@
       var d = GQ.state.defi;
       var index = fb ? fb.index : d.index;
       var q = D.questions[index];
+      var gel = fb ? 0 : GQ.freezeRemaining();
       var html = '<h1 class="sr-only" tabindex="-1">' + t(D.titre) + '</h1>' +
-        progress(index, D.questions.length, function (i) { return i < d.index; }) +
-        questionCard(q) +
-        choices(q, { scope: 'defi', selected: GQ.ui.sel, tried: fb ? [] : d.tried, reveal: !!fb });
+        progress(index, D.questions.length, function (i) { return i < d.index; });
+      if (gel) {
+        return {
+          key: 'q3-play-' + index + '-gel',
+          elf: { say: 'blocage' },
+          after: freezeAfter,
+          html: html + lockDevice(gel, freezeTexts()) + questionCard(q) + GQ.jokerBlock('q3-' + index, q.indiceJoker),
+        };
+      }
+      html += questionCard(q) + choices(q, { scope: 'defi', selected: GQ.ui.sel, tried: fb ? [] : d.tried, reveal: !!fb });
       if (fb) {
         html +=
           '<div class="feedback-slot" aria-live="polite"><div class="feedback feedback-ok pop">' + icon('valide') + '<span><strong>' + t(T.general.bonneReponse) + '</strong>' +
@@ -802,7 +830,7 @@
     var index = GQ.state.defi.index;
     var question = Q.defi.questions[index];
     var res = GQ.defiAnswer(sel);
-    if (!res) return GQ.render();
+    if (!res) { GQ.uiReset(); return GQ.render(); }
     if (res.correct) {
       GQ.uiReset();
       if (!(res.done && !question.explication)) GQ.ui.correct = { scope: 'defi', index: index, done: res.done };
@@ -871,8 +899,11 @@
   forms.enigma = function (form, value) {
     var n = Number(form.dataset.n);
     if (!value.trim()) return formError(value, T.general.reponseVide);
-    if (n !== GQ.state.quest || GQ.state.phase[n] !== 'enigma') return GQ.render();
-    if (!GQ.enigmaAnswer(n, value)) return formError(value, T.general.mauvaiseReponse);
+    if (n !== GQ.state.quest || GQ.state.phase[n] !== 'enigma' || GQ.freezeRemaining()) return GQ.render();
+    if (!GQ.enigmaAnswer(n, value)) {
+      if (GQ.freezeRemaining()) { GQ.uiReset(); return GQ.render(); }
+      return formError(value, T.general.mauvaiseReponse);
+    }
     GQ.uiReset();
     GQ.render();
   };

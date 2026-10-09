@@ -59,7 +59,7 @@ Tous les fichiers à modifier se trouvent dans `config/`. Chacun est commenté e
 
 | Fichier | Contenu |
 |---|---|
-| `config/parametres.js` | Règles du quiz (tentatives, durée du blocage), chrono global, QR code obligatoire ou non, adresse publique du site, logo, code organisateur de fin de partie, mode test |
+| `config/parametres.js` | Règles du quiz (tentatives, durée du blocage, validation après le gel), gel après une erreur, chrono global, QR code obligatoire ou non, adresse publique du site, logo, code organisateur de fin de partie, mode test |
 | `config/textes.js` | Accueil, nom d'équipe, **règles** (texte exact demandé), messages d'erreur ou de réussite, joker, lieux, QR codes, fin |
 | `config/quiz.js` | Quête 1 : introduction, 4 thèmes × 8 questions, bonnes réponses |
 | `config/quetes.js` | Quêtes 2 à 5 : énigme, 3 questions du défi, énigme finale, écran final, indices du joker |
@@ -84,7 +84,7 @@ Cette commande signale les erreurs de saisie (virgule oubliée, lettre de répon
 ## 4. Déroulement du jeu
 
 1. **Accueil**, puis **nom d'équipe** (aucune donnée personnelle), puis **plateau « Comment jouer ? »** animé.
-2. **Quête 1 : le grand quiz.** L'équipe choisit un thème et répond aux 8 QCM, une question à la fois. **Aucune correction n'est affichée pendant les questions** : l'équipe peut revenir en arrière et modifier ses choix, puis valide ses 8 réponses et découvre son score. Avec 8/8, le premier indice se débloque. Sinon, le thème est **fermé** (il ne pourra plus être rejoué) et l'équipe en choisit un autre. Au **deuxième thème raté**, le quiz est gelé pendant **3 minutes**, avec un compte à rebours affiché. Le score s'affiche, mais pas les questions ratées, pour ne pas dévoiler les réponses. Abandonner un thème en cours compte aussi comme un échec. Si les 4 thèmes sont ratés, ils redeviennent tous disponibles.
+2. **Quête 1 : le grand quiz.** L'équipe choisit un thème et répond aux 8 QCM, une question à la fois. **Aucune correction n'est affichée pendant les questions** : l'équipe peut revenir en arrière et modifier ses choix, puis valide ses 8 réponses et découvre son score. Avec 8/8, le premier indice se débloque. Sinon, le thème est **fermé** (il ne pourra plus être rejoué) et l'équipe en choisit un autre. Au **deuxième thème raté**, le quiz est gelé pendant **50 secondes**, avec un compte à rebours affiché. **À la fin du gel, le quiz est validé d'office** : l'équipe n'a plus de thème à jouer et découvre directement l'indice du lieu A (`parametres.quiz.valideApresBlocage`). Le score s'affiche, mais pas les questions ratées, pour ne pas dévoiler les réponses. Abandonner un thème en cours compte aussi comme un échec.
 3. **Lieu A** : l'équipe saisit le lieu deviné. S'il est correct, elle s'y rend et scanne le QR code (ou saisit le code imprimé dessous). La quête 2 se débloque.
 4. **Quête 2 : l'énigme mystère.** Une énigme à réponse libre, puis l'indice du lieu B et la même mécanique de déplacement.
 5. **Quête 3 : le défi Saint-Gobain.** 3 QCM, puis l'indice du lieu C.
@@ -93,7 +93,9 @@ Cette commande signale les erreurs de saisie (virgule oubliée, lettre de répon
 
 **Chrono global** : un compte à rebours de 30 minutes (`parametres.chrono`) s'affiche en haut de l'écran pendant toute la partie. Il démarre au bouton « C'est parti ! » et s'arrête à la fin de l'aventure, qui affiche le temps total. Il passe au rouge sous 5 minutes. Une fois écoulé, il affiche le dépassement (+01:12) mais ne bloque pas le jeu.
 
-**Quête 3** : les 3 questions du défi gardent une correction immédiate (on retente jusqu'à la bonne réponse), conformément au cahier des charges initial. La mécanique du quiz peut y être reprise sur demande.
+**Gel après une erreur (quêtes 2, 3 et 4)** : chaque mauvaise réponse à l'énigme, à une question du défi ou à l'énigme finale gèle la saisie pendant **50 secondes** (`parametres.gel`), avec le même compte à rebours que le quiz. L'énigme et le joker restent visibles. À la fin du gel, l'équipe retente. Le gel résiste au rechargement de la page. La saisie des lieux et des codes QR n'est pas concernée.
+
+**Quête 3** : les 3 questions du défi gardent une correction immédiate : une erreur déclenche le gel, puis l'équipe retente jusqu'à la bonne réponse.
 
 **Joker** : un seul par équipe. Le bouton « Utiliser mon joker » apparaît sur chaque étape qui a un `indiceJoker` renseigné. Une confirmation est demandée, puis l'indice s'affiche et le joker est marqué comme utilisé (le rechargement de la page ne le rend pas). Le statut « Joker disponible » ou « Joker utilisé » reste visible en haut de l'écran.
 
@@ -119,7 +121,7 @@ Ce que permet le mode test :
 - consulter l'état de la partie (quête, phase, joker, tentatives du quiz, blocage, lieux) ;
 - **aller directement à n'importe quelle quête**. Sert aussi à reprendre la partie d'une équipe sur un autre téléphone (le joker se règle séparément) ;
 - **afficher les bonnes réponses** pendant les tests (QCM, énigmes, lieux, codes) ;
-- **blocage court** du quiz (15 s au lieu de 3 min), déclencher ou lever le blocage, effacer les tentatives ;
+- **blocage court** du quiz et des gels (15 s au lieu de 50 s), déclencher ou lever le blocage, effacer les tentatives, **lever le gel** d'une quête ;
 - rendre le joker ou le marquer comme utilisé ;
 - **simuler le scan** de chaque QR code, tester un QR inconnu, générer les fiches QR ;
 - marquer ou annuler « Aventure terminée » ;
@@ -159,7 +161,7 @@ npx playwright install chromium
 npm test
 ```
 
-Les vérifications couvrent : parcours complet des 5 quêtes ; nom d'équipe vide ; quiz sans correction pendant les questions (navigation avant/arrière, réponses conservées) ; score affiché à la fin, thème raté fermé ; rechargement en cours de thème ; gel de 3 minutes après deux thèmes ratés et persistance au rechargement ; chrono global ; accès direct à une quête non débloquée ; QR code scanné trop tôt, inconnu, ou ouvert dans un navigateur sans partie ; lieu incorrect ; code manuel incorrect ; joker refusé, puis utilisé, mémorisé après rechargement et impossible à réutiliser ; code organisateur incorrect ; « Aventure terminée » conservée au rechargement ; mode test (code, blocage court, sauts de quête, remise à zéro, fiches QR) ; absence de défilement horizontal en mobile et sur ordinateur ; absence d'erreur JavaScript.
+Les vérifications couvrent : parcours complet des 5 quêtes ; nom d'équipe vide ; quiz sans correction pendant les questions (navigation avant/arrière, réponses conservées) ; score affiché à la fin, thème raté fermé ; rechargement en cours de thème ; gel de 50 secondes après deux thèmes ratés, persistance au rechargement et quiz validé d'office à la fin du gel ; gel après une mauvaise réponse aux quêtes 2, 3 et 4 ; chrono global ; accès direct à une quête non débloquée ; QR code scanné trop tôt, inconnu, ou ouvert dans un navigateur sans partie ; lieu incorrect ; code manuel incorrect ; joker refusé, puis utilisé, mémorisé après rechargement et impossible à réutiliser ; code organisateur incorrect ; « Aventure terminée » conservée au rechargement ; mode test (code, blocage court, sauts de quête, remise à zéro, fiches QR) ; absence de défilement horizontal en mobile et sur ordinateur ; absence d'erreur JavaScript.
 
 ---
 
@@ -188,7 +190,8 @@ Le fichier `index.html` contient `noindex` : le site n'apparaîtra pas dans les 
 
 **Fonctionnel :**
 - les écrans (accueil, équipe, règles) et les 5 quêtes, avec leurs écrans d'introduction, de réussite et de transition ;
-- le quiz : 4 thèmes, 32 questions intégrées, score révélé à la fin, thèmes ratés fermés, gel de 3 minutes avec minuteur ;
+- le quiz : 4 thèmes, 32 questions intégrées, score révélé à la fin, thèmes ratés fermés, gel de 50 secondes avec minuteur puis validation d'office ;
+- le gel de 50 secondes après chaque mauvaise réponse aux quêtes 2, 3 et 4 ;
 - le chrono global de 30 minutes, l'écran de chargement et le lutin (promenades, bulles, scène finale) ;
 - l'énigme de la quête 2, le défi (3 QCM), l'énigme finale, l'écran final et « Aventure terminée » ;
 - la saisie et la validation des lieux, les QR codes (scan, saisie manuelle, mode sans QR code) et la génération des fiches à imprimer ;
@@ -200,8 +203,9 @@ Le fichier `index.html` contient `noindex` : le site n'apparaîtra pas dans les 
 - l'affichage mobile et ordinateur, ainsi que l'accessibilité de base (contrastes, navigation clavier, mouvements réduits).
 
 **À configurer ou à valider avant l'événement :**
-- [ ] **Lieux A, B, C et FINAL** dans `config/lieux.js` : nom, indice, réponses acceptées, texte de validation, indice du joker. Ils contiennent aujourd'hui des valeurs `[À CONFIGURER]`, et aucun lieu réel n'a été inventé.
-- [ ] **Énigme finale** (quête 4) et son indice du joker dans `config/quetes.js`.
+- [ ] **Lieux A, B, C et FINAL** dans `config/lieux.js` : ils contiennent des **lieux simulés** pour tester le parcours (cafétéria, accueil, salle de sport, rooftop). Remplacez nom, indice, réponses acceptées, texte de validation et indice du joker par les vrais lieux, puis supprimez la ligne `aVerifier` de chaque lieu.
+- [ ] **Énigme finale** (quête 4) et son indice du joker dans `config/quetes.js` : **simulés** (réponse : le rooftop), à réécrire avec le vrai lieu final.
+- [ ] **Indices du joker du défi** (quête 3) : proposés par défaut, à faire valider.
 - [ ] **Questions marquées `aVerifier`** : thème « La Tour prend de la hauteur » (Q1, Q4, Q5, Q7, Q8) et thème « Matériaux, mode d'emploi » (Q5, Q6, Q8). La Q8 du thème Matériaux ne doit pas être utilisée sans vérification de la source. La mention « à vérifier avant publication » a été retirée de l'énoncé visible et conservée en note interne.
 - [ ] **Questions de la quête 3** et **énigme de la quête 2** (réponse : « le verre ») : proposées par défaut, à faire valider.
 - [ ] **Code organisateur de fin** (`finDePartie.codeOrganisateur`, actuellement `HOTTE2026`) et **code du mode test** (`1225`).

@@ -36,40 +36,53 @@
 window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.lieux = {
+  /* ⚠ LIEUX SIMULÉS pour tester le parcours de bout en bout : remplacez
+   * nom, indice, réponses, textes et jokers par les vrais lieux de la Tour,
+   * puis supprimez la ligne aVerifier de chaque lieu. */
   A: {
-    nom: "[À CONFIGURER] Lieu A",
-    indice: "[À CONFIGURER] Indice permettant de deviner le lieu A.",
-    reponsesAcceptees: ["lieu a"],
+    nom: "La cafétéria",
+    indice:
+      "On y fait le plein d'énergie avant les réunions.\nLe café y coule à flots et les plateaux s'y croisent à midi.\n\n**Où le lutin a-t-il caché la suite ?**",
+    reponsesAcceptees: ["cafeteria", "cafet", "cafe", "restaurant", "cantine", "self", "restaurant d'entreprise"],
     texteValidation:
-      "[À CONFIGURER] Texte affiché lorsque le lieu A est trouvé (comment s'y rendre, ce qu'il faut y chercher…).",
-    indiceJoker: "[À CONFIGURER] Indice supplémentaire pour le lieu A.",
+      "Direction la cafétéria ! Cherchez le QR code caché près de la machine à café, puis scannez-le.",
+    indiceJoker: "Suivez l'odeur du café…",
     codeQR: "SAPIN",
+    aVerifier: "Lieu simulé pour les tests : à remplacer par un vrai lieu de la Tour.",
   },
 
   B: {
-    nom: "[À CONFIGURER] Lieu B",
-    indice: "[À CONFIGURER] Indice permettant de deviner le lieu B.",
-    reponsesAcceptees: ["lieu b"],
-    texteValidation: "[À CONFIGURER] Texte affiché lorsque le lieu B est trouvé.",
-    indiceJoker: "[À CONFIGURER] Indice supplémentaire pour le lieu B.",
+    nom: "L'accueil",
+    indice:
+      "C'est la première porte franchie par chaque visiteur.\nOn y reçoit son badge et un grand sourire.\n\n**Où se cache le prochain QR code ?**",
+    reponsesAcceptees: ["accueil", "hall", "hall d'accueil", "reception", "hall d'entree"],
+    texteValidation:
+      "Rendez-vous à l'accueil du rez-de-chaussée. Le QR code vous attend près du comptoir.",
+    indiceJoker: "Pensez à l'endroit où l'on retire son badge visiteur.",
     codeQR: "ETOILE",
+    aVerifier: "Lieu simulé pour les tests : à remplacer par un vrai lieu de la Tour.",
   },
 
   C: {
-    nom: "[À CONFIGURER] Lieu C",
-    indice: "[À CONFIGURER] Indice permettant de deviner le lieu C.",
-    reponsesAcceptees: ["lieu c"],
-    texteValidation: "[À CONFIGURER] Texte affiché lorsque le lieu C est trouvé.",
-    indiceJoker: "[À CONFIGURER] Indice supplémentaire pour le lieu C.",
+    nom: "La salle de sport",
+    indice:
+      "Ici, on transpire entre deux réunions.\nTapis, haltères et vestiaires sont au rendez-vous.\n\n**Où le lutin s'est-il caché cette fois ?**",
+    reponsesAcceptees: ["salle de sport", "sport", "salle de fitness", "fitness", "gym", "salle de gym"],
+    texteValidation:
+      "Filez à la salle de sport ! Le QR code est accroché près des vestiaires.",
+    indiceJoker: "Baskets aux pieds, c'est là qu'on se dépense.",
     codeQR: "FLOCON",
+    aVerifier: "Lieu simulé pour les tests : à remplacer par un vrai lieu de la Tour.",
   },
 
   FINAL: {
-    nom: "[À CONFIGURER] Lieu final de la hotte",
+    nom: "Le rooftop",
     indice: "",
-    reponsesAcceptees: ["lieu final"],
-    texteValidation: "[À CONFIGURER] Texte affiché lorsque le lieu final est trouvé.",
+    reponsesAcceptees: ["rooftop", "toit", "terrasse", "toit terrasse", "terrasse du toit", "dernier etage", "sommet"],
+    texteValidation:
+      "La hotte vous attend tout en haut de la Tour, sur le rooftop. Prenez l'ascenseur jusqu'au dernier étage !",
     indiceJoker: "",
     codeQR: "HOTTE",
+    aVerifier: "Lieu simulé pour les tests : à remplacer par un vrai lieu de la Tour.",
   },
 };

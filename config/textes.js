@@ -89,7 +89,7 @@ window.GAME_CONFIG.textes = {
     regles: [
       { icone: "qr", texte: "Entre deux quêtes : trouvez le lieu, scannez son QR code." },
       { icone: "star", texte: "**1 joker** = 1 indice bonus, une seule fois." },
-      { icone: "flake", texte: "**Quiz** : 8/8 pour passer. 2 thèmes ratés = 3 min de gel." },
+      { icone: "flake", texte: "**Mauvaise réponse** = 50 s de gel. Au quiz : 2 thèmes ratés." },
     ],
     detail: "Lire les règles détaillées",
   },
@@ -118,9 +118,9 @@ window.GAME_CONFIG.textes = {
           "Vous disposez d'un joker utilisable une seule fois pendant toute l'aventure. Il vous permettra d'obtenir un indice supplémentaire.",
       },
       {
-        titre: "Attention au quiz !",
+        titre: "Attention aux erreurs !",
         texte:
-          "Vous devez obtenir 8 bonnes réponses. En cas d'échec, vous pouvez tenter un autre thème. Si vous échouez une deuxième fois, le quiz se bloque pendant 3 minutes.",
+          "Au quiz, il faut 8 bonnes réponses sur 8. En cas d'échec, vous pouvez tenter un autre thème. Au deuxième échec, le quiz est gelé pendant 50 secondes, puis vous passez à la suite. Dans les autres quêtes, chaque mauvaise réponse gèle le jeu pendant 50 secondes.",
       },
     ],
     objectif:
@@ -149,6 +149,9 @@ window.GAME_CONFIG.textes = {
     queteTerminee: "Cette quête est déjà terminée. Voici votre quête en cours.",
     commencer: "Commencer",
     continuer: "Continuer",
+    gelTitre: "Réponse gelée",
+    gelTexte: "Mauvaise réponse : le lutin a tout gelé ! Patientez avant de retenter votre chance.",
+    gelCompteur: "Nouvelle tentative dans",
     stockageIndisponible:
       "Ce navigateur bloque la sauvegarde (navigation privée ?). Votre progression sera perdue si la page est fermée ou rechargée.",
   },

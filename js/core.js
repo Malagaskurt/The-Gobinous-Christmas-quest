@@ -158,8 +158,10 @@
         failedSinceLock: 0,
         lockUntil: 0,
         lockTotal: 0,
+        passAfterLock: false, // quiz validé d'office à la fin du blocage
         wonTheme: null,
       },
+      gel: { until: 0, total: 0 }, // gel après une mauvaise réponse (quêtes 2 à 4)
       defi: { index: 0, tried: [] },
       places: {}, // id → { found: horodatage, arrived: horodatage }
       joker: { used: false, on: null, at: null },
@@ -175,7 +177,7 @@
       if (!raw) return base;
       var s = JSON.parse(raw);
       if (!s || s.v !== 1) return base;
-      ['phase', 'quiz', 'defi', 'joker'].forEach(function (k) {
+      ['phase', 'quiz', 'defi', 'joker', 'gel'].forEach(function (k) {
         s[k] = Object.assign(base[k], s[k] || {});
       });
       return Object.assign(base, s);
@@ -238,27 +240,75 @@
   /* Quête 1 : quiz                                                      */
   /* ------------------------------------------------------------------ */
 
-  /* Durée de blocage effective (le mode test peut la raccourcir). */
-  GQ.lockDurationMs = function () {
-    var pq = P.quiz || {};
-    var sec = GQ.test && GQ.test.isActive() && GQ.test.opt('shortLock')
-      ? (P.modeTest && P.modeTest.dureeBlocageCourtSecondes) || 15
-      : pq.dureeBlocageSecondes;
+  /* Durée effective d'un blocage (le mode test peut la raccourcir). */
+  function durationMs(sec) {
+    if (GQ.test && GQ.test.isActive() && GQ.test.opt('shortLock')) {
+      sec = (P.modeTest && P.modeTest.dureeBlocageCourtSecondes) || 15;
+    }
     return Math.max(0, Number(sec) || 0) * 1000;
+  }
+
+  /* Temps restant d'un blocage { until, total }. Horloge du téléphone
+   * reculée : on ne dépasse jamais la durée initiale. */
+  function remaining(o, untilKey, totalKey) {
+    var left = (o[untilKey] || 0) - Date.now();
+    if (left <= 0) return 0;
+    if (o[totalKey] && left > o[totalKey]) {
+      o[untilKey] = Date.now() + o[totalKey];
+      GQ.save();
+      return o[totalKey];
+    }
+    return left;
+  }
+
+  GQ.lockDurationMs = function () {
+    return durationMs((P.quiz || {}).dureeBlocageSecondes);
   };
 
   GQ.quizLockRemaining = function () {
-    var q = GQ.state.quiz;
-    var left = (q.lockUntil || 0) - Date.now();
-    if (left <= 0) return 0;
-    // Horloge du téléphone reculée : on ne dépasse jamais la durée initiale.
-    if (q.lockTotal && left > q.lockTotal) {
-      q.lockUntil = Date.now() + q.lockTotal;
-      GQ.save();
-      return q.lockTotal;
-    }
-    return left;
+    return remaining(GQ.state.quiz, 'lockUntil', 'lockTotal');
   };
+
+  /* Blocage du quiz (deuxième thème raté, ou mode test). */
+  GQ.quizLock = function () {
+    var q = GQ.state.quiz;
+    q.lockTotal = GQ.lockDurationMs();
+    q.lockUntil = Date.now() + q.lockTotal;
+    q.failedSinceLock = 0;
+    q.passAfterLock = (P.quiz || {}).valideApresBlocage !== false;
+  };
+
+  /* Fin du blocage : si le quiz est validé d'office, l'équipe passe
+   * directement à l'écran de réussite. Retourne true si c'est le cas. */
+  GQ.quizCheckPass = function () {
+    var s = GQ.state;
+    var q = s.quiz;
+    if (!q.passAfterLock || s.quest !== 1 || GQ.quizLockRemaining() > 0) return false;
+    if (['themes', 'result'].indexOf(s.phase[1]) === -1) return false;
+    q.passAfterLock = false;
+    q.current = null;
+    q.wonTheme = q.wonTheme || 'gel';
+    q.lastResult = { forced: true, at: Date.now() };
+    s.phase[1] = 'success';
+    GQ.save();
+    return true;
+  };
+
+  /* ------------------------------------------------------------------ */
+  /* Gel après une mauvaise réponse (quêtes 2 à 4)                       */
+  /* ------------------------------------------------------------------ */
+
+  GQ.freezeRemaining = function () {
+    return remaining(GQ.state.gel, 'until', 'total');
+  };
+
+  function freeze() {
+    var g = P.gel || {};
+    if (g.actif === false) return;
+    var total = durationMs(g.dureeSecondes != null ? g.dureeSecondes : 50);
+    if (!total) return;
+    GQ.state.gel = { until: Date.now() + total, total: total };
+  }
 
   GQ.failedThemeIds = function () {
     var out = {};
@@ -297,9 +347,7 @@
     q.failedSinceLock += 1;
     var locked = false;
     if (q.failedSinceLock >= ((P.quiz && P.quiz.tentativesAvantBlocage) || 2)) {
-      q.lockTotal = GQ.lockDurationMs();
-      q.lockUntil = Date.now() + q.lockTotal;
-      q.failedSinceLock = 0;
+      GQ.quizLock();
       locked = true;
     }
     return locked;
@@ -378,14 +426,14 @@
   };
 
   /* ------------------------------------------------------------------ */
-  /* Quête 3 : défi (QCM sans limite d'essais)                           */
+  /* Quête 3 : défi (QCM, gel après chaque erreur)                       */
   /* ------------------------------------------------------------------ */
 
   GQ.defiAnswer = function (choiceIdx) {
     var d = GQ.state.defi;
     var qs = Q.defi.questions;
     var question = qs[d.index];
-    if (!question) return null;
+    if (!question || GQ.freezeRemaining() > 0) return null;
     if (letterIndex(question.reponse) === choiceIdx) {
       d.index += 1;
       d.tried = [];
@@ -394,6 +442,7 @@
       return { correct: true, done: d.index >= qs.length };
     }
     if (d.tried.indexOf(choiceIdx) === -1) d.tried.push(choiceIdx);
+    freeze();
     GQ.save();
     return { correct: false };
   };
@@ -402,13 +451,16 @@
   /* Énigmes (quêtes 2 et 4)                                             */
   /* ------------------------------------------------------------------ */
 
+  /* Une mauvaise réponse déclenche le gel. */
   GQ.enigmaAnswer = function (n, input) {
+    if (GQ.freezeRemaining() > 0) return false;
+    function wrong() { freeze(); GQ.save(); return false; }
     if (n === 2) {
-      if (!matches(input, Q.enigme.reponses)) return false;
+      if (!matches(input, Q.enigme.reponses)) return wrong();
       GQ.state.phase[2] = 'success';
     } else if (n === 4) {
       var id = GQ.finalPlaceId();
-      if (!matches(input, GQ.place(id).reponsesAcceptees)) return false;
+      if (!matches(input, GQ.place(id).reponsesAcceptees)) return wrong();
       GQ.state.places[id] = Object.assign(GQ.state.places[id] || {}, { found: Date.now() });
       GQ.state.phase[4] = 'success';
     } else {
@@ -529,6 +581,7 @@
     s.rulesOk = true;
     if (!s.clockStart) s.clockStart = Date.now();
     s.finished = null;
+    s.gel = defaults().gel;
     s.quest = n;
     for (var k = 1; k <= 5; k++) {
       if (k < n) s.phase[k] = 'done';
