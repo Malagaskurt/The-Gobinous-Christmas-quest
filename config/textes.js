@@ -75,7 +75,31 @@ window.GAME_CONFIG.textes = {
     erreurVide: "Indiquez un nom d'équipe pour continuer.",
   },
 
-  /* Texte de l'écran des règles (affiché tel quel).
+  /* Écran « Comment jouer ? » : plateau de jeu animé + 3 règles clés.
+   * Le texte complet des règles (ci-dessous, « regles ») reste accessible
+   * via le lien « règles détaillées » et le bouton Règles en cours de jeu. */
+  plateau: {
+    titre: "COMMENT JOUER ?",
+    description: "Plateau du jeu : 5 quêtes, du départ jusqu'à la hotte.",
+    depart: "DÉPART",
+    quete: "QUÊTE {n}",
+    notes: [
+      "8 bonnes réponses sur 8",
+      "Une énigme, un indice",
+      "3 questions Saint-Gobain",
+      "L'énigme de la cachette",
+      "La surprise finale",
+    ],
+    legende: "Entre deux quêtes : trouvez le lieu, puis scannez son QR code.",
+    regles: [
+      { icone: "star", texte: "**1 joker** pour toute l'aventure : un indice bonus, une seule fois." },
+      { icone: "flake", texte: "**Quiz** : 8/8 pour passer. 2 thèmes ratés = 3 min de gel." },
+      { icone: "clock", texte: "**30 minutes**, en équipe, avec un seul téléphone." },
+    ],
+    detail: "Lire les règles détaillées",
+  },
+
+  /* Texte complet des règles (affiché tel quel).
    * ⚠ Si vous modifiez les paramètres du quiz (nombre de tentatives,
    *   durée du blocage…), pensez à mettre à jour la règle n°5. */
   regles: {

@@ -95,6 +95,16 @@
       '.c..c..c.',
       '....c....',
     ],
+    clock: [
+      '..bbbbb..',
+      '.bwwwwwb.',
+      'bwwwbwwwb',
+      'bwwwbwwwb',
+      'bwwwbbbwb',
+      'bwwwwwwwb',
+      '.bwwwwwb.',
+      '..bbbbb..',
+    ],
     lock: [
       '..bbbbb..',
       '.bb...bb.',

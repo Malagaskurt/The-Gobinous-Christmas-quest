@@ -124,10 +124,16 @@ await step('Nom d\'équipe vide refusé, puis accepté', async () => {
   assert((await hash()) === '#/regles', 'pas redirigé vers les règles');
 });
 
-await step('Règles affichées avec le texte attendu', async () => {
+await step('Plateau « Comment jouer ? » animé, règles détaillées accessibles', async () => {
+  assert(await has('COMMENT JOUER'), 'titre absent');
+  assert((await page.locator('.board-svg').count()) === 1, 'plateau absent');
+  for (let n = 1; n <= 5; n++) assert(await has(`QUÊTE ${n}`), `quête ${n} absente du plateau`);
+  await clickText('Lire les règles détaillées');
+  const modal = norm(await page.locator('.modal').innerText());
   for (const s of ['COMMENT JOUER', 'Résolvez les 5 quêtes.', 'Gardez votre joker.', 'Attention au quiz', 'Votre objectif']) {
-    assert(await has(s), `texte manquant : ${s}`);
+    assert(modal.includes(norm(s)), `texte manquant dans les règles détaillées : ${s}`);
   }
+  await page.click('[data-modal-cancel]');
   await noHorizontalScroll();
   await clickText("C'est parti");
   assert((await hash()) === '#/quete/1', 'pas sur la quête 1');

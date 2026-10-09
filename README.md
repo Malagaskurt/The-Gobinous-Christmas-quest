@@ -22,6 +22,7 @@ Composants tiers inclus : les polices **Montserrat** (remplaçante libre de Goth
 
 - **Concept** : un lutin a caché le cadeau. Ce personnage en pixel art se promène de temps en temps sous l'en-tête et sur la bande tricotée de l'accueil. Il commente certaines étapes dans une bulle (réussite, thème raté, quiz gelé, départ vers un lieu) et répond quand on le touche. À la fin, il apparaît avec le cadeau. Ses répliques se modifient dans `config/textes.js` (`lutin`), sa fréquence dans `config/parametres.js` (`lutin`).
 - **Tricot uniquement au début** : l'écran de chargement et l'accueil reprennent l'univers du pull de Noël (maille bleue, titre brodé, bande de flocons et de sapins). L'accueil est volontairement épuré : logo, titre et bouton. Des textes facultatifs (sous-titre, accroche…) peuvent être réactivés dans `config/textes.js`.
+- **Plateau « Comment jouer ? »** : après le nom d'équipe, un plateau façon jeu de l'oie se dessine. On y voit les 5 quêtes, un QR code entre chaque étape et la hotte à l'arrivée, et le lutin le parcourt (touchez le plateau pour relancer l'animation). En dessous, 3 règles clés seulement. Le texte complet des règles reste accessible par « Lire les règles détaillées » et par le bouton Règles en cours de partie. Textes modifiables dans `config/textes.js` → `plateau`.
 - **Écran des questions réduit à l'essentiel** : progression, question, réponses et bouton. L'en-tête est compact : logo, chrono, progression des quêtes, état du joker et accès aux règles.
 - **Écrans de jeu** : fond blanc, en-tête bleu nuit avec chrono à cristaux liquides et guirlande de pixels, cartes à ombre franche façon écran rétro, pictogrammes en pixel art, minuteur rétro pendant le gel du quiz.
 - **Typographies** : Gotham (repli Montserrat) et Arial, plus une seule police « informatique », VT323, pour les titres pixel, les compteurs et les bulles du lutin.
@@ -78,7 +79,7 @@ Cette commande signale les erreurs de saisie (virgule oubliée, lettre de répon
 
 ## 4. Déroulement du jeu
 
-1. **Accueil**, puis **nom d'équipe** (aucune donnée personnelle), puis **règles**.
+1. **Accueil**, puis **nom d'équipe** (aucune donnée personnelle), puis **plateau « Comment jouer ? »** animé.
 2. **Quête 1 : le grand quiz.** L'équipe choisit un thème et répond aux 8 QCM, une question à la fois. **Aucune correction n'est affichée pendant les questions** : l'équipe peut revenir en arrière et modifier ses choix, puis valide ses 8 réponses et découvre son score. Avec 8/8, le premier indice se débloque. Sinon, le thème est **fermé** (il ne pourra plus être rejoué) et l'équipe en choisit un autre. Au **deuxième thème raté**, le quiz est gelé pendant **3 minutes**, avec un compte à rebours affiché. Le score s'affiche, mais pas les questions ratées, pour ne pas dévoiler les réponses. Abandonner un thème en cours compte aussi comme un échec. Si les 4 thèmes sont ratés, ils redeviennent tous disponibles.
 3. **Lieu A** : l'équipe saisit le lieu deviné. S'il est correct, elle s'y rend et scanne le QR code (ou saisit le code imprimé dessous). La quête 2 se débloque.
 4. **Quête 2 : l'énigme mystère.** Une énigme à réponse libre, puis l'indice du lieu B et la même mécanique de déplacement.
@@ -219,6 +220,7 @@ js/screens.js           écrans et actions des participants
 js/knit.js              rendu tricot (accueil et chargement)
 js/pixel.js             pixel art : pictogrammes et lutin
 js/elf.js               comportement du lutin (promenades, bulles)
+js/board.js             plateau de jeu animé (« Comment jouer ? »)
 js/ui.js                logo, chrono, en-tête, fenêtres, animations
 js/admin.js             mode test et fiches QR codes
 js/app.js               navigation et événements

@@ -69,6 +69,7 @@
   }
 
   function hide() {
+    clearTimeout(reactTimer);
     if (!root) return;
     legs(false);
     clearTimeout(hideTimer);

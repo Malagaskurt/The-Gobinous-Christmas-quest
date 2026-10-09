@@ -176,6 +176,12 @@
     };
   };
 
+  /* Bandeau des écrans d'entrée : même univers que les écrans de jeu. */
+  function miniHeader() {
+    return '<header class="topbar topbar-mini"><div class="topbar-row topbar-center">' + GQ.logo('clair', 'brand-logo') + '</div></header><div class="garland" aria-hidden="true"></div>';
+  }
+  GQ.miniHeader = miniHeader;
+
   screens.team = function () {
     var E = T.equipe;
     if (GQ.ui.value == null && GQ.state.team) GQ.ui.value = GQ.state.team;
@@ -184,9 +190,10 @@
       bare: true,
       elf: { say: 'equipe' },
       html:
+        miniHeader() +
         '<main class="screen screen-plain">' +
         '<a class="back-link" href="#/">' + icon('retour') + 'Accueil</a>' +
-        '<div class="plain-head">' + GQ.logo('fonce', 'plain-logo') + art.gift('plain-art') +
+        '<div class="plain-head">' + art.gift('plain-art') +
         '<h1 class="page-title" tabindex="-1">' + t(E.titre) + '</h1>' +
         '<p class="muted">' + t(E.aide) + '</p></div>' +
         textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder }) +
@@ -195,15 +202,21 @@
   };
 
   screens.rules = function () {
+    var PL = T.plateau;
     return {
       key: 'rules',
       bare: true,
+      after: GQ.board.animate,
       html:
-        '<main class="screen screen-plain">' +
-        '<div class="plain-head">' + GQ.logo('fonce', 'plain-logo') +
-        '<h1 class="page-title rules-title" tabindex="-1">' + t(T.regles.titre) + '</h1></div>' +
-        GQ.rulesHtml() +
-        cta(btn(esc(T.regles.bouton), 'accept-rules')) +
+        miniHeader() +
+        '<main class="screen screen-plain screen-board">' +
+        '<h1 class="page-title rules-title" tabindex="-1">' + t(PL.titre) + '</h1>' +
+        GQ.board.html() +
+        '<ul class="key-rules">' + PL.regles.map(function (r, i) {
+          return '<li class="b-pop" style="animation-delay:' + (2.4 + i * 0.15).toFixed(2) + 's">' + GQ.pixel.img(r.icone, 'key-ico') + '<span>' + t(r.texte) + '</span></li>';
+        }).join('') + '</ul>' +
+        '<button type="button" class="btn btn-ghost" data-action="show-rules">' + esc(PL.detail) + '</button>' +
+        cta(btn(esc(T.regles.bouton) + icon('fleche'), 'accept-rules', '', 'btn-red')) +
         '</main>',
     };
   };
@@ -610,7 +623,7 @@
       key: 'scan-' + code + '-' + r.status,
       bare: !inGame,
       celebrate: ok,
-      html: inGame ? block : '<main class="screen screen-plain"><div class="plain-head">' + GQ.logo('fonce', 'plain-logo') + '</div>' + block + '</main>',
+      html: inGame ? block : miniHeader() + '<main class="screen screen-plain">' + block + '</main>',
     };
   };
 
