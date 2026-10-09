@@ -16,14 +16,14 @@ Les équipes de 5 à 10 personnes jouent avec un seul téléphone. Elles résolv
 | **Navigation par `#/…`** | Fonctionne sur tous les hébergeurs statiques sans réglage serveur. Les QR codes pointent vers `…/#/scan/CODE`. |
 | **Aucune dépendance réseau** | Polices et générateur de QR codes sont inclus. Aucun appel à Google Fonts, aucun outil de mesure d'audience, aucun cookie. |
 
-Composants tiers inclus : les polices **Montserrat** (remplaçante libre de Gotham), **Great Vibes** (écriture manuscrite) et **VT323** (afficheur des minuteurs), toutes sous SIL Open Font License, et **qrcode-generator** de Kazuhiko Arase (licence MIT), utilisé seulement par le mode test pour imprimer les QR codes.
+Composants tiers inclus : les polices **Montserrat** (remplaçante libre de Gotham) et **Great Vibes** (écriture manuscrite), sous SIL Open Font License, et **qrcode-generator** de Kazuhiko Arase (licence MIT), utilisé seulement par le mode test pour imprimer les QR codes.
 
-### Direction artistique : « le pull de Noël Saint-Gobain »
+### Direction artistique : épurée
 
-- **Maille tricotée** bleu Saint-Gobain sur l'accueil, l'en-tête et les écrans d'entrée. Les mailles, les lettres brodées (alphabet pixel), les bandes jacquard (flocons, sapins) et les motifs (étoile, écusson, cadeau) sont dessinés en SVG par `js/knit.js`. Aucune image externe, rendu net sur tous les écrans.
-- **Papier à lettre** pour le contenu des quêtes : chaque quête s'ouvre sur une lettre glissée dans une **enveloppe rouge**, avec ses indices sur des notes scotchées.
-- Accents manuscrits (« Quête n°1 », « Bravo ! », « Joyeux Noël »), tampons de score (« 8/8 »), **minuteur rétro à cristaux liquides** pour le blocage du quiz, et un écran de chargement qui « tricote » le titre.
-- Palette : bleu #17428C, bleu clair #00ADE1, rouge de Noël #C8102E et laine écrue. Logo Saint-Gobain en version blanche sur les fonds tricotés et bleu foncé sur les fonds clairs.
+- Fond blanc et bleu Saint-Gobain (#17428C) en couleur principale. Le bleu clair (#00ADE1) sert d'accent, le rouge de Noël (#C8102E) n'apparaît que par petites touches.
+- Accueil sur un aplat bleu nuit, avec le logo Saint-Gobain en blanc, une étoile et le sous-titre manuscrit « Christmas Quest ».
+- Écrans de jeu sur fond blanc : en-tête avec le logo bleu foncé, le chrono et une barre de progression fine. Une seule illustration ou un seul mot manuscrit par écran.
+- Animations discrètes : coche qui se dessine, quelques flocons à la réussite d'une quête, anneau qui se vide pendant le blocage du quiz.
 
 ---
 
@@ -77,7 +77,7 @@ Cette commande signale les erreurs de saisie (virgule oubliée, lettre de répon
 ## 4. Déroulement du jeu
 
 1. **Accueil**, puis **nom d'équipe** (aucune donnée personnelle), puis **règles**.
-2. **Quête 1 : le grand quiz.** L'équipe choisit un thème et répond aux 8 QCM, une question à la fois. **Aucune correction n'est affichée pendant les questions** : l'équipe peut revenir en arrière et modifier ses choix, puis valide ses 8 réponses et découvre son score. Avec 8/8, le premier indice se débloque. Sinon, le thème est **fermé** (il ne pourra plus être rejoué) et l'équipe en choisit un autre. Au **deuxième thème raté**, le quiz est gelé pendant **3 minutes**, avec un minuteur affiché. Le score s'affiche, mais pas les questions ratées, pour ne pas dévoiler les réponses. Abandonner un thème en cours compte aussi comme un échec. Si les 4 thèmes sont ratés, ils redeviennent tous disponibles.
+2. **Quête 1 : le grand quiz.** L'équipe choisit un thème et répond aux 8 QCM, une question à la fois. **Aucune correction n'est affichée pendant les questions** : l'équipe peut revenir en arrière et modifier ses choix, puis valide ses 8 réponses et découvre son score. Avec 8/8, le premier indice se débloque. Sinon, le thème est **fermé** (il ne pourra plus être rejoué) et l'équipe en choisit un autre. Au **deuxième thème raté**, le quiz est gelé pendant **3 minutes**, avec un compte à rebours affiché. Le score s'affiche, mais pas les questions ratées, pour ne pas dévoiler les réponses. Abandonner un thème en cours compte aussi comme un échec. Si les 4 thèmes sont ratés, ils redeviennent tous disponibles.
 3. **Lieu A** : l'équipe saisit le lieu deviné. S'il est correct, elle s'y rend et scanne le QR code (ou saisit le code imprimé dessous). La quête 2 se débloque.
 4. **Quête 2 : l'énigme mystère.** Une énigme à réponse libre, puis l'indice du lieu B et la même mécanique de déplacement.
 5. **Quête 3 : le défi Saint-Gobain.** 3 QCM, puis l'indice du lieu C.
@@ -182,7 +182,7 @@ Le fichier `index.html` contient `noindex` : le site n'apparaîtra pas dans les 
 **Fonctionnel :**
 - les écrans (accueil, équipe, règles) et les 5 quêtes, avec leurs écrans d'introduction, de réussite et de transition ;
 - le quiz : 4 thèmes, 32 questions intégrées, score révélé à la fin, thèmes ratés fermés, gel de 3 minutes avec minuteur ;
-- le chrono global de 30 minutes, l'écran de chargement et la nouvelle direction artistique ;
+- le chrono global de 30 minutes et l'écran de chargement ;
 - l'énigme de la quête 2, le défi (3 QCM), l'énigme finale, l'écran final et « Aventure terminée » ;
 - la saisie et la validation des lieux, les QR codes (scan, saisie manuelle, mode sans QR code) et la génération des fiches à imprimer ;
 - le joker (confirmation, indice, mémorisation) ;
@@ -200,7 +200,7 @@ Le fichier `index.html` contient `noindex` : le site n'apparaîtra pas dans les 
 - [ ] **Code organisateur de fin** (`finDePartie.codeOrganisateur`, actuellement `HOTTE2026`) et **code du mode test** (`1225`).
 - [ ] **`urlPublique`** une fois le site en ligne, puis impression des QR codes.
 - [ ] **Logo** : les versions blanche et bleu foncé ont été détourées depuis l'image fournie (PNG). Pour un rendu parfait, remplacez-les par le fichier vectoriel officiel (`marque.logoClair` / `marque.logoFonce`).
-- [ ] **Polices Gotham et Lovelo Line** : non incluses (polices sous licence). Gotham est utilisée si elle est installée sur l'appareil, sinon Montserrat la remplace. Les grands titres sont « brodés » en mailles et n'utilisent pas de police. Pour diffuser les fichiers officiels, voir `css/fonts.css`.
+- [ ] **Polices Gotham et Lovelo Line** : non incluses (polices sous licence). Gotham est utilisée si elle est installée sur l'appareil, sinon Montserrat la remplace. Pour diffuser les fichiers officiels, voir `css/fonts.css`.
 - [ ] Désactiver le mode test.
 
 ---
@@ -214,12 +214,11 @@ css/styles.css          charte graphique (couleurs, typographie, mise en page)
 css/fonts.css           déclaration des polices
 js/core.js              règles du jeu et sauvegarde
 js/screens.js           écrans et actions des participants
-js/knit.js              moteur graphique « tricot » (mailles, lettres brodées, motifs)
-js/ui.js                logo, chrono, en-tête, fenêtres, animations
+js/ui.js                pictogrammes, logo, chrono, en-tête, fenêtres, animations
 js/admin.js             mode test et fiches QR codes
 js/app.js               navigation et événements
 js/validate.js          vérification de la configuration
-assets/fonts/           Montserrat, Great Vibes, VT323 (SIL OFL)
+assets/fonts/           Montserrat, Great Vibes (SIL OFL)
 assets/img/             favicon, logo Saint-Gobain (blanc et bleu foncé)
 vendor/                 générateur de QR codes (MIT)
 tools/                  serveur local et vérification de configuration

@@ -178,31 +178,28 @@
   /* Chrono global : rafraîchi chaque seconde, indépendamment des écrans. */
   setInterval(GQ.updateClocks, 1000);
 
-  /* Écran de chargement : quelques mailles se tricotent pendant que le
-   * jeu s'affiche dessous. Un appui le fait disparaître. */
+  /* Écran de chargement : logo et titre, puis fondu. Un appui le ferme. */
   function loader() {
     var el = document.getElementById('loader');
     if (!el) return;
     // Raccourci si l'utilisateur réduit les animations, ou en test automatisé.
     var reduce = navigator.webdriver || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    var row = [];
-    for (var i = 0; i < 12; i++) row.push('done');
     el.innerHTML =
       '<div class="loader-inner">' +
-      GQ.knit.img('star', 'loader-star') +
-      GQ.knit.text('GOBINOUS', { cls: 'loader-title', alt: '', outline: true }) +
-      '<p class="script loader-text">' + GQ.t(T.chargement.texte) + '</p>' +
-      '<div class="loader-row">' + GQ.knit.row(row) + '</div>' +
+      GQ.art.star('loader-star') +
+      '<p class="loader-title">' + GQ.t(T.accueil.titre) + '</p>' +
+      '<p class="script loader-script">' + GQ.t(T.accueil.titreSuite) + '</p>' +
+      '<span class="loader-bar" aria-hidden="true"><i></i></span>' +
       '</div>' +
       '<div class="loader-logo">' + GQ.logo('clair') + '</div>';
     el.classList.add('is-on');
     var hide = function () {
       if (el.classList.contains('is-out')) return;
       el.classList.add('is-out');
-      setTimeout(function () { el.remove(); }, 600);
+      setTimeout(function () { el.remove(); }, 500);
     };
     el.addEventListener('click', hide);
-    setTimeout(hide, reduce ? 300 : 1900);
+    setTimeout(hide, reduce ? 300 : 1400);
   }
 
   if (!window.GQ_STOP) {

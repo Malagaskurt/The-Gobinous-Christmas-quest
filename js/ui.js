@@ -34,6 +34,36 @@
   };
 
   /* ------------------------------------------------------------------ */
+  /* Pictogrammes (un seul accent graphique par écran)                   */
+  /* ------------------------------------------------------------------ */
+
+  function svg(cls, box, body) {
+    return '<svg class="art ' + (cls || '') + '" viewBox="0 0 ' + box + ' ' + box + '" aria-hidden="true">' + body + '</svg>';
+  }
+  GQ.art = {
+    star: function (cls) {
+      return svg(cls, 48, '<path d="M24 4l5.6 13.2 14.4 1.2-11 9.4 3.4 14L24 34.4 11.6 41.8 15 27.8 4 18.4l14.4-1.2z" fill="currentColor"/>');
+    },
+    check: function (cls) {
+      return svg(cls, 96, '<circle cx="48" cy="48" r="44" fill="currentColor"/><path class="art-check" d="M30 49l12 12 25-26" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>');
+    },
+    gift: function (cls) {
+      return svg(cls, 96,
+        '<g fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">' +
+        '<rect x="20" y="42" width="56" height="40" rx="4" stroke="currentColor"/>' +
+        '<rect x="15" y="31" width="66" height="12" rx="3" stroke="currentColor"/>' +
+        '<path d="M48 31v51" stroke="#C8102E"/>' +
+        '<path d="M48 31c-5-11-19-14-19-5 0 5 8 5 19 5zM48 31c5-11 19-14 19-5 0 5-8 5-19 5z" stroke="#C8102E"/></g>');
+    },
+    flake: function (cls) {
+      return svg(cls, 48,
+        '<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">' +
+        '<path d="M24 4v40M6.7 14l34.6 20M6.7 34l34.6-20"/>' +
+        '<path d="M19 8l5 5 5-5M19 40l5-5 5 5M7.4 20.4l6.8-1.8L12.4 12M40.6 27.6l-6.8 1.8 1.8 6.6M7.4 27.6l6.8 1.8-1.8 6.6M40.6 20.4l-6.8-1.8 1.8-6.6"/></g>');
+    },
+  };
+
+  /* ------------------------------------------------------------------ */
   /* Logo                                                                */
   /* ------------------------------------------------------------------ */
 
@@ -90,19 +120,19 @@
     }
     var used = s.joker.used;
     return (
-      '<header class="topbar knit">' +
-      '<a class="brand" href="#/" aria-label="Accueil">' + GQ.logo('clair', 'brand-logo') + '</a>' +
+      '<header class="topbar">' +
+      '<a class="brand" href="#/" aria-label="Accueil">' + GQ.logo('fonce', 'brand-logo') + '</a>' +
       GQ.clockHtml() +
       '<button type="button" class="link-btn" data-action="show-rules">' + GQ.icon('livre') + '<span>' + esc(T.general.regles) + '</span></button>' +
       '</header>' +
-      '<div class="subbar knit">' +
+      '<div class="subbar">' +
       '<div class="subbar-row">' +
       '<span class="team-name" title="' + esc(s.team) + '">' + esc(T.general.equipe) + ' <b>' + esc(s.team) + '</b></span>' +
       '<span class="joker-chip ' + (used ? 'is-used' : '') + '">' + GQ.icon('etoile') +
       esc(used ? T.joker.statutUtilise : T.joker.statutDisponible) + '</span>' +
       '</div>' +
       '<ol class="stepper" aria-label="Progression">' + steps + '</ol>' +
-      '</div><div class="band-thin" aria-hidden="true"></div>'
+      '</div>'
     );
   };
 
@@ -126,7 +156,7 @@
       root.innerHTML =
         '<div class="modal-backdrop" data-modal-close></div>' +
         '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">' +
-        (opts.knit ? GQ.knit.img(opts.knit, 'modal-knit') : opts.icon ? '<div class="modal-icon">' + GQ.icon(opts.icon) + '</div>' : '') +
+        (opts.icon ? '<div class="modal-icon">' + GQ.icon(opts.icon) + '</div>' : '') +
         '<h2 id="modal-title" class="modal-title">' + t(opts.title) + '</h2>' +
         (opts.html || (opts.text ? '<p>' + t(opts.text) + '</p>' : '')) +
         '<div class="modal-actions">' +
@@ -186,13 +216,13 @@
   GQ.celebrate = function (big) {
     if (reduceMotion) return;
     var fx = document.getElementById('fx');
-    var colors = ['#17428C', '#00ADE1', '#F6EFE2', '#2D66BA', '#C8102E', '#ffffff'];
-    var count = big ? 42 : 22;
+    var colors = ['#17428C', '#00ADE1', '#9DB7DD', '#C8102E'];
+    var count = big ? 24 : 12;
     var frag = '';
     for (var i = 0; i < count; i++) {
       var c = colors[i % colors.length];
-      var shape = i % 3 === 0 ? 'flake' : i % 3 === 1 ? 'dot' : 'diamond';
-      var size = 6 + Math.random() * (big ? 10 : 7);
+      var shape = i % 2 ? 'dot' : 'flake';
+      var size = 5 + Math.random() * 6;
       frag +=
         '<span class="fx-piece fx-' + shape + '" style="left:' + (Math.random() * 100).toFixed(1) + '%;' +
         'width:' + size.toFixed(1) + 'px;height:' + size.toFixed(1) + 'px;color:' + c + ';' +

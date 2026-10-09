@@ -11,7 +11,7 @@
   var t = GQ.t;
   var esc = GQ.esc;
   var icon = GQ.icon;
-  var knit = GQ.knit;
+  var art = GQ.art;
 
   var screens = (GQ.screens = {});
   var actions = (GQ.actions = GQ.actions || {});
@@ -86,7 +86,7 @@
     for (var i = 0; i < total; i++) states.push(i === index ? 'current' : answered(i) ? 'done' : 'todo');
     return (
       '<div class="q-progress"><span class="q-count">' + t(T.general.questionNumero, { n: index + 1, total: total }) + '</span>' +
-      knit.row(states) + '</div>'
+      '<span class="dots" aria-hidden="true">' + states.map(function (st) { return '<i class="dot dot-' + st + '"></i>'; }).join('') + '</span></div>'
     );
   }
 
@@ -128,30 +128,16 @@
     );
   }
 
-  /* Bloc de réussite : écusson tricoté, mot manuscrit, titre, texte. */
+  /* Bloc de réussite : pictogramme, mot manuscrit, titre, texte. */
   function successBlock(o) {
+    var script = o.script == null ? T.general.bravo : o.script;
     return (
       '<section class="success">' +
-      '<div class="success-art">' + (o.art || knit.img('badge', 'success-badge')) + (o.stamp ? '<span class="stamp stamp-' + (o.stampKind || 'blue') + '">' + esc(o.stamp) + '</span>' : '') + '</div>' +
-      (String(o.script == null ? T.general.bravo : o.script).trim() ? '<p class="script success-script">' + t(o.script == null ? T.general.bravo : o.script) + '</p>' : '') +
+      (o.art === '' ? '' : '<div class="success-art">' + (o.art || art.check('success-check')) + '</div>') +
+      (o.score ? '<p class="score' + (o.scoreKind === 'red' ? ' score-red' : '') + '">' + esc(o.score) + '</p>' : '') +
+      (String(script).trim() ? '<p class="script success-script">' + t(script) + '</p>' : '') +
       '<h1 class="success-title" tabindex="-1">' + t(o.title) + '</h1>' + (o.html || '') + '</section>' +
       (o.cta ? cta(o.cta) : '')
-    );
-  }
-
-  /* Lettre glissée dans une enveloppe rouge (introduction des quêtes). */
-  function envelope(inner) {
-    return (
-      '<div class="envelope">' +
-      '<div class="env-back" aria-hidden="true"></div>' +
-      '<div class="letter">' +
-      '<span class="postmark" aria-hidden="true">' + knit.img('star', 'postmark-star') + '<span>SG · 1665</span></span>' +
-      '<p class="script letter-hello">' + t(T.general.lettreSalutation, { equipe: GQ.state.team }) + '</p>' +
-      inner +
-      '<p class="script letter-sign">' + t(T.general.lettreSignature) + '</p>' +
-      '</div>' +
-      '<div class="env-front" aria-hidden="true"></div>' +
-      '</div>'
     );
   }
 
@@ -163,26 +149,22 @@
     var A = T.accueil;
     var s = GQ.state;
     var action = s.team
-      ? '<p class="home-resume">' + t(A.partieEnCours, { equipe: s.team }) + '</p>' + btn(esc(A.boutonReprendre) + icon('fleche'), 'resume', '', 'btn-red')
-      : btn(esc(A.bouton) + icon('fleche'), 'start', '', 'btn-red');
+      ? '<p class="home-resume">' + t(A.partieEnCours, { equipe: s.team }) + '</p>' + btn(esc(A.boutonReprendre) + icon('fleche'), 'resume', '', 'btn-light')
+      : btn(esc(A.bouton) + icon('fleche'), 'start', '', 'btn-light');
     return {
       key: 'home',
       bare: true,
       html:
-        '<main class="screen-home knit">' +
-        '<div class="home-top"><span class="corner corner-l" aria-hidden="true"></span><span class="home-year">' + t(A.annee) + '</span><span class="corner corner-r" aria-hidden="true"></span></div>' +
+        '<main class="screen-home">' +
         '<div class="home-logo">' + GQ.logo('clair') + '</div>' +
         '<div class="home-hero">' +
-        knit.img('star', 'home-star') +
+        art.star('home-star') +
         '<p class="home-club">' + t(A.surtitre) + '</p>' +
-        '<h1 class="home-title" tabindex="-1">' + knit.text(plain(A.titre), { cls: 'home-knit-title', outline: true }) +
-        '<span class="script home-script">' + t(A.titreSuite) + '</span></h1>' +
+        '<h1 class="home-title" tabindex="-1">' + t(A.titre) + '<span class="script home-script">' + t(A.titreSuite) + '</span></h1>' +
         '<p class="home-subtitle">' + t(A.sousTitre) + '</p>' +
-        '</div>' +
         '<p class="home-lead">' + t(A.accroche) + '</p>' +
+        '</div>' +
         '<div class="home-cta">' + action + '</div>' +
-        '<div class="band" aria-hidden="true"></div>' +
-        '<div class="home-notes">' + (A.noteGauche ? '<p>' + t(A.noteGauche) + '</p>' : '<p></p>') + (A.noteDroite ? '<p>' + t(A.noteDroite) + '</p>' : '') + '</div>' +
         '</main>',
     };
   };
@@ -194,17 +176,12 @@
       key: 'team',
       bare: true,
       html:
-        '<main class="screen-knit knit">' +
+        '<main class="screen screen-plain">' +
         '<a class="back-link" href="#/">' + icon('retour') + 'Accueil</a>' +
-        '<div class="tag-wrap">' +
-        knit.img('gift', 'tag-gift') +
-        '<div class="gift-tag">' +
-        '<span class="tag-hole" aria-hidden="true"></span>' +
-        '<p class="script tag-script">' + t(E.etiquette) + '</p>' +
+        '<div class="plain-head">' + art.gift('plain-art') +
         '<h1 class="page-title" tabindex="-1">' + t(E.titre) + '</h1>' +
-        '<p class="muted small">' + t(E.aide) + '</p>' +
-        textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder, btnCls: 'btn-red' }) +
-        '</div></div>' +
+        '<p class="muted">' + t(E.aide) + '</p></div>' +
+        textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder }) +
         '</main>',
     };
   };
@@ -214,12 +191,11 @@
       key: 'rules',
       bare: true,
       html:
-        '<main class="screen-knit knit">' +
-        '<div class="rules-logo">' + GQ.logo('clair') + '</div>' +
-        '<h1 class="rules-title" tabindex="-1"><span class="sr-only">' + t(T.regles.titre) + '</span>' +
-        knit.text(plain(T.regles.titre).replace(/ (?=\S+\s*\?)/, '\n'), { alt: '', cls: 'rules-knit', outline: true }) + '</h1>' +
-        '<div class="paper-sheet">' + GQ.rulesHtml() + '</div>' +
-        cta(btn(esc(T.regles.bouton), 'accept-rules', '', 'btn-red')) +
+        '<main class="screen screen-plain">' +
+        '<div class="plain-head">' + GQ.logo('fonce', 'plain-logo') +
+        '<h1 class="page-title rules-title" tabindex="-1">' + t(T.regles.titre) + '</h1></div>' +
+        GQ.rulesHtml() +
+        cta(btn(esc(T.regles.bouton), 'accept-rules')) +
         '</main>',
     };
   };
@@ -234,7 +210,7 @@
       key: 'q' + n + '-intro',
       html:
         questHead(n) +
-        envelope('<p class="intro-text">' + t(qc.intro) + '</p>') +
+        '<div class="intro-card">' + art.gift('intro-art') + '<p class="intro-text">' + t(qc.intro) + '</p></div>' +
         cta(btn(esc(qc.boutonIntro) + icon('fleche'), 'intro-next', ' data-n="' + n + '"')),
     };
   }
@@ -249,7 +225,7 @@
         questHead(n, L.surtitre) +
         '<h2 class="section-title">' + t(L.titre) + '</h2>' +
         '<p class="muted">' + t(L.consigne) + '</p>' +
-        '<div class="clue-card"><span class="tape" aria-hidden="true"></span><p class="card-label">' + icon('loupe') + esc(L.surtitre) + '</p><p class="clue-text">' + t(p.indice) + '</p></div>' +
+        '<div class="clue-card"><p class="card-label">' + icon('loupe') + esc(L.surtitre) + '</p><p class="clue-text">' + t(p.indice) + '</p></div>' +
         GQ.jokerBlock('lieu-' + id, p.indiceJoker) +
         textAnswer({ form: 'place', label: L.label, button: L.bouton, expected: p.reponsesAcceptees, attrs: ' data-n="' + n + '"' }),
     };
@@ -261,7 +237,7 @@
     var L = T.lieux;
     var html =
       questHead(n) +
-      '<section class="found-card"><span class="tape" aria-hidden="true"></span>' + icon('pin', 'found-icon') +
+      '<section class="found-card">' + icon('pin', 'found-icon') +
       '<h2 class="found-title">' + t(L.trouveTitre) + '</h2>' +
       '<p class="found-place">' + t(L.trouveSousTitre, { lieu: p.nom }) + '</p>' +
       (p.texteValidation ? '<p>' + t(p.texteValidation) + '</p>' : '') +
@@ -270,38 +246,45 @@
       html += cta(btn(esc(L.boutonArrivee), 'arrive', ' data-place="' + esc(id) + '"'));
     } else {
       html +=
-        '<div class="scan-card knit">' + icon('qr', 'scan-icon') + '<p>' + t(L.scanConsigne) + '</p></div>' +
+        '<div class="scan-card">' + icon('qr', 'scan-icon') + '<p>' + t(L.scanConsigne) + '</p></div>' +
         '<details class="manual-code"' + (GQ.ui.codeOpen ? ' open' : '') + '><summary>' + t(L.codeManuelTitre) + '</summary>' +
         textAnswer({ form: 'code', label: L.codeManuelLabel, button: L.codeManuelBouton, caps: true, expected: GQ.test.isActive() ? [p.codeQR] : null, attrs: ' data-place="' + esc(id) + '"' }) +
         '<p class="hint">' + t(L.conseilNavigateur) + '</p></details>' +
         (GQ.test.isActive() ? btn('Test : simuler le scan', 'test-scan', ' data-code="' + esc(p.codeQR) + '"', 'btn-test') : '');
     }
-    return { key: 'q' + n + '-travel', celebrate: true, html: html };
+    return { key: 'q' + n + '-travel', html: html };
   }
 
   /* ------------------------------------------------------------------ */
   /* Quête 1 : le grand quiz                                             */
   /* ------------------------------------------------------------------ */
 
+  /* Blocage du quiz : compte à rebours dans un anneau qui se vide. */
   function lockDevice(lock) {
     var X = QZ.textes;
+    var total = GQ.state.quiz.lockTotal || lock;
     return (
-      '<div class="timer-device" role="timer" aria-label="' + esc(X.bloqueCompteur) + '">' +
-      '<div class="td-top"><span class="td-label">' + esc(X.bloqueTitre) + '</span>' + knit.img('flake', 'td-flake') + '</div>' +
-      '<div class="td-screen"><span class="td-small">' + esc(X.bloqueCompteur) + '</span>' +
-      '<span class="td-digits" data-countdown>' + GQ.mmss(lock + 999) + '</span></div>' +
-      '<div class="td-keys" aria-hidden="true"><span></span><span></span><span></span><span class="td-key-red"></span></div>' +
-      '</div>' +
-      '<p class="lock-text">' + t(X.bloqueTexte) + '</p>'
+      '<div class="lock" role="timer" aria-label="' + esc(X.bloqueCompteur) + '">' +
+      '<div class="lock-ring"><svg viewBox="0 0 120 120" aria-hidden="true">' +
+      '<circle class="ring-bg" cx="60" cy="60" r="54"/>' +
+      '<circle class="ring-fg" cx="60" cy="60" r="54" pathLength="100" data-ring style="stroke-dashoffset:' + (100 - (100 * lock) / total).toFixed(2) + '"/></svg>' +
+      '<div class="ring-center">' + art.flake('ring-flake') +
+      '<span class="ring-digits" data-countdown>' + GQ.mmss(lock + 999) + '</span></div></div>' +
+      '<h3 class="lock-title">' + esc(X.bloqueTitre) + '</h3>' +
+      '<p class="lock-text">' + t(X.bloqueTexte) + '</p>' +
+      '</div>'
     );
   }
 
   function startCountdown() {
     GQ.every(250, function () {
       var left = GQ.quizLockRemaining();
-      var el = document.querySelector('[data-countdown]');
       if (!left) { GQ.render(); return; }
+      var total = GQ.state.quiz.lockTotal || left;
+      var el = document.querySelector('[data-countdown]');
+      var ring = document.querySelector('[data-ring]');
       if (el) el.textContent = GQ.mmss(left + 999);
+      if (ring) ring.style.strokeDashoffset = (100 - (100 * left) / total).toFixed(2);
     });
   }
 
@@ -326,7 +309,7 @@
         '<span class="theme-icon">' + icon(th.icone || 'etoile') + '</span>' +
         '<span class="theme-body"><span class="theme-title">' + t(th.titre) + '</span>' +
         '<span class="theme-meta">' + th.questions.length + ' questions</span></span>' +
-        (failed[th.id] ? '<span class="stamp stamp-red stamp-small">' + esc(X.themeEchoue) + '</span>' : icon('fleche', 'theme-arrow')) +
+        (failed[th.id] ? '<span class="badge">' + esc(X.themeEchoue) + '</span>' : icon('fleche', 'theme-arrow')) +
         '</button></li>';
     });
     html += '</ul>';
@@ -369,12 +352,12 @@
     return {
       key: 'q1-result',
       html: successBlock({
-        art: knit.img('flake', 'success-badge'),
-        stamp: r.score + '/' + r.total,
-        stampKind: 'red',
+        art: '',
+        score: r.score + '/' + r.total,
+        scoreKind: 'red',
         script: '',
         title: r.total - r.score <= 2 ? X.echecTitre : X.echecTitreLoin,
-        html: '<p class="score-line">' + t(X.resultatScore, { score: r.score, total: r.total }) + '</p>' +
+        html: '<p class="sr-only">' + t(X.resultatScore, { score: r.score, total: r.total }) + '</p>' +
           '<p>' + t(X.echecTexte) + '</p>' + (note ? '<p class="notice notice-warn">' + icon('cadenas') + '<span>' + t(note.replace('{minutes}', dur)) + '</span></p>' : ''),
         cta: btn(esc(r.locked ? X.boutonMinuteur : X.boutonAutreTheme) + icon('fleche'), 'quiz-themes'),
       }),
@@ -393,7 +376,7 @@
         key: 'q1-success',
         celebrate: true,
         html: successBlock({
-          stamp: r ? r.score + '/' + r.total : '8/8',
+          score: r ? r.score + '/' + r.total : '8/8',
           title: X.reussiteTitre,
           html: '<p>' + t(X.reussiteTexte) + '</p>',
           cta: btn(esc(X.boutonIndice) + icon('fleche'), 'to-place', ' data-n="1"'),
@@ -416,7 +399,7 @@
       key: 'q' + n + '-enigma',
       html:
         questHead(n) +
-        '<div class="riddle-card"><span class="tape" aria-hidden="true"></span><p class="card-label">' + icon('etoile') + 'Énigme</p><p class="riddle">' + t(qc.enigme) + '</p></div>' +
+        '<div class="riddle-card"><p class="card-label">' + icon('etoile') + 'Énigme</p><p class="riddle">' + t(qc.enigme) + '</p></div>' +
         GQ.jokerBlock('q' + n, qc.indiceJoker) +
         textAnswer({ form: 'enigma', label: qc.label || T.general.votreReponse, button: T.general.validerReponse, expected: expected, attrs: ' data-n="' + n + '"' }),
     };
@@ -491,7 +474,7 @@
         key: 'q4-success',
         celebrate: 'big',
         html: successBlock({
-          art: knit.img('gift', 'success-gift'),
+          art: art.gift('success-gift'),
           title: D.reussiteTitre,
           html: '<p class="found-place">' + t(D.reussiteLieu, { lieu: p.nom }) + '</p>' +
             (p.texteValidation ? '<p>' + t(p.texteValidation) + '</p>' : '') +
@@ -533,7 +516,7 @@
     var code = P.finDePartie && P.finDePartie.codeOrganisateur;
     var html =
       questHead(5) +
-      '<section class="finale">' + knit.img('gift', 'finale-gift') +
+      '<section class="finale">' + art.gift('finale-gift') +
       '<p class="script finale-script">' + t(H.script) + '</p>' +
       '<p class="finale-text">' + t(H.texte) + '</p>' +
       '<p class="found-place">' + t(H.rappelLieu, { lieu: p.nom }) + '</p></section>';
@@ -614,7 +597,7 @@
       key: 'scan-' + code + '-' + r.status,
       bare: !inGame,
       celebrate: ok,
-      html: inGame ? block : '<main class="screen-knit knit"><div class="home-logo">' + GQ.logo('clair') + '</div><div class="paper-sheet">' + block + '</div></main>',
+      html: inGame ? block : '<main class="screen screen-plain"><div class="plain-head">' + GQ.logo('fonce', 'plain-logo') + '</div>' + block + '</main>',
     };
   };
 
@@ -746,7 +729,7 @@
       GQ.ui.msg = { kind: 'error', text: T.general.choixVide, shake: true };
       return GQ.render();
     }
-    GQ.modal({ title: X.confirmTitre, text: X.confirmTexte, confirm: X.confirmOui, cancel: X.confirmNon, knit: 'badge' }).then(function (ok) {
+    GQ.modal({ title: X.confirmTitre, text: X.confirmTexte, confirm: X.confirmOui, cancel: X.confirmNon, icon: 'valide' }).then(function (ok) {
       if (!ok) return;
       GQ.quizSubmit();
       GQ.uiReset();
@@ -791,7 +774,7 @@
       text: T.joker.confirmationTexte,
       confirm: T.joker.confirmer,
       cancel: T.joker.annuler,
-      knit: 'star',
+      icon: 'etoile',
     }).then(function (ok) {
       if (!ok) {
         GQ.toast(T.joker.conserve, 'info');
