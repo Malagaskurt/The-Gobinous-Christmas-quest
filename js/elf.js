@@ -38,7 +38,7 @@
     });
   }
 
-  function frame(name) { sprite.src = GQ.pixel.src(name); }
+  function frame(name) { sprite.src = GQ.knit.src(name); }
 
   function legs(on) {
     clearInterval(frameTimer);
@@ -53,7 +53,7 @@
     // La bulle s'ouvre du côté où il reste de la place.
     var r = root.getBoundingClientRect();
     var col = column();
-    root.classList.toggle('bubble-left', r.left + r.width / 2 > (col.left + col.right) / 2);
+    root.classList.toggle('bubble-left', state !== 'peek' && r.left + r.width / 2 > (col.left + col.right) / 2);
     root.classList.add('has-bubble');
     clearTimeout(say.t);
     say.t = setTimeout(function () { if (root) root.classList.remove('has-bubble'); }, ms || 3800);
@@ -130,8 +130,10 @@
     root.className = 'elf is-peek';
     root.style.transition = '';
     root.style.transform = '';
-    root.style.top = '';
-    root.style.left = (col.right - 66) + 'px';
+    // Sous l'en-tête, en haut à droite : jamais par-dessus les boutons.
+    var bar = document.querySelector('.topbar');
+    root.style.top = Math.max(8, bar ? bar.getBoundingClientRect().bottom + 10 : 60) + 'px';
+    root.style.left = (col.right - 62) + 'px';
     void root.offsetWidth;
     root.classList.add('is-in');
     say(text, (ms || 4200) - 400);

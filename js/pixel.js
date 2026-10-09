@@ -139,6 +139,55 @@
       '..BcCcB..',
       'BBBBBBBBB',
     ],
+    qr: [
+      'wwww.w.wwww',
+      'w..w.ww.w.w',
+      'w..w..w...w',
+      'wwww.w.wwww',
+      '.....w.....',
+      'w.ww.wwc.w.',
+      '.....c.....',
+      'wwww.wc.w.w',
+      'w..w..ww.ww',
+      'w..w.w.c...',
+      'wwww.w.wwww',
+    ],
+    quiz: [
+      '.wwwwwwww.',
+      'wwwrrrrwww',
+      'wwrwwwwrww',
+      'wwwwwwrwww',
+      'wwwwwrwwww',
+      'wwwwwrwwww',
+      'wwwwwwwwww',
+      '.wwwwrwww.',
+      '..ww......',
+      '.w........',
+    ],
+    loupe: [
+      '..ccccc....',
+      '.cCCCCCc...',
+      'cCCwCCCCc..',
+      'cCwCCCCCc..',
+      'cCCCCCCCc..',
+      'cCCCCCCCc..',
+      '.cCCCCCc...',
+      '..cccccrr..',
+      '.......rrr.',
+      '........rrr',
+      '.........rr',
+    ],
+    pin: [
+      '..rrrrr..',
+      '.rrrrrrr.',
+      'rrrwwwrrr',
+      'rrwwwwwrr',
+      'rrrwwwrrr',
+      '.rrrrrrr.',
+      '..rrrrr..',
+      '...rrr...',
+      '....r....',
+    ],
     clock: [
       '..bbbbb..',
       '.bwwwwwb.',
@@ -242,6 +291,7 @@
 
   GQ.pixel = {
     PAL: PAL,
+    grid: function (name) { return ICONS[name] || SPRITES[name] || null; },
     svg: svg,
     src: get,
     img: function (name, cls, alt) {
@@ -249,13 +299,12 @@
     },
   };
 
-  /* Illustrations utilisées par les écrans. */
+  /* Illustrations utilisées par les écrans : rendues en tricot. */
+  function k(name) { return function (cls) { return GQ.knit.icon(name, 'art ' + (cls || '')); }; }
   GQ.art = {
-    star: function (cls) { return GQ.pixel.img('star', 'art ' + (cls || '')); },
-    check: function (cls) { return GQ.pixel.img('check', 'art ' + (cls || '')); },
-    gift: function (cls) { return GQ.pixel.img('gift', 'art ' + (cls || '')); },
-    flake: function (cls) { return GQ.pixel.img('flake', 'art ' + (cls || '')); },
-    lock: function (cls) { return GQ.pixel.img('lock', 'art ' + (cls || '')); },
-    elf: function (pose, cls) { return GQ.pixel.img(pose || 'elfWave', 'elf-inline ' + (cls || ''), ''); },
+    star: k('star'), check: k('check'), gift: k('gift'), flake: k('flake'), lock: k('lock'),
+    elf: function (pose, cls) { return GQ.knit.icon(pose || 'elfWave', 'elf-inline ' + (cls || '')); },
   };
+  /* Pictogramme de chaque quête (carte, en-tête, introduction). */
+  GQ.questIcon = function (n) { return ['', 'quiz', 'loupe', 'tower', 'pin', 'gift'][n] || 'star'; };
 })();

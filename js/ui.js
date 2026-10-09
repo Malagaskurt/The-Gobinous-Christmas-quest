@@ -85,11 +85,12 @@
       var cls = s.finished || n < s.quest ? 'done' : n === s.quest ? 'current' : '';
       steps +=
         '<li class="step ' + cls + '"' + (n === currentQuest ? ' aria-current="step"' : '') + '>' +
-        '<span class="step-dot"></span>' +
+        GQ.knit.icon(GQ.questIcon(n), 'step-ico') +
         '<span class="sr-only">' + esc(T.general.quete) + ' ' + n + (cls === 'done' ? ' (terminée)' : '') + '</span></li>';
     }
     var used = s.joker.used;
     return (
+      '<div class="garland" aria-hidden="true"></div>' +
       '<header class="topbar">' +
       '<div class="topbar-row">' +
       '<a class="brand" href="#/" aria-label="Accueil">' + GQ.logo('clair', 'brand-logo') + '</a>' +
@@ -101,7 +102,7 @@
       '<span class="joker-chip ' + (used ? 'is-used' : '') + '" title="' + esc(s.team) + '">' + GQ.icon('etoile') +
       esc(used ? T.joker.statutUtilise : T.joker.statutDisponible) + '</span>' +
       '</div>' +
-      '</header><div class="garland" aria-hidden="true"></div>'
+      '</header>'
     );
   };
 
@@ -125,7 +126,7 @@
       root.innerHTML =
         '<div class="modal-backdrop" data-modal-close></div>' +
         '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">' +
-        (opts.icon ? '<div class="modal-icon">' + GQ.icon(opts.icon) + '</div>' : '') +
+        (opts.knit ? GQ.knit.icon(opts.knit, 'modal-knit') : opts.icon ? '<div class="modal-icon">' + GQ.icon(opts.icon) + '</div>' : '') +
         '<h2 id="modal-title" class="modal-title">' + t(opts.title) + '</h2>' +
         (opts.html || (opts.text ? '<p>' + t(opts.text) + '</p>' : '')) +
         '<div class="modal-actions">' +

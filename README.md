@@ -18,15 +18,19 @@ Les équipes de 5 à 10 personnes jouent avec un seul téléphone. Elles résolv
 
 Composants tiers inclus : les polices **Montserrat** (remplaçante libre de Gotham) et **VT323** (police « informatique »), sous SIL Open Font License, et **qrcode-generator** de Kazuhiko Arase (licence MIT), utilisé seulement par le mode test pour imprimer les QR codes.
 
-### Direction artistique : « le lutin farceur »
+### Direction artistique : « Nuit de Noël tricotée »
 
-- **Concept** : un lutin a caché le cadeau. Ce personnage en pixel art se promène de temps en temps sous l'en-tête et sur la bande tricotée de l'accueil. Il commente certaines étapes dans une bulle (réussite, thème raté, quiz gelé, départ vers un lieu) et répond quand on le touche. À la fin, il apparaît avec le cadeau. Ses répliques se modifient dans `config/textes.js` (`lutin`), sa fréquence dans `config/parametres.js` (`lutin`).
-- **Tricot uniquement au début** : l'écran de chargement et l'accueil reprennent l'univers du pull de Noël (maille bleue, titre brodé, bande de flocons et de sapins). L'accueil est volontairement épuré : logo, titre et bouton. Des textes facultatifs (sous-titre, accroche…) peuvent être réactivés dans `config/textes.js`.
-- **Plateau « Comment jouer ? »**, façon jeu de l'oie illustré : fond bleu clair, chemin écru cerné de rouge, objets de jeu corail (dés, pions, drapeau, jetons). Les cases portent directement les mots-clés des règles (« 8/8 pour passer », « 1 joker = 1 indice », « 30 min chrono »…) et des pictogrammes (QR code entre deux quêtes). Le chemin se dessine, puis un pion coiffé d'un bonnet de lutin avance case par case jusqu'à la hotte (touchez le plateau pour relancer). Le texte complet des règles reste accessible par « Lire les règles détaillées » et par le bouton Règles en cours de partie. Contenu des cases modifiable dans `config/textes.js` → `plateau.cases`.
-- **Écran des questions réduit à l'essentiel** : progression, question, réponses et bouton. L'en-tête est compact : logo, chrono, progression des quêtes, état du joker et accès aux règles.
-- **Écrans de jeu** : fond blanc, en-tête bleu nuit avec chrono à cristaux liquides et guirlande de pixels, cartes à ombre franche façon écran rétro, pictogrammes en pixel art, minuteur rétro pendant le gel du quiz.
-- **Typographies** : Gotham (repli Montserrat) et Arial, plus une seule police « informatique », VT323, pour les titres pixel, les compteurs et les bulles du lutin.
-- **Couleurs** : bleu Saint-Gobain #17428C, bleu clair #00ADE1, rouge de Noël #C8102E, laine écrue. Logo Saint-Gobain en blanc sur fond foncé, en bleu foncé sur fond clair.
+Une seule direction artistique, identique de l'écran de chargement jusqu'à la fin :
+
+- **Fond bleu nuit Saint-Gobain** et neige légère qui tombe sur tous les écrans.
+- **Tout ce qui est illustré est brodé en mailles** (rendu tricot généré par `js/knit.js`) : titres de chaque écran, pictogrammes des 5 quêtes (quiz, loupe, Tour Saint-Gobain, repère de lieu, cadeau), sapins, étoile, QR code, le lutin et le compte à rebours géant du quiz gelé.
+- **Guirlande tricotée** en haut de chaque écran, comme un fil rouge visuel.
+- **Contenus dans des cadres écrus à double filet** (introductions, énigmes, indices, réussites, fenêtres).
+- **En-tête de jeu** : logo blanc, chrono, et la progression représentée par les 5 pictogrammes de quêtes, qui s'allument au fur et à mesure.
+- **« Comment jouer ? »** : carte du parcours. Une route enneigée serpente de DÉPART à la hotte, avec les 5 étapes illustrées, un QR code entre deux quêtes, et le lutin qui parcourt la route. En dessous, une légende de 3 règles clés.
+- **Le lutin farceur** a caché le cadeau. Il traverse l'écran de chargement, apparaît sous l'en-tête avec une bulle à certains moments (jamais par-dessus les boutons) et se promène de temps en temps. Répliques dans `config/textes.js` (`lutin`), fréquence dans `config/parametres.js` (`lutin`).
+- **Typographies** : Gotham (repli Montserrat), Arial, et VT323 pour les compteurs et les petites étiquettes.
+- **Couleurs** : bleu #17428C et ses nuances, bleu clair #00ADE1, rouge de Noël, laine écrue.
 
 ---
 

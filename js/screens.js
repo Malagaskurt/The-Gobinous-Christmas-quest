@@ -59,14 +59,27 @@
   /* Composants                                                          */
   /* ------------------------------------------------------------------ */
 
+  /* Titre brodé (image tricotée) + texte réel pour l'accessibilité. */
+  function knitTitle(text, opts) {
+    opts = opts || {};
+    return '<h1 class="k-title ' + (opts.cls || '') + '" tabindex="-1"><span class="sr-only">' + t(text) + '</span>' +
+      GQ.knit.title(plain(text), { alt: '', color: opts.color, max: opts.max || 10, outline: true, cls: 'k-title-img' }) + '</h1>';
+  }
+  GQ.knitTitle = knitTitle;
+
   function questHead(n, sub) {
     return (
       '<div class="quest-head">' +
-      '<p class="quest-script">' + t(T.general.queteNumero, { n: n }) + '<span class="quest-of"> / ' + GQ.QUEST_COUNT + '</span></p>' +
-      '<h1 class="quest-title" tabindex="-1">' + t(GQ.questCfg(n).titre) + '</h1>' +
-      (sub ? '<p class="eyebrow">' + t(sub) + '</p>' : '') +
+      GQ.knit.icon(GQ.questIcon(n), 'quest-ico') +
+      '<p class="kicker">' + t(T.general.queteNumero, { n: n }) + ' / ' + GQ.QUEST_COUNT + (sub ? ' · ' + t(sub) : '') + '</p>' +
+      knitTitle(GQ.questCfg(n).titre) +
       '</div>'
     );
+  }
+
+  /* Carte écrue à double filet (« cadre »). */
+  function frame(inner, cls) {
+    return '<div class="frame ' + (cls || '') + '"><div class="frame-in">' + inner + '</div></div>';
   }
 
   GQ.jokerBlock = function (key, hint) {
@@ -128,15 +141,16 @@
     );
   }
 
-  /* Bloc de réussite : pictogramme, mot manuscrit, titre, texte. */
+  /* Bloc de réussite : pictogramme tricoté, mot brodé, titre, texte. */
   function successBlock(o) {
     var script = o.script == null ? T.general.bravo : o.script;
     return (
       '<section class="success">' +
-      (o.art === '' ? '' : '<div class="success-art">' + (o.art || art.check('success-check')) + '</div>') +
-      (o.score ? '<p class="score' + (o.scoreKind === 'red' ? ' score-red' : '') + '">' + esc(o.score) + '</p>' : '') +
-      (String(script).trim() ? '<p class="pixel-text success-script">' + t(script) + '</p>' : '') +
-      '<h1 class="success-title" tabindex="-1">' + t(o.title) + '</h1>' + (o.html || '') + '</section>' +
+      (o.art === '' ? '' : '<div class="success-art">' + (o.art || GQ.knit.icon('star', 'success-ico')) + '</div>') +
+      (o.score ? '<p class="score"><span class="sr-only">' + esc(o.score) + '</span>' + GQ.knit.text(o.score, { alt: '', color: o.scoreKind === 'red' ? '#E4323A' : '#00ADE1', outline: true, cls: 'score-img' }) + '</p>' : '') +
+      (String(script).trim() ? '<p class="success-script">' + GQ.knit.title(plain(script).replace(/\s*!$/, '!'), { alt: plain(script), color: '#E4323A', outline: true, cls: 'script-img' }) + '</p>' : '') +
+      '<h2 class="success-title" tabindex="-1">' + t(o.title) + '</h2>' +
+      (o.html ? frame(o.html, 'frame-center') : '') + '</section>' +
       (o.cta ? cta(o.cta) : '')
     );
   }
@@ -152,33 +166,31 @@
     var action = s.team
       ? '<p class="home-resume">' + t(A.partieEnCours, { equipe: s.team }) + '</p>' + btn(esc(A.boutonReprendre) + icon('fleche'), 'resume', '', 'btn-red')
       : btn(esc(A.bouton) + icon('fleche'), 'start', '', 'btn-red');
-    var notes = opt(A.noteGauche + A.noteDroite, '<div class="home-notes"><p>' + t(A.noteGauche) + '</p><p>' + t(A.noteDroite) + '</p></div>');
     return {
       key: 'home',
       bare: true,
-      elf: { walk: '.band', say: 'accueil' },
       html:
-        '<main class="screen-home knit">' +
-        '<div class="home-top"><span class="corner corner-l" aria-hidden="true"></span>' + opt(A.annee, '<span class="pixel-text home-year">' + t(A.annee) + '</span>') + '<span class="corner corner-r" aria-hidden="true"></span></div>' +
+        '<main class="screen-home">' +
+        '<div class="garland" aria-hidden="true"></div>' +
         '<div class="home-logo">' + GQ.logo('clair') + '</div>' +
         '<div class="home-hero">' +
-        GQ.knit.img('star', 'home-star') +
-        opt(A.surtitre, '<p class="home-club">' + t(A.surtitre) + '</p>') +
-        '<h1 class="home-title" tabindex="-1">' + GQ.knit.text(plain(A.titre), { cls: 'home-knit-title', outline: true }) +
-        '<span class="pixel-text home-pixel">' + t(A.titreSuite) + '</span></h1>' +
+        opt(A.surtitre, '<p class="kicker">' + t(A.surtitre) + '</p>') +
+        '<h1 class="home-title" tabindex="-1"><span class="sr-only">' + t(A.titre) + ' ' + t(A.titreSuite) + '</span>' +
+        GQ.knit.text(plain(A.titre).toUpperCase(), { alt: '', color: '#E4323A', outline: true, cls: 'home-knit-title' }) +
+        '<span class="home-sub" aria-hidden="true">' + t(A.titreSuite) + '</span></h1>' +
         opt(A.sousTitre, '<p class="home-subtitle">' + t(A.sousTitre) + '</p>') +
+        GQ.knit.scene('home-scene') +
         opt(A.accroche, '<p class="home-lead">' + t(A.accroche) + '</p>') +
         '</div>' +
         '<div class="home-cta">' + action + '</div>' +
-        '<div class="band" aria-hidden="true"></div>' +
-        (notes || '<div class="home-spacer"></div>') +
+        '<div class="garland garland-flip" aria-hidden="true"></div>' +
         '</main>',
     };
   };
 
   /* Bandeau des écrans d'entrée : même univers que les écrans de jeu. */
   function miniHeader() {
-    return '<header class="topbar topbar-mini"><div class="topbar-row topbar-center">' + GQ.logo('clair', 'brand-logo') + '</div></header><div class="garland" aria-hidden="true"></div>';
+    return '<div class="garland" aria-hidden="true"></div><header class="topbar topbar-mini"><div class="topbar-row topbar-center">' + GQ.logo('clair', 'brand-logo') + '</div></header>';
   }
   GQ.miniHeader = miniHeader;
 
@@ -193,10 +205,9 @@
         miniHeader() +
         '<main class="screen screen-plain">' +
         '<a class="back-link" href="#/">' + icon('retour') + 'Accueil</a>' +
-        '<div class="plain-head">' + art.gift('plain-art') +
-        '<h1 class="page-title" tabindex="-1">' + t(E.titre) + '</h1>' +
-        '<p class="muted">' + t(E.aide) + '</p></div>' +
-        textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder }) +
+        '<div class="center-head">' + GQ.knit.icon('gift', 'head-ico') + knitTitle(E.titreCourt || E.titre) + '</div>' +
+        frame('<p class="frame-lead">' + t(E.titre) + '</p><p class="muted small">' + t(E.aide) + '</p>' +
+          textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder, btnCls: 'btn-red' })) +
         '</main>',
     };
   };
@@ -210,8 +221,11 @@
       html:
         miniHeader() +
         '<main class="screen screen-plain screen-board">' +
-        '<h1 class="page-title rules-title" tabindex="-1">' + t(PL.titre) + '</h1>' +
+        '<div class="center-head">' + knitTitle(PL.titre, { max: 8 }) + '</div>' +
         GQ.board.html() +
+        frame('<ul class="legend">' + PL.regles.map(function (r) {
+          return '<li>' + GQ.knit.icon(r.icone, 'legend-ico') + '<span>' + t(r.texte) + '</span></li>';
+        }).join('') + '</ul>', 'frame-legend') +
         '<button type="button" class="btn btn-ghost" data-action="show-rules">' + esc(PL.detail) + '</button>' +
         cta(btn(esc(T.regles.bouton) + icon('fleche'), 'accept-rules', '', 'btn-red btn-start')) +
         '</main>',
@@ -228,7 +242,7 @@
       key: 'q' + n + '-intro',
       html:
         questHead(n) +
-        '<div class="intro-card">' + art.gift('intro-art') + '<p class="intro-text">' + t(qc.intro) + '</p></div>' +
+        frame('<p class="intro-text">' + t(qc.intro) + '</p>') +
         cta(btn(esc(qc.boutonIntro) + icon('fleche'), 'intro-next', ' data-n="' + n + '"')),
     };
   }
@@ -243,7 +257,7 @@
         questHead(n, L.surtitre) +
         '<h2 class="section-title">' + t(L.titre) + '</h2>' +
         '<p class="muted">' + t(L.consigne) + '</p>' +
-        '<div class="clue-card"><p class="card-label">' + icon('loupe') + esc(L.surtitre) + '</p><p class="clue-text">' + t(p.indice) + '</p></div>' +
+        frame('<p class="card-label">' + icon('loupe') + esc(L.surtitre) + '</p><p class="clue-text">' + t(p.indice) + '</p>') +
         GQ.jokerBlock('lieu-' + id, p.indiceJoker) +
         textAnswer({ form: 'place', label: L.label, button: L.bouton, expected: p.reponsesAcceptees, attrs: ' data-n="' + n + '"' }),
     };
@@ -255,16 +269,15 @@
     var L = T.lieux;
     var html =
       questHead(n) +
-      '<section class="found-card">' + icon('pin', 'found-icon') +
+      frame(GQ.knit.icon('pin', 'found-ico') +
       '<h2 class="found-title">' + t(L.trouveTitre) + '</h2>' +
       '<p class="found-place">' + t(L.trouveSousTitre, { lieu: p.nom }) + '</p>' +
-      (p.texteValidation ? '<p>' + t(p.texteValidation) + '</p>' : '') +
-      '</section>';
+      (p.texteValidation ? '<p>' + t(p.texteValidation) + '</p>' : ''), 'frame-center');
     if (P.lieux && P.lieux.scanObligatoire === false) {
       html += cta(btn(esc(L.boutonArrivee), 'arrive', ' data-place="' + esc(id) + '"'));
     } else {
       html +=
-        '<div class="scan-card">' + icon('qr', 'scan-icon') + '<p>' + t(L.scanConsigne) + '</p></div>' +
+        '<div class="scan-card">' + GQ.knit.icon('qr', 'scan-ico') + '<p>' + t(L.scanConsigne) + '</p></div>' +
         '<details class="manual-code"' + (GQ.ui.codeOpen ? ' open' : '') + '><summary>' + t(L.codeManuelTitre) + '</summary>' +
         textAnswer({ form: 'code', label: L.codeManuelLabel, button: L.codeManuelBouton, caps: true, expected: GQ.test.isActive() ? [p.codeQR] : null, attrs: ' data-place="' + esc(id) + '"' }) +
         '<p class="hint">' + t(L.conseilNavigateur) + '</p></details>' +
@@ -277,30 +290,36 @@
   /* Quête 1 : le grand quiz                                             */
   /* ------------------------------------------------------------------ */
 
-  /* Blocage du quiz : minuteur rétro à cristaux liquides. */
+  /* Blocage du quiz : compte à rebours géant en chiffres tricotés. */
   function lockDevice(lock) {
     var X = QZ.textes;
-    var total = GQ.state.quiz.lockTotal || lock;
     return (
-      '<div class="timer-device" role="timer" aria-label="' + esc(X.bloqueCompteur) + '">' +
-      '<div class="td-top"><span class="td-label">' + esc(X.bloqueTitre) + '</span>' + art.flake('td-flake') + '</div>' +
-      '<div class="td-screen"><span class="td-small">' + esc(X.bloqueCompteur) + '</span>' +
-      '<span class="td-digits" data-countdown>' + GQ.mmss(lock + 999) + '</span>' +
-      '<span class="td-bar"><i data-ring style="width:' + ((100 * lock) / total).toFixed(1) + '%"></i></span></div>' +
-      '</div>' +
-      '<p class="lock-text">' + t(X.bloqueTexte) + '</p>'
+      '<div class="lock" role="timer" aria-label="' + esc(X.bloqueCompteur) + '">' +
+      GQ.knit.icon('flake', 'lock-ico') +
+      '<p class="kicker">' + esc(X.bloqueTitre) + '</p>' +
+      '<div class="lock-digits" data-countdown>' + lockDigits(GQ.mmss(lock + 999)) + '</div>' +
+      '<p class="lock-text">' + t(X.bloqueTexte) + '</p>' +
+      '</div>'
     );
   }
 
+  function lockDigits(label) {
+    var X = QZ.textes;
+    return '<span class="sr-only">' + esc(X.bloqueCompteur) + ' ' + label + '</span>' +
+      GQ.knit.text(label, { alt: '', color: '#E4323A', outline: true, cls: 'lock-img' });
+  }
+
   function startCountdown() {
+    var last = '';
     GQ.every(250, function () {
       var left = GQ.quizLockRemaining();
       if (!left) { GQ.render(); return; }
-      var total = GQ.state.quiz.lockTotal || left;
+      var label = GQ.mmss(left + 999);
       var el = document.querySelector('[data-countdown]');
-      var bar = document.querySelector('[data-ring]');
-      if (el) el.textContent = GQ.mmss(left + 999);
-      if (bar) bar.style.width = ((100 * left) / total).toFixed(1) + '%';
+      if (el && label !== last) {
+        last = label;
+        el.innerHTML = lockDigits(label);
+      }
     });
   }
 
@@ -316,13 +335,13 @@
     } else if (q.failedSinceLock > 0) {
       html += '<p class="attempts">' + icon('cadenas') + t(X.tentatives, { n: q.failedSinceLock, max: maxFail }) + '</p>';
     }
-    html += '<p class="muted small">' + t(X.choixAide) + '</p><ul class="themes">';
+    html += (lock ? '' : '<p class="muted small center">' + t(X.choixAide) + '</p>') + '<ul class="themes">';
     QZ.themes.forEach(function (th) {
       var available = GQ.themeAvailable(th.id);
       var disabled = lock || !available;
       html +=
         '<li><button type="button" class="theme-card' + (failed[th.id] ? ' is-failed' : '') + '" data-action="start-theme" data-id="' + esc(th.id) + '"' + (disabled ? ' disabled' : '') + '>' +
-        '<span class="theme-icon">' + icon(th.icone || 'etoile') + '</span>' +
+        '<span class="theme-icon">' + GQ.knit.icon({ miroir: 'star', tour: 'tower', materiaux: 'dice', flocon: 'flake', etoile: 'star', cadeau: 'gift' }[th.icone] || 'star', 'theme-knit') + '</span>' +
         '<span class="theme-body"><span class="theme-title">' + t(th.titre) + '</span>' +
         '<span class="theme-meta">' + th.questions.length + ' questions</span></span>' +
         (failed[th.id] ? '<span class="badge">' + esc(X.themeEchoue) + '</span>' : icon('fleche', 'theme-arrow')) +
@@ -418,7 +437,7 @@
       key: 'q' + n + '-enigma',
       html:
         questHead(n) +
-        '<div class="riddle-card"><p class="card-label">' + icon('etoile') + 'Énigme</p><p class="riddle">' + t(qc.enigme) + '</p></div>' +
+        frame('<p class="card-label">' + icon('etoile') + 'Énigme</p><p class="riddle">' + t(qc.enigme) + '</p>') +
         GQ.jokerBlock('q' + n, qc.indiceJoker) +
         textAnswer({ form: 'enigma', label: qc.label || T.general.votreReponse, button: T.general.validerReponse, expected: expected, attrs: ' data-n="' + n + '"' }),
     };
@@ -495,7 +514,7 @@
         key: 'q4-success',
         celebrate: 'big',
         html: successBlock({
-          art: art.gift('success-gift'),
+          art: GQ.knit.icon('gift', 'success-ico'),
           title: D.reussiteTitre,
           html: '<p class="found-place">' + t(D.reussiteLieu, { lieu: p.nom }) + '</p>' +
             (p.texteValidation ? '<p>' + t(p.texteValidation) + '</p>' : '') +
@@ -523,7 +542,7 @@
         key: 'q5-finished',
         celebrate: 'big',
         html: successBlock({
-          art: '<div class="elf-scene"><span class="elf-say pixel-text">' + t(GQ.elf.line('fin')) + '</span>' + art.elf('elfWave', 'elf-big') + '</div>',
+          art: '<div class="elf-scene"><span class="elf-say">' + t(GQ.elf.line('fin')) + '</span>' + art.elf('elfWave', 'elf-big') + '</div>',
           script: '',
           title: F.termineeTitre,
           html: '<p>' + t(F.termineeTexte, { equipe: s.team }) + '</p>' +
@@ -539,10 +558,9 @@
     var html =
       questHead(5) +
       '<section class="finale">' +
-      '<div class="elf-scene"><span class="elf-say pixel-text">' + t(GQ.elf.line('finale')) + '</span>' + art.elf('elfGift', 'elf-big') + '</div>' +
-      '<p class="pixel-text finale-script">' + t(H.script) + '</p>' +
-      '<p class="finale-text">' + t(H.texte) + '</p>' +
-      '<p class="found-place">' + t(H.rappelLieu, { lieu: p.nom }) + '</p></section>';
+      '<div class="elf-scene"><span class="elf-say">' + t(GQ.elf.line('finale')) + '</span>' + art.elf('elfGift', 'elf-big') + '</div>' +
+      '<p class="finale-script">' + GQ.knit.title(plain(H.script), { alt: plain(H.script), color: '#E4323A', outline: true, cls: 'script-img' }) + '</p>' +
+      frame('<p class="finale-text">' + t(H.texte) + '</p><p class="found-place">' + t(H.rappelLieu, { lieu: p.nom }) + '</p>', 'frame-center') + '</section>';
     if (code) {
       html +=
         '<details class="manual-code organizer"' + (GQ.ui.codeOpen ? ' open' : '') + '><summary>' + icon('cadenas') + t(F.organisateurTitre) + '</summary>' +
@@ -610,7 +628,7 @@
     }
     var inGame = s.team && s.rulesOk;
     var block = successBlock({
-      art: ok ? null : '<div class="scan-art">' + icon(r.status === 'trop-tot' ? 'cadenas' : 'qr') + '</div>',
+      art: ok ? GQ.knit.icon('pin', 'success-ico') : GQ.knit.icon(r.status === 'trop-tot' ? 'lock' : 'qr', 'success-ico'),
       script: ok ? T.general.bravo : ' ',
       title: title,
       html: body,

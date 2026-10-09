@@ -260,7 +260,7 @@
       var s = memo(key, function () {
         var g = textGrid(text, 'x');
         if (opts.outline) g = outline(g, 'o');
-        return src(svg(g, { wool: { x: opts.color || WOOL.w, o: '#0A1F45' } }));
+        return src(svg(g, { wool: { x: opts.color || WOOL.w, o: '#071534' } }));
       });
       return '<img class="knit-img ' + (opts.cls || '') + '" src="' + s + '" alt="' + GQ.esc(opts.alt != null ? opts.alt : text.replace(/\n/g, ' ')) + '">';
     },
@@ -276,7 +276,96 @@
     },
   };
 
+  /* ------------------------------------------------------------------ */
+  /* Nuit tricotée : titres, pictogrammes, lutin, guirlande, scène       */
+  /* ------------------------------------------------------------------ */
+
+  /* Couleurs des pixels (pixel.js) une fois tricotées sur fond bleu nuit. */
+  var KNIT_PAL = {
+    r: '#E4323A', R: '#A3141F', w: '#F6EFE2', W: '#FFFFFF', s: '#F3C7A1', S: '#D9967A',
+    b: '#3B78D4', B: '#2A5DB0', c: '#00ADE1', C: '#9EE0F5', k: '#0A1F45', n: '#17428C', m: '#1B4A99', p: '#E2D7C3', d: '#0E2A5E',
+  };
+
+  function wrapWords(text, max) {
+    var lines = [];
+    String(text).split('\n').forEach(function (part) {
+      var line = '';
+      part.split(' ').forEach(function (w) {
+        if (line && (line + ' ' + w).length > max) { lines.push(line); line = w; }
+        else line = line ? line + ' ' + w : w;
+      });
+      if (line) lines.push(line);
+    });
+    return lines.join('\n');
+  }
+
+  function gridImg(key, makeGrid, wool, cls, alt) {
+    var s = memo(key, function () { return src(svg(makeGrid(), { wool: wool })); });
+    return '<img class="knit-img ' + (cls || '') + '" src="' + s + '" alt="' + GQ.esc(alt || '') + '"' + (alt ? '' : ' aria-hidden="true"') + '>';
+  }
+
+  /* Colle des motifs pixel sur une grille vide (scènes composées). */
+  function compose(cols, rows, items, dots) {
+    var g = [];
+    for (var y = 0; y < rows; y++) g.push(new Array(cols + 1).join('.').split(''));
+    items.forEach(function (it) {
+      var src = GQ.pixel.grid(it.name);
+      src.forEach(function (line, dy) {
+        for (var dx = 0; dx < line.length; dx++) {
+          var ch = line[dx];
+          if (ch === '.' || ch === 'k') continue;
+          var x = it.flip ? it.x + line.length - 1 - dx : it.x + dx;
+          if (g[it.y + dy] && x >= 0 && x < cols) g[it.y + dy][x] = ch;
+        }
+      });
+    });
+    (dots || []).forEach(function (p) { if (g[p[1]] && g[p[1]][p[0]] === '.') g[p[1]][p[0]] = 'C'; });
+    return g.map(function (r) { return r.join(''); });
+  }
+
+  var GARLAND = [
+    'r..........rr..........r',
+    '.rr......rr..rr......rr.',
+    '...rrrrrr......rrrrrr...',
+    '......w...........c.....',
+    '.....www.........ccc....',
+    '....wwwww.......ccccc...',
+    '....wwrww.......ccwcc...',
+    '....wwwww.......ccccc...',
+    '.....www.........ccc....',
+  ];
+
+  Object.assign(GQ.knit, {
+    PAL: KNIT_PAL,
+    /* Titre brodé avec retour à la ligne automatique. */
+    title: function (text, opts) {
+      opts = opts || {};
+      return GQ.knit.text(wrapWords(String(text).toUpperCase(), opts.max || 10), opts);
+    },
+    /* Pictogramme ou personnage pixel (pixel.js) rendu en tricot. */
+    icon: function (name, cls, alt) {
+      return gridImg('ico:' + name, function () { return GQ.pixel.grid(name); }, KNIT_PAL, cls, alt);
+    },
+    src: function (name) {
+      return memo('ico:' + name, function () { return src(svg(GQ.pixel.grid(name), { wool: KNIT_PAL })); });
+    },
+    /* Scène d'accueil : sapins, Tour Saint-Gobain, lutin et cadeau. */
+    scene: function (cls) {
+      return gridImg('scene', function () {
+        return compose(58, 23, [
+          { name: 'tree', x: 1, y: 10 },
+          { name: 'tower', x: 13, y: 7 },
+          { name: 'elfWave', x: 23, y: 1 },
+          { name: 'gift', x: 41, y: 12 },
+          { name: 'tree', x: 47, y: 10, flip: true },
+        ], [[3, 2], [9, 5], [14, 1], [21, 4], [42, 3], [47, 6], [53, 2], [56, 7], [37, 1], [44, 9], [5, 7], [34, 6]]);
+      }, KNIT_PAL, cls, '');
+    },
+  });
+
   /* Arrière-plans partagés, exposés en variables CSS. */
+  document.documentElement.style.setProperty('--knit-garland', css(svg(GARLAND, { wool: KNIT_PAL })));
+
   var root = document.documentElement.style;
   root.setProperty('--knit-plain', css(svg(PLAIN, { tile: true, bg: GAP })));
   root.setProperty('--knit-band', css(svg(bandGrid(), { tile: true, bg: GAP })));

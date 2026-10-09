@@ -66,6 +66,7 @@ window.GAME_CONFIG.textes = {
   },
 
   equipe: {
+    titreCourt: "Votre équipe",
     titre: "Quel est le nom de votre équipe ?",
     aide:
       "Ce nom sert uniquement à identifier votre progression sur ce téléphone. Aucune donnée personnelle n'est demandée.",
@@ -79,32 +80,16 @@ window.GAME_CONFIG.textes = {
    * Le texte complet des règles (ci-dessous, « regles ») reste accessible
    * via le lien « règles détaillées » et le bouton Règles en cours de jeu. */
   plateau: {
-    titre: "COMMENT JOUER ?",
-    description: "Plateau du jeu : 5 quêtes, du départ jusqu'à la hotte.",
+    titre: "Comment jouer ?",
+    description: "Carte du parcours : 5 quêtes, du départ jusqu'à la hotte.",
     depart: "DÉPART",
-    quete: "QUÊTE {n}",
-    /* Cases du plateau, dans l'ordre du parcours. Chaque case contient
-     * soit un texte court, soit un pictogramme :
-     *   { quete: 1 }                 → « QUÊTE 1 » + nom de la quête
-     *   { texte: "8/8 pour passer" } → mots-clés (\n = retour à la ligne)
-     *   { icone: "qr" }              → qr, pin, clock, sparkle, heart, gift */
-    cases: [
-      { icone: "sparkle" },
-      { quete: 1 },
-      { texte: "8/8 pour passer" },
-      { texte: "2 ratés ?\ngel 3 min" },
-      { icone: "qr" },
-      { quete: 2 },
-      { texte: "Trouvez le lieu" },
-      { icone: "qr" },
-      { quete: 3, texte: "Le défi" },
-      { texte: "1 joker\n= 1 indice" },
-      { icone: "qr" },
-      { quete: 4, texte: "Dernier indice" },
-      { icone: "clock" },
-      { texte: "30 min chrono" },
-      { icone: "pin" },
-      { quete: 5, texte: "La hotte" },
+    /* Une étiquette courte par quête, affichée sur la carte. */
+    etapes: ["Le grand quiz", "L'énigme", "Le défi", "Le dernier indice", "La hotte"],
+    /* Légende de la carte : 3 règles clés seulement. */
+    regles: [
+      { icone: "qr", texte: "Entre deux quêtes : trouvez le lieu, scannez son QR code." },
+      { icone: "star", texte: "**1 joker** = 1 indice bonus, une seule fois." },
+      { icone: "flake", texte: "**Quiz** : 8/8 pour passer. 2 thèmes ratés = 3 min de gel." },
     ],
     detail: "Lire les règles détaillées",
   },
