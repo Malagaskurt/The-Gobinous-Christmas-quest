@@ -12,8 +12,9 @@
  *   aVerifier   : (facultatif) note interne visible uniquement dans le
  *                 mode test et dans `npm run check`. Supprimez la ligne
  *                 une fois l'information vérifiée.
- *   explication : (facultatif) phrase affichée après la bonne réponse.
- *   indiceJoker : (facultatif) indice supplémentaire proposé via le joker.
+ *
+ * Les réponses ne sont pas corrigées question par question : l'équipe
+ * découvre seulement son score à la fin des 8 questions.
  *
  * La bonne réponse n'est jamais affichée aux participants avant qu'ils
  * l'aient sélectionnée. Attention : le site étant statique, ce fichier
@@ -35,26 +36,37 @@ window.GAME_CONFIG.quiz = {
 
   textes: {
     choixTitre: "Choisissez votre thème",
-    choixAide: "Une fois commencé, abandonner un thème compte comme une tentative échouée.",
+    choixAide:
+      "Répondez aux 8 questions : le score ne s'affiche qu'à la fin. Il faut 8 bonnes réponses sur 8. Un thème raté ne peut plus être rejoué.",
     tentatives: "Tentatives échouées : {n} sur {max} avant blocage",
-    erreurs: "Erreurs sur ce thème : {n} sur {max} autorisées",
-    themeEchoue: "Déjà tenté",
-    themeEnCours: "En cours",
-    bloqueTitre: "Quiz bloqué",
-    bloqueTexte:
-      "Vous avez échoué deux fois. Le quiz est bloqué quelques minutes : profitez-en pour échanger en équipe !",
-    bloqueCompteur: "Nouvelle tentative possible dans",
-    changerTheme: "Changer de thème",
+    themeEchoue: "Fermé",
+    questionPrecedente: "Question précédente",
+    questionSuivante: "Question suivante",
+    validerTout: "Valider mes 8 réponses",
+    confirmTitre: "Valider vos réponses ?",
+    confirmTexte: "Vous ne pourrez plus les modifier. Il faut 8 bonnes réponses sur 8 pour réussir ce thème.",
+    confirmOui: "Oui, voir notre score",
+    confirmNon: "Relire mes réponses",
+    changerTheme: "Abandonner ce thème",
     abandonTitre: "Abandonner ce thème ?",
-    abandonTexte: "Ce thème sera compté comme une tentative échouée.",
+    abandonTexte: "Ce thème sera compté comme une tentative échouée et ne pourra plus être rejoué.",
     abandonTexteBlocage:
       "Ce thème sera compté comme une tentative échouée. Attention : le quiz sera alors bloqué pendant {minutes}.",
     abandonConfirmer: "Abandonner le thème",
     abandonAnnuler: "Continuer ce thème",
-    tropErreurs: "Trop d'erreurs sur ce thème : cette tentative est échouée. Choisissez un autre thème.",
+    resultatScore: "{score} bonne(s) réponse(s) sur {total}",
+    echecTitre: "Raté, de peu !", // 6 ou 7 bonnes réponses
+    echecTitreLoin: "Pas cette fois !", // 5 bonnes réponses ou moins
+    echecTexte: "Il fallait 8 bonnes réponses sur 8. Ce thème est désormais fermé : choisissez-en un autre.",
+    echecAvertissement: "Attention : un nouvel échec bloquera le quiz pendant {minutes}.",
+    echecBlocage: "C'est votre deuxième échec : le quiz est gelé pendant {minutes}.",
+    boutonAutreTheme: "Choisir un autre thème",
+    boutonMinuteur: "Voir le minuteur",
+    bloqueTitre: "Quiz gelé",
+    bloqueTexte: "Deux thèmes ratés : le quiz est gelé quelques minutes. Profitez-en pour échanger en équipe !",
+    bloqueCompteur: "Nouvelle tentative dans",
     reussiteTitre: "Quiz réussi !",
-    reussiteTexte:
-      "Bravo, vous avez répondu correctement aux huit questions. Votre premier indice est débloqué.",
+    reussiteTexte: "8 bonnes réponses sur 8 : votre premier indice est débloqué.",
     boutonIndice: "Découvrir le premier indice",
   },
 

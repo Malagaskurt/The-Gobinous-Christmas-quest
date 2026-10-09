@@ -88,7 +88,7 @@
 
   function phaseLabel(n, ph) {
     return ({
-      intro: 'introduction', themes: 'choix du thème', play: 'questions', enigma: 'énigme',
+      intro: 'introduction', themes: 'choix du thème', play: 'questions', result: 'résultat (thème raté)', enigma: 'énigme',
       success: 'réussite', location: 'deviner le lieu', travel: 'se rendre au lieu / scanner',
       final: 'écran final', done: 'terminée',
     })[ph] || ph;
@@ -139,7 +139,8 @@
         row('Équipe', s.team ? esc(s.team) : '<i>aucune</i>') +
         row('Quête en cours', s.finished ? 'Aventure terminée (' + esc(s.finished.by) + ')' : s.quest + ' · ' + phaseLabel(s.quest, s.phase[s.quest])) +
         row('Joker', s.joker.used ? 'utilisé (' + esc(s.joker.on) + ')' : 'disponible') +
-        row('Quiz', (cur ? 'thème en cours : ' + esc(cur.titre) + ', question ' + (q.current.index + 1) + ', ' + q.current.errors + ' erreur(s)<br>' : '') +
+        row('Chrono', s.clockStart ? GQ.mmss((GQ.clock() || { elapsed: 0 }).elapsed) + ' écoulées' : '<i>pas démarré</i>') +
+        row('Quiz', (cur ? 'thème en cours : ' + esc(cur.titre) + ', question ' + (q.current.index + 1) + ', ' + q.current.answers.filter(function (a) { return a != null; }).length + ' réponse(s)<br>' : '') +
           q.attempts.length + ' tentative(s) · ' + q.failedSinceLock + ' échec(s) depuis le dernier blocage' +
           (lock ? '<br><b>Bloqué encore ' + Math.ceil(lock / 1000) + ' s</b>' : '') +
           (q.wonTheme ? '<br>Thème réussi : ' + esc((GQ.theme(q.wonTheme) || {}).titre || q.wonTheme) : '')) +
@@ -161,6 +162,11 @@
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-lock">Déclencher le blocage</button>' +
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-unlock">Lever le blocage</button>' +
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-reset-quiz">Effacer les tentatives</button>' +
+        '</div></section>' +
+
+        '<section class="admin-card"><h2>Chrono global</h2><div class="btn-row">' +
+        '<button type="button" class="btn btn-small btn-secondary" data-action="test-clock" data-v="reset">Remettre à zéro</button>' +
+        '<button type="button" class="btn btn-small btn-secondary" data-action="test-clock" data-v="5">Avancer de 5 min</button>' +
         '</div></section>' +
 
         '<section class="admin-card"><h2>Joker</h2><div class="btn-row">' +
@@ -213,6 +219,7 @@
           : 'Scannez ce QR code avec l\'appareil photo du téléphone de votre équipe.') + '</p>' +
         '<p class="qr-manual">Code : <b>' + esc(String(p.codeQR).toUpperCase()) + '</b></p>' +
         '<p class="qr-url">' + esc(url) + '</p>' +
+        GQ.logo('fonce', 'qr-logo') +
         '</article>'
       );
     }).join('');
@@ -300,6 +307,14 @@
     q.failedSinceLock = 0;
     if (GQ.state.quest === 1 && GQ.state.phase[1] !== 'intro') GQ.state.phase[1] = 'themes';
     done('Quiz bloqué pendant ' + Math.round(q.lockTotal / 1000) + ' s.');
+  };
+
+  actions['test-clock'] = function (el) {
+    if (!guard()) return;
+    var s = GQ.state;
+    if (el.dataset.v === 'reset' || !s.clockStart) s.clockStart = Date.now();
+    if (el.dataset.v === '5') s.clockStart -= 5 * 60000;
+    done('Chrono mis à jour.');
   };
 
   actions['test-unlock'] = function () {

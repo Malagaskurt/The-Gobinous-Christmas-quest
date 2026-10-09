@@ -123,9 +123,8 @@
     var pq = P.quiz || {};
     if (!(pq.tentativesAvantBlocage >= 1)) err('parametres.quiz.tentativesAvantBlocage doit être un nombre ≥ 1.');
     if (!(pq.dureeBlocageSecondes >= 0)) err('parametres.quiz.dureeBlocageSecondes doit être un nombre ≥ 0.');
-    if (pq.erreursAutoriseesParTheme !== null && pq.erreursAutoriseesParTheme !== undefined &&
-        !(pq.erreursAutoriseesParTheme >= 0)) {
-      err('parametres.quiz.erreursAutoriseesParTheme doit valoir null ou un nombre ≥ 0.');
+    if (P.chrono && P.chrono.actif !== false && !(P.chrono.dureeMinutes > 0)) {
+      err('parametres.chrono.dureeMinutes doit être un nombre de minutes > 0.');
     }
     var fin = P.finDePartie || {};
     if (!fin.codeOrganisateur && !fin.qrFinalActif) {

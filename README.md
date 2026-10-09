@@ -16,7 +16,14 @@ Les équipes de 5 à 10 personnes jouent avec un seul téléphone. Elles résolv
 | **Navigation par `#/…`** | Fonctionne sur tous les hébergeurs statiques sans réglage serveur. Les QR codes pointent vers `…/#/scan/CODE`. |
 | **Aucune dépendance réseau** | Polices et générateur de QR codes sont inclus. Aucun appel à Google Fonts, aucun outil de mesure d'audience, aucun cookie. |
 
-Seuls composants tiers inclus : la police **Montserrat** (SIL Open Font License, remplaçante libre de Gotham) et **qrcode-generator** de Kazuhiko Arase (licence MIT, utilisé seulement par le mode test pour imprimer les QR codes).
+Composants tiers inclus : les polices **Montserrat** (remplaçante libre de Gotham), **Great Vibes** (écriture manuscrite) et **VT323** (afficheur des minuteurs), toutes sous SIL Open Font License, et **qrcode-generator** de Kazuhiko Arase (licence MIT), utilisé seulement par le mode test pour imprimer les QR codes.
+
+### Direction artistique : « le pull de Noël Saint-Gobain »
+
+- **Maille tricotée** bleu Saint-Gobain sur l'accueil, l'en-tête et les écrans d'entrée. Les mailles, les lettres brodées (alphabet pixel), les bandes jacquard (flocons, sapins) et les motifs (étoile, écusson, cadeau) sont dessinés en SVG par `js/knit.js`. Aucune image externe, rendu net sur tous les écrans.
+- **Papier à lettre** pour le contenu des quêtes : chaque quête s'ouvre sur une lettre glissée dans une **enveloppe rouge**, avec ses indices sur des notes scotchées.
+- Accents manuscrits (« Quête n°1 », « Bravo ! », « Joyeux Noël »), tampons de score (« 8/8 »), **minuteur rétro à cristaux liquides** pour le blocage du quiz, et un écran de chargement qui « tricote » le titre.
+- Palette : bleu #17428C, bleu clair #00ADE1, rouge de Noël #C8102E et laine écrue. Logo Saint-Gobain en version blanche sur les fonds tricotés et bleu foncé sur les fonds clairs.
 
 ---
 
@@ -45,7 +52,7 @@ Tous les fichiers à modifier se trouvent dans `config/`. Chacun est commenté e
 
 | Fichier | Contenu |
 |---|---|
-| `config/parametres.js` | Règles du quiz (tentatives, durée du blocage, erreurs tolérées), QR code obligatoire ou non, adresse publique du site, logo, code organisateur de fin de partie, mode test |
+| `config/parametres.js` | Règles du quiz (tentatives, durée du blocage), chrono global, QR code obligatoire ou non, adresse publique du site, logo, code organisateur de fin de partie, mode test |
 | `config/textes.js` | Accueil, nom d'équipe, **règles** (texte exact demandé), messages d'erreur ou de réussite, joker, lieux, QR codes, fin |
 | `config/quiz.js` | Quête 1 : introduction, 4 thèmes × 8 questions, bonnes réponses |
 | `config/quetes.js` | Quêtes 2 à 5 : énigme, 3 questions du défi, énigme finale, écran final, indices du joker |
@@ -70,12 +77,16 @@ Cette commande signale les erreurs de saisie (virgule oubliée, lettre de répon
 ## 4. Déroulement du jeu
 
 1. **Accueil**, puis **nom d'équipe** (aucune donnée personnelle), puis **règles**.
-2. **Quête 1 : le grand quiz.** L'équipe choisit un thème et répond à 8 QCM, une question à la fois. Une mauvaise réponse se retente sans perdre la progression. Abandonner un thème compte comme une tentative échouée. Après 2 échecs, le quiz se bloque 3 minutes. En cas de réussite, l'indice du lieu A s'affiche.
+2. **Quête 1 : le grand quiz.** L'équipe choisit un thème et répond aux 8 QCM, une question à la fois. **Aucune correction n'est affichée pendant les questions** : l'équipe peut revenir en arrière et modifier ses choix, puis valide ses 8 réponses et découvre son score. Avec 8/8, le premier indice se débloque. Sinon, le thème est **fermé** (il ne pourra plus être rejoué) et l'équipe en choisit un autre. Au **deuxième thème raté**, le quiz est gelé pendant **3 minutes**, avec un minuteur affiché. Le score s'affiche, mais pas les questions ratées, pour ne pas dévoiler les réponses. Abandonner un thème en cours compte aussi comme un échec. Si les 4 thèmes sont ratés, ils redeviennent tous disponibles.
 3. **Lieu A** : l'équipe saisit le lieu deviné. S'il est correct, elle s'y rend et scanne le QR code (ou saisit le code imprimé dessous). La quête 2 se débloque.
 4. **Quête 2 : l'énigme mystère.** Une énigme à réponse libre, puis l'indice du lieu B et la même mécanique de déplacement.
 5. **Quête 3 : le défi Saint-Gobain.** 3 QCM, puis l'indice du lieu C.
 6. **Quête 4 : le dernier indice.** La réponse à l'énigme finale est le lieu de la hotte. Un écran festif confirme le lieu et invite l'équipe à suivre les instructions des organisateurs.
 7. **Quête 5 : la hotte secrète.** Écran final et animation. La partie passe à **« Aventure terminée »** quand un organisateur saisit le code de fin sur le téléphone (bouton « Réservé aux organisateurs »), ou quand l'équipe scanne le QR code FINAL si `qrFinalActif` vaut `true`.
+
+**Chrono global** : un compte à rebours de 30 minutes (`parametres.chrono`) s'affiche en haut de l'écran pendant toute la partie. Il démarre au bouton « C'est parti ! » et s'arrête à la fin de l'aventure, qui affiche le temps total. Il passe au rouge sous 5 minutes. Une fois écoulé, il affiche le dépassement (+01:12) mais ne bloque pas le jeu.
+
+**Quête 3** : les 3 questions du défi gardent une correction immédiate (on retente jusqu'à la bonne réponse), conformément au cahier des charges initial. La mécanique du quiz peut y être reprise sur demande.
 
 **Joker** : un seul par équipe. Le bouton « Utiliser mon joker » apparaît sur chaque étape qui a un `indiceJoker` renseigné. Une confirmation est demandée, puis l'indice s'affiche et le joker est marqué comme utilisé (le rechargement de la page ne le rend pas). Le statut « Joker disponible » ou « Joker utilisé » reste visible en haut de l'écran.
 
@@ -105,6 +116,7 @@ Ce que permet le mode test :
 - rendre le joker ou le marquer comme utilisé ;
 - **simuler le scan** de chaque QR code, tester un QR inconnu, générer les fiches QR ;
 - marquer ou annuler « Aventure terminée » ;
+- remettre à zéro ou avancer le chrono de 5 minutes ;
 - **réinitialiser la partie** ;
 - voir le rapport de vérification du contenu.
 
@@ -140,7 +152,7 @@ npx playwright install chromium
 npm test
 ```
 
-Les 26 vérifications couvrent : parcours complet des 5 quêtes ; nom d'équipe vide ; mauvaise réponse au quiz avec réessai sans perte de progression ; rechargement en cours de thème ; blocage après deux thèmes échoués et persistance au rechargement ; accès direct à une quête non débloquée ; QR code scanné trop tôt, inconnu, ou ouvert dans un navigateur sans partie ; lieu incorrect ; code manuel incorrect ; joker refusé, puis utilisé, mémorisé après rechargement et impossible à réutiliser ; code organisateur incorrect ; « Aventure terminée » conservée au rechargement ; mode test (code, blocage court, sauts de quête, remise à zéro, fiches QR) ; absence de défilement horizontal en mobile et sur ordinateur ; absence d'erreur JavaScript.
+Les 28 vérifications couvrent : parcours complet des 5 quêtes ; nom d'équipe vide ; quiz sans correction pendant les questions (navigation avant/arrière, réponses conservées) ; score affiché à la fin, thème raté fermé ; rechargement en cours de thème ; gel de 3 minutes après deux thèmes ratés et persistance au rechargement ; chrono global ; accès direct à une quête non débloquée ; QR code scanné trop tôt, inconnu, ou ouvert dans un navigateur sans partie ; lieu incorrect ; code manuel incorrect ; joker refusé, puis utilisé, mémorisé après rechargement et impossible à réutiliser ; code organisateur incorrect ; « Aventure terminée » conservée au rechargement ; mode test (code, blocage court, sauts de quête, remise à zéro, fiches QR) ; absence de défilement horizontal en mobile et sur ordinateur ; absence d'erreur JavaScript.
 
 ---
 
@@ -169,7 +181,8 @@ Le fichier `index.html` contient `noindex` : le site n'apparaîtra pas dans les 
 
 **Fonctionnel :**
 - les écrans (accueil, équipe, règles) et les 5 quêtes, avec leurs écrans d'introduction, de réussite et de transition ;
-- le quiz : 4 thèmes, 32 questions intégrées, validation, réessai, tentatives, blocage de 3 minutes ;
+- le quiz : 4 thèmes, 32 questions intégrées, score révélé à la fin, thèmes ratés fermés, gel de 3 minutes avec minuteur ;
+- le chrono global de 30 minutes, l'écran de chargement et la nouvelle direction artistique ;
 - l'énigme de la quête 2, le défi (3 QCM), l'énigme finale, l'écran final et « Aventure terminée » ;
 - la saisie et la validation des lieux, les QR codes (scan, saisie manuelle, mode sans QR code) et la génération des fiches à imprimer ;
 - le joker (confirmation, indice, mémorisation) ;
@@ -186,9 +199,8 @@ Le fichier `index.html` contient `noindex` : le site n'apparaîtra pas dans les 
 - [ ] **Questions de la quête 3** et **énigme de la quête 2** (réponse : « le verre ») : proposées par défaut, à faire valider.
 - [ ] **Code organisateur de fin** (`finDePartie.codeOrganisateur`, actuellement `HOTTE2026`) et **code du mode test** (`1225`).
 - [ ] **`urlPublique`** une fois le site en ligne, puis impression des QR codes.
-- [ ] **Logo** : déposer un fichier autorisé dans `assets/img/` et renseigner `marque.logo`. Un emplacement est prévu dans l'en-tête et sur l'accueil.
-- [ ] **Polices Gotham et Lovelo Line** : non incluses (polices sous licence). Elles sont utilisées si elles sont installées sur l'appareil ; sinon Montserrat les remplace, avec un effet contour pour les titres. Pour diffuser les fichiers officiels, voir `css/fonts.css`.
-- [ ] Choisir de limiter ou non les erreurs par thème du quiz (`erreursAutoriseesParTheme`, illimité par défaut) et adapter la règle n°5 si besoin.
+- [ ] **Logo** : les versions blanche et bleu foncé ont été détourées depuis l'image fournie (PNG). Pour un rendu parfait, remplacez-les par le fichier vectoriel officiel (`marque.logoClair` / `marque.logoFonce`).
+- [ ] **Polices Gotham et Lovelo Line** : non incluses (polices sous licence). Gotham est utilisée si elle est installée sur l'appareil, sinon Montserrat la remplace. Les grands titres sont « brodés » en mailles et n'utilisent pas de police. Pour diffuser les fichiers officiels, voir `css/fonts.css`.
 - [ ] Désactiver le mode test.
 
 ---
@@ -202,12 +214,13 @@ css/styles.css          charte graphique (couleurs, typographie, mise en page)
 css/fonts.css           déclaration des polices
 js/core.js              règles du jeu et sauvegarde
 js/screens.js           écrans et actions des participants
-js/ui.js                illustrations, en-tête, fenêtres, animations
+js/knit.js              moteur graphique « tricot » (mailles, lettres brodées, motifs)
+js/ui.js                logo, chrono, en-tête, fenêtres, animations
 js/admin.js             mode test et fiches QR codes
 js/app.js               navigation et événements
 js/validate.js          vérification de la configuration
-assets/fonts/           Montserrat (SIL OFL)
-assets/img/             favicon (et futur logo)
+assets/fonts/           Montserrat, Great Vibes, VT323 (SIL OFL)
+assets/img/             favicon, logo Saint-Gobain (blanc et bleu foncé)
 vendor/                 générateur de QR codes (MIT)
 tools/                  serveur local et vérification de configuration
 tests/                  test automatisé de bout en bout

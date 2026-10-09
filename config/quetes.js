@@ -127,5 +127,6 @@ window.GAME_CONFIG.quetes = {
     texte:
       "Vous avez retrouvé la piste de la hotte ! Rendez-vous au lieu indiqué et suivez les instructions des organisateurs pour découvrir la surprise finale.",
     rappelLieu: "Lieu indiqué : **{lieu}**",
+    script: "Joyeux Noël",
   },
 };

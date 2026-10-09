@@ -148,11 +148,13 @@
       team: null,
       startedAt: null,
       rulesOk: false,
+      clockStart: null, // départ du chrono global (au « C'est parti ! »)
       quest: 1,
       phase: { 1: 'intro', 2: 'intro', 3: 'intro', 4: 'intro', 5: 'final' },
       quiz: {
-        current: null, // { themeId, index, tried: [], errors }
-        attempts: [], // { themeId, result: 'en-cours' | 'echec' | 'reussi', at }
+        current: null, // { themeId, index, answers: [] }
+        attempts: [], // { themeId, result: 'en-cours' | 'echec' | 'reussi', score, at }
+        lastResult: null, // dernier résultat affiché { themeId, score, total, success, locked }
         failedSinceLock: 0,
         lockUntil: 0,
         lockTotal: 0,
@@ -211,7 +213,20 @@
 
   GQ.acceptRules = function () {
     GQ.state.rulesOk = true;
+    if (!GQ.state.clockStart) GQ.state.clockStart = Date.now();
     GQ.save();
+  };
+
+  /* Chrono global : temps restant sur la durée prévue. Il s'arrête à la
+   * fin de l'aventure et ne bloque jamais le jeu une fois écoulé. */
+  GQ.clock = function () {
+    var c = P.chrono || {};
+    var s = GQ.state;
+    if (c.actif === false || !s.clockStart) return null;
+    var total = Math.max(1, Number(c.dureeMinutes) || 30) * 60000;
+    var end = s.finished ? s.finished.at : Date.now();
+    var elapsed = Math.max(0, end - s.clockStart);
+    return { total: total, elapsed: elapsed, remaining: total - elapsed, frozen: !!s.finished };
   };
 
   GQ.setPhase = function (n, phase) {
@@ -262,16 +277,22 @@
     var q = GQ.state.quiz;
     if (q.current || GQ.quizLockRemaining() > 0 || !GQ.theme(id) || !GQ.themeAvailable(id)) return false;
     q.attempts.push({ themeId: id, result: 'en-cours', at: Date.now() });
-    q.current = { themeId: id, index: 0, tried: [], errors: 0 };
+    q.current = { themeId: id, index: 0, answers: [] };
+    q.lastResult = null;
     GQ.state.phase[1] = 'play';
     GQ.save();
     return true;
   };
 
-  function failCurrentTheme() {
+  /* Tentative échouée (thème raté ou abandonné). Retourne true si le
+   * quiz se bloque. */
+  function failCurrentTheme(score) {
     var q = GQ.state.quiz;
     var last = q.attempts[q.attempts.length - 1];
-    if (last && last.result === 'en-cours') last.result = 'echec';
+    if (last && last.result === 'en-cours') {
+      last.result = 'echec';
+      if (score != null) last.score = score;
+    }
     q.current = null;
     q.failedSinceLock += 1;
     var locked = false;
@@ -281,53 +302,79 @@
       q.failedSinceLock = 0;
       locked = true;
     }
-    GQ.state.phase[1] = 'themes';
-    GQ.save();
     return locked;
   }
 
   /* Abandon volontaire du thème en cours → tentative échouée. */
   GQ.quizAbandon = function () {
     if (!GQ.state.quiz.current) return false;
-    return { locked: failCurrentTheme() };
+    var locked = failCurrentTheme(null);
+    GQ.state.phase[1] = 'themes';
+    GQ.save();
+    return { locked: locked };
   };
 
-  /* L'abandon du thème déclencherait-il le blocage ? */
+  /* Un nouvel échec déclencherait-il le blocage ? */
   GQ.quizNextFailLocks = function () {
     return GQ.state.quiz.failedSinceLock + 1 >= ((P.quiz && P.quiz.tentativesAvantBlocage) || 2);
   };
 
-  /* Réponse à la question en cours.
-   * Retour : { correct, done, failed, locked } */
-  GQ.quizAnswer = function (choiceIdx) {
+  /* Les réponses ne sont corrigées qu'à la fin du thème : on enregistre
+   * simplement le choix de l'équipe pour la question en cours. */
+  GQ.quizSelect = function (choiceIdx) {
+    var cur = GQ.state.quiz.current;
+    if (!cur) return false;
+    var question = GQ.theme(cur.themeId).questions[cur.index];
+    if (!(choiceIdx >= 0 && choiceIdx < question.choix.length)) return false;
+    cur.answers[cur.index] = choiceIdx;
+    GQ.save();
+    return true;
+  };
+
+  GQ.quizMove = function (delta) {
+    var cur = GQ.state.quiz.current;
+    if (!cur) return false;
+    var total = GQ.theme(cur.themeId).questions.length;
+    if (delta > 0 && cur.answers[cur.index] == null) return false;
+    var next = cur.index + delta;
+    if (next < 0 || next >= total) return false;
+    cur.index = next;
+    GQ.save();
+    return true;
+  };
+
+  GQ.quizAllAnswered = function () {
+    var cur = GQ.state.quiz.current;
+    if (!cur) return false;
+    var qs = GQ.theme(cur.themeId).questions;
+    for (var i = 0; i < qs.length; i++) if (cur.answers[i] == null) return false;
+    return true;
+  };
+
+  /* Correction du thème. Retour : { score, total, success, locked } */
+  GQ.quizSubmit = function () {
     var q = GQ.state.quiz;
     var cur = q.current;
-    if (!cur) return null;
-    var theme = GQ.theme(cur.themeId);
-    var question = theme.questions[cur.index];
-    if (letterIndex(question.reponse) === choiceIdx) {
-      cur.index += 1;
-      cur.tried = [];
-      if (cur.index >= theme.questions.length) {
-        var last = q.attempts[q.attempts.length - 1];
-        if (last) last.result = 'reussi';
-        q.wonTheme = cur.themeId;
-        q.current = null;
-        GQ.state.phase[1] = 'success';
-        GQ.save();
-        return { correct: true, done: true };
-      }
-      GQ.save();
-      return { correct: true, done: false };
+    if (!cur || !GQ.quizAllAnswered()) return null;
+    var qs = GQ.theme(cur.themeId).questions;
+    var score = 0;
+    qs.forEach(function (question, i) {
+      if (letterIndex(question.reponse) === cur.answers[i]) score++;
+    });
+    var res = { themeId: cur.themeId, score: score, total: qs.length, success: score === qs.length, locked: false, at: Date.now() };
+    if (res.success) {
+      var last = q.attempts[q.attempts.length - 1];
+      if (last) { last.result = 'reussi'; last.score = score; }
+      q.wonTheme = cur.themeId;
+      q.current = null;
+      GQ.state.phase[1] = 'success';
+    } else {
+      res.locked = failCurrentTheme(score);
+      GQ.state.phase[1] = 'result';
     }
-    if (cur.tried.indexOf(choiceIdx) === -1) cur.tried.push(choiceIdx);
-    cur.errors += 1;
-    var max = P.quiz && P.quiz.erreursAutoriseesParTheme;
-    if (max !== null && max !== undefined && cur.errors > max) {
-      return { correct: false, failed: true, locked: failCurrentTheme() };
-    }
+    q.lastResult = res;
     GQ.save();
-    return { correct: false };
+    return res;
   };
 
   /* ------------------------------------------------------------------ */
@@ -480,6 +527,7 @@
     if (!s.team) s.team = 'Équipe test';
     if (!s.startedAt) s.startedAt = Date.now();
     s.rulesOk = true;
+    if (!s.clockStart) s.clockStart = Date.now();
     s.finished = null;
     s.quest = n;
     for (var k = 1; k <= 5; k++) {
@@ -494,6 +542,7 @@
       s.quiz = defaults().quiz;
     } else {
       s.quiz.current = null;
+      s.quiz.lastResult = null;
       if (!s.quiz.wonTheme) s.quiz.wonTheme = CFG.quiz.themes[0].id;
     }
     if (n <= 3) s.defi = { index: 0, tried: [] };

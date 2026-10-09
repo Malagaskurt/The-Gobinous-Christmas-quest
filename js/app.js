@@ -92,7 +92,7 @@
     if (!GQ.storageOk) {
       html += '<div class="storage-warning" role="alert">' + GQ.t(T.general.stockageIndisponible) + '</div>';
     }
-    html += scr.bare ? scr.html : GQ.header(GQ.state.quest) + '<main class="screen screen-quest">' + scr.html + '</main>';
+    html += scr.bare ? scr.html : GQ.header(GQ.state.quest) + '<main class="screen screen-quest paper">' + scr.html + '</main>';
     if (GQ.test.isActive() && parseRoute().name !== 'organisateur') {
       html += '<a class="test-bar" href="#/organisateur">Mode test</a>';
     }
@@ -111,6 +111,7 @@
       var fb = app.querySelector('.feedback-slot .feedback');
       if (fb && fb.scrollIntoView) fb.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
+    GQ.updateClocks();
     if (scr.after) scr.after();
     if (scr.celebrate && !celebrated[scr.key]) {
       celebrated[scr.key] = true;
@@ -174,5 +175,38 @@
     }).catch(function () { /* police absente : effet contour conservé */ });
   }
 
-  if (!window.GQ_STOP) GQ.render();
+  /* Chrono global : rafraîchi chaque seconde, indépendamment des écrans. */
+  setInterval(GQ.updateClocks, 1000);
+
+  /* Écran de chargement : quelques mailles se tricotent pendant que le
+   * jeu s'affiche dessous. Un appui le fait disparaître. */
+  function loader() {
+    var el = document.getElementById('loader');
+    if (!el) return;
+    // Raccourci si l'utilisateur réduit les animations, ou en test automatisé.
+    var reduce = navigator.webdriver || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var row = [];
+    for (var i = 0; i < 12; i++) row.push('done');
+    el.innerHTML =
+      '<div class="loader-inner">' +
+      GQ.knit.img('star', 'loader-star') +
+      GQ.knit.text('GOBINOUS', { cls: 'loader-title', alt: '', outline: true }) +
+      '<p class="script loader-text">' + GQ.t(T.chargement.texte) + '</p>' +
+      '<div class="loader-row">' + GQ.knit.row(row) + '</div>' +
+      '</div>' +
+      '<div class="loader-logo">' + GQ.logo('clair') + '</div>';
+    el.classList.add('is-on');
+    var hide = function () {
+      if (el.classList.contains('is-out')) return;
+      el.classList.add('is-out');
+      setTimeout(function () { el.remove(); }, 600);
+    };
+    el.addEventListener('click', hide);
+    setTimeout(hide, reduce ? 300 : 1900);
+  }
+
+  if (!window.GQ_STOP) {
+    GQ.render();
+    loader();
+  }
 })();

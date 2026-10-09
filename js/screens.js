@@ -11,6 +11,7 @@
   var t = GQ.t;
   var esc = GQ.esc;
   var icon = GQ.icon;
+  var knit = GQ.knit;
 
   var screens = (GQ.screens = {});
   var actions = (GQ.actions = GQ.actions || {});
@@ -22,6 +23,7 @@
   GQ.uiReset = function () { GQ.ui = {}; };
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function plain(s) { return String(s == null ? '' : s); }
 
   function btn(label, action, attrs, cls) {
     return '<button type="button" class="btn ' + (cls || 'btn-primary') + '" data-action="' + action + '"' + (attrs || '') + '>' + label + '</button>';
@@ -35,14 +37,23 @@
   }
 
   function testAnswers(list) {
-    if (!GQ.test.isActive() || !GQ.test.opt('showAnswers')) return '';
-    return '<p class="test-note">Mode test · réponses acceptées : ' + (list || []).map(esc).join(' / ') + '</p>';
+    if (!GQ.test.isActive() || !GQ.test.opt('showAnswers') || !list) return '';
+    return '<p class="test-note">Mode test · réponses acceptées : ' + list.map(esc).join(' / ') + '</p>';
   }
 
   function testVerify(note) {
     if (!note || !GQ.test.isActive()) return '';
     return '<p class="test-note test-note-warn">À vérifier : ' + esc(note) + '</p>';
   }
+
+  function minutesLabel(ms) {
+    var sec = Math.round(ms / 1000);
+    if (sec < 60) return sec + ' secondes';
+    var m = Math.round(sec / 60);
+    return m + (m > 1 ? ' minutes' : ' minute');
+  }
+
+  function cta(inner) { return '<div class="sticky-cta">' + inner + '</div>'; }
 
   /* ------------------------------------------------------------------ */
   /* Composants                                                          */
@@ -51,9 +62,9 @@
   function questHead(n, sub) {
     return (
       '<div class="quest-head">' +
-      '<span class="quest-num" aria-hidden="true">' + pad(n) + '</span>' +
-      '<div><p class="eyebrow">' + esc(T.general.quete) + ' ' + n + ' sur ' + GQ.QUEST_COUNT + (sub ? ' · ' + t(sub) : '') + '</p>' +
-      '<h1 class="quest-title" tabindex="-1">' + t(GQ.questCfg(n).titre) + '</h1></div>' +
+      '<p class="quest-script">' + t(T.general.queteNumero, { n: n }) + '<span class="quest-of"> / ' + GQ.QUEST_COUNT + '</span></p>' +
+      '<h1 class="quest-title" tabindex="-1">' + t(GQ.questCfg(n).titre) + '</h1>' +
+      (sub ? '<p class="eyebrow">' + t(sub) + '</p>' : '') +
       '</div>'
     );
   }
@@ -70,44 +81,38 @@
     return '<button type="button" class="btn btn-joker" data-action="joker" data-key="' + esc(key) + '">' + icon('etoile') + esc(T.joker.bouton) + '</button>';
   };
 
-  /* QCM : une question, des propositions, un bouton de validation. */
-  function mcq(o) {
-    var q = o.question;
+  function progress(index, total, answered) {
+    var states = [];
+    for (var i = 0; i < total; i++) states.push(i === index ? 'current' : answered(i) ? 'done' : 'todo');
+    return (
+      '<div class="q-progress"><span class="q-count">' + t(T.general.questionNumero, { n: index + 1, total: total }) + '</span>' +
+      knit.row(states) + '</div>'
+    );
+  }
+
+  /* Liste de propositions. selected : index choisi ; tried : propositions
+   * déjà écartées (quête 3) ; correct : bonne réponse à révéler. */
+  function choices(q, o) {
     var correct = GQ.letterIndex(q.reponse);
-    var fb = !!o.feedback;
     var showTest = GQ.test.isActive() && GQ.test.opt('showAnswers');
-    var items = q.choix.map(function (c, i) {
-      var tried = !fb && o.tried.indexOf(i) !== -1;
-      var sel = !fb && GQ.ui.sel === i;
-      var ok = fb && i === correct;
-      var cls = (tried ? ' is-wrong' : '') + (sel ? ' is-selected' : '') + (ok ? ' is-correct' : '') + (fb && !ok ? ' is-dim' : '');
+    return '<ul class="choices" role="radiogroup" aria-labelledby="qtext">' + q.choix.map(function (c, i) {
+      var tried = (o.tried || []).indexOf(i) !== -1;
+      var sel = !o.reveal && o.selected === i;
+      var ok = o.reveal && i === correct;
+      var cls = (tried ? ' is-wrong' : '') + (sel ? ' is-selected' : '') + (ok ? ' is-correct' : '') + (o.reveal && !ok ? ' is-dim' : '');
       return (
-        '<li><button type="button" role="radio" aria-checked="' + sel + '" class="choice' + cls + '" data-action="select" data-i="' + i + '"' + (tried || fb ? ' disabled' : '') + '>' +
+        '<li><button type="button" role="radio" aria-checked="' + sel + '" class="choice' + cls + '" data-action="select" data-scope="' + o.scope + '" data-i="' + i + '"' + (tried || o.reveal ? ' disabled' : '') + '>' +
         '<span class="choice-letter">' + GQ.letter(i) + '</span>' +
         '<span class="choice-text">' + t(c) + '</span>' +
         (tried ? icon('croix', 'choice-icon') : '') + (ok ? icon('valide', 'choice-icon') : '') +
-        (showTest && !fb && i === correct ? '<span class="test-badge">bonne réponse</span>' : '') +
+        (showTest && !o.reveal && i === correct ? '<span class="test-badge">bonne réponse</span>' : '') +
         '</button></li>'
       );
-    }).join('');
-    var pct = Math.round(((o.index + (fb ? 1 : 0)) / o.total) * 100);
-    var html =
-      '<div class="q-progress"><span class="q-count">' + t(T.general.questionNumero, { n: o.index + 1, total: o.total }) + '</span>' +
-      '<span class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></span></div>' +
-      '<div class="question-card"><h2 class="question" id="qtext">' + t(q.question) + '</h2>' + testVerify(q.aVerifier) + '</div>' +
-      '<ul class="choices" role="radiogroup" aria-labelledby="qtext">' + items + '</ul>';
-    if (fb) {
-      html +=
-        '<div class="feedback-slot" aria-live="polite"><div class="feedback feedback-ok pop">' + icon('valide') + '<span><strong>' + t(T.general.bonneReponse) + '</strong>' +
-        (q.explication ? '<br>' + t(q.explication) : '') + '</span></div></div>' +
-        '<div class="sticky-cta">' + btn(esc(o.done ? T.general.terminer : T.general.questionSuivante) + icon('fleche'), 'next-question', ' data-scope="' + o.scope + '"') + '</div>';
-    } else {
-      html +=
-        feedbackSlot() +
-        GQ.jokerBlock(o.jokerKey, q.indiceJoker) +
-        '<div class="sticky-cta">' + btn(esc(T.general.validerReponse), 'validate-choice', ' data-scope="' + o.scope + '"' + (GQ.ui.sel == null ? ' aria-disabled="true"' : '')) + '</div>';
-    }
-    return html;
+    }).join('') + '</ul>';
+  }
+
+  function questionCard(q) {
+    return '<div class="question-card"><h2 class="question" id="qtext">' + t(q.question) + '</h2>' + testVerify(q.aVerifier) + '</div>';
   }
 
   /* Champ de réponse libre (énigmes, lieux, codes). */
@@ -118,15 +123,35 @@
       '<input class="field" id="answer-' + o.form + '" name="answer" type="text" maxlength="80" autocomplete="off" autocapitalize="' + (o.caps ? 'characters' : 'off') + '" autocorrect="off" spellcheck="false" enterkeyhint="done" value="' + esc(GQ.ui.value || '') + '"' + (o.placeholder ? ' placeholder="' + esc(o.placeholder) + '"' : '') + '>' +
       feedbackSlot() +
       testAnswers(o.expected) +
-      '<button class="btn btn-primary" type="submit">' + esc(o.button) + '</button>' +
+      '<button class="btn ' + (o.btnCls || 'btn-primary') + '" type="submit">' + esc(o.button) + '</button>' +
       '</form>'
     );
   }
 
-  function successBlock(title, html, cta, art) {
+  /* Bloc de réussite : écusson tricoté, mot manuscrit, titre, texte. */
+  function successBlock(o) {
     return (
-      '<section class="success">' + (art || GQ.art.check()) +
-      '<h1 class="success-title" tabindex="-1">' + t(title) + '</h1>' + html + '</section>' + cta
+      '<section class="success">' +
+      '<div class="success-art">' + (o.art || knit.img('badge', 'success-badge')) + (o.stamp ? '<span class="stamp stamp-' + (o.stampKind || 'blue') + '">' + esc(o.stamp) + '</span>' : '') + '</div>' +
+      (String(o.script == null ? T.general.bravo : o.script).trim() ? '<p class="script success-script">' + t(o.script == null ? T.general.bravo : o.script) + '</p>' : '') +
+      '<h1 class="success-title" tabindex="-1">' + t(o.title) + '</h1>' + (o.html || '') + '</section>' +
+      (o.cta ? cta(o.cta) : '')
+    );
+  }
+
+  /* Lettre glissée dans une enveloppe rouge (introduction des quêtes). */
+  function envelope(inner) {
+    return (
+      '<div class="envelope">' +
+      '<div class="env-back" aria-hidden="true"></div>' +
+      '<div class="letter">' +
+      '<span class="postmark" aria-hidden="true">' + knit.img('star', 'postmark-star') + '<span>SG · 1665</span></span>' +
+      '<p class="script letter-hello">' + t(T.general.lettreSalutation, { equipe: GQ.state.team }) + '</p>' +
+      inner +
+      '<p class="script letter-sign">' + t(T.general.lettreSignature) + '</p>' +
+      '</div>' +
+      '<div class="env-front" aria-hidden="true"></div>' +
+      '</div>'
     );
   }
 
@@ -137,21 +162,27 @@
   screens.home = function () {
     var A = T.accueil;
     var s = GQ.state;
-    var cta = s.team
-      ? '<p class="home-resume">' + t(A.partieEnCours, { equipe: s.team }) + '</p>' + btn(esc(A.boutonReprendre) + icon('fleche'), 'resume')
-      : btn(esc(A.bouton) + icon('fleche'), 'start');
+    var action = s.team
+      ? '<p class="home-resume">' + t(A.partieEnCours, { equipe: s.team }) + '</p>' + btn(esc(A.boutonReprendre) + icon('fleche'), 'resume', '', 'btn-red')
+      : btn(esc(A.bouton) + icon('fleche'), 'start', '', 'btn-red');
     return {
       key: 'home',
       bare: true,
       html:
-        '<main class="screen screen-home">' +
-        '<div class="home-brand">' + GQ.brandSlot() + '</div>' +
-        '<div class="home-art">' + GQ.art.hero() + '</div>' +
-        '<p class="eyebrow eyebrow-center">' + t(A.surtitre) + '</p>' +
-        '<h1 class="home-title" tabindex="-1"><span class="display">' + t(A.titre) + '</span><span class="home-title-sub">' + t(A.titreSuite) + '</span></h1>' +
+        '<main class="screen-home knit">' +
+        '<div class="home-top"><span class="corner corner-l" aria-hidden="true"></span><span class="home-year">' + t(A.annee) + '</span><span class="corner corner-r" aria-hidden="true"></span></div>' +
+        '<div class="home-logo">' + GQ.logo('clair') + '</div>' +
+        '<div class="home-hero">' +
+        knit.img('star', 'home-star') +
+        '<p class="home-club">' + t(A.surtitre) + '</p>' +
+        '<h1 class="home-title" tabindex="-1">' + knit.text(plain(A.titre), { cls: 'home-knit-title', outline: true }) +
+        '<span class="script home-script">' + t(A.titreSuite) + '</span></h1>' +
         '<p class="home-subtitle">' + t(A.sousTitre) + '</p>' +
+        '</div>' +
         '<p class="home-lead">' + t(A.accroche) + '</p>' +
-        '<div class="home-cta">' + cta + '</div>' +
+        '<div class="home-cta">' + action + '</div>' +
+        '<div class="band" aria-hidden="true"></div>' +
+        '<div class="home-notes">' + (A.noteGauche ? '<p>' + t(A.noteGauche) + '</p>' : '<p></p>') + (A.noteDroite ? '<p>' + t(A.noteDroite) + '</p>' : '') + '</div>' +
         '</main>',
     };
   };
@@ -163,12 +194,17 @@
       key: 'team',
       bare: true,
       html:
-        '<main class="screen screen-form">' +
+        '<main class="screen-knit knit">' +
         '<a class="back-link" href="#/">' + icon('retour') + 'Accueil</a>' +
-        '<div class="form-art">' + GQ.art.gift() + '</div>' +
+        '<div class="tag-wrap">' +
+        knit.img('gift', 'tag-gift') +
+        '<div class="gift-tag">' +
+        '<span class="tag-hole" aria-hidden="true"></span>' +
+        '<p class="script tag-script">' + t(E.etiquette) + '</p>' +
         '<h1 class="page-title" tabindex="-1">' + t(E.titre) + '</h1>' +
-        '<p class="muted">' + t(E.aide) + '</p>' +
-        textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder, attrs: '' }) +
+        '<p class="muted small">' + t(E.aide) + '</p>' +
+        textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder, btnCls: 'btn-red' }) +
+        '</div></div>' +
         '</main>',
     };
   };
@@ -178,10 +214,12 @@
       key: 'rules',
       bare: true,
       html:
-        '<main class="screen screen-rules">' +
-        '<h1 class="rules-title display" tabindex="-1">' + t(T.regles.titre) + '</h1>' +
-        GQ.rulesHtml() +
-        '<div class="sticky-cta">' + btn(esc(T.regles.bouton), 'accept-rules') + '</div>' +
+        '<main class="screen-knit knit">' +
+        '<div class="rules-logo">' + GQ.logo('clair') + '</div>' +
+        '<h1 class="rules-title" tabindex="-1"><span class="sr-only">' + t(T.regles.titre) + '</span>' +
+        knit.text(plain(T.regles.titre).replace(/ (?=\S+\s*\?)/, '\n'), { alt: '', cls: 'rules-knit', outline: true }) + '</h1>' +
+        '<div class="paper-sheet">' + GQ.rulesHtml() + '</div>' +
+        cta(btn(esc(T.regles.bouton), 'accept-rules', '', 'btn-red')) +
         '</main>',
     };
   };
@@ -196,8 +234,8 @@
       key: 'q' + n + '-intro',
       html:
         questHead(n) +
-        '<div class="intro-card">' + GQ.art.gift('intro-art') + '<p class="intro-text">' + t(qc.intro) + '</p></div>' +
-        '<div class="sticky-cta">' + btn(esc(qc.boutonIntro) + icon('fleche'), 'intro-next', ' data-n="' + n + '"') + '</div>',
+        envelope('<p class="intro-text">' + t(qc.intro) + '</p>') +
+        cta(btn(esc(qc.boutonIntro) + icon('fleche'), 'intro-next', ' data-n="' + n + '"')),
     };
   }
 
@@ -211,7 +249,7 @@
         questHead(n, L.surtitre) +
         '<h2 class="section-title">' + t(L.titre) + '</h2>' +
         '<p class="muted">' + t(L.consigne) + '</p>' +
-        '<div class="clue-card"><p class="card-label">' + icon('loupe') + esc(L.surtitre) + '</p><p class="clue-text">' + t(p.indice) + '</p></div>' +
+        '<div class="clue-card"><span class="tape" aria-hidden="true"></span><p class="card-label">' + icon('loupe') + esc(L.surtitre) + '</p><p class="clue-text">' + t(p.indice) + '</p></div>' +
         GQ.jokerBlock('lieu-' + id, p.indiceJoker) +
         textAnswer({ form: 'place', label: L.label, button: L.bouton, expected: p.reponsesAcceptees, attrs: ' data-n="' + n + '"' }),
     };
@@ -223,16 +261,16 @@
     var L = T.lieux;
     var html =
       questHead(n) +
-      '<section class="found-card">' + icon('pin', 'found-icon') +
+      '<section class="found-card"><span class="tape" aria-hidden="true"></span>' + icon('pin', 'found-icon') +
       '<h2 class="found-title">' + t(L.trouveTitre) + '</h2>' +
       '<p class="found-place">' + t(L.trouveSousTitre, { lieu: p.nom }) + '</p>' +
       (p.texteValidation ? '<p>' + t(p.texteValidation) + '</p>' : '') +
       '</section>';
     if (P.lieux && P.lieux.scanObligatoire === false) {
-      html += '<div class="sticky-cta">' + btn(esc(L.boutonArrivee), 'arrive', ' data-place="' + esc(id) + '"') + '</div>';
+      html += cta(btn(esc(L.boutonArrivee), 'arrive', ' data-place="' + esc(id) + '"'));
     } else {
       html +=
-        '<div class="scan-card">' + icon('qr', 'scan-icon') + '<p>' + t(L.scanConsigne) + '</p></div>' +
+        '<div class="scan-card knit">' + icon('qr', 'scan-icon') + '<p>' + t(L.scanConsigne) + '</p></div>' +
         '<details class="manual-code"' + (GQ.ui.codeOpen ? ' open' : '') + '><summary>' + t(L.codeManuelTitre) + '</summary>' +
         textAnswer({ form: 'code', label: L.codeManuelLabel, button: L.codeManuelBouton, caps: true, expected: GQ.test.isActive() ? [p.codeQR] : null, attrs: ' data-place="' + esc(id) + '"' }) +
         '<p class="hint">' + t(L.conseilNavigateur) + '</p></details>' +
@@ -245,16 +283,26 @@
   /* Quête 1 : le grand quiz                                             */
   /* ------------------------------------------------------------------ */
 
-  function formatDuration(ms) {
-    var sec = Math.ceil(ms / 1000);
-    return Math.floor(sec / 60) + ':' + pad(sec % 60);
+  function lockDevice(lock) {
+    var X = QZ.textes;
+    return (
+      '<div class="timer-device" role="timer" aria-label="' + esc(X.bloqueCompteur) + '">' +
+      '<div class="td-top"><span class="td-label">' + esc(X.bloqueTitre) + '</span>' + knit.img('flake', 'td-flake') + '</div>' +
+      '<div class="td-screen"><span class="td-small">' + esc(X.bloqueCompteur) + '</span>' +
+      '<span class="td-digits" data-countdown>' + GQ.mmss(lock + 999) + '</span></div>' +
+      '<div class="td-keys" aria-hidden="true"><span></span><span></span><span></span><span class="td-key-red"></span></div>' +
+      '</div>' +
+      '<p class="lock-text">' + t(X.bloqueTexte) + '</p>'
+    );
   }
 
-  function minutesLabel(ms) {
-    var sec = Math.round(ms / 1000);
-    if (sec < 60) return sec + ' secondes';
-    var m = Math.round(sec / 60);
-    return m + (m > 1 ? ' minutes' : ' minute');
+  function startCountdown() {
+    GQ.every(250, function () {
+      var left = GQ.quizLockRemaining();
+      var el = document.querySelector('[data-countdown]');
+      if (!left) { GQ.render(); return; }
+      if (el) el.textContent = GQ.mmss(left + 999);
+    });
   }
 
   function quizThemes() {
@@ -265,10 +313,7 @@
     var failed = GQ.failedThemeIds();
     var html = questHead(1) + '<h2 class="section-title">' + t(X.choixTitre) + '</h2>';
     if (lock) {
-      html +=
-        '<div class="lock-card" role="status">' + icon('cadenas', 'lock-icon') +
-        '<h3>' + t(X.bloqueTitre) + '</h3><p>' + t(X.bloqueTexte) + '</p>' +
-        '<p class="lock-count">' + t(X.bloqueCompteur) + ' <span class="countdown" data-countdown>' + formatDuration(lock) + '</span></p></div>';
+      html += lockDevice(lock);
     } else if (q.failedSinceLock > 0) {
       html += '<p class="attempts">' + icon('cadenas') + t(X.tentatives, { n: q.failedSinceLock, max: maxFail }) + '</p>';
     }
@@ -281,66 +326,78 @@
         '<span class="theme-icon">' + icon(th.icone || 'etoile') + '</span>' +
         '<span class="theme-body"><span class="theme-title">' + t(th.titre) + '</span>' +
         '<span class="theme-meta">' + th.questions.length + ' questions</span></span>' +
-        (failed[th.id] ? '<span class="badge">' + esc(X.themeEchoue) + '</span>' : icon('fleche', 'theme-arrow')) +
+        (failed[th.id] ? '<span class="stamp stamp-red stamp-small">' + esc(X.themeEchoue) + '</span>' : icon('fleche', 'theme-arrow')) +
         '</button></li>';
     });
     html += '</ul>';
     return {
       key: 'q1-themes' + (lock ? '-lock' : ''),
       html: html,
-      after: function () {
-        if (!lock) return;
-        GQ.every(1000, function () {
-          var left = GQ.quizLockRemaining();
-          var el = document.querySelector('[data-countdown]');
-          if (!left) { GQ.render(); return; }
-          if (el) el.textContent = formatDuration(left);
-        });
-      },
+      after: lock ? startCountdown : null,
     };
   }
 
   function quizPlay() {
     var X = QZ.textes;
-    var fb = GQ.ui.correct && GQ.ui.correct.scope === 'quiz' ? GQ.ui.correct : null;
     var cur = GQ.state.quiz.current;
-    var themeId = fb ? fb.themeId : cur.themeId;
-    var theme = GQ.theme(themeId);
-    var index = fb ? fb.index : cur.index;
-    var max = P.quiz && P.quiz.erreursAutoriseesParTheme;
-    var html =
-      questHead(1, theme.titre) +
-      mcq({
-        scope: 'quiz',
-        question: theme.questions[index],
-        index: index,
-        total: theme.questions.length,
-        tried: fb ? [] : cur.tried,
-        feedback: !!fb,
-        done: fb && fb.done,
-        jokerKey: 'quiz-' + theme.id + '-' + index,
-      });
-    if (!fb) {
-      if (max !== null && max !== undefined) {
-        html += '<p class="attempts small">' + t(X.erreurs, { n: cur.errors, max: max }) + '</p>';
-      }
-      html += '<button type="button" class="btn btn-ghost" data-action="abandon-theme">' + esc(X.changerTheme) + '</button>';
-    }
-    return { key: 'q1-play-' + themeId + '-' + index + (fb ? '-ok' : ''), html: html };
+    var theme = GQ.theme(cur.themeId);
+    var total = theme.questions.length;
+    var q = theme.questions[cur.index];
+    var last = cur.index === total - 1;
+    var answered = cur.answers[cur.index] != null;
+    var next = last
+      ? btn(esc(X.validerTout), 'quiz-submit', answered ? '' : ' aria-disabled="true"', 'btn-red')
+      : btn(esc(X.questionSuivante) + icon('fleche'), 'quiz-move', ' data-d="1"' + (answered ? '' : ' aria-disabled="true"'));
+    return {
+      key: 'q1-play-' + theme.id + '-' + cur.index,
+      html:
+        questHead(1, theme.titre) +
+        progress(cur.index, total, function (i) { return cur.answers[i] != null; }) +
+        questionCard(q) +
+        choices(q, { scope: 'quiz', selected: cur.answers[cur.index] }) +
+        feedbackSlot() +
+        cta(next + (cur.index > 0 ? btn(icon('retour') + esc(X.questionPrecedente), 'quiz-move', ' data-d="-1"', 'btn-ghost btn-inline') : '')) +
+        '<button type="button" class="btn btn-ghost btn-abandon" data-action="abandon-theme">' + esc(X.changerTheme) + '</button>',
+    };
+  }
+
+  function quizResult() {
+    var X = QZ.textes;
+    var r = GQ.state.quiz.lastResult || { score: 0, total: 8 };
+    var dur = minutesLabel(GQ.state.quiz.lockTotal || GQ.lockDurationMs());
+    var note = r.locked ? X.echecBlocage : GQ.quizNextFailLocks() ? X.echecAvertissement : '';
+    return {
+      key: 'q1-result',
+      html: successBlock({
+        art: knit.img('flake', 'success-badge'),
+        stamp: r.score + '/' + r.total,
+        stampKind: 'red',
+        script: '',
+        title: r.total - r.score <= 2 ? X.echecTitre : X.echecTitreLoin,
+        html: '<p class="score-line">' + t(X.resultatScore, { score: r.score, total: r.total }) + '</p>' +
+          '<p>' + t(X.echecTexte) + '</p>' + (note ? '<p class="notice notice-warn">' + icon('cadenas') + '<span>' + t(note.replace('{minutes}', dur)) + '</span></p>' : ''),
+        cta: btn(esc(r.locked ? X.boutonMinuteur : X.boutonAutreTheme) + icon('fleche'), 'quiz-themes'),
+      }),
+    };
   }
 
   function quest1() {
     var ph = GQ.state.phase[1];
     var X = QZ.textes;
-    if (GQ.ui.correct && GQ.ui.correct.scope === 'quiz') return quizPlay();
     if (ph === 'intro') return introScreen(1);
     if (ph === 'play' && GQ.state.quiz.current) return quizPlay();
+    if (ph === 'result') return quizResult();
     if (ph === 'success') {
+      var r = GQ.state.quiz.lastResult;
       return {
         key: 'q1-success',
         celebrate: true,
-        html: successBlock(X.reussiteTitre, '<p>' + t(X.reussiteTexte) + '</p>',
-          '<div class="sticky-cta">' + btn(esc(X.boutonIndice) + icon('fleche'), 'to-place', ' data-n="1"') + '</div>'),
+        html: successBlock({
+          stamp: r ? r.score + '/' + r.total : '8/8',
+          title: X.reussiteTitre,
+          html: '<p>' + t(X.reussiteTexte) + '</p>',
+          cta: btn(esc(X.boutonIndice) + icon('fleche'), 'to-place', ' data-n="1"'),
+        }),
       };
     }
     if (ph === 'location') return placeGuessScreen(1);
@@ -359,7 +416,7 @@
       key: 'q' + n + '-enigma',
       html:
         questHead(n) +
-        '<div class="riddle-card"><p class="card-label">' + icon('etoile') + 'Énigme</p><p class="riddle">' + t(qc.enigme) + '</p></div>' +
+        '<div class="riddle-card"><span class="tape" aria-hidden="true"></span><p class="card-label">' + icon('etoile') + 'Énigme</p><p class="riddle">' + t(qc.enigme) + '</p></div>' +
         GQ.jokerBlock('q' + n, qc.indiceJoker) +
         textAnswer({ form: 'enigma', label: qc.label || T.general.votreReponse, button: T.general.validerReponse, expected: expected, attrs: ' data-n="' + n + '"' }),
     };
@@ -373,8 +430,7 @@
       return {
         key: 'q2-success',
         celebrate: true,
-        html: successBlock(E.reussiteTitre, '<p>' + t(E.reussiteTexte) + '</p>',
-          '<div class="sticky-cta">' + btn(esc(E.boutonIndice) + icon('fleche'), 'to-place', ' data-n="2"') + '</div>'),
+        html: successBlock({ title: E.reussiteTitre, html: '<p>' + t(E.reussiteTexte) + '</p>', cta: btn(esc(E.boutonIndice) + icon('fleche'), 'to-place', ' data-n="2"') }),
       };
     }
     if (ph === 'location') return placeGuessScreen(2);
@@ -383,7 +439,7 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Quête 3 : le défi Saint-Gobain                                      */
+  /* Quête 3 : le défi Saint-Gobain (correction immédiate)               */
   /* ------------------------------------------------------------------ */
 
   function quest3() {
@@ -391,29 +447,29 @@
     var D = Q.defi;
     var fb = GQ.ui.correct && GQ.ui.correct.scope === 'defi' ? GQ.ui.correct : null;
     if (fb || ph === 'play') {
-      var index = fb ? fb.index : GQ.state.defi.index;
-      return {
-        key: 'q3-play-' + index + (fb ? '-ok' : ''),
-        html:
-          questHead(3) +
-          mcq({
-            scope: 'defi',
-            question: D.questions[index],
-            index: index,
-            total: D.questions.length,
-            tried: fb ? [] : GQ.state.defi.tried,
-            feedback: !!fb,
-            done: fb && fb.done,
-            jokerKey: 'q3-' + index,
-          }),
-      };
+      var d = GQ.state.defi;
+      var index = fb ? fb.index : d.index;
+      var q = D.questions[index];
+      var html = questHead(3) +
+        progress(index, D.questions.length, function (i) { return i < d.index; }) +
+        questionCard(q) +
+        choices(q, { scope: 'defi', selected: GQ.ui.sel, tried: fb ? [] : d.tried, reveal: !!fb });
+      if (fb) {
+        html +=
+          '<div class="feedback-slot" aria-live="polite"><div class="feedback feedback-ok pop">' + icon('valide') + '<span><strong>' + t(T.general.bonneReponse) + '</strong>' +
+          (q.explication ? '<br>' + t(q.explication) : '') + '</span></div></div>' +
+          cta(btn(esc(fb.done ? T.general.terminer : T.general.questionSuivante) + icon('fleche'), 'next-question'));
+      } else {
+        html += feedbackSlot() + GQ.jokerBlock('q3-' + index, q.indiceJoker) +
+          cta(btn(esc(T.general.validerReponse), 'validate-choice', GQ.ui.sel == null ? ' aria-disabled="true"' : ''));
+      }
+      return { key: 'q3-play-' + index + (fb ? '-ok' : ''), html: html };
     }
     if (ph === 'success') {
       return {
         key: 'q3-success',
         celebrate: true,
-        html: successBlock(D.reussiteTitre, '<p>' + t(D.reussiteTexte) + '</p>',
-          '<div class="sticky-cta">' + btn(esc(D.boutonIndice) + icon('fleche'), 'to-place', ' data-n="3"') + '</div>'),
+        html: successBlock({ title: D.reussiteTitre, html: '<p>' + t(D.reussiteTexte) + '</p>', cta: btn(esc(D.boutonIndice) + icon('fleche'), 'to-place', ' data-n="3"') }),
       };
     }
     if (ph === 'location') return placeGuessScreen(3);
@@ -434,14 +490,14 @@
       return {
         key: 'q4-success',
         celebrate: 'big',
-        html: successBlock(
-          D.reussiteTitre,
-          '<p class="found-place">' + t(D.reussiteLieu, { lieu: p.nom }) + '</p>' +
+        html: successBlock({
+          art: knit.img('gift', 'success-gift'),
+          title: D.reussiteTitre,
+          html: '<p class="found-place">' + t(D.reussiteLieu, { lieu: p.nom }) + '</p>' +
             (p.texteValidation ? '<p>' + t(p.texteValidation) + '</p>' : '') +
             '<p class="notice">' + icon('pin') + '<span>' + t(D.consigneOrganisateurs) + '</span></p>',
-          '<div class="sticky-cta">' + btn(esc(D.bouton) + icon('fleche'), 'to-finale') + '</div>',
-          GQ.art.gift('success-gift')
-        ),
+          cta: btn(esc(D.bouton) + icon('fleche'), 'to-finale'),
+        }),
       };
     }
     return introScreen(4);
@@ -458,24 +514,27 @@
     var p = GQ.place(GQ.finalPlaceId());
     if (s.finished) {
       var d = new Date(s.finished.at);
+      var c = GQ.clock();
       return {
         key: 'q5-finished',
         celebrate: 'big',
-        html:
-          '<section class="success finished">' + GQ.art.check() +
-          '<p class="eyebrow eyebrow-center">Gobinous Christmas Quest</p>' +
-          '<h1 class="success-title display-strong" tabindex="-1">' + t(F.termineeTitre) + '</h1>' +
-          '<p>' + t(F.termineeTexte, { equipe: s.team }) + '</p>' +
-          '<p class="muted small">' + t(F.termineeLe, {
-            date: d.toLocaleDateString('fr-FR'),
-            heure: d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-          }) + '</p></section>',
+        html: successBlock({
+          script: F.termineeScript,
+          title: F.termineeTitre,
+          html: '<p>' + t(F.termineeTexte, { equipe: s.team }) + '</p>' +
+            (c ? '<p class="final-time">' + t(T.chrono.tempsFinal, { temps: GQ.mmss(c.elapsed) }) + '</p>' : '') +
+            '<p class="muted small">' + t(F.termineeLe, {
+              date: d.toLocaleDateString('fr-FR'),
+              heure: d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+            }) + '</p>',
+        }),
       };
     }
     var code = P.finDePartie && P.finDePartie.codeOrganisateur;
     var html =
       questHead(5) +
-      '<section class="finale">' + GQ.art.gift('finale-art') +
+      '<section class="finale">' + knit.img('gift', 'finale-gift') +
+      '<p class="script finale-script">' + t(H.script) + '</p>' +
       '<p class="finale-text">' + t(H.texte) + '</p>' +
       '<p class="found-place">' + t(H.rappelLieu, { lieu: p.nom }) + '</p></section>';
     if (code) {
@@ -502,7 +561,7 @@
     var s = GQ.state;
     var p = r.placeId ? GQ.place(r.placeId) : null;
     var back = btn(esc(S.boutonRetour), 'resume');
-    var title, body, cta, art = GQ.art.check(), celebrate = false, ok = false;
+    var title, body, action, ok = false;
 
     // Un second affichage du même scan reste un succès tant que la quête n'a pas commencé.
     if (r.status === 'deja' && s.quest === r.next && s.phase[r.next] === 'intro') r = Object.assign({}, r, { status: 'ok' });
@@ -510,10 +569,9 @@
     switch (r.status) {
       case 'ok':
         ok = true;
-        celebrate = true;
         title = S.okTitre;
         body = '<p>' + t(S.okTexte, { lieu: p.nom, n: r.next }) + '</p>';
-        cta = btn(esc(S.boutonSuite.replace('{n}', r.next)) + icon('fleche'), 'resume');
+        action = btn(esc(S.boutonSuite.replace('{n}', r.next)) + icon('fleche'), 'resume');
         break;
       case 'fin':
       case 'deja-fini':
@@ -522,38 +580,41 @@
       case 'fin-desactivee':
         title = T.fin.organisateurTitre;
         body = '<p>' + t(S.finDesactiveeTexte) + '</p>';
-        cta = back;
+        action = back;
         break;
       case 'deja':
         title = S.dejaTitre;
         body = '<p>' + t(S.dejaTexte) + '</p>';
-        cta = back;
+        action = back;
         break;
       case 'trop-tot':
         title = S.tropTotTitre;
         body = '<p>' + t(S.tropTotTexte) + '</p>';
-        cta = back;
+        action = back;
         break;
       case 'pas-de-partie':
         title = S.pasDePartieTitre;
         body = '<p>' + t(S.pasDePartieTexte) + '</p>';
-        cta = btn(esc(S.boutonAccueil), 'go-home');
+        action = btn(esc(S.boutonAccueil), 'go-home', '', 'btn-red');
         break;
       default:
         title = S.inconnuTitre;
         body = '<p>' + t(S.inconnuTexte) + '</p>';
-        cta = s.team ? back : btn(esc(S.boutonAccueil), 'go-home');
+        action = s.team ? back : btn(esc(S.boutonAccueil), 'go-home', '', 'btn-red');
     }
-    if (!ok) art = '<div class="scan-art">' + icon(r.status === 'trop-tot' ? 'cadenas' : 'qr') + '</div>';
+    var inGame = s.team && s.rulesOk;
+    var block = successBlock({
+      art: ok ? null : '<div class="scan-art">' + icon(r.status === 'trop-tot' ? 'cadenas' : 'qr') + '</div>',
+      script: ok ? T.general.bravo : ' ',
+      title: title,
+      html: body,
+      cta: action,
+    });
     return {
       key: 'scan-' + code + '-' + r.status,
-      bare: !s.team || !s.rulesOk,
-      celebrate: celebrate,
-      html: (s.team && s.rulesOk ? '' : '<main class="screen">') +
-        '<section class="success' + (ok ? '' : ' is-neutral') + '">' + art +
-        '<h1 class="success-title" tabindex="-1">' + t(title) + '</h1>' + body + '</section>' +
-        '<div class="sticky-cta">' + cta + '</div>' +
-        (s.team && s.rulesOk ? '' : '</main>'),
+      bare: !inGame,
+      celebrate: ok,
+      html: inGame ? block : '<main class="screen-knit knit"><div class="home-logo">' + GQ.logo('clair') + '</div><div class="paper-sheet">' + block + '</div></main>',
     };
   };
 
@@ -627,6 +688,12 @@
     GQ.render();
   };
 
+  actions['quiz-themes'] = function () {
+    if (GQ.state.quest === 1 && GQ.state.phase[1] === 'result') GQ.setPhase(1, 'themes');
+    GQ.uiReset();
+    GQ.render();
+  };
+
   actions['abandon-theme'] = function () {
     var X = QZ.textes;
     var locks = GQ.quizNextFailLocks();
@@ -644,59 +711,64 @@
     });
   };
 
+  /* Sélection d'une proposition : mise à jour directe, sans réaffichage. */
   actions.select = function (el) {
     var i = Number(el.dataset.i);
-    GQ.ui.sel = i;
+    if (el.dataset.scope === 'quiz') {
+      if (!GQ.quizSelect(i)) return GQ.render();
+    } else {
+      GQ.ui.sel = i;
+    }
     GQ.ui.msg = null;
     document.querySelectorAll('.choice').forEach(function (b) {
       var on = Number(b.dataset.i) === i;
       b.classList.toggle('is-selected', on);
       b.setAttribute('aria-checked', String(on));
     });
-    var v = document.querySelector('[data-action="validate-choice"]');
-    if (v) v.removeAttribute('aria-disabled');
+    document.querySelectorAll('.sticky-cta [aria-disabled]').forEach(function (b) { b.removeAttribute('aria-disabled'); });
     var slot = document.querySelector('.feedback-slot');
     if (slot) slot.innerHTML = '';
   };
 
-  actions['validate-choice'] = function (el) {
-    var scope = el.dataset.scope;
+  actions['quiz-move'] = function (el) {
+    var d = Number(el.dataset.d);
+    if (!GQ.quizMove(d)) {
+      if (d > 0) GQ.ui.msg = { kind: 'error', text: T.general.choixVide, shake: true };
+      return GQ.render();
+    }
+    GQ.uiReset();
+    GQ.render();
+  };
+
+  actions['quiz-submit'] = function () {
+    var X = QZ.textes;
+    if (!GQ.quizAllAnswered()) {
+      GQ.ui.msg = { kind: 'error', text: T.general.choixVide, shake: true };
+      return GQ.render();
+    }
+    GQ.modal({ title: X.confirmTitre, text: X.confirmTexte, confirm: X.confirmOui, cancel: X.confirmNon, knit: 'badge' }).then(function (ok) {
+      if (!ok) return;
+      GQ.quizSubmit();
+      GQ.uiReset();
+      GQ.render();
+    });
+  };
+
+  /* Quête 3 : correction immédiate de la question. */
+  actions['validate-choice'] = function () {
     var sel = GQ.ui.sel;
     if (sel == null) {
       GQ.ui.msg = { kind: 'error', text: T.general.choixVide, shake: true };
       return GQ.render();
     }
-    var index, themeId, question, res;
-    if (scope === 'quiz') {
-      var cur = GQ.state.quiz.current;
-      if (!cur) return GQ.render();
-      themeId = cur.themeId;
-      index = cur.index;
-      question = GQ.theme(themeId).questions[index];
-      res = GQ.quizAnswer(sel);
-    } else {
-      index = GQ.state.defi.index;
-      question = Q.defi.questions[index];
-      res = GQ.defiAnswer(sel);
-    }
+    var index = GQ.state.defi.index;
+    var question = Q.defi.questions[index];
+    var res = GQ.defiAnswer(sel);
     if (!res) return GQ.render();
     if (res.correct) {
       GQ.uiReset();
-      if (!(res.done && !question.explication)) {
-        GQ.ui.correct = { scope: scope, themeId: themeId, index: index, done: res.done };
-      }
+      if (!(res.done && !question.explication)) GQ.ui.correct = { scope: 'defi', index: index, done: res.done };
       return GQ.render();
-    }
-    if (res.failed) {
-      GQ.uiReset();
-      GQ.render();
-      GQ.modal({
-        title: QZ.textes.tropErreurs,
-        text: res.locked ? QZ.textes.bloqueTexte : '',
-        cancel: T.general.continuer,
-        icon: 'cadenas',
-      });
-      return;
     }
     GQ.ui.sel = null;
     GQ.ui.msg = { kind: 'error', text: T.general.mauvaiseReponse, shake: true };
@@ -719,7 +791,7 @@
       text: T.joker.confirmationTexte,
       confirm: T.joker.confirmer,
       cancel: T.joker.annuler,
-      icon: 'etoile',
+      knit: 'star',
     }).then(function (ok) {
       if (!ok) {
         GQ.toast(T.joker.conserve, 'info');

@@ -52,6 +52,17 @@ const has = async (s) => norm(await text()).includes(norm(s));
 const hash = () => page.evaluate(() => location.hash);
 const state = () => page.evaluate(() => window.GQ.state);
 const settle = () => page.waitForTimeout(150);
+// Chaque chargement de page affiche brièvement l'écran de chargement.
+async function go(url) {
+  await page.goto(url);
+  await page.waitForSelector('#loader', { state: 'detached' });
+  await settle();
+}
+async function reload() {
+  await page.reload();
+  await page.waitForSelector('#loader', { state: 'detached' });
+  await settle();
+}
 async function clickText(s) {
   await page.getByText(s, { exact: false }).first().click();
   await settle();
@@ -59,6 +70,24 @@ async function clickText(s) {
 async function answer(value) {
   await page.fill('.answer-form .field', value);
   await page.click('.answer-form button[type=submit]');
+  await settle();
+}
+async function choose(i) {
+  await page.click(`.choice[data-i="${i}"]`);
+}
+async function nextQuestion() {
+  await page.click('[data-action="quiz-move"][data-d="1"]');
+  await settle();
+}
+/* Répond à toutes les questions restantes du thème puis valide. */
+async function finishTheme(theme, pick) {
+  const cur = (await state()).quiz.current;
+  for (let i = cur.index; i < theme.questions.length; i++) {
+    await choose(pick(theme.questions[i], i));
+    if (i < theme.questions.length - 1) await nextQuestion();
+  }
+  await page.click('[data-action="quiz-submit"]');
+  await page.click('[data-modal-ok]');
   await settle();
 }
 async function chooseAndValidate(i) {
@@ -72,7 +101,7 @@ async function noHorizontalScroll() {
 }
 
 const CFG = await (async () => {
-  await page.goto(BASE);
+  await go(BASE);
   return page.evaluate(() => window.GAME_CONFIG);
 })();
 const L = 'ABCD';
@@ -105,74 +134,88 @@ await step('Règles affichées avec le texte attendu', async () => {
 });
 
 await step('Accès direct à une quête non débloquée → redirection', async () => {
-  await page.goto(BASE + '#/quete/3');
+  await go(BASE + '#/quete/3');
   await page.waitForTimeout(300);
   assert((await hash()) === '#/quete/1', `hash = ${await hash()}`);
   assert(norm(await page.locator('#toast').innerText()).includes('pas encore débloquée'), 'message absent');
 });
 
 await step('QR code d\'un lieu non encore trouvé → refusé', async () => {
-  await page.goto(BASE + '#/scan/' + CFG.lieux.B.codeQR);
+  await go(BASE + '#/scan/' + CFG.lieux.B.codeQR);
   await settle();
   assert(await has('Pas si vite'), 'message « trop tôt » absent');
   assert((await state()).quest === 1, 'la progression a changé');
-  await page.goto(BASE + '#/scan/XYZ123');
+  await go(BASE + '#/scan/XYZ123');
   await settle();
   assert(await has('non reconnu'), 'QR inconnu non signalé');
-  await page.goto(BASE + '#/quete/1');
+  await go(BASE + '#/quete/1');
   await settle();
 });
 
 const themes = CFG.quiz.themes;
-await step('Quiz : mauvaise réponse → réessai sans perdre la progression', async () => {
+const wrongOf = (q) => (idx(q) === 0 ? 1 : 0);
+
+await step('Quiz : aucune correction pendant les questions, navigation possible', async () => {
   await clickText('Choisir un thème');
   await page.click(`[data-action="start-theme"][data-id="${themes[0].id}"]`);
   await settle();
   assert(await has('Question 1 sur 8'), 'compteur absent');
-  const q = themes[0].questions[0];
-  const wrong = idx(q) === 0 ? 1 : 0;
-  await chooseAndValidate(wrong);
-  assert(await has("Ce n'est pas la bonne réponse"), 'erreur non affichée');
-  assert(await has('Question 1 sur 8'), 'progression perdue');
-  assert((await state()).quiz.lockUntil === 0, 'une mauvaise réponse a déclenché un blocage');
-  await chooseAndValidate(idx(q));
-  assert(await has('Bonne réponse'), 'bonne réponse non confirmée');
-  await clickText('Question suivante');
+  assert(await page.locator('[data-action="quiz-move"][data-d="1"]').getAttribute('aria-disabled') === 'true', 'suivant actif sans réponse');
+  await choose(wrongOf(themes[0].questions[0]));
+  assert(!(await has("Ce n'est pas la bonne réponse")) && !(await has('Bonne réponse')), 'une correction est affichée');
+  assert((await page.locator('.choice.is-wrong, .choice.is-correct').count()) === 0, 'la bonne réponse est révélée');
+  await nextQuestion();
   assert(await has('Question 2 sur 8'), 'pas de passage à la question 2');
+  await page.click('[data-action="quiz-move"][data-d="-1"]');
+  await settle();
+  assert(await has('Question 1 sur 8'), 'retour impossible');
+  assert(await page.locator('.choice.is-selected').count() === 1, 'réponse précédente perdue');
+  await nextQuestion();
 });
 
 await step('Rechargement en cours de thème → reprise à la même question', async () => {
-  await page.reload();
-  await settle();
+  await reload();
   assert(await has('Question 2 sur 8'), 'question perdue après rechargement');
 });
 
-await step('Deux thèmes abandonnés → quiz bloqué (persistant au rechargement)', async () => {
-  await clickText('Changer de thème');
-  await page.click('[data-modal-ok]');
-  await settle();
+await step('Thème terminé avec des erreurs → score affiché, thème fermé, pas de blocage', async () => {
+  // Question 1 déjà fausse ; la dernière l'est aussi → 6/8.
+  await finishTheme(themes[0], (q, i) => (i < 7 ? idx(q) : wrongOf(q)));
+  assert(await has('Raté, de peu'), 'écran d\'échec absent');
+  assert(await has('6 bonne(s) réponse(s) sur 8'), 'score 6/8 absent');
+  assert((await state()).quiz.lockUntil === 0, 'blocage déclenché trop tôt');
+  assert(await has('un nouvel échec bloquera'), 'avertissement absent');
+  await clickText('Choisir un autre thème');
+  assert(await page.locator(`[data-id="${themes[0].id}"]`).isDisabled(), 'thème raté encore disponible');
   assert(await has('Tentatives échouées : 1 sur 2'), 'compteur de tentatives absent');
-  assert(await page.locator(`[data-id="${themes[0].id}"]`).isDisabled(), 'thème échoué encore disponible');
+});
+
+await step('Deuxième thème raté → quiz gelé 3 minutes (persistant au rechargement)', async () => {
   await page.click(`[data-action="start-theme"][data-id="${themes[1].id}"]`);
   await settle();
-  await clickText('Changer de thème');
-  assert(norm(await page.locator('.modal').innerText()).includes('bloqué'), 'avertissement de blocage absent');
-  await page.click('[data-modal-ok]');
-  await settle();
-  assert(await has('Quiz bloqué'), 'blocage non affiché');
-  const s = await state();
-  const ms = s.quiz.lockUntil - Date.now();
+  await finishTheme(themes[1], (q) => wrongOf(q));
+  assert(await has('Pas cette fois'), 'écran d\'échec absent');
+  assert(await has('0 bonne(s) réponse(s) sur 8'), 'score 0/8 absent');
+  assert(await has('quiz est gelé'), 'annonce du blocage absente');
+  await clickText('Voir le minuteur');
+  assert(await has('Quiz gelé'), 'minuteur absent');
+  const ms = (await state()).quiz.lockUntil - Date.now();
   assert(ms > 170000 && ms <= 180000, `durée de blocage inattendue : ${ms} ms`);
-  await page.reload();
-  await settle();
-  assert(await has('Quiz bloqué'), 'blocage perdu après rechargement');
+  assert(/0[23]:\d\d/.test(await page.locator('[data-countdown]').innerText()), 'compte à rebours absent');
+  await reload();
+  assert(await has('Quiz gelé'), 'blocage perdu après rechargement');
   assert(await page.locator(`[data-id="${themes[2].id}"]`).isDisabled(), 'thème cliquable pendant le blocage');
+});
+
+await step('Chrono global de 30 minutes affiché pendant le jeu', async () => {
+  const txt = await page.locator('[data-clock] .clock-digits').innerText();
+  assert(/^(29|30):\d\d$/.test(txt), `chrono inattendu : ${txt}`);
 });
 
 console.log('\nMode test organisateur');
 
 await step('Mode test : code incorrect refusé, code correct accepté', async () => {
-  await page.goto(BASE + '#/organisateur');
+  await go(BASE + '#/organisateur');
   await settle();
   await answer('0000');
   assert(await has('Code incorrect'), 'code incorrect accepté');
@@ -187,11 +230,11 @@ await step('Mode test : lever le blocage puis tester le blocage court', async ()
   const ms = (await state()).quiz.lockUntil - Date.now();
   const short = CFG.parametres.modeTest.dureeBlocageCourtSecondes * 1000;
   assert(ms > 0 && ms <= short, `blocage court inattendu : ${ms} ms`);
-  await page.goto(BASE + '#/quete/1');
+  await go(BASE + '#/quete/1');
   await settle();
-  assert(await has('Quiz bloqué'), 'blocage non affiché');
+  assert(await has('Quiz gelé'), 'blocage non affiché');
   await page.waitForTimeout(short + 1200);
-  assert(!(await has('Quiz bloqué')), 'le quiz ne se débloque pas à la fin du compte à rebours');
+  assert(!(await has('Quiz gelé')), 'le quiz ne se débloque pas à la fin du compte à rebours');
 });
 
 await step('Mode test : bonnes réponses signalées', async () => {
@@ -199,27 +242,20 @@ await step('Mode test : bonnes réponses signalées', async () => {
   await settle();
   assert((await page.locator('.test-badge').count()) === 1, 'badge « bonne réponse » absent');
   // On repasse en affichage participant pour la suite.
-  await page.goto(BASE + '#/organisateur');
+  await go(BASE + '#/organisateur');
   await settle();
   await page.click('[data-opt="showAnswers"]');
-  await page.goto(BASE + '#/quete/1');
+  await go(BASE + '#/quete/1');
   await settle();
   assert((await page.locator('.test-badge').count()) === 0, 'badge encore visible');
 });
 
 console.log('\nSuite du parcours');
 
-await step('Quiz réussi après 8 bonnes réponses → indice du lieu A', async () => {
-  const th = themes[2];
-  for (let i = 0; i < th.questions.length; i++) {
-    assert(await has(`Question ${i + 1} sur 8`), `question ${i + 1} absente`);
-    await chooseAndValidate(idx(th.questions[i]));
-    if (await page.locator('[data-action="next-question"]').count()) {
-      await page.click('[data-action="next-question"]');
-      await settle();
-    }
-  }
+await step('Quiz réussi après 8 bonnes réponses sur 8 → indice du lieu A', async () => {
+  await finishTheme(themes[2], (q) => idx(q));
   assert(await has('Quiz réussi'), 'écran de réussite absent');
+  assert(await has('8/8'), 'score 8/8 absent');
   await clickText('Découvrir le premier indice');
   assert(await has('Où se trouve la prochaine étape'), 'écran du lieu absent');
 });
@@ -235,11 +271,11 @@ await step('Code manuel incorrect refusé, scan du QR A → quête 2', async () 
   await page.click('.manual-code summary');
   await answer(CFG.lieux.C.codeQR);
   assert(await has('ne correspond pas'), 'mauvais code accepté');
-  await page.goto(BASE + '#/scan/' + CFG.lieux.A.codeQR.toLowerCase());
+  await go(BASE + '#/scan/' + CFG.lieux.A.codeQR.toLowerCase());
   await settle();
   assert(await has('Lieu validé'), 'scan non validé');
   assert((await state()).quest === 2, 'quête 2 non débloquée');
-  await page.reload();
+  await reload();
   await settle();
   assert(await has('Lieu validé') || await has('Commencer la quête 2'), 'rechargement de l\'écran de scan incohérent');
   await clickText('Commencer la quête 2');
@@ -261,7 +297,7 @@ await step('Joker : confirmation → indice affiché, joker consommé et mémori
   await settle();
   assert(await has('Indice du joker'), 'indice non affiché');
   assert(await has('Joker utilisé'), 'statut non mis à jour');
-  await page.reload();
+  await reload();
   await settle();
   assert((await state()).joker.used === true, 'joker récupéré après rechargement');
   assert(await has('Indice du joker'), 'indice perdu après rechargement');
@@ -285,7 +321,7 @@ await step('Joker : réutilisation impossible (bouton désactivé et règle côt
 
 await step('Lieu B puis quête 3 (défi Saint-Gobain)', async () => {
   await answer(CFG.lieux.B.reponsesAcceptees[0]);
-  await page.goto(BASE + '#/scan/' + CFG.lieux.B.codeQR);
+  await go(BASE + '#/scan/' + CFG.lieux.B.codeQR);
   await settle();
   await clickText('Commencer la quête 3');
   await clickText('Relever le défi');
@@ -331,7 +367,8 @@ await step('Quête 5 : code organisateur incorrect refusé, correct → « Avent
   assert(await has('Code incorrect'), 'mauvais code accepté');
   await answer(CFG.parametres.finDePartie.codeOrganisateur.toLowerCase());
   assert(await has('Aventure terminée'), 'fin non affichée');
-  await page.reload();
+  assert(await has('Votre temps'), 'temps final absent');
+  await reload();
   await settle();
   assert(await has('Aventure terminée'), 'fin perdue après rechargement');
   await noHorizontalScroll();
@@ -349,12 +386,12 @@ await step('QR code ouvert dans un navigateur sans partie → message explicite'
 });
 
 await step('Mode test : aller à la quête 3 puis réinitialiser la partie', async () => {
-  await page.goto(BASE + '#/organisateur');
+  await go(BASE + '#/organisateur');
   await settle();
   await page.click('[data-action="test-jump"][data-n="3"]');
   await settle();
   assert((await hash()) === '#/quete/3' && (await state()).quest === 3, 'saut de quête impossible');
-  await page.goto(BASE + '#/organisateur');
+  await go(BASE + '#/organisateur');
   await settle();
   await clickText('Réinitialiser la partie');
   await page.click('[data-modal-ok]');
@@ -363,7 +400,7 @@ await step('Mode test : aller à la quête 3 puis réinitialiser la partie', asy
   await clickText('Fiches QR codes à imprimer');
   await page.waitForSelector('.qr-code svg');
   assert((await page.locator('.qr-code svg').count()) >= 3, 'QR codes non générés');
-  await page.goto(BASE + '#/organisateur');
+  await go(BASE + '#/organisateur');
   await settle();
   await clickText('Quitter le mode test');
   assert(!(await page.locator('.test-bar').count()), 'mode test encore actif');
@@ -371,7 +408,7 @@ await step('Mode test : aller à la quête 3 puis réinitialiser la partie', asy
 
 await step('Affichage ordinateur (1280 px) sans débordement', async () => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto(BASE);
+  await go(BASE);
   await settle();
   await noHorizontalScroll();
 });

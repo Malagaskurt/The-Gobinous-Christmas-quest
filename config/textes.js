@@ -14,7 +14,13 @@
 window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.textes = {
+  /* Écran de chargement (au tout premier affichage). */
+  chargement: {
+    texte: "On tricote votre aventure…",
+  },
+
   accueil: {
+    annee: "Noël 2026",
     surtitre: "The Gobinous Christmas Club",
     titre: "Gobinous",
     titreSuite: "Christmas Quest",
@@ -24,9 +30,20 @@ window.GAME_CONFIG.textes = {
     bouton: "Commencer l'aventure",
     boutonReprendre: "Reprendre l'aventure",
     partieEnCours: "Partie en cours sur ce téléphone : **{equipe}**",
+    /* Deux petites notes en bas de l'écran d'accueil (laisser "" pour masquer). */
+    noteGauche: "Mission du jour : retrouver la hotte avant le dessert.",
+    noteDroite: "Durée : 30 minutes. Fous rires : non garantis, mais très probables.",
+  },
+
+  /* Chrono global affiché en haut des écrans de jeu. */
+  chrono: {
+    restant: "Temps restant",
+    depasse: "Temps dépassé",
+    tempsFinal: "Votre temps : **{temps}**",
   },
 
   equipe: {
+    etiquette: "De la part de…",
     titre: "Quel est le nom de votre équipe ?",
     aide:
       "Ce nom sert uniquement à identifier votre progression sur ce téléphone. Aucune donnée personnelle n'est demandée.",
@@ -73,6 +90,11 @@ window.GAME_CONFIG.textes = {
 
   general: {
     quete: "Quête",
+    queteNumero: "Quête n°{n}",
+    bravo: "Bravo !",
+    /* Lettre d'introduction de chaque quête. */
+    lettreSalutation: "Chère équipe {equipe},",
+    lettreSignature: "Le Gobinous Christmas Club",
     equipe: "Équipe",
     regles: "Règles",
     questionNumero: "Question {n} sur {total}",
@@ -156,6 +178,7 @@ window.GAME_CONFIG.textes = {
     organisateurLabel: "Code organisateur",
     organisateurBouton: "Valider la fin de l'aventure",
     organisateurErreur: "Code incorrect.",
+    termineeScript: "Joyeux Noël !",
     termineeTitre: "Aventure terminée",
     termineeTexte: "Bravo **{equipe}** ! Merci d'avoir participé à la Gobinous Christmas Quest. Joyeux Noël !",
     termineeLe: "Aventure validée le {date} à {heure}.",

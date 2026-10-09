@@ -26,15 +26,20 @@ window.GAME_CONFIG.parametres = {
     /* Durée du blocage, en secondes (180 = 3 minutes). */
     dureeBlocageSecondes: 180,
 
-    /* Nombre d'erreurs tolérées sur un même thème avant que la tentative
-     * ne soit considérée comme échouée.
-     *   null → illimité : l'équipe peut réessayer chaque question autant
-     *          de fois que nécessaire. Un thème n'échoue alors que si
-     *          l'équipe l'abandonne (bouton « Changer de thème »).
-     *   3    → la 4e erreur sur un thème fait échouer la tentative.
-     * ⚠ Si vous changez cette valeur, adaptez la règle n°5 dans
-     *   config/textes.js. */
-    erreursAutoriseesParTheme: null,
+    /* Les réponses ne sont pas corrigées question par question : l'équipe
+     * découvre son score à la fin des 8 questions. Il faut 8/8 pour
+     * valider un thème ; un thème raté ne peut plus être rejoué (sauf si
+     * tous les thèmes ont été ratés). */
+  },
+
+  /* ---- Chrono global -------------------------------------------------
+   * Compte à rebours affiché en haut de l'écran pendant toute la partie.
+   * Il démarre au bouton « C'est parti ! » et s'arrête à la fin de
+   * l'aventure. Une fois écoulé, il affiche le dépassement (+00:42) mais
+   * ne bloque pas le jeu. */
+  chrono: {
+    actif: true,
+    dureeMinutes: 30,
   },
 
   /* ---- Lieux et QR codes -------------------------------------------- */
@@ -64,12 +69,16 @@ window.GAME_CONFIG.parametres = {
   urlPublique: "",
 
   /* ---- Éléments de marque --------------------------------------------
-   * Le logo officiel n'est pas inclus. Déposez un fichier autorisé dans
-   * assets/img/ puis indiquez son chemin, par exemple
-   * "assets/img/logo-saint-gobain.svg". Laissez vide pour ne rien
-   * afficher. */
+   * Logo Saint-Gobain en deux versions monochromes, extraites du fichier
+   * fourni par l'organisation :
+   *   logoClair : version blanche, sur les fonds tricotés bleus ;
+   *   logoFonce : version bleu foncé, sur les fonds clairs.
+   * Pour utiliser un fichier officiel (SVG de préférence), déposez-le
+   * dans assets/img/ et remplacez les chemins. Laissez vide pour masquer
+   * le logo. */
   marque: {
-    logo: "",
+    logoClair: "assets/img/logo-saint-gobain-blanc.png",
+    logoFonce: "assets/img/logo-saint-gobain-bleu.png",
     logoAlt: "Saint-Gobain",
   },
 
