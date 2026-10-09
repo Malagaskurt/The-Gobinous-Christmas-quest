@@ -94,6 +94,15 @@
     return String(s == null ? '' : s).trim().toUpperCase().replace(/[\s_]+/g, '');
   }
 
+  /* Durée lisible : « 45 secondes », « 3 minutes ». */
+  function durationLabel(ms) {
+    var sec = Math.round(ms / 1000);
+    if (sec < 60) return sec + ' secondes';
+    var m = Math.round(sec / 60);
+    return m + (m > 1 ? ' minutes' : ' minute');
+  }
+
+  GQ.durationLabel = durationLabel;
   GQ.esc = esc;
   GQ.t = t;
   GQ.letter = function (i) { return LETTERS[i]; };
@@ -169,11 +178,14 @@
         passAfterLock: false, // quiz validé d'office à la fin du blocage
         wonTheme: null,
       },
-      gel: { until: 0, total: 0 }, // gel après une mauvaise réponse (quêtes 2 à 4)
+      // Pénalités des quêtes 2 à 4 : erreurs par étape, gel en cours et
+      // étape validée d'office à la fin du gel.
+      gel: { until: 0, total: 0, fails: {}, pass: null },
       defi: { index: 0, tried: [] },
       places: {}, // id → { found: horodatage, arrived: horodatage }
       joker: { used: false, on: null, at: null },
       finished: null, // { at, by: 'code' | 'qr' | 'test' }
+      forced: {}, // quêtes validées d'office après un gel (2, 4)
     };
   }
 
@@ -185,7 +197,7 @@
       if (!raw) return base;
       var s = JSON.parse(raw);
       if (!s || s.v !== 1) return base;
-      ['phase', 'quiz', 'defi', 'joker', 'gel'].forEach(function (k) {
+      ['phase', 'quiz', 'defi', 'joker', 'gel', 'forced'].forEach(function (k) {
         s[k] = Object.assign(base[k], s[k] || {});
       });
       if (!s.id) s.id = base.id;
@@ -306,20 +318,80 @@
   };
 
   /* ------------------------------------------------------------------ */
-  /* Gel après une mauvaise réponse (quêtes 2 à 4)                       */
+  /* Pénalités des quêtes 2 à 4                                          */
+  /* Même principe que le quiz : 2 essais par étape (énigme, question du */
+  /* défi, énigme finale). Après la 2e erreur, gel, puis l'étape est     */
+  /* validée d'office.                                                   */
   /* ------------------------------------------------------------------ */
+
+  function penaltyCfg() {
+    var g = P.gel || {};
+    return {
+      on: g.actif !== false,
+      tries: Math.max(1, Number(g.essais) || 2),
+      sec: g.dureeSecondes != null ? g.dureeSecondes : 45,
+      pass: g.valideApresGel !== false,
+    };
+  }
+
+  /* Variables des textes de règles : {duree} (gel), {chrono}. */
+  GQ.ruleVars = function () {
+    var c = P.chrono || {};
+    return {
+      duree: durationLabel(Math.max(0, Number(penaltyCfg().sec) || 0) * 1000),
+      chrono: (Number(c.dureeMinutes) || 30) + ' minutes',
+    };
+  };
 
   GQ.freezeRemaining = function () {
     return remaining(GQ.state.gel, 'until', 'total');
   };
 
-  function freeze() {
-    var g = P.gel || {};
-    if (g.actif === false) return;
-    var total = durationMs(g.dureeSecondes != null ? g.dureeSecondes : 50);
-    if (!total) return;
-    GQ.state.gel = { until: Date.now() + total, total: total };
+  /* Essais restants sur une étape (clé : q2, q3-0, q3-1…, q4). */
+  GQ.triesLeft = function (key) {
+    var c = penaltyCfg();
+    return Math.max(0, c.tries - (GQ.state.gel.fails[key] || 0));
+  };
+
+  /* Mauvaise réponse sur une étape. Retour : { frozen, left } */
+  function penalize(key) {
+    var c = penaltyCfg();
+    var g = GQ.state.gel;
+    if (!c.on) return { frozen: false, left: Infinity };
+    g.fails[key] = (g.fails[key] || 0) + 1;
+    if (g.fails[key] < c.tries) return { frozen: false, left: c.tries - g.fails[key] };
+    g.fails[key] = 0;
+    g.total = durationMs(c.sec);
+    g.until = Date.now() + g.total;
+    g.pass = c.pass ? key : null;
+    return { frozen: true, left: 0 };
   }
+
+  /* Fin du gel : l'étape gelée est validée d'office. Retourne la clé de
+   * l'étape validée, ou null. */
+  GQ.penaltyCheckPass = function () {
+    var s = GQ.state;
+    var g = s.gel;
+    var key = g.pass;
+    if (!key || GQ.freezeRemaining() > 0) return null;
+    g.pass = null;
+    if (key === 'q2' && s.quest === 2 && s.phase[2] === 'enigma') {
+      s.phase[2] = 'success';
+      s.forced = Object.assign(s.forced || {}, { 2: true });
+    } else if (key === 'q4' && s.quest === 4 && s.phase[4] === 'enigma') {
+      var id = GQ.finalPlaceId();
+      s.places[id] = Object.assign(s.places[id] || {}, { found: Date.now() });
+      s.phase[4] = 'success';
+      s.forced = Object.assign(s.forced || {}, { 4: true });
+    } else if (/^q3-\d+$/.test(key) && s.quest === 3 && s.phase[3] === 'play' && 'q3-' + s.defi.index === key) {
+      advanceDefi();
+    } else {
+      GQ.save();
+      return null;
+    }
+    GQ.save();
+    return key;
+  };
 
   GQ.failedThemeIds = function () {
     var out = {};
@@ -437,35 +509,46 @@
   };
 
   /* ------------------------------------------------------------------ */
-  /* Quête 3 : défi (QCM, gel après chaque erreur)                       */
+  /* Quête 3 : défi (QCM, 2 essais par question)                         */
   /* ------------------------------------------------------------------ */
 
+  function advanceDefi() {
+    var d = GQ.state.defi;
+    d.index += 1;
+    d.tried = [];
+    if (d.index >= Q.defi.questions.length) GQ.state.phase[3] = 'success';
+    return d.index >= Q.defi.questions.length;
+  }
+
+  /* Retour : null (refusé) | { correct, done } | { correct: false, frozen, left } */
   GQ.defiAnswer = function (choiceIdx) {
     var d = GQ.state.defi;
-    var qs = Q.defi.questions;
-    var question = qs[d.index];
+    var question = Q.defi.questions[d.index];
     if (!question || GQ.freezeRemaining() > 0) return null;
     if (letterIndex(question.reponse) === choiceIdx) {
-      d.index += 1;
-      d.tried = [];
-      if (d.index >= qs.length) GQ.state.phase[3] = 'success';
+      var done = advanceDefi();
       GQ.save();
-      return { correct: true, done: d.index >= qs.length };
+      return { correct: true, done: done };
     }
     if (d.tried.indexOf(choiceIdx) === -1) d.tried.push(choiceIdx);
-    freeze();
+    var pen = penalize('q3-' + d.index);
     GQ.save();
-    return { correct: false };
+    return { correct: false, frozen: pen.frozen, left: pen.left };
   };
 
   /* ------------------------------------------------------------------ */
   /* Énigmes (quêtes 2 et 4)                                             */
   /* ------------------------------------------------------------------ */
 
-  /* Une mauvaise réponse déclenche le gel. */
+  /* Retour : { ok: true } | { ok: false, frozen, left } (left : essais
+   * restants avant le gel). */
   GQ.enigmaAnswer = function (n, input) {
-    if (GQ.freezeRemaining() > 0) return false;
-    function wrong() { freeze(); GQ.save(); return false; }
+    if (GQ.freezeRemaining() > 0) return { ok: false, frozen: true, left: 0 };
+    function wrong() {
+      var pen = penalize('q' + n);
+      GQ.save();
+      return { ok: false, frozen: pen.frozen, left: pen.left };
+    }
     if (n === 2) {
       if (!matches(input, Q.enigme.reponses)) return wrong();
       GQ.state.phase[2] = 'success';
@@ -475,10 +558,10 @@
       GQ.state.places[id] = Object.assign(GQ.state.places[id] || {}, { found: Date.now() });
       GQ.state.phase[4] = 'success';
     } else {
-      return false;
+      return { ok: false, frozen: false, left: 0 };
     }
     GQ.save();
-    return true;
+    return { ok: true };
   };
 
   /* ------------------------------------------------------------------ */
@@ -593,6 +676,7 @@
     if (!s.clockStart) s.clockStart = Date.now();
     s.finished = null;
     s.gel = defaults().gel;
+    s.forced = {};
     s.quest = n;
     for (var k = 1; k <= 5; k++) {
       if (k < n) s.phase[k] = 'done';

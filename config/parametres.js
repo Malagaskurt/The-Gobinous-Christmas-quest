@@ -24,7 +24,7 @@ window.GAME_CONFIG.parametres = {
     tentativesAvantBlocage: 2,
 
     /* Durée du blocage, en secondes. */
-    dureeBlocageSecondes: 50,
+    dureeBlocageSecondes: 45,
 
     /* true → à la fin du blocage, le quiz est validé d'office : l'équipe
      * n'a plus à répondre et passe directement à l'indice du lieu A.
@@ -37,14 +37,18 @@ window.GAME_CONFIG.parametres = {
      * tous les thèmes ont été ratés). */
   },
 
-  /* ---- Gel après une mauvaise réponse (quêtes 2, 3 et 4) -----------
-   * Chaque mauvaise réponse à l'énigme (quête 2), au défi (quête 3) ou à
-   * l'énigme finale (quête 4) gèle la saisie pendant dureeSecondes, avec
-   * un compte à rebours. L'équipe peut ensuite retenter.
+  /* ---- Pénalités des quêtes 2, 3 et 4 --------------------------------
+   * Même principe que le quiz. Chaque étape (énigme de la quête 2,
+   * chaque question du défi, énigme finale) laisse `essais` tentatives.
+   * Après la dernière erreur, tout est gelé pendant dureeSecondes (seules
+   * les règles restent consultables), puis, si valideApresGel vaut true,
+   * l'étape est validée d'office : l'équipe passe à la suite.
    * La saisie des lieux et des codes n'est pas concernée. */
   gel: {
     actif: true,
-    dureeSecondes: 50,
+    essais: 2,
+    dureeSecondes: 45,
+    valideApresGel: true,
   },
 
   /* ---- Chrono global -------------------------------------------------

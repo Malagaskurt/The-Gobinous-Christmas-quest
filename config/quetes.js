@@ -27,18 +27,21 @@ window.GAME_CONFIG.quetes = {
   enigme: {
     titre: "L'énigme mystère",
     intro:
-      "Bien joué ! Votre première étape est terminée. Pour continuer, résolvez cette énigme et découvrez le prochain lieu de votre aventure.",
+      "Bien joué, vous avez retrouvé la trace du lutin au pied du sapin ! Dans sa fuite, il a laissé tomber un petit parchemin couvert de givre. Résolvez son énigme pour découvrir où il est allé ensuite.",
     boutonIntro: "Découvrir l'énigme",
 
-    /* Énigme proposée par défaut : modifiable librement. */
     enigme:
       "Je nais du sable, de la soude et du feu.\nJe suis solide mais fragile, présent partout mais transparent.\nOn me traverse du regard sans vraiment me voir.\nDepuis 1665, Saint-Gobain me façonne.\n\n**Qui suis-je ?**",
-    reponses: ["verre", "le verre", "du verre"],
+    reponses: ["verre", "le verre", "du verre", "vitre", "glace", "miroir"],
     indiceJoker: "Pensez à la Galerie des Glaces : de quoi ses miroirs sont-ils faits ?",
 
     reussiteTitre: "Énigme résolue !",
     reussiteTexte:
-      "Bravo ! La réponse était bien « le verre », le matériau avec lequel l'aventure Saint-Gobain a commencé.",
+      "Bravo ! La réponse était bien « le verre », le matériau avec lequel l'aventure Saint-Gobain a commencé. Le lutin, lui, a filé se réchauffer quelque part…",
+    /* Écran affiché quand l'énigme est validée d'office après le gel. */
+    reussiteApresGelTitre: "Le gel est levé !",
+    reussiteApresGelTexte:
+      "La réponse était « le verre », le matériau avec lequel l'aventure Saint-Gobain a commencé en 1665. Le lutin vous laisse filer vers la suite !",
     boutonIndice: "Découvrir l'indice du prochain lieu",
     lieu: "B",
   },
@@ -49,51 +52,46 @@ window.GAME_CONFIG.quetes = {
   defi: {
     titre: "Le défi Saint-Gobain",
     intro:
-      "À vous de jouer ! Découvrez quelques innovations de Saint-Gobain grâce à trois questions. Chaque bonne réponse vous rapproche de la hotte.",
+      "À la cafétéria, le lutin a laissé un plan de son atelier à jouets… avec trois questions pour le construire. Aidez-le avec les solutions Saint-Gobain : chaque bonne réponse vous rapproche de la hotte.",
     boutonIntro: "Relever le défi",
 
     /* 3 questions, 3 propositions chacune, une seule bonne réponse.
-     * Questions proposées par défaut : à faire relire par la
-     * communication Saint-Gobain avant l'événement. */
+     * 2 essais par question : après la 2e erreur, le jeu est gelé, puis
+     * la bonne réponse s'affiche et l'équipe passe à la question suivante. */
     questions: [
       {
         question:
-          "Quelle marque du groupe Saint-Gobain est spécialisée dans l'isolation en laine minérale ?",
-        choix: ["Isover", "Sekurit", "Weber"],
-        reponse: "A",
-        explication: "Isover isole les bâtiments pour limiter les pertes de chaleur et le bruit.",
+          "Pour garder toute la chaleur du réveillon à l'intérieur de la maison, quelle marque du groupe isole murs et combles ?",
+        choix: ["Sekurit", "Isover", "Weber"],
+        reponse: "B",
+        explication: "Isover isole les bâtiments avec de la laine minérale : moins de pertes de chaleur, moins de bruit.",
         indiceJoker: "Son nom évoque un « hiver » qu'on garde dehors.",
-        aVerifier: "Question rédigée en attendant le contenu officiel : à faire valider.",
       },
       {
-        question: "À quoi servent principalement les plaques de plâtre Placo ?",
+        question:
+          "Le lutin veut monter rapidement les cloisons de son atelier à jouets. Que doit-il utiliser ?",
         choix: [
-          "À réaliser des cloisons et des plafonds",
-          "À fabriquer des pare-brise",
-          "À produire des bouteilles en verre",
+          "Des pare-brise de voiture",
+          "Des bouteilles en verre",
+          "Des plaques de plâtre Placo",
         ],
-        reponse: "A",
-        explication: "Les plaques de plâtre permettent d'aménager rapidement les espaces intérieurs.",
+        reponse: "C",
+        explication: "Les plaques de plâtre Placo servent à réaliser cloisons et plafonds, rapidement et proprement.",
         indiceJoker: "Regardez autour de vous : les murs des bureaux en sont souvent faits.",
-        aVerifier: "Question rédigée en attendant le contenu officiel : à faire valider.",
       },
       {
-        question: "Pour quel usage les produits Weber sont-ils surtout connus ?",
-        choix: [
-          "Les mortiers, colles à carrelage et enduits de façade",
-          "La peinture des voitures",
-          "Les composants électroniques",
-        ],
+        question:
+          "Pour carreler la cuisine du Père Noël, quel produit Weber le lutin doit-il choisir ?",
+        choix: ["Une colle à carrelage", "Une laine de verre", "Un double vitrage"],
         reponse: "A",
-        explication: "Weber propose des mortiers techniques pour construire et rénover.",
-        indiceJoker: "Pensez au carreleur et au maçon.",
-        aVerifier: "Question rédigée en attendant le contenu officiel : à faire valider.",
+        explication: "Weber est spécialiste des mortiers : colles à carrelage, joints, enduits de façade…",
+        indiceJoker: "Pensez au carreleur et au maçon : il faut que ça colle !",
       },
     ],
 
     reussiteTitre: "Défi relevé !",
     reussiteTexte:
-      "Trois bonnes réponses : vous connaissez désormais un peu mieux les solutions Saint-Gobain. Un nouvel indice vous attend.",
+      "L'atelier du lutin est prêt, grâce à vous ! Isolation, cloisons, carrelage : vous connaissez vos solutions Saint-Gobain. Un nouvel indice vous attend.",
     boutonIndice: "Découvrir l'indice du prochain lieu",
     lieu: "C",
   },
@@ -106,19 +104,20 @@ window.GAME_CONFIG.quetes = {
   dernierIndice: {
     titre: "Le dernier indice",
     intro:
-      "Vous approchez du but. Il ne vous reste plus qu'une énigme pour découvrir où se cache la hotte.",
+      "Sur la scène de l'auditorium, le lutin a oublié la dernière page de son spectacle. Elle révèle où il a caché la hotte… à condition de résoudre l'énigme finale !",
     boutonIntro: "Découvrir l'énigme finale",
 
-    /* Énigme SIMULÉE : sa réponse doit être le lieu FINAL de
+    /* Énigme inventée : sa réponse doit être le lieu FINAL de
      * config/lieux.js (réponses acceptées : voir ce lieu). */
     enigme:
-      "Plus haut que les bureaux, plus près des étoiles,\nj'offre tout Paris en guise de toile.\nOn y prend l'air quand le soleil brille,\net le lutin y cache la hotte qui scintille.",
+      "Plus haut que les bureaux, plus près des étoiles,\nj'offre tout Paris en guise de toile.\nLe Père Noël y poserait son traîneau sans hésiter,\net c'est là que le lutin a caché la hotte tant convoitée.",
     label: "Où se cache la hotte ?",
-    indiceJoker: "Prenez l'ascenseur et montez… jusqu'en haut !",
-    aVerifier: "Énigme simulée pour les tests : à remplacer avec le vrai lieu final.",
+    indiceJoker: "Où un traîneau pourrait-il atterrir dans une tour ? Visez le plus haut possible.",
+    aVerifier: "Énigme inventée pour les tests : à adapter au vrai lieu de la hotte.",
     lieu: "FINAL",
 
     reussiteTitre: "Vous avez trouvé la cachette de la hotte !",
+    reussiteApresGelTitre: "Le gel est levé : voici la cachette de la hotte !",
     reussiteLieu: "Lieu final : **{lieu}**",
     consigneOrganisateurs:
       "Rendez-vous sur place. Une fois arrivés, suivez les instructions des organisateurs.",
@@ -131,7 +130,7 @@ window.GAME_CONFIG.quetes = {
   hotte: {
     titre: "La hotte secrète",
     texte:
-      "Vous avez retrouvé la piste de la hotte ! Rendez-vous au lieu indiqué et suivez les instructions des organisateurs pour découvrir la surprise finale.",
+      "Vous avez démasqué le lutin et retrouvé la piste de la hotte ! Rendez-vous au lieu indiqué et suivez les instructions des organisateurs pour découvrir la surprise finale.",
     rappelLieu: "Lieu indiqué : **{lieu}**",
     script: "Joyeux Noël",
   },

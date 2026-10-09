@@ -124,14 +124,18 @@
       var prevFocus = document.activeElement;
       root.innerHTML =
         '<div class="modal-backdrop" data-modal-close></div>' +
-        '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">' +
+        '<div class="modal' + (opts.sheet ? ' modal-sheet' : '') + '" role="dialog" aria-modal="true" aria-labelledby="modal-title">' +
+        (opts.sheet ? '<div class="garland" aria-hidden="true"></div><div class="sheet-in">' : '') +
         (opts.knit ? GQ.knit.icon(opts.knit, 'modal-knit') : opts.icon ? '<div class="modal-icon">' + GQ.icon(opts.icon) + '</div>' : '') +
-        '<h2 id="modal-title" class="modal-title">' + t(opts.title) + '</h2>' +
+        (opts.sheet
+          ? '<h2 id="modal-title" class="sheet-title"><span class="sr-only">' + t(opts.title) + '</span>' +
+            GQ.knit.title(String(opts.title).toUpperCase(), { alt: '', max: 10, outline: true, cls: 'k-title-img' }) + '</h2>'
+          : '<h2 id="modal-title" class="modal-title">' + t(opts.title) + '</h2>') +
         (opts.html || (opts.text ? '<p>' + t(opts.text) + '</p>' : '')) +
         '<div class="modal-actions">' +
         (opts.confirm ? '<button type="button" class="btn btn-primary" data-modal-ok>' + esc(opts.confirm) + '</button>' : '') +
-        (opts.cancel ? '<button type="button" class="btn btn-secondary" data-modal-cancel>' + esc(opts.cancel) + '</button>' : '') +
-        '</div></div>';
+        (opts.cancel ? '<button type="button" class="btn ' + (opts.sheet ? 'btn-red' : 'btn-secondary') + '" data-modal-cancel>' + esc(opts.cancel) + '</button>' : '') +
+        '</div>' + (opts.sheet ? '</div>' : '') + '</div>';
       root.classList.add('is-open');
       document.body.classList.add('no-scroll');
 
@@ -166,15 +170,21 @@
     });
   };
 
+  /* Règles du jeu : une carte tricotée par règle, dans la DA du jeu. */
   GQ.rulesHtml = function () {
     var R = T.regles;
+    var v = GQ.ruleVars();
     return (
+      (R.intro ? '<p class="rules-intro">' + t(R.intro, v) + '</p>' : '') +
       '<ol class="rules">' +
       R.liste.map(function (r, i) {
-        return '<li><span class="rule-num">' + (i + 1) + '</span><p><strong>' + t(r.titre) + '</strong> ' + t(r.texte) + '</p></li>';
+        return '<li class="rule">' +
+          '<div class="rule-art">' + GQ.knit.icon(r.icone || 'star', 'rule-ico') + '<span class="rule-num">' + (i + 1) + '</span></div>' +
+          '<div class="rule-body"><h3 class="rule-title">' + t(r.titre, v) + '</h3><p>' + t(r.texte, v) + '</p></div>' +
+          '</li>';
       }).join('') +
       '</ol>' +
-      '<p class="rules-goal">' + t(R.objectif) + '</p>'
+      '<div class="rules-goal">' + GQ.knit.icon('gift', 'rules-goal-ico') + '<p>' + t(R.objectif, v) + '</p></div>'
     );
   };
 

@@ -335,7 +335,7 @@
 
   actions['test-unfreeze'] = function () {
     if (!guard()) return;
-    GQ.state.gel = { until: 0, total: 0 };
+    GQ.state.gel.until = 0;
     done('Gel levé.');
   };
 

@@ -1,10 +1,10 @@
 /* =====================================================================
  * GOBINOUS CHRISTMAS QUEST — LIEUX, INDICES ET QR CODES
  * ---------------------------------------------------------------------
- * ⚠ VALEURS PROVISOIRES : les lieux réels de la Tour Saint-Gobain ne
- * sont pas encore définis. Remplacez chaque valeur marquée
- * [À CONFIGURER] par le contenu définitif. N'indiquez que des lieux
- * réellement accessibles aux participants.
+ * Les lieux ci-dessous sont INVENTÉS pour que le jeu soit jouable de bout
+ * en bout : remplacez-les par de vrais lieux de la Tour Saint-Gobain,
+ * réellement accessibles aux participants (puis supprimez la ligne
+ * aVerifier de chaque lieu).
  *
  * Parcours :
  *   Quête 1 (quiz)            → indice vers le lieu A → QR A → Quête 2
@@ -36,53 +36,66 @@
 window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.lieux = {
-  /* ⚠ LIEUX SIMULÉS pour tester le parcours de bout en bout : remplacez
-   * nom, indice, réponses, textes et jokers par les vrais lieux de la Tour,
-   * puis supprimez la ligne aVerifier de chaque lieu. */
+  /* Après le quiz (quête 1). */
   A: {
+    nom: "Le grand sapin du hall",
+    indice:
+      "Au pied de la Tour, je suis le premier à vous souhaiter la bienvenue.\nCette année, j'ai revêtu boules, guirlandes et une étoile tout en haut.\nSous la grande verrière, je brille pour chaque visiteur qui passe les portiques.\n\n**Où le lutin a-t-il caché la suite ?**",
+    reponsesAcceptees: [
+      "sapin", "grand sapin", "sapin du hall", "sapin de noel", "le sapin de noel du hall",
+      "hall", "hall d'accueil", "hall d'entree", "accueil", "rez de chaussee",
+    ],
+    texteValidation:
+      "Direction le rez-de-chaussée ! Le QR code est accroché à une branche du grand sapin, côté accueil. Ne secouez pas trop les boules…",
+    indiceJoker: "Prenez l'ascenseur… jusqu'en bas, là où l'on badge en arrivant le matin.",
+    codeQR: "SAPIN",
+    aVerifier: "Lieu inventé pour les tests : à remplacer par un vrai lieu de la Tour.",
+  },
+
+  /* Après l'énigme mystère (quête 2). */
+  B: {
     nom: "La cafétéria",
     indice:
-      "On y fait le plein d'énergie avant les réunions.\nLe café y coule à flots et les plateaux s'y croisent à midi.\n\n**Où le lutin a-t-il caché la suite ?**",
-    reponsesAcceptees: ["cafeteria", "cafet", "cafe", "restaurant", "cantine", "self", "restaurant d'entreprise"],
+      "Ici, les tasses fument comme des cheminées un soir de réveillon.\nOn s'y retrouve pour un chocolat chaud, un café ou une pause bien méritée.\nLe lutin, frigorifié, est venu s'y réchauffer… et il a oublié quelque chose.\n\n**Où le lutin est-il allé se réchauffer ?**",
+    reponsesAcceptees: [
+      "cafeteria", "cafet", "cafe", "coin cafe", "espace cafe", "machine a cafe",
+      "restaurant", "restaurant d'entreprise", "cantine", "self",
+    ],
     texteValidation:
-      "Direction la cafétéria ! Cherchez le QR code caché près de la machine à café, puis scannez-le.",
-    indiceJoker: "Suivez l'odeur du café…",
-    codeQR: "SAPIN",
-    aVerifier: "Lieu simulé pour les tests : à remplacer par un vrai lieu de la Tour.",
-  },
-
-  B: {
-    nom: "L'accueil",
-    indice:
-      "C'est la première porte franchie par chaque visiteur.\nOn y reçoit son badge et un grand sourire.\n\n**Où se cache le prochain QR code ?**",
-    reponsesAcceptees: ["accueil", "hall", "hall d'accueil", "reception", "hall d'entree"],
-    texteValidation:
-      "Rendez-vous à l'accueil du rez-de-chaussée. Le QR code vous attend près du comptoir.",
-    indiceJoker: "Pensez à l'endroit où l'on retire son badge visiteur.",
+      "Filez à la cafétéria ! Le QR code se cache près de la machine à café, entre les tasses et les sachets de chocolat.",
+    indiceJoker: "Suivez l'odeur du café… et du chocolat chaud.",
     codeQR: "ETOILE",
-    aVerifier: "Lieu simulé pour les tests : à remplacer par un vrai lieu de la Tour.",
+    aVerifier: "Lieu inventé pour les tests : à remplacer par un vrai lieu de la Tour.",
   },
 
+  /* Après le défi Saint-Gobain (quête 3). */
   C: {
-    nom: "La salle de sport",
+    nom: "L'auditorium",
     indice:
-      "Ici, on transpire entre deux réunions.\nTapis, haltères et vestiaires sont au rendez-vous.\n\n**Où le lutin s'est-il caché cette fois ?**",
-    reponsesAcceptees: ["salle de sport", "sport", "salle de fitness", "fitness", "gym", "salle de gym"],
+      "Je n'ai ni bureau ni vue sur Paris, mais des rangées de fauteuils face à une scène.\nC'est chez moi que l'on fait les grandes annonces et les conventions.\nCe soir, le lutin y répète en secret son spectacle de Noël.\n\n**Dans quelle salle le lutin fait-il son show ?**",
+    reponsesAcceptees: [
+      "auditorium", "amphi", "amphitheatre", "salle de conference", "salle de conferences",
+      "salle de spectacle", "salle de convention",
+    ],
     texteValidation:
-      "Filez à la salle de sport ! Le QR code est accroché près des vestiaires.",
-    indiceJoker: "Baskets aux pieds, c'est là qu'on se dépense.",
+      "Rendez-vous à l'auditorium ! Le QR code est collé sur le pupitre, au milieu de la scène.",
+    indiceJoker: "Micro, scène, projecteurs : c'est là qu'on parle à tout le monde en même temps.",
     codeQR: "FLOCON",
-    aVerifier: "Lieu simulé pour les tests : à remplacer par un vrai lieu de la Tour.",
+    aVerifier: "Lieu inventé pour les tests : à remplacer par un vrai lieu de la Tour.",
   },
 
+  /* Cachette de la hotte : réponse à l'énigme de la quête 4. */
   FINAL: {
-    nom: "Le rooftop",
+    nom: "La terrasse panoramique",
     indice: "",
-    reponsesAcceptees: ["rooftop", "toit", "terrasse", "toit terrasse", "terrasse du toit", "dernier etage", "sommet"],
+    reponsesAcceptees: [
+      "terrasse", "terrasse panoramique", "rooftop", "toit", "toit terrasse", "le toit de la tour",
+      "dernier etage", "sommet", "sommet de la tour", "haut de la tour",
+    ],
     texteValidation:
-      "La hotte vous attend tout en haut de la Tour, sur le rooftop. Prenez l'ascenseur jusqu'au dernier étage !",
+      "Prenez l'ascenseur jusqu'au dernier étage et rejoignez la terrasse panoramique : la hotte vous y attend, avec tout Paris à vos pieds !",
     indiceJoker: "",
     codeQR: "HOTTE",
-    aVerifier: "Lieu simulé pour les tests : à remplacer par un vrai lieu de la Tour.",
+    aVerifier: "Lieu inventé pour les tests : à remplacer par le vrai lieu de la hotte.",
   },
 };

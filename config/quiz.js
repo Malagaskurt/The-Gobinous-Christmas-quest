@@ -28,7 +28,7 @@ window.GAME_CONFIG = window.GAME_CONFIG || {};
 window.GAME_CONFIG.quiz = {
   titre: "Le grand quiz",
   intro:
-    "Pour lancer votre aventure, mettez vos connaissances à l'épreuve. Choisissez votre thème et répondez correctement aux huit questions pour débloquer votre premier indice.",
+    "Catastrophe : un lutin farceur a caché la hotte de Noël du Gobinous Christmas Club quelque part dans la Tour ! Pour retrouver sa trace, choisissez un thème et répondez correctement aux huit questions. Vous avez droit à deux thèmes.",
   boutonIntro: "Choisir un thème",
 
   /* Lieu dont l'indice est débloqué après le quiz (voir config/lieux.js). */
@@ -37,8 +37,8 @@ window.GAME_CONFIG.quiz = {
   textes: {
     choixTitre: "Choisissez votre thème",
     choixAide:
-      "Répondez aux 8 questions : le score ne s'affiche qu'à la fin. Il faut 8 bonnes réponses sur 8. Un thème raté ne peut plus être rejoué.",
-    tentatives: "Tentatives échouées : {n} sur {max} avant blocage",
+      "Répondez aux 8 questions : le score ne s'affiche qu'à la fin. Il faut 8 bonnes réponses sur 8. Vous avez droit à deux thèmes.",
+    tentatives: "Thèmes ratés : {n} sur {max}. Dernière chance !",
     themeEchoue: "Fermé",
     questionPrecedente: "Question précédente",
     questionSuivante: "Question suivante",
@@ -57,13 +57,13 @@ window.GAME_CONFIG.quiz = {
     resultatScore: "{score} bonne(s) réponse(s) sur {total}",
     echecTitre: "Raté, de peu !", // 6 ou 7 bonnes réponses
     echecTitreLoin: "Pas cette fois !", // 5 bonnes réponses ou moins
-    echecTexte: "Il fallait 8 bonnes réponses sur 8. Ce thème est désormais fermé : choisissez-en un autre.",
-    echecAvertissement: "Attention : un nouvel échec bloquera le quiz pendant {minutes}.",
+    echecTexte: "Il fallait 8 bonnes réponses sur 8. Ce thème est fermé, mais vous avez droit à une deuxième chance : choisissez un autre thème.",
+    echecAvertissement: "Attention : si ce deuxième thème est raté, tout sera gelé pendant {minutes}.",
     echecBlocage: "C'est votre deuxième échec : le quiz est gelé pendant {minutes}. Ensuite, le lutin vous laissera passer à la suite.",
     boutonAutreTheme: "Choisir un autre thème",
     boutonMinuteur: "Voir le minuteur",
     bloqueTitre: "Quiz gelé",
-    bloqueTexte: "Deux thèmes ratés : le quiz est gelé. À la fin du compte à rebours, vous passerez directement à la suite de l'aventure.",
+    bloqueTexte: "Deux thèmes ratés : tout est gelé ! Vous ne pouvez rien faire, à part relire les règles. À la fin du compte à rebours, vous passerez directement au premier indice.",
     bloqueCompteur: "Suite de l'aventure dans",
     reussiteTitre: "Quiz réussi !",
     reussiteTexte: "8 bonnes réponses sur 8 : votre premier indice est débloqué.",

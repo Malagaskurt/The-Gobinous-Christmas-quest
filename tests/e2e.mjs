@@ -108,12 +108,8 @@ async function chooseAndValidate(i) {
   await page.click('[data-action="validate-choice"]');
   await settle();
 }
-// Lève le gel d'une quête sans attendre la fin du compte à rebours.
-async function unfreeze() {
-  await page.evaluate(() => { window.GQ.state.gel = { until: 0, total: 0 }; window.GQ.save(); window.GQ.render(); });
-  await settle();
-}
-const frozen = async () => (await page.locator('.answer-form, .choices').count()) === 0 && (await has('Réponse gelée'));
+const frozen = async () =>
+  (await page.locator('.answer-form, .choices, .btn-joker').count()) === 0 && (await has('Tout est gelé'));
 async function noHorizontalScroll() {
   const ok = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
   assert(ok, 'défilement horizontal détecté');
@@ -158,9 +154,10 @@ await step('Plateau « Comment jouer ? » animé, règles détaillées accessibl
   for (let n = 1; n <= 5; n++) assert(await has(`QUÊTE ${n}`), `quête ${n} absente du plateau`);
   await clickText('Lire les règles détaillées');
   const modal = norm(await page.locator('.modal').innerText());
-  for (const s of ['COMMENT JOUER', 'Résolvez les 5 quêtes.', 'Gardez votre joker.', 'Attention aux erreurs', 'Votre objectif']) {
+  for (const s of ['Les règles', '5 quêtes à résoudre', '1 joker, 1 seule fois', '2 essais, puis le gel', 'gelé 45 secondes…', '30 minutes chrono', 'Votre objectif']) {
     assert(modal.includes(norm(s)), `texte manquant dans les règles détaillées : ${s}`);
   }
+  assert((await page.locator('.modal-sheet .rule').count()) === 6, 'règles illustrées absentes');
   await page.click('[data-modal-cancel]');
   await noHorizontalScroll();
   await clickText("C'est parti");
@@ -218,13 +215,13 @@ await step('Thème terminé avec des erreurs → score affiché, thème fermé, 
   assert(await has('Raté, de peu'), 'écran d\'échec absent');
   assert(await has('6 bonne(s) réponse(s) sur 8'), 'score 6/8 absent');
   assert((await state()).quiz.lockUntil === 0, 'blocage déclenché trop tôt');
-  assert(await has('un nouvel échec bloquera'), 'avertissement absent');
+  assert(await has('si ce deuxième thème est raté'), 'avertissement absent');
   await clickText('Choisir un autre thème');
   assert(await page.locator(`[data-id="${themes[0].id}"]`).isDisabled(), 'thème raté encore disponible');
-  assert(await has('Tentatives échouées : 1 sur 2'), 'compteur de tentatives absent');
+  assert(await has('Thèmes ratés : 1 sur 2'), 'compteur de tentatives absent');
 });
 
-await step('Deuxième thème raté → quiz gelé 50 secondes (persistant au rechargement)', async () => {
+await step('Deuxième thème raté → quiz gelé 45 secondes (persistant au rechargement)', async () => {
   await page.click(`[data-action="start-theme"][data-id="${themes[1].id}"]`);
   await settle();
   await finishTheme(themes[1], (q) => wrongOf(q));
@@ -234,7 +231,10 @@ await step('Deuxième thème raté → quiz gelé 50 secondes (persistant au rec
   await clickText('Voir le minuteur');
   assert(await has('Quiz gelé'), 'minuteur absent');
   const ms = (await state()).quiz.lockUntil - Date.now();
-  assert(ms > 40000 && ms <= 50000, `durée de blocage inattendue : ${ms} ms`);
+  assert(ms > 40000 && ms <= 45000, `durée de blocage inattendue : ${ms} ms`);
+  await page.click('.topbar [data-action="show-rules"]');
+  assert((await page.locator('.modal-sheet').count()) === 1, 'règles inaccessibles pendant le gel');
+  await page.click('[data-modal-cancel]');
   assert((await state()).quiz.passAfterLock === true, 'validation d\'office non prévue');
   assert(/00:[45]\d/.test(await page.locator('[data-countdown]').innerText()), 'compte à rebours absent');
   await reload();
@@ -352,17 +352,10 @@ await step('Joker : confirmation → indice affiché, joker consommé et mémori
   assert(await has('Indice du joker'), 'indice perdu après rechargement');
 });
 
-await step('Énigme : mauvaise réponse → gel (persistant), puis bonne réponse acceptée', async () => {
+await step('Énigme : 1re erreur → dernier essai annoncé, bonne réponse acceptée', async () => {
   await answer('le bois');
-  assert(await frozen(), 'pas de gel après une mauvaise réponse');
-  const ms = (await state()).gel.until - Date.now();
-  const short = CFG.parametres.modeTest.dureeBlocageCourtSecondes * 1000;
-  assert(ms > 0 && ms <= short, `gel inattendu : ${ms} ms`);
-  await reload();
-  assert(await frozen(), 'gel perdu après rechargement');
-  assert(await has('Indice du joker'), 'indice du joker masqué pendant le gel');
-  await page.waitForTimeout(ms + 1200);
-  assert((await page.locator('.answer-form').count()) === 1, 'saisie non rétablie à la fin du gel');
+  assert(await has('Dernier essai'), 'avertissement du dernier essai absent');
+  assert(!(await frozen()), 'gel dès la première erreur');
   await answer('  Le VERRE ');
   assert(await has('Énigme résolue'), 'bonne réponse refusée');
   await clickText("Découvrir l'indice du prochain lieu");
@@ -387,14 +380,22 @@ await step('Lieu B puis quête 3 (défi Saint-Gobain)', async () => {
     assert(await has(`Question ${i + 1} sur ${qs.length}`), `question ${i + 1} absente`);
     const wrong = idx(qs[i]) === 0 ? 1 : 0;
     if (i === 0) {
-      await chooseAndValidate(wrong);
-      assert(await frozen(), 'pas de gel après une erreur au défi');
+      // Deux erreurs → gel, puis question validée d'office (bonne réponse montrée).
+      const wrongs = qs[i].choix.map((_, k) => k).filter((k) => k !== idx(qs[i]));
+      await chooseAndValidate(wrongs[0]);
+      assert(await has('Dernier essai'), 'avertissement du dernier essai absent');
+      await chooseAndValidate(wrongs[1]);
+      assert(await frozen(), 'pas de gel après la 2e erreur au défi');
       await go(BASE + '#/organisateur');
       await settle();
       await clickText('Lever le gel');
       await go(BASE + '#/quete/3');
       await settle();
-      assert((await page.locator(`.choice[data-i="${wrong}"]`).count()) === 1, 'propositions absentes après le gel');
+      assert(await has('Le gel est levé'), 'question non validée d\'office après le gel');
+      assert((await page.locator('.choice.is-correct').count()) === 1, 'bonne réponse non montrée');
+      await page.click('[data-action="next-question"]');
+      await settle();
+      continue;
     }
     await chooseAndValidate(idx(qs[i]));
     await page.click('[data-action="next-question"]');
@@ -416,13 +417,21 @@ await step('Lieu C via saisie manuelle du code → quête 4', async () => {
 await step('Quête 4 : énigme finale → lieu final confirmé', async () => {
   await clickText("Découvrir l'énigme finale");
   await answer('nulle part');
-  assert(await frozen(), 'pas de gel après une mauvaise réponse');
-  await unfreeze();
-  await answer(CFG.lieux.FINAL.reponsesAcceptees[0]);
+  assert(await has('Dernier essai'), 'avertissement du dernier essai absent');
+  await answer('la cave');
+  assert(await frozen(), 'pas de gel après la 2e erreur');
+  const ms = (await state()).gel.until - Date.now();
+  const short = CFG.parametres.modeTest.dureeBlocageCourtSecondes * 1000;
+  assert(ms > 0 && ms <= short, `gel inattendu : ${ms} ms`);
+  await reload();
+  assert(await frozen(), 'gel perdu après rechargement');
+  await page.waitForTimeout(ms + 1200);
+  assert(await has('Le gel est levé'), 'énigme finale non validée d\'office');
   assert(await has('cachette de la hotte'), 'réussite absente');
+  assert(await has(CFG.lieux.FINAL.nom), 'lieu final absent');
   assert(await has('instructions des organisateurs'), 'consigne absente');
   await clickText('Continuer');
-  assert(await has('Vous avez retrouvé la piste de la hotte'), 'écran final absent');
+  assert(await has('retrouvé la piste de la hotte'), 'écran final absent');
 });
 
 await step('Quête 5 : code organisateur incorrect refusé, correct → « Aventure terminée »', async () => {

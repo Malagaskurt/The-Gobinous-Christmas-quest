@@ -51,7 +51,7 @@ window.GAME_CONFIG.textes = {
       "Bien joué. J'avais pourtant bien caché cet indice !",
     ],
     echec: "Hé hé… Ce thème-là était piégé !",
-    blocage: "Pause forcée ! J'en profite pour faire une sieste.",
+    blocage: "Brrr… Tout est gelé ! J'en profite pour faire une sieste.",
     lieu: "Je vous attends là-bas… ou pas !",
     finale: "Bon d'accord… Vous m'avez presque trouvé !",
     fin: "Vous m'avez démasqué ! Bien joué, l'équipe !",
@@ -89,44 +89,58 @@ window.GAME_CONFIG.textes = {
     regles: [
       { icone: "qr", texte: "Entre deux quêtes : trouvez le lieu, scannez son QR code." },
       { icone: "star", texte: "**1 joker** = 1 indice bonus, une seule fois." },
-      { icone: "flake", texte: "**Mauvaise réponse** = 50 s de gel. Au quiz : 2 thèmes ratés." },
+      { icone: "flake", texte: "**2 essais** par étape, puis {duree} de gel… et on passe à la suite." },
     ],
     detail: "Lire les règles détaillées",
   },
 
-  /* Texte complet des règles (affiché tel quel).
-   * ⚠ Si vous modifiez les paramètres du quiz (nombre de tentatives,
-   *   durée du blocage…), pensez à mettre à jour la règle n°5. */
+  /* Règles du jeu, affichées en plein écran (bouton « Règles » en haut
+   * des écrans de jeu, et lien « Lire les règles » de la carte).
+   * Une règle = une icône tricotée + un titre court + une phrase ou deux.
+   * Icônes : star, gift, check, flake, tree, dice, tower, qr, quiz, loupe,
+   * pin, clock, lock.
+   * {duree} et {chrono} sont remplacés par la durée du gel et celle du
+   * chrono (config/parametres.js). */
   regles: {
-    titre: "COMMENT JOUER ?",
+    titre: "Les règles",
+    intro: "Un lutin farceur a caché la hotte de Noël dans la Tour. À vous de la retrouver !",
     liste: [
       {
-        titre: "Résolvez les 5 quêtes.",
-        texte: "Quiz, énigmes et défis vous attendent pour retrouver le cadeau disparu.",
+        icone: "gift",
+        titre: "5 quêtes à résoudre",
+        texte: "Quiz, énigmes et défis : chaque quête réussie vous rapproche de la hotte.",
       },
       {
-        titre: "Suivez les indices.",
-        texte: "Chaque quête réussie vous permet de découvrir la suite de l'aventure.",
+        icone: "qr",
+        titre: "Suivez les indices",
+        texte: "Après chaque quête, devinez le lieu suivant, allez-y et scannez son QR code.",
       },
       {
-        titre: "Jouez en équipe.",
-        texte: "Discutez, réfléchissez ensemble et utilisez votre téléphone pour avancer.",
+        icone: "tree",
+        titre: "Jouez en équipe",
+        texte: "Un seul téléphone pour toute l'équipe : discutez, réfléchissez ensemble, avancez ensemble.",
       },
       {
-        titre: "Gardez votre joker.",
+        icone: "star",
+        titre: "1 joker, 1 seule fois",
+        texte: "Il donne un indice bonus. Utilisez-le au bon moment : il ne revient pas !",
+      },
+      {
+        icone: "flake",
+        titre: "2 essais, puis le gel",
         texte:
-          "Vous disposez d'un joker utilisable une seule fois pendant toute l'aventure. Il vous permettra d'obtenir un indice supplémentaire.",
+          "Quiz : 8/8 exigé, 2 thèmes possibles. Ailleurs : 2 essais par réponse. Après la 2e erreur, tout est gelé {duree}… puis vous passez à la suite.",
       },
       {
-        titre: "Attention aux erreurs !",
-        texte:
-          "Au quiz, il faut 8 bonnes réponses sur 8. En cas d'échec, vous pouvez tenter un autre thème. Au deuxième échec, le quiz est gelé pendant 50 secondes, puis vous passez à la suite. Dans les autres quêtes, chaque mauvaise réponse gèle le jeu pendant 50 secondes.",
+        icone: "clock",
+        titre: "{chrono} chrono",
+        texte: "Le chrono tourne dès le départ. S'il est dépassé, vous pouvez finir, mais votre temps compte !",
       },
     ],
     objectif:
       "Votre objectif : retrouver la hotte et découvrir ce qu'elle vous réserve. Le contenu des cadeaux reste secret jusqu'à la révélation finale.",
     bouton: "C'est parti !",
-    boutonFermer: "Fermer",
+    boutonFermer: "J'ai compris",
   },
 
   general: {
@@ -141,6 +155,9 @@ window.GAME_CONFIG.textes = {
     terminer: "Terminer",
     bonneReponse: "Bonne réponse !",
     mauvaiseReponse: "Ce n'est pas la bonne réponse. Réessayez !",
+    mauvaiseReponseDernierEssai:
+      "Ce n'est pas la bonne réponse. Dernier essai : encore une erreur et tout sera gelé pendant {duree}.",
+    gelLeveReponse: "Le gel est levé ! Voici la bonne réponse.",
     reponseVide: "Saisissez une réponse avant de valider.",
     choixVide: "Sélectionnez une réponse avant de valider.",
     votreReponse: "Votre réponse",
@@ -150,9 +167,10 @@ window.GAME_CONFIG.textes = {
     commencer: "Commencer",
     continuer: "Continuer",
     partieReinitialisee: "Votre partie a été réinitialisée par les organisateurs.",
-    gelTitre: "Réponse gelée",
-    gelTexte: "Mauvaise réponse : le lutin a tout gelé ! Patientez avant de retenter votre chance.",
-    gelCompteur: "Nouvelle tentative dans",
+    gelTitre: "Tout est gelé !",
+    gelTexte:
+      "Deuxième erreur : le lutin a tout gelé ! Vous ne pouvez rien faire, à part relire les règles. À la fin du compte à rebours, vous passerez directement à la suite.",
+    gelCompteur: "Suite de l'aventure dans",
     stockageIndisponible:
       "Ce navigateur bloque la sauvegarde (navigation privée ?). Votre progression sera perdue si la page est fermée ou rechargée.",
   },
