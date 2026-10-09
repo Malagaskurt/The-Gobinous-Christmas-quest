@@ -113,6 +113,10 @@
     }
     GQ.updateClocks();
     if (scr.after) scr.after();
+    if (changed) {
+      GQ.elf.hide();
+      if (scr.elf) GQ.elf.react(scr.elf);
+    }
     if (scr.celebrate && !celebrated[scr.key]) {
       celebrated[scr.key] = true;
       GQ.celebrate(scr.celebrate === 'big');
@@ -178,32 +182,37 @@
   /* Chrono global : rafraîchi chaque seconde, indépendamment des écrans. */
   setInterval(GQ.updateClocks, 1000);
 
-  /* Écran de chargement : logo et titre, puis fondu. Un appui le ferme. */
+  /* Écran de chargement : étoile et titre tricotés, barre de progression
+   * en pixels, et le lutin qui traverse l'écran. Un appui le ferme. */
   function loader() {
     var el = document.getElementById('loader');
     if (!el) return;
     // Raccourci si l'utilisateur réduit les animations, ou en test automatisé.
     var reduce = navigator.webdriver || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var cells = '';
+    for (var i = 0; i < 12; i++) cells += '<i style="animation-delay:' + (0.25 + i * 0.09).toFixed(2) + 's"></i>';
     el.innerHTML =
       '<div class="loader-inner">' +
-      GQ.art.star('loader-star') +
-      '<p class="loader-title">' + GQ.t(T.accueil.titre) + '</p>' +
-      '<p class="script loader-script">' + GQ.t(T.accueil.titreSuite) + '</p>' +
-      '<span class="loader-bar" aria-hidden="true"><i></i></span>' +
+      GQ.knit.img('star', 'loader-star') +
+      GQ.knit.text(GQ.cfg.textes.accueil.titre, { cls: 'loader-title', alt: '', outline: true }) +
+      '<p class="pixel-text loader-text">' + GQ.t(T.chargement.texte) + '<span class="cursor">_</span></p>' +
+      '<span class="loader-cells" aria-hidden="true">' + cells + '</span>' +
       '</div>' +
+      '<div class="loader-elf" aria-hidden="true"><img class="pixel" src="' + GQ.pixel.src('elfWalk1') + '" alt=""><img class="pixel" src="' + GQ.pixel.src('elfWalk2') + '" alt=""></div>' +
       '<div class="loader-logo">' + GQ.logo('clair') + '</div>';
     el.classList.add('is-on');
     var hide = function () {
       if (el.classList.contains('is-out')) return;
       el.classList.add('is-out');
-      setTimeout(function () { el.remove(); }, 500);
+      setTimeout(function () { el.remove(); }, 550);
     };
     el.addEventListener('click', hide);
-    setTimeout(hide, reduce ? 300 : 1400);
+    setTimeout(hide, reduce ? 300 : 2000);
   }
 
   if (!window.GQ_STOP) {
-    GQ.render();
     loader();
+    GQ.render();
+    GQ.elf.schedule();
   }
 })();

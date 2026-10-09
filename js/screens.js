@@ -135,7 +135,7 @@
       '<section class="success">' +
       (o.art === '' ? '' : '<div class="success-art">' + (o.art || art.check('success-check')) + '</div>') +
       (o.score ? '<p class="score' + (o.scoreKind === 'red' ? ' score-red' : '') + '">' + esc(o.score) + '</p>' : '') +
-      (String(script).trim() ? '<p class="script success-script">' + t(script) + '</p>' : '') +
+      (String(script).trim() ? '<p class="pixel-text success-script">' + t(script) + '</p>' : '') +
       '<h1 class="success-title" tabindex="-1">' + t(o.title) + '</h1>' + (o.html || '') + '</section>' +
       (o.cta ? cta(o.cta) : '')
     );
@@ -149,22 +149,27 @@
     var A = T.accueil;
     var s = GQ.state;
     var action = s.team
-      ? '<p class="home-resume">' + t(A.partieEnCours, { equipe: s.team }) + '</p>' + btn(esc(A.boutonReprendre) + icon('fleche'), 'resume', '', 'btn-light')
-      : btn(esc(A.bouton) + icon('fleche'), 'start', '', 'btn-light');
+      ? '<p class="home-resume">' + t(A.partieEnCours, { equipe: s.team }) + '</p>' + btn(esc(A.boutonReprendre) + icon('fleche'), 'resume', '', 'btn-red')
+      : btn(esc(A.bouton) + icon('fleche'), 'start', '', 'btn-red');
     return {
       key: 'home',
       bare: true,
+      elf: { walk: '.band', say: 'accueil' },
       html:
-        '<main class="screen-home">' +
+        '<main class="screen-home knit">' +
+        '<div class="home-top"><span class="corner corner-l" aria-hidden="true"></span><span class="pixel-text home-year">' + t(A.annee) + '</span><span class="corner corner-r" aria-hidden="true"></span></div>' +
         '<div class="home-logo">' + GQ.logo('clair') + '</div>' +
         '<div class="home-hero">' +
-        art.star('home-star') +
+        GQ.knit.img('star', 'home-star') +
         '<p class="home-club">' + t(A.surtitre) + '</p>' +
-        '<h1 class="home-title" tabindex="-1">' + t(A.titre) + '<span class="script home-script">' + t(A.titreSuite) + '</span></h1>' +
+        '<h1 class="home-title" tabindex="-1">' + GQ.knit.text(plain(A.titre), { cls: 'home-knit-title', outline: true }) +
+        '<span class="pixel-text home-pixel">' + t(A.titreSuite) + '</span></h1>' +
         '<p class="home-subtitle">' + t(A.sousTitre) + '</p>' +
-        '<p class="home-lead">' + t(A.accroche) + '</p>' +
         '</div>' +
+        '<p class="home-lead">' + t(A.accroche) + '</p>' +
         '<div class="home-cta">' + action + '</div>' +
+        '<div class="band" aria-hidden="true"></div>' +
+        '<div class="home-notes">' + (A.noteGauche ? '<p>' + t(A.noteGauche) + '</p>' : '<p></p>') + (A.noteDroite ? '<p>' + t(A.noteDroite) + '</p>' : '') + '</div>' +
         '</main>',
     };
   };
@@ -175,10 +180,11 @@
     return {
       key: 'team',
       bare: true,
+      elf: { say: 'equipe' },
       html:
         '<main class="screen screen-plain">' +
         '<a class="back-link" href="#/">' + icon('retour') + 'Accueil</a>' +
-        '<div class="plain-head">' + art.gift('plain-art') +
+        '<div class="plain-head">' + GQ.logo('fonce', 'plain-logo') + art.gift('plain-art') +
         '<h1 class="page-title" tabindex="-1">' + t(E.titre) + '</h1>' +
         '<p class="muted">' + t(E.aide) + '</p></div>' +
         textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder }) +
@@ -252,27 +258,25 @@
         '<p class="hint">' + t(L.conseilNavigateur) + '</p></details>' +
         (GQ.test.isActive() ? btn('Test : simuler le scan', 'test-scan', ' data-code="' + esc(p.codeQR) + '"', 'btn-test') : '');
     }
-    return { key: 'q' + n + '-travel', html: html };
+    return { key: 'q' + n + '-travel', elf: { say: 'lieu' }, html: html };
   }
 
   /* ------------------------------------------------------------------ */
   /* Quête 1 : le grand quiz                                             */
   /* ------------------------------------------------------------------ */
 
-  /* Blocage du quiz : compte à rebours dans un anneau qui se vide. */
+  /* Blocage du quiz : minuteur rétro à cristaux liquides. */
   function lockDevice(lock) {
     var X = QZ.textes;
     var total = GQ.state.quiz.lockTotal || lock;
     return (
-      '<div class="lock" role="timer" aria-label="' + esc(X.bloqueCompteur) + '">' +
-      '<div class="lock-ring"><svg viewBox="0 0 120 120" aria-hidden="true">' +
-      '<circle class="ring-bg" cx="60" cy="60" r="54"/>' +
-      '<circle class="ring-fg" cx="60" cy="60" r="54" pathLength="100" data-ring style="stroke-dashoffset:' + (100 - (100 * lock) / total).toFixed(2) + '"/></svg>' +
-      '<div class="ring-center">' + art.flake('ring-flake') +
-      '<span class="ring-digits" data-countdown>' + GQ.mmss(lock + 999) + '</span></div></div>' +
-      '<h3 class="lock-title">' + esc(X.bloqueTitre) + '</h3>' +
-      '<p class="lock-text">' + t(X.bloqueTexte) + '</p>' +
-      '</div>'
+      '<div class="timer-device" role="timer" aria-label="' + esc(X.bloqueCompteur) + '">' +
+      '<div class="td-top"><span class="td-label">' + esc(X.bloqueTitre) + '</span>' + art.flake('td-flake') + '</div>' +
+      '<div class="td-screen"><span class="td-small">' + esc(X.bloqueCompteur) + '</span>' +
+      '<span class="td-digits" data-countdown>' + GQ.mmss(lock + 999) + '</span>' +
+      '<span class="td-bar"><i data-ring style="width:' + ((100 * lock) / total).toFixed(1) + '%"></i></span></div>' +
+      '</div>' +
+      '<p class="lock-text">' + t(X.bloqueTexte) + '</p>'
     );
   }
 
@@ -282,9 +286,9 @@
       if (!left) { GQ.render(); return; }
       var total = GQ.state.quiz.lockTotal || left;
       var el = document.querySelector('[data-countdown]');
-      var ring = document.querySelector('[data-ring]');
+      var bar = document.querySelector('[data-ring]');
       if (el) el.textContent = GQ.mmss(left + 999);
-      if (ring) ring.style.strokeDashoffset = (100 - (100 * left) / total).toFixed(2);
+      if (bar) bar.style.width = ((100 * left) / total).toFixed(1) + '%';
     });
   }
 
@@ -315,6 +319,7 @@
     html += '</ul>';
     return {
       key: 'q1-themes' + (lock ? '-lock' : ''),
+      elf: lock ? { say: 'blocage' } : null,
       html: html,
       after: lock ? startCountdown : null,
     };
@@ -351,6 +356,7 @@
     var note = r.locked ? X.echecBlocage : GQ.quizNextFailLocks() ? X.echecAvertissement : '';
     return {
       key: 'q1-result',
+      elf: { say: 'echec' },
       html: successBlock({
         art: '',
         score: r.score + '/' + r.total,
@@ -375,6 +381,7 @@
       return {
         key: 'q1-success',
         celebrate: true,
+        elf: { say: 'reussite' },
         html: successBlock({
           score: r ? r.score + '/' + r.total : '8/8',
           title: X.reussiteTitre,
@@ -413,6 +420,7 @@
       return {
         key: 'q2-success',
         celebrate: true,
+        elf: { say: 'reussite' },
         html: successBlock({ title: E.reussiteTitre, html: '<p>' + t(E.reussiteTexte) + '</p>', cta: btn(esc(E.boutonIndice) + icon('fleche'), 'to-place', ' data-n="2"') }),
       };
     }
@@ -452,6 +460,7 @@
       return {
         key: 'q3-success',
         celebrate: true,
+        elf: { say: 'reussite' },
         html: successBlock({ title: D.reussiteTitre, html: '<p>' + t(D.reussiteTexte) + '</p>', cta: btn(esc(D.boutonIndice) + icon('fleche'), 'to-place', ' data-n="3"') }),
       };
     }
@@ -502,7 +511,8 @@
         key: 'q5-finished',
         celebrate: 'big',
         html: successBlock({
-          script: F.termineeScript,
+          art: '<div class="elf-scene"><span class="elf-say pixel-text">' + t(GQ.elf.line('fin')) + '</span>' + art.elf('elfWave', 'elf-big') + '</div>',
+          script: '',
           title: F.termineeTitre,
           html: '<p>' + t(F.termineeTexte, { equipe: s.team }) + '</p>' +
             (c ? '<p class="final-time">' + t(T.chrono.tempsFinal, { temps: GQ.mmss(c.elapsed) }) + '</p>' : '') +
@@ -516,8 +526,9 @@
     var code = P.finDePartie && P.finDePartie.codeOrganisateur;
     var html =
       questHead(5) +
-      '<section class="finale">' + art.gift('finale-gift') +
-      '<p class="script finale-script">' + t(H.script) + '</p>' +
+      '<section class="finale">' +
+      '<div class="elf-scene"><span class="elf-say pixel-text">' + t(GQ.elf.line('finale')) + '</span>' + art.elf('elfGift', 'elf-big') + '</div>' +
+      '<p class="pixel-text finale-script">' + t(H.script) + '</p>' +
       '<p class="finale-text">' + t(H.texte) + '</p>' +
       '<p class="found-place">' + t(H.rappelLieu, { lieu: p.nom }) + '</p></section>';
     if (code) {

@@ -14,7 +14,13 @@
 window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.textes = {
+  /* Écran de chargement (au tout premier affichage). */
+  chargement: {
+    texte: "Chargement de la quête",
+  },
+
   accueil: {
+    annee: "Noël 2026",
     surtitre: "The Gobinous Christmas Club",
     titre: "Gobinous",
     titreSuite: "Christmas Quest",
@@ -24,6 +30,27 @@ window.GAME_CONFIG.textes = {
     bouton: "Commencer l'aventure",
     boutonReprendre: "Reprendre l'aventure",
     partieEnCours: "Partie en cours sur ce téléphone : **{equipe}**",
+    /* Deux petites notes en bas de l'écran d'accueil (laisser "" pour masquer). */
+    noteGauche: "Un lutin farceur a caché le cadeau quelque part dans la Tour.",
+    noteDroite: "Durée : 30 minutes. Fous rires : non garantis, mais très probables.",
+  },
+
+  /* Répliques du lutin qui a caché le cadeau. Une liste [ ] = une réplique
+   * tirée au hasard. Laissez "" pour qu'il reste silencieux. */
+  lutin: {
+    accueil: "Psst… Le cadeau ? C'est moi qui l'ai caché. Hi hi !",
+    equipe: "Un nom qui claque, et que la chasse commence !",
+    reussite: [
+      "Pas mal… Mais vous ne m'attraperez pas si facilement !",
+      "Hé ! Vous chauffez…",
+      "Bien joué. J'avais pourtant bien caché cet indice !",
+    ],
+    echec: "Hé hé… Ce thème-là était piégé !",
+    blocage: "Pause forcée ! J'en profite pour faire une sieste.",
+    lieu: "Je vous attends là-bas… ou pas !",
+    finale: "Bon d'accord… Vous m'avez presque trouvé !",
+    fin: "Vous m'avez démasqué ! Bien joué, l'équipe !",
+    clic: ["Pas touche !", "Je ne dirai rien…", "Cherchez encore !", "Hi hi hi !", "Le cadeau ? Quel cadeau ?"],
   },
 
   /* Chrono global affiché en haut des écrans de jeu. */
@@ -80,7 +107,7 @@ window.GAME_CONFIG.textes = {
 
   general: {
     quete: "Quête",
-    queteNumero: "Quête n°{n}",
+    queteNumero: "Quête {n}",
     bravo: "Bravo !",
     equipe: "Équipe",
     regles: "Règles",
@@ -165,7 +192,6 @@ window.GAME_CONFIG.textes = {
     organisateurLabel: "Code organisateur",
     organisateurBouton: "Valider la fin de l'aventure",
     organisateurErreur: "Code incorrect.",
-    termineeScript: "Joyeux Noël !",
     termineeTitre: "Aventure terminée",
     termineeTexte: "Bravo **{equipe}** ! Merci d'avoir participé à la Gobinous Christmas Quest. Joyeux Noël !",
     termineeLe: "Aventure validée le {date} à {heure}.",

@@ -256,6 +256,8 @@ await step('Quiz réussi après 8 bonnes réponses sur 8 → indice du lieu A', 
   await finishTheme(themes[2], (q) => idx(q));
   assert(await has('Quiz réussi'), 'écran de réussite absent');
   assert(await has('8/8'), 'score 8/8 absent');
+  await page.waitForSelector('#elf.is-peek.has-bubble', { timeout: 3000 });
+  assert((await page.locator('#elf .elf-bubble').innerText()).trim().length > 0, 'le lutin ne dit rien');
   await clickText('Découvrir le premier indice');
   assert(await has('Où se trouve la prochaine étape'), 'écran du lieu absent');
 });
@@ -368,6 +370,7 @@ await step('Quête 5 : code organisateur incorrect refusé, correct → « Avent
   await answer(CFG.parametres.finDePartie.codeOrganisateur.toLowerCase());
   assert(await has('Aventure terminée'), 'fin non affichée');
   assert(await has('Votre temps'), 'temps final absent');
+  assert((await page.locator('.elf-scene .elf-inline').count()) === 1, 'lutin final absent');
   await reload();
   await settle();
   assert(await has('Aventure terminée'), 'fin perdue après rechargement');

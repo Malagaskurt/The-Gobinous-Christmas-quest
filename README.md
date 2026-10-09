@@ -16,14 +16,15 @@ Les équipes de 5 à 10 personnes jouent avec un seul téléphone. Elles résolv
 | **Navigation par `#/…`** | Fonctionne sur tous les hébergeurs statiques sans réglage serveur. Les QR codes pointent vers `…/#/scan/CODE`. |
 | **Aucune dépendance réseau** | Polices et générateur de QR codes sont inclus. Aucun appel à Google Fonts, aucun outil de mesure d'audience, aucun cookie. |
 
-Composants tiers inclus : les polices **Montserrat** (remplaçante libre de Gotham) et **Great Vibes** (écriture manuscrite), sous SIL Open Font License, et **qrcode-generator** de Kazuhiko Arase (licence MIT), utilisé seulement par le mode test pour imprimer les QR codes.
+Composants tiers inclus : les polices **Montserrat** (remplaçante libre de Gotham) et **VT323** (police « informatique »), sous SIL Open Font License, et **qrcode-generator** de Kazuhiko Arase (licence MIT), utilisé seulement par le mode test pour imprimer les QR codes.
 
-### Direction artistique : épurée
+### Direction artistique : « le lutin farceur »
 
-- Fond blanc et bleu Saint-Gobain (#17428C) en couleur principale. Le bleu clair (#00ADE1) sert d'accent, le rouge de Noël (#C8102E) n'apparaît que par petites touches.
-- Accueil sur un aplat bleu nuit, avec le logo Saint-Gobain en blanc, une étoile et le sous-titre manuscrit « Christmas Quest ».
-- Écrans de jeu sur fond blanc : en-tête avec le logo bleu foncé, le chrono et une barre de progression fine. Une seule illustration ou un seul mot manuscrit par écran.
-- Animations discrètes : coche qui se dessine, quelques flocons à la réussite d'une quête, anneau qui se vide pendant le blocage du quiz.
+- **Concept** : un lutin a caché le cadeau. Ce personnage en pixel art se promène de temps en temps sous l'en-tête et sur la bande tricotée de l'accueil. Il commente certaines étapes dans une bulle (réussite, thème raté, quiz gelé, départ vers un lieu) et répond quand on le touche. À la fin, il apparaît avec le cadeau. Ses répliques se modifient dans `config/textes.js` (`lutin`), sa fréquence dans `config/parametres.js` (`lutin`).
+- **Tricot uniquement au début** : l'écran de chargement et l'accueil reprennent l'univers du pull de Noël (maille bleue, titre brodé, bande de flocons et de sapins).
+- **Écrans de jeu** : fond blanc, en-tête bleu nuit avec chrono à cristaux liquides et guirlande de pixels, cartes à ombre franche façon écran rétro, pictogrammes en pixel art, minuteur rétro pendant le gel du quiz.
+- **Typographies** : Gotham (repli Montserrat) et Arial, plus une seule police « informatique », VT323, pour les titres pixel, les compteurs et les bulles du lutin.
+- **Couleurs** : bleu Saint-Gobain #17428C, bleu clair #00ADE1, rouge de Noël #C8102E, laine écrue. Logo Saint-Gobain en blanc sur fond foncé, en bleu foncé sur fond clair.
 
 ---
 
@@ -152,7 +153,7 @@ npx playwright install chromium
 npm test
 ```
 
-Les 28 vérifications couvrent : parcours complet des 5 quêtes ; nom d'équipe vide ; quiz sans correction pendant les questions (navigation avant/arrière, réponses conservées) ; score affiché à la fin, thème raté fermé ; rechargement en cours de thème ; gel de 3 minutes après deux thèmes ratés et persistance au rechargement ; chrono global ; accès direct à une quête non débloquée ; QR code scanné trop tôt, inconnu, ou ouvert dans un navigateur sans partie ; lieu incorrect ; code manuel incorrect ; joker refusé, puis utilisé, mémorisé après rechargement et impossible à réutiliser ; code organisateur incorrect ; « Aventure terminée » conservée au rechargement ; mode test (code, blocage court, sauts de quête, remise à zéro, fiches QR) ; absence de défilement horizontal en mobile et sur ordinateur ; absence d'erreur JavaScript.
+Les vérifications couvrent : parcours complet des 5 quêtes ; nom d'équipe vide ; quiz sans correction pendant les questions (navigation avant/arrière, réponses conservées) ; score affiché à la fin, thème raté fermé ; rechargement en cours de thème ; gel de 3 minutes après deux thèmes ratés et persistance au rechargement ; chrono global ; accès direct à une quête non débloquée ; QR code scanné trop tôt, inconnu, ou ouvert dans un navigateur sans partie ; lieu incorrect ; code manuel incorrect ; joker refusé, puis utilisé, mémorisé après rechargement et impossible à réutiliser ; code organisateur incorrect ; « Aventure terminée » conservée au rechargement ; mode test (code, blocage court, sauts de quête, remise à zéro, fiches QR) ; absence de défilement horizontal en mobile et sur ordinateur ; absence d'erreur JavaScript.
 
 ---
 
@@ -182,7 +183,7 @@ Le fichier `index.html` contient `noindex` : le site n'apparaîtra pas dans les 
 **Fonctionnel :**
 - les écrans (accueil, équipe, règles) et les 5 quêtes, avec leurs écrans d'introduction, de réussite et de transition ;
 - le quiz : 4 thèmes, 32 questions intégrées, score révélé à la fin, thèmes ratés fermés, gel de 3 minutes avec minuteur ;
-- le chrono global de 30 minutes et l'écran de chargement ;
+- le chrono global de 30 minutes, l'écran de chargement et le lutin (promenades, bulles, scène finale) ;
 - l'énigme de la quête 2, le défi (3 QCM), l'énigme finale, l'écran final et « Aventure terminée » ;
 - la saisie et la validation des lieux, les QR codes (scan, saisie manuelle, mode sans QR code) et la génération des fiches à imprimer ;
 - le joker (confirmation, indice, mémorisation) ;
@@ -214,11 +215,14 @@ css/styles.css          charte graphique (couleurs, typographie, mise en page)
 css/fonts.css           déclaration des polices
 js/core.js              règles du jeu et sauvegarde
 js/screens.js           écrans et actions des participants
-js/ui.js                pictogrammes, logo, chrono, en-tête, fenêtres, animations
+js/knit.js              rendu tricot (accueil et chargement)
+js/pixel.js             pixel art : pictogrammes et lutin
+js/elf.js               comportement du lutin (promenades, bulles)
+js/ui.js                logo, chrono, en-tête, fenêtres, animations
 js/admin.js             mode test et fiches QR codes
 js/app.js               navigation et événements
 js/validate.js          vérification de la configuration
-assets/fonts/           Montserrat, Great Vibes (SIL OFL)
+assets/fonts/           Montserrat, VT323 (SIL OFL)
 assets/img/             favicon, logo Saint-Gobain (blanc et bleu foncé)
 vendor/                 générateur de QR codes (MIT)
 tools/                  serveur local et vérification de configuration

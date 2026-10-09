@@ -42,6 +42,15 @@ window.GAME_CONFIG.parametres = {
     dureeMinutes: 30,
   },
 
+  /* ---- Le lutin -------------------------------------------------------
+   * Mascotte en pixel art : il se promène de temps en temps sous l'en-tête
+   * et commente certaines étapes (textes dans config/textes.js → lutin).
+   * promenadeSecondes : intervalle moyen entre deux promenades. */
+  lutin: {
+    actif: true,
+    promenadeSecondes: 50,
+  },
+
   /* ---- Lieux et QR codes -------------------------------------------- */
   lieux: {
     /* true  → après avoir trouvé un lieu, l'équipe doit scanner le QR code
