@@ -693,17 +693,20 @@
   actions.start = function () { GQ.go('equipe'); };
 
   /* Accès organisateur caché : 5 appuis rapides sur le logo de l'accueil
-   * (utile quand la barre d'adresse n'est pas accessible). Le code du mode
-   * test reste demandé ; sans effet si le mode test est désactivé. */
+   * (utile quand la barre d'adresse n'est pas accessible). Ouvre le mode
+   * test s'il est activé, sinon le suivi des équipes. Un code est toujours
+   * demandé. */
   var logoTaps = [];
   actions['logo-tap'] = function () {
-    if (!(P.modeTest && P.modeTest.actif)) return;
+    var testOn = P.modeTest && P.modeTest.actif;
+    var suiviOn = !(P.suivi && P.suivi.actif === false);
+    if (!testOn && !suiviOn) return;
     var now = Date.now();
     logoTaps = logoTaps.filter(function (t0) { return now - t0 < 2500; });
     logoTaps.push(now);
     if (logoTaps.length >= 5) {
       logoTaps = [];
-      GQ.go('organisateur');
+      GQ.go(testOn ? 'organisateur' : 'suivi');
     }
   };
   actions['go-home'] = function () { GQ.go(''); };

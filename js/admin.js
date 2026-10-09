@@ -68,6 +68,11 @@
     return sub === 'qr' ? qrSheet() : panel();
   };
 
+  function suiviLink() {
+    if (P.suivi && P.suivi.actif === false) return '';
+    return '<p><a class="btn btn-small btn-secondary" href="#/suivi">Suivi des équipes</a></p>';
+  }
+
   function login() {
     return {
       key: 'org-login',
@@ -77,6 +82,7 @@
         '<a class="back-link" href="#/">' + icon('retour') + 'Accueil</a>' +
         '<h1 class="page-title" tabindex="-1">Mode test organisateur</h1>' +
         '<p class="muted">Espace réservé aux organisateurs pour préparer et tester le parcours.</p>' +
+        suiviLink() +
         '<form class="answer-form" data-form="test-login" novalidate autocomplete="off">' +
         '<label class="field-label" for="test-code">Code d\'accès</label>' +
         '<input class="field" id="test-code" name="answer" type="password" inputmode="numeric" autocomplete="off">' +
@@ -132,6 +138,7 @@
         '<main class="screen screen-admin">' +
         '<p class="eyebrow">Gobinous Christmas Quest</p>' +
         '<h1 class="page-title" tabindex="-1">Mode test organisateur</h1>' +
+        suiviLink() +
         '<p class="notice notice-warn">' + icon('cadenas') + '<span>Les actions ci-dessous modifient la partie enregistrée dans ce navigateur. ' +
         'Avant de confier ce téléphone à une équipe : <b>réinitialisez la partie</b> puis <b>quittez le mode test</b>.</span></p>' +
 

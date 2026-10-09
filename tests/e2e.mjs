@@ -6,6 +6,9 @@
 import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const require = createRequire(import.meta.url);
 let chromium;
@@ -36,7 +39,17 @@ function assert(cond, msg) {
   if (!cond) throw new Error(msg);
 }
 
-const server = spawn(process.execPath, ['tools/serve.mjs', String(PORT)], { cwd: root, stdio: 'ignore' });
+// Serveur du jeu avec un fichier de suivi temporaire (n'écrase pas data/).
+const SUIVI_CODE = 'TEST-SUIVI';
+const server = spawn(process.execPath, ['tools/serve.mjs', String(PORT)], {
+  cwd: root,
+  stdio: 'ignore',
+  env: { ...process.env, CODE_SUIVI: SUIVI_CODE, SUIVI_FICHIER: join(mkdtempSync(join(tmpdir(), 'gq-')), 'equipes.json') },
+});
+const apiTeams = async () => {
+  const r = await fetch(BASE + 'api/equipes', { headers: { 'X-Code-Suivi': SUIVI_CODE } });
+  return (await r.json()).equipes;
+};
 await new Promise((r) => setTimeout(r, 600));
 
 const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
@@ -128,6 +141,15 @@ await step('Nom d\'équipe vide refusé, puis accepté', async () => {
   assert(await has("Indiquez un nom d'équipe"), 'message d\'erreur absent');
   await answer('Les Testeurs');
   assert((await hash()) === '#/regles', 'pas redirigé vers les règles');
+});
+
+await step('Suivi : la progression de l\'équipe est envoyée au serveur', async () => {
+  await page.evaluate(() => window.GQ.sync.push());
+  const t = (await apiTeams()).find((x) => x.equipe === 'Les Testeurs');
+  assert(t, 'équipe absente du suivi');
+  assert(t.quete === 1, `quête inattendue : ${t.quete}`);
+  const r = await fetch(BASE + 'api/equipes', { headers: { 'X-Code-Suivi': 'MAUVAIS' } });
+  assert(r.status === 401, 'liste accessible sans le bon code');
 });
 
 await step('Plateau « Comment jouer ? » animé, règles détaillées accessibles', async () => {
@@ -428,6 +450,41 @@ await step('QR code ouvert dans un navigateur sans partie → message explicite'
   await other.close();
 });
 
+await step('Suivi : tableau de bord protégé, avancement affiché, réinitialisation à distance', async () => {
+  const other = await browser.newContext({ viewport: { width: 375, height: 740 } });
+  const p2 = await other.newPage();
+  await p2.goto(BASE);
+  await p2.waitForSelector('#loader', { state: 'detached' });
+  await p2.getByText('Lancer la partie').first().click();
+  await p2.fill('.answer-form .field', 'Équipe B');
+  await p2.click('.answer-form button[type=submit]');
+  await p2.waitForTimeout(200);
+  await p2.evaluate(() => window.GQ.sync.push());
+
+  await go(BASE + '#/suivi');
+  await answer('MAUVAIS');
+  assert(await has('Code incorrect'), 'mauvais code accepté');
+  await answer(SUIVI_CODE.toLowerCase());
+  await page.waitForSelector('.team-card');
+  const b = page.locator('.team-card', { hasText: 'Équipe B' });
+  assert(await b.count() === 1, 'équipe B absente du tableau de bord');
+  const a = norm(await page.locator('.team-card', { hasText: 'Les Testeurs' }).innerText());
+  assert(a.includes('terminée'), 'équipe terminée non signalée');
+  await noHorizontalScroll();
+
+  await b.locator('[data-action="suivi-reset"]').click();
+  await page.click('[data-modal-ok]');
+  await page.waitForTimeout(300);
+  assert((await apiTeams()).find((x) => x.equipe === 'Équipe B').resetDemande, 'réinitialisation non enregistrée');
+  await p2.evaluate(() => window.GQ.sync.push());
+  await p2.waitForTimeout(300);
+  const s2 = await p2.evaluate(() => window.GQ.state);
+  assert(s2.team === null, 'partie de l\'équipe B non réinitialisée');
+  assert((await p2.evaluate(() => location.hash)) === '#/', 'équipe B pas renvoyée à l\'accueil');
+  assert(!(await apiTeams()).some((x) => x.equipe === 'Équipe B'), 'équipe B encore dans le suivi');
+  await other.close();
+});
+
 await step('Mode test : aller à la quête 3 puis réinitialiser la partie', async () => {
   await go(BASE + '#/organisateur');
   await settle();
@@ -440,6 +497,8 @@ await step('Mode test : aller à la quête 3 puis réinitialiser la partie', asy
   await page.click('[data-modal-ok]');
   await settle();
   assert((await state()).team === null, 'partie non réinitialisée');
+  await page.waitForTimeout(300);
+  assert(!(await apiTeams()).length, 'partie réinitialisée encore dans le suivi');
   await clickText('Fiches QR codes à imprimer');
   await page.waitForSelector('.qr-code svg');
   assert((await page.locator('.qr-code svg').count()) >= 3, 'QR codes non générés');

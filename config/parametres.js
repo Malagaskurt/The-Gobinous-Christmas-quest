@@ -57,6 +57,24 @@ window.GAME_CONFIG.parametres = {
     dureeMinutes: 30,
   },
 
+  /* ---- Suivi des équipes -------------------------------------------
+   * Chaque téléphone envoie régulièrement sa progression au serveur du
+   * jeu (npm start). Les organisateurs la consultent sur le tableau de
+   * bord #/suivi et peuvent réinitialiser une équipe à distance.
+   * Le code d'accès au tableau de bord est défini côté serveur (variable
+   * CODE_SUIVI, voir README.md) : il n'apparaît pas dans ce fichier.
+   * Sans serveur (hébergement statique), le jeu fonctionne normalement,
+   * sans suivi.
+   *   actif               : false pour désactiver complètement le suivi
+   *   urlServeur          : adresse du serveur si le site est hébergé
+   *                         ailleurs ("" = même adresse que le site)
+   *   intervalleSecondes  : fréquence d'envoi de la progression */
+  suivi: {
+    actif: true,
+    urlServeur: "",
+    intervalleSecondes: 10,
+  },
+
   /* ---- Le lutin -------------------------------------------------------
    * Mascotte en pixel art : il se promène de temps en temps sous l'en-tête
    * et commente certaines étapes (textes dans config/textes.js → lutin).

@@ -149,6 +149,7 @@ window.GAME_CONFIG.textes = {
     queteTerminee: "Cette quête est déjà terminée. Voici votre quête en cours.",
     commencer: "Commencer",
     continuer: "Continuer",
+    partieReinitialisee: "Votre partie a été réinitialisée par les organisateurs.",
     gelTitre: "Réponse gelée",
     gelTexte: "Mauvaise réponse : le lutin a tout gelé ! Patientez avant de retenter votre chance.",
     gelCompteur: "Nouvelle tentative dans",

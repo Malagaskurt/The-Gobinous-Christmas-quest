@@ -12,7 +12,8 @@ Les équipes de 5 à 10 personnes jouent avec un seul téléphone. Elles résolv
 |---|---|
 | **Site statique** : HTML, CSS et JavaScript sans framework | Rien à compiler ni à installer. Le site s'héberge n'importe où (simple dépôt de fichiers) et reste léger sur mobile. |
 | **Contenus dans `config/`** | Questions, réponses, indices, lieux, textes et paramètres sont séparés du code. On les modifie dans un éditeur de texte. |
-| **Sauvegarde dans le navigateur** (`localStorage`) | Avec un téléphone par équipe, sans classement ni échange entre équipes, un serveur n'apporte rien d'indispensable pour un événement de 45 minutes (voir § 7). |
+| **Sauvegarde dans le navigateur** (`localStorage`) | La partie de chaque équipe reste sur son téléphone : le jeu continue même si le réseau ou le serveur tombe (voir § 7). |
+| **Petit serveur Node.js sans dépendance** (`tools/serve.mjs`) | Il sert le site et reçoit la progression de chaque téléphone pour le **suivi des équipes** (voir § 6 bis). Facultatif : sur un hébergement statique, le jeu marche sans suivi. |
 | **Navigation par `#/…`** | Fonctionne sur tous les hébergeurs statiques sans réglage serveur. Les QR codes pointent vers `…/#/scan/CODE`. |
 | **Aucune dépendance réseau** | Polices et générateur de QR codes sont inclus. Aucun appel à Google Fonts, aucun outil de mesure d'audience, aucun cookie. |
 
@@ -46,10 +47,19 @@ Puis ouvrez :
 
 - **Jeu** : http://localhost:8080/
 - **Mode test organisateur** : http://localhost:8080/#/organisateur (code par défaut : `1225`)
+- **Suivi des équipes** : http://localhost:8080/#/suivi (code par défaut : `SUIVI2026`)
 
 Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'ordinateur et ouvrez l'adresse « Réseau » affichée au démarrage.
 
-> Sans Node.js : double-cliquez sur `index.html`. Le jeu fonctionne aussi en `file://`, mais les QR codes générés pointeront alors vers une adresse locale.
+Pour choisir le code du suivi des équipes, lancez plutôt :
+
+```bash
+CODE_SUIVI=MonCodeSecret npm start
+```
+
+Les équipes suivies sont enregistrées dans `data/equipes.json` (non versionné), et retrouvées après un redémarrage du serveur.
+
+> Sans Node.js : double-cliquez sur `index.html`. Le jeu fonctionne aussi en `file://`, sans suivi des équipes, et les QR codes générés pointeront vers une adresse locale.
 
 ---
 
@@ -133,11 +143,34 @@ Ce que permet le mode test :
 
 ---
 
+## 6 bis. Suivi des équipes (tableau de bord)
+
+Accès : `#/suivi` à la fin de l'adresse, le bouton « Suivi des équipes » du mode test, ou 5 appuis rapides sur le logo de l'accueil quand le mode test est désactivé. Le code est demandé (`SUIVI2026` par défaut, à changer avec la variable `CODE_SUIVI` au lancement du serveur). Il est vérifié par le serveur et n'apparaît pas dans les fichiers du site.
+
+Chaque téléphone envoie sa progression au serveur toutes les 10 secondes et à chaque action (`parametres.suivi`). Une équipe apparaît dès qu'elle a saisi son nom. Pour chacune, le tableau de bord affiche :
+- la quête en cours (barre 1 à 5) et l'étape précise (« Quiz : thème X, question 4/8 », « En route vers le lieu B (L'accueil) », « Énigme finale »…) ;
+- le temps de jeu, les lieux validés, le joker, le nombre de thèmes ratés au quiz ;
+- les états particuliers : **Terminée**, **Gelée** (avec le temps restant), **Sans nouvelles depuis…** (téléphone en veille ou hors réseau), **Mode test**.
+
+Les équipes terminées s'affichent en premier (de la plus rapide à la plus lente), puis les autres de la plus avancée à la moins avancée. La page s'actualise toute seule toutes les 4 secondes.
+
+Actions possibles :
+- **Réinitialiser** : efface la partie sur le téléphone de l'équipe à sa prochaine connexion (en général quelques secondes). Le téléphone revient à l'accueil avec un message, et l'équipe recommence depuis le début, avec un nouveau nom si elle le souhaite.
+- **Retirer de la liste** : enlève l'équipe du tableau de bord sans toucher à son téléphone (utile pour les essais). Si l'équipe joue encore, elle réapparaît.
+
+Une partie réinitialisée depuis le mode test du téléphone disparaît aussi du tableau de bord.
+
+**Limites** : le suivi fonctionne seulement si le site est servi par `tools/serve.mjs` (voir § 9). Un téléphone sans réseau continue à jouer et réapparaît dès qu'il se reconnecte. Le code de suivi protège la liste et les actions, mais n'importe qui peut envoyer de fausses équipes au serveur : c'est acceptable pour un événement interne, pas pour un concours avec enjeu.
+
+---
+
 ## 7. Sauvegarde, sécurité et limites
 
-**Données enregistrées**, uniquement dans le navigateur du téléphone (`localStorage`) : nom d'équipe, quête et étape en cours, progression et tentatives du quiz, fin du blocage, joker, lieux trouvés ou validés, fin de partie et horodatages. Aucune donnée n'est envoyée à un serveur. Pas de compte, pas de cookie, pas de mesure d'audience.
+**Données enregistrées** dans le navigateur du téléphone (`localStorage`) : identifiant aléatoire de la partie, nom d'équipe, quête et étape en cours, progression et tentatives du quiz, fin du blocage ou du gel, joker, lieux trouvés ou validés, fin de partie et horodatages.
 
-**Pourquoi pas de serveur ?** Chaque équipe joue sur un seul téléphone, sans classement ni interaction entre équipes. Un serveur n'aurait d'intérêt que pour : suivre les équipes en direct depuis un tableau de bord organisateur, reprendre une partie sur un autre appareil sans intervention, ou rendre la triche plus difficile. Ce n'est pas demandé et cela demanderait hébergement, base de données et maintenance.
+**Données envoyées au serveur du jeu** (suivi des équipes) : seulement un résumé (identifiant de partie, nom d'équipe, quête et étape, temps de jeu, joker, lieux validés, thèmes ratés, gel en cours). Aucune donnée personnelle n'est demandée. Pas de compte, pas de cookie, pas de mesure d'audience. Désactivable avec `parametres.suivi.actif: false`.
+
+**Pourquoi la partie reste sur le téléphone ?** Le serveur ne sert qu'au suivi : si le Wi-Fi ou le serveur tombe pendant l'événement, les équipes continuent de jouer sans rien perdre.
 
 **Limites assumées de la sauvegarde locale :**
 - La progression **reste sur un seul navigateur d'un seul téléphone**. Changer de téléphone ou de navigateur repart de zéro. Pour reprendre une partie ailleurs, utilisez le mode test, « Aller directement à une quête ».
@@ -161,13 +194,21 @@ npx playwright install chromium
 npm test
 ```
 
-Les vérifications couvrent : parcours complet des 5 quêtes ; nom d'équipe vide ; quiz sans correction pendant les questions (navigation avant/arrière, réponses conservées) ; score affiché à la fin, thème raté fermé ; rechargement en cours de thème ; gel de 50 secondes après deux thèmes ratés, persistance au rechargement et quiz validé d'office à la fin du gel ; gel après une mauvaise réponse aux quêtes 2, 3 et 4 ; chrono global ; accès direct à une quête non débloquée ; QR code scanné trop tôt, inconnu, ou ouvert dans un navigateur sans partie ; lieu incorrect ; code manuel incorrect ; joker refusé, puis utilisé, mémorisé après rechargement et impossible à réutiliser ; code organisateur incorrect ; « Aventure terminée » conservée au rechargement ; mode test (code, blocage court, sauts de quête, remise à zéro, fiches QR) ; absence de défilement horizontal en mobile et sur ordinateur ; absence d'erreur JavaScript.
+Les vérifications couvrent : parcours complet des 5 quêtes ; suivi des équipes (envoi de la progression, code du tableau de bord, réinitialisation à distance) ; nom d'équipe vide ; quiz sans correction pendant les questions (navigation avant/arrière, réponses conservées) ; score affiché à la fin, thème raté fermé ; rechargement en cours de thème ; gel de 50 secondes après deux thèmes ratés, persistance au rechargement et quiz validé d'office à la fin du gel ; gel après une mauvaise réponse aux quêtes 2, 3 et 4 ; chrono global ; accès direct à une quête non débloquée ; QR code scanné trop tôt, inconnu, ou ouvert dans un navigateur sans partie ; lieu incorrect ; code manuel incorrect ; joker refusé, puis utilisé, mémorisé après rechargement et impossible à réutiliser ; code organisateur incorrect ; « Aventure terminée » conservée au rechargement ; mode test (code, blocage court, sauts de quête, remise à zéro, fiches QR) ; absence de défilement horizontal en mobile et sur ordinateur ; absence d'erreur JavaScript.
 
 ---
 
 ## 9. Mettre en ligne
 
-Le site se résume à des fichiers statiques. Déposez **tout le dossier** (sauf `tests/`, `tools/` et `node_modules/`, facultatifs) sur l'un de ces hébergements :
+**Avec le suivi des équipes** (recommandé), il faut un hébergement capable de lancer Node.js 18 ou plus, avec la commande `node tools/serve.mjs` et la variable `CODE_SUIVI` :
+
+- **Serveur ou machine virtuelle interne Saint-Gobain** : copiez le dossier, lancez `CODE_SUIVI=… PORT=80 node tools/serve.mjs` (ou derrière le proxy HTTPS habituel).
+- **Render**, **Railway**, **Fly.io**, **Heroku**… : service web Node.js, commande de démarrage `node tools/serve.mjs`, variable `CODE_SUIVI` dans les réglages. Le port est fourni par l'hébergeur (`PORT`). Choisissez une offre où le service ne s'endort pas pendant l'événement.
+- **Le jour J, sur un ordinateur portable** : `npm start` sur le même Wi-Fi que les téléphones, puis adresse « Réseau » affichée au démarrage. Simple, mais les QR codes imprimés doivent pointer vers cette adresse.
+
+Les équipes sont gardées dans `data/equipes.json` : sur un hébergement dont le disque est effacé à chaque redémarrage, la liste repart à vide, mais les téléphones la remplissent à nouveau dans les 10 secondes.
+
+**Sans suivi**, le site se résume à des fichiers statiques. Déposez **tout le dossier** (sauf `tests/`, `tools/` et `node_modules/`, facultatifs) sur l'un de ces hébergements :
 
 - **Serveur web interne Saint-Gobain** ou toute offre d'hébergement statique : copiez les fichiers dans un dossier publié en HTTPS.
 - **Netlify** : glissez-déposez le dossier sur https://app.netlify.com/drop pour obtenir une adresse en quelques secondes.
@@ -178,7 +219,8 @@ Après la mise en ligne :
 1. renseignez `urlPublique` dans `config/parametres.js` avec l'adresse obtenue, puis republiez ;
 2. ouvrez `#/organisateur` → « Fiches QR codes à imprimer » et imprimez ;
 3. scannez chaque QR code imprimé avec un téléphone pour vérifier qu'il ouvre bien le site ;
-4. désactivez le mode test (`modeTest.actif: false`) et republiez.
+4. désactivez le mode test (`modeTest.actif: false`) et republiez ;
+5. ouvrez `#/suivi` avec votre code et vérifiez qu'un téléphone de test y apparaît, puis retirez-le de la liste.
 
 Le fichier `index.html` contient `noindex` : le site n'apparaîtra pas dans les moteurs de recherche.
 
@@ -198,6 +240,7 @@ Le fichier `index.html` contient `noindex` : le site n'apparaîtra pas dans les 
 - le joker (confirmation, indice, mémorisation) ;
 - la sauvegarde locale, la reprise après rechargement et la synchronisation entre onglets ;
 - le mode test complet ;
+- le suivi des équipes en direct, avec réinitialisation à distance ;
 - la vérification de configuration ;
 - les tests automatisés ;
 - l'affichage mobile et ordinateur, ainsi que l'accessibilité de base (contrastes, navigation clavier, mouvements réduits).
@@ -208,7 +251,8 @@ Le fichier `index.html` contient `noindex` : le site n'apparaîtra pas dans les 
 - [ ] **Indices du joker du défi** (quête 3) : proposés par défaut, à faire valider.
 - [ ] **Questions marquées `aVerifier`** : thème « La Tour prend de la hauteur » (Q1, Q4, Q5, Q7, Q8) et thème « Matériaux, mode d'emploi » (Q5, Q6, Q8). La Q8 du thème Matériaux ne doit pas être utilisée sans vérification de la source. La mention « à vérifier avant publication » a été retirée de l'énoncé visible et conservée en note interne.
 - [ ] **Questions de la quête 3** et **énigme de la quête 2** (réponse : « le verre ») : proposées par défaut, à faire valider.
-- [ ] **Code organisateur de fin** (`finDePartie.codeOrganisateur`, actuellement `HOTTE2026`) et **code du mode test** (`1225`).
+- [ ] **Code organisateur de fin** (`finDePartie.codeOrganisateur`, actuellement `HOTTE2026`), **code du mode test** (`1225`) et **code du suivi** (variable `CODE_SUIVI` du serveur, `SUIVI2026` par défaut).
+- [ ] **Hébergement Node.js** pour le suivi des équipes (voir § 9).
 - [ ] **`urlPublique`** une fois le site en ligne, puis impression des QR codes.
 - [ ] **Logo** : les versions blanche et bleu foncé ont été détourées depuis l'image fournie (PNG). Pour un rendu parfait, remplacez-les par le fichier vectoriel officiel (`marque.logoClair` / `marque.logoFonce`).
 - [ ] **Polices Gotham et Lovelo Line** : non incluses (polices sous licence). Gotham est utilisée si elle est installée sur l'appareil, sinon Montserrat la remplace. Pour diffuser les fichiers officiels, voir `css/fonts.css`.
@@ -231,11 +275,14 @@ js/elf.js               comportement du lutin (promenades, bulles)
 js/board.js             plateau de jeu animé (« Comment jouer ? »)
 js/ui.js                logo, chrono, en-tête, fenêtres, animations
 js/admin.js             mode test et fiches QR codes
+js/sync.js              envoi de la progression au serveur (suivi)
+js/suivi.js             tableau de bord des organisateurs (#/suivi)
 js/app.js               navigation et événements
 js/validate.js          vérification de la configuration
 assets/fonts/           Montserrat, VT323 (SIL OFL)
 assets/img/             favicon, logo Saint-Gobain (blanc et bleu foncé)
 vendor/                 générateur de QR codes (MIT)
-tools/                  serveur local et vérification de configuration
+tools/                  serveur du jeu (site + suivi) et vérification de configuration
+data/                   équipes suivies (créé par le serveur, non versionné)
 tests/                  test automatisé de bout en bout
 ```

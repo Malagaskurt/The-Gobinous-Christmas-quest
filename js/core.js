@@ -142,9 +142,17 @@
     }
   })();
 
+  /* Identifiant aléatoire de la partie (suivi des équipes). */
+  function newId() {
+    var a = '';
+    while (a.length < 16) a += Math.random().toString(36).slice(2);
+    return a.slice(0, 16);
+  }
+
   function defaults() {
     return {
       v: 1,
+      id: newId(),
       team: null,
       startedAt: null,
       rulesOk: false,
@@ -180,6 +188,7 @@
       ['phase', 'quiz', 'defi', 'joker', 'gel'].forEach(function (k) {
         s[k] = Object.assign(base[k], s[k] || {});
       });
+      if (!s.id) s.id = base.id;
       return Object.assign(base, s);
     } catch (e) {
       return base;
@@ -198,8 +207,10 @@
   GQ.reload = function () { GQ.state = load(); };
 
   GQ.resetGame = function () {
+    var old = GQ.state.id;
     GQ.state = defaults();
     GQ.save();
+    if (GQ.sync && old) GQ.sync.forget(old);
   };
 
   /* ------------------------------------------------------------------ */

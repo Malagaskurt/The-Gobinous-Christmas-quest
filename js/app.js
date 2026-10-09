@@ -18,6 +18,7 @@
   /*   #/quete/N         quête N (redirige si elle n'est pas débloquée)  */
   /*   #/scan/CODE       arrivée sur un lieu (cible des QR codes)        */
   /*   #/organisateur    mode test (si activé)                           */
+  /*   #/suivi           suivi des équipes (organisateurs)               */
   /* ------------------------------------------------------------------ */
 
   var keepUiOnce = false;
@@ -68,6 +69,8 @@
         return GQ.screens.scan(r.arg);
       case 'organisateur':
         return GQ.screens.organizer(r.arg);
+      case 'suivi':
+        return GQ.screens.suivi();
       default:
         return redirectTo('');
     }
@@ -99,6 +102,7 @@
     }
     app.innerHTML = html;
     document.body.classList.toggle('is-testing', GQ.test.isActive());
+    document.body.classList.toggle('is-wide', !!scr.wide);
 
     var changed = scr.key !== lastKey;
     lastKey = scr.key;
