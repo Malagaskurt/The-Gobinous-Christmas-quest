@@ -83,18 +83,28 @@ window.GAME_CONFIG.textes = {
     description: "Plateau du jeu : 5 quêtes, du départ jusqu'à la hotte.",
     depart: "DÉPART",
     quete: "QUÊTE {n}",
-    notes: [
-      "8 bonnes réponses sur 8",
-      "Une énigme, un indice",
-      "3 questions Saint-Gobain",
-      "L'énigme de la cachette",
-      "La surprise finale",
-    ],
-    legende: "Entre deux quêtes : trouvez le lieu, puis scannez son QR code.",
-    regles: [
-      { icone: "star", texte: "**1 joker** pour toute l'aventure : un indice bonus, une seule fois." },
-      { icone: "flake", texte: "**Quiz** : 8/8 pour passer. 2 thèmes ratés = 3 min de gel." },
-      { icone: "clock", texte: "**30 minutes**, en équipe, avec un seul téléphone." },
+    /* Cases du plateau, dans l'ordre du parcours. Chaque case contient
+     * soit un texte court, soit un pictogramme :
+     *   { quete: 1 }                 → « QUÊTE 1 » + nom de la quête
+     *   { texte: "8/8 pour passer" } → mots-clés (\n = retour à la ligne)
+     *   { icone: "qr" }              → qr, pin, clock, sparkle, heart, gift */
+    cases: [
+      { icone: "sparkle" },
+      { quete: 1 },
+      { texte: "8/8 pour passer" },
+      { texte: "2 ratés ?\ngel 3 min" },
+      { icone: "qr" },
+      { quete: 2 },
+      { texte: "Trouvez le lieu" },
+      { icone: "qr" },
+      { quete: 3, texte: "Le défi" },
+      { texte: "1 joker\n= 1 indice" },
+      { icone: "qr" },
+      { quete: 4, texte: "Dernier indice" },
+      { icone: "clock" },
+      { texte: "30 min chrono" },
+      { icone: "pin" },
+      { quete: 5, texte: "La hotte" },
     ],
     detail: "Lire les règles détaillées",
   },

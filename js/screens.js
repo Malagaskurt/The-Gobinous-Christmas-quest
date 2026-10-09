@@ -212,9 +212,6 @@
         '<main class="screen screen-plain screen-board">' +
         '<h1 class="page-title rules-title" tabindex="-1">' + t(PL.titre) + '</h1>' +
         GQ.board.html() +
-        '<ul class="key-rules">' + PL.regles.map(function (r, i) {
-          return '<li class="b-pop" style="animation-delay:' + (2.4 + i * 0.15).toFixed(2) + 's">' + GQ.pixel.img(r.icone, 'key-ico') + '<span>' + t(r.texte) + '</span></li>';
-        }).join('') + '</ul>' +
         '<button type="button" class="btn btn-ghost" data-action="show-rules">' + esc(PL.detail) + '</button>' +
         cta(btn(esc(T.regles.bouton) + icon('fleche'), 'accept-rules', '', 'btn-red btn-start')) +
         '</main>',
