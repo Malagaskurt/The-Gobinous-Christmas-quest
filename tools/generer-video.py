@@ -62,7 +62,7 @@ def config():
     js = (
         "global.window={};require(process.argv[1]);"
         "const r=window.GAME_CONFIG.quetes.traque;"
-        "console.log(JSON.stringify({subs:r.sousTitres,voix:r.videoVoix}));"
+        "console.log(JSON.stringify({subs:r.sousTitres,voix:r.videoVoix,intro:r.videoIntro||null}));"
     )
     out = subprocess.run(["node", "-e", js, os.path.join(ROOT, "config", "quetes.js")], capture_output=True, text=True, check=True)
     return json.loads(out.stdout)
@@ -192,8 +192,22 @@ def barnabe(mouth=0, blink=False, legs=0, arm=None, wave=0):
             for xx in range(20, 23):
                 grid[y0 - 1][xx] = "b"
             grid[y0 - 1][23] = "s"
-        else:  # carry : main posée sur le sac
+        elif arm == "carry":  # main posée sur le sac
             grid[y0][21] = "s"
+    if arm == "sixseven":
+        # Geste « six seven » : paumes vers le ciel, une main monte quand
+        # l'autre descend (wave = 0 ou 1).
+        y0 = 18 + 3
+        for side, hy in ((0, y0 - 2 if wave else y0 + 1), (1, y0 + 1 if wave else y0 - 2)):
+            xs = (1, 2, 3) if side == 0 else (20, 21, 22)
+            hand = (0, 1) if side == 0 else (22, 23)
+            grid[y0][3 if side == 0 else 20] = "b"
+            for yy in range(min(hy, y0), max(hy, y0) + 1):
+                grid[yy][xs[1]] = "b"
+            for xx in xs:
+                grid[hy][xx] = "b"
+            for xx in hand:
+                grid[hy - 1][xx] = "s"
     return ["".join(r) for r in grid]
 
 
@@ -411,9 +425,27 @@ def envelope(sig):
 
 def main():
     cfg = config()
-    subs = cfg["subs"]
+    subs = [dict(x) for x in cfg["subs"]]
     voice = decode(os.path.join(ROOT, cfg["voix"]))
     lead = 0.6
+    # Présentation « C'est Barnabé Six Seven ! » insérée après la 1re phrase.
+    intro = cfg.get("intro") or {}
+    gesture_end = 2.9
+    if intro.get("audio") and os.path.exists(os.path.join(ROOT, intro["audio"])):
+        clip = decode(os.path.join(ROOT, intro["audio"]))
+        cut = int(float(intro.get("apres", 1.0)) * SR)
+        pad = lambda s_: np.zeros(int(s_ * SR), dtype=np.float32)
+        voice = np.concatenate([voice[:cut], pad(0.12), clip, pad(0.2), voice[cut:]])
+        at = lead + cut / SR + 0.12
+        shift = 0.32 + len(clip) / SR
+        for x in subs:
+            if x["de"] >= at - 0.12:
+                x["de"] = round(x["de"] + shift, 2)
+                x["a"] = round(x["a"] + shift, 2)
+        subs.append({"de": round(at, 2), "a": round(at + len(clip) / SR + 0.2, 2), "scene": 1, "texte": intro.get("texte", "")})
+        subs.sort(key=lambda x: x["de"])
+        gesture_end = at + len(clip) / SR + 0.4
+        print("✔ présentation insérée :", intro["audio"])
     end_voice = lead + len(voice) / SR
     total = end_voice + 1.8
     n_frames = int(total * FPS)
@@ -480,8 +512,17 @@ def main():
         y = 54  # Barnabé (×3) : pieds sur le sol
         room(img, t, desk=scene in (1, 2))
         if scene == 0:
-            gg = 2.9 <= t < 7.7  # « GG à vous » : il salue
-            blit(img, barnabe(mouth, blink, arm="wave" if gg else "carry", wave=(f // 3) % 2), 2, y, 3)
+            if t < gesture_end:  # « Salut… Barnabé Six Seven » : le geste
+                ph = (f // 3) % 2
+                blit(img, barnabe(mouth, blink, arm="sixseven", wave=ph), 2, y, 3)
+                # « 6 » au-dessus de la main gauche, « 7 » au-dessus de la droite
+                left_row = (19 if ph else 22) - 1
+                right_row = (22 if ph else 19) - 1
+                text(img, "6", 2, y + left_row * 3 - 17, "W", 2)
+                text(img, "7", 2 + 22 * 3, y + right_row * 3 - 17, "W", 2)
+            else:
+                gg = t < 7.7 + (gesture_end - 2.9)  # « GG à vous » : il salue
+                blit(img, barnabe(mouth, blink, arm="wave" if gg else "carry", wave=(f // 3) % 2), 2, y, 3)
             blit(img, sack(t), 84, 122, 2)
         elif scene == 1:
             blit(img, barnabe(mouth, blink or (f % 24) < 3, arm="point"), -2, y, 3)
@@ -532,6 +573,10 @@ def main():
         check=True,
     )
     print("✔", os.path.relpath(webm, ROOT), f"({os.path.getsize(webm) // 1024} Ko)")
+    # Minutage final des sous-titres (lu par le jeu, prioritaire sur la config).
+    with open(OUT[:-4] + "-sous-titres.json", "w", encoding="utf8") as fh:
+        json.dump(subs, fh, ensure_ascii=False, indent=1)
+    print("✔ sous-titres :", os.path.relpath(OUT[:-4] + "-sous-titres.json", ROOT))
 
 
 if __name__ == "__main__":

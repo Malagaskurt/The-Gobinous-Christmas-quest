@@ -67,6 +67,9 @@ window.GAME_CONFIG.parametres = {
     volumeVoix: 1,
     noel: ["assets/audio/musique-noel-1.mp3", "assets/audio/musique-noel-2.mp3"],
     japon: "assets/audio/musique-japon.mp3",
+    /* Écran de fin : musique pop-électro dansante (le lutin danse). */
+    fete: "assets/audio/musique-fete.mp3",
+    volumeFete: 0.4,
     effets: true,
     volumeEffets: 0.45,
   },

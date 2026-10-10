@@ -508,7 +508,7 @@ await step('Mot secret CADEAU → transmission à usage unique, jamais « salle 
   assert(r.ok && (r.headers.get('content-type') || '').includes('video/mp4'), 'fichier vidéo non servi');
   // Lecture réelle (version WebM dans le navigateur de test) : sous-titres
   // synchronisés et pas de blocage.
-  await page.waitForFunction(() => { const v = document.querySelector('.cctv-video'); return v && v.currentTime > 2; }, null, { timeout: 15000 });
+  await page.waitForFunction(() => { const v = document.querySelector('.cctv-video'); return v && v.currentTime > 4; }, null, { timeout: 15000 });
   assert((await page.locator('.cctv-sub').innerText()).length > 10, 'sous-titres absents');
   // Fin de la vidéo → passage automatique au rapport.
   await page.evaluate(() => { const v = document.querySelector('.cctv-video'); v.currentTime = v.duration - 0.5; });
@@ -561,12 +561,15 @@ await step('Appel de Barnabé puis écran de fin, conservé au rechargement', as
   await page.waitForSelector('[data-action="paquet-validate"]');
   await page.click('[data-action="paquet-validate"]');
   await settle();
-  assert(await has('Mission accomplie') && await has('Votre temps'), 'écran de fin absent');
-  assert(await has('Les Testeurs') && await has('Dernière ligne droite'), 'bilan de fin incomplet');
+  assert(await has('Mission presque accomplie'), 'écran de fin absent');
+  assert(await has('Les Testeurs') && await has('Rendez-vous au lieu de départ avec le paquet choisi'), 'consigne de fin absente');
+  assert((await page.locator('.dance-elf .dance-frame').count()) === 4, 'le lutin ne danse pas');
+  const fete = await fetch(BASE + 'assets/audio/musique-fete.mp3');
+  assert(fete.ok, 'musique de fin absente');
   assert((await page.locator('.topbar').count()) === 0, 'l\'écran de fin garde l\'en-tête du jeu');
   assert((await state()).finished, 'fin non enregistrée');
   await reload();
-  assert(await has('Mission accomplie'), 'fin perdue après rechargement');
+  assert(await has('Mission presque accomplie'), 'fin perdue après rechargement');
   assert((await page.locator('.finale-home a[href="#/"]').count()) === 1, 'pas de retour à l\'accueil du site');
   await noHorizontalScroll();
 });

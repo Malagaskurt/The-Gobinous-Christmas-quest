@@ -131,6 +131,12 @@
     var v = document.querySelector('.cctv-video');
     if (!v) return;
     var subs = R.sousTitres || [];
+    // Minutage exact produit par tools/generer-video.py (si présent).
+    if (window.fetch && /\.mp4$/i.test(R.video)) {
+      fetch(R.video.replace(/\.mp4$/i, '-sous-titres.json'), { cache: 'no-store' }).then(function (r) {
+        return r.ok ? r.json() : null;
+      }).then(function (list) { if (Array.isArray(list) && list.length) subs = list; }, function () { /* minutage de la config */ });
+    }
     var lastT = -1;
     var still = 0;
     v.addEventListener('ended', function () { setTimeout(videoEnded, 600); });
@@ -375,49 +381,36 @@
     };
   }
 
-  /* Écran de fin : une page à part, sans en-tête de jeu, qui « signe »
-   * l'aventure (ciel étoilé, scène tricotée, bilan, dernières consignes). */
+  /* Écran de fin : léger et festif. Un grand titre, le lutin qui danse
+   * sur une musique pop-électro, et la consigne finale en petit. */
   function end() {
     var s = GQ.state;
     var c = GQ.clock();
-    var d = new Date((s.finished && s.finished.at) || Date.now());
     var stars = '';
-    for (var i = 0; i < 26; i++) {
+    for (var i = 0; i < 22; i++) {
       stars += '<i style="left:' + ((i * 37) % 100) + '%;top:' + ((i * 53) % 70) + '%;animation-delay:' + ((i % 7) * 0.45).toFixed(2) + 's"></i>';
     }
-    function stat(k, v) { return '<div><dt>' + esc(k) + '</dt><dd>' + v + '</dd></div>'; }
+    var frames = ['elfWave', 'elfWalk1', 'elfGift', 'elfWalk2'].map(function (f, i) {
+      return GQ.knit.icon(f, 'dance-frame dance-f' + i);
+    }).join('');
     return {
       key: 'q5-end',
       bare: true,
       tone: 'blue',
       celebrate: 'big',
-      music: 'noel',
+      music: 'fete',
       html:
-        '<main class="finale">' +
+        '<main class="finale finale-light">' +
         '<div class="garland" aria-hidden="true"></div>' +
         '<div class="finale-sky" aria-hidden="true">' + stars + '</div>' +
         '<div class="finale-inner">' +
         GQ.logo('clair', 'finale-logo') +
-        '<p class="kicker">' + GQ.icon('etoile') + ' Fin de l\'aventure ' + GQ.icon('etoile') + '</p>' +
         C.knitTitle(R.finTitre, { color: '#E4323A' }) +
-        '<p class="finale-sub">' + t(R.finSousTitre) + '</p>' +
-        '<div class="finale-scene">' + GQ.knit.scene('finale-knit') + '</div>' +
-        '<p class="finale-lead">' + t(R.finTexte, { equipe: s.team || '' }) + '</p>' +
-        '<dl class="finale-stats">' +
-        stat('Votre temps', c ? GQ.mmss(c.elapsed) : '—') +
-        stat('Quêtes', '5/5') +
-        stat('Joker', s.joker.used ? 'utilisé' : 'intact') +
-        '</dl>' +
-        '<section class="finale-card"><h2>' + t(R.finConsignesTitre) + '</h2><ul>' +
-        R.finConsignes.map(function (x) { return '<li><span class="finale-ico" aria-hidden="true">' + GQ.pix(x.icone) + '</span><span>' + t(x.texte) + '</span></li>'; }).join('') +
-        '</ul></section>' +
-        '<p class="finale-voeux">' + GQ.knit.title(R.finVoeux, { alt: C.plain(R.finVoeux), color: '#E4323A', outline: true, cls: 'finale-voeux-img' }) + '</p>' +
-        '<p class="finale-sign">— ' + t(R.finSignature) + '</p>' +
-        '<p class="finale-home"><a class="btn btn-red" href="#/">' + icon('retour') + esc(R.boutonAccueil || 'Retour à l\'accueil') + '</a></p>' +
-        '<p class="finale-date">' + t(T.fin.termineeLe, {
-          date: d.toLocaleDateString('fr-FR'),
-          heure: d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-        }) + '</p>' +
+        '<div class="dance" aria-hidden="true"><span class="dance-spot dance-spot-a"></span><span class="dance-spot dance-spot-b"></span>' +
+        '<div class="dance-elf">' + frames + '</div><span class="dance-floor"></span></div>' +
+        '<p class="finale-team">' + t(R.finTexte, { equipe: s.team || '' }) + (c ? ' · <span class="nowrap">' + GQ.mmss(c.elapsed) + '</span>' : '') + '</p>' +
+        '<p class="finale-next">' + t(R.finConsigne) + '</p>' +
+        '<p class="finale-home"><a class="btn btn-ghost" href="#/">' + icon('retour') + esc(R.boutonAccueil || 'Retour à l\'accueil') + '</a></p>' +
         '</div></main>',
     };
   }

@@ -7,6 +7,7 @@ Produit :
   assets/audio/musique-noel-1.mp3  « Douce nuit », boîte à musique et nappe
   assets/audio/musique-noel-2.mp3  « Deck the Halls », boîte à musique, tout doux
   assets/audio/musique-japon.mp3   koto et nappe (mixée dans la vidéo de Barnabé)
+  assets/audio/musique-fete.mp3    pop-électro dansante (écran de fin, le lutin danse)
 
 Ambiance très discrète : une boîte à musique, une nappe et une basse
 douce, sans batterie. Les accords sont écrits mesure par mesure sur la
@@ -349,7 +350,110 @@ def japon():
     save_mp3(stereo(sig), "musique-japon.mp3")
 
 
+# ---------------------------------------------------------------------------
+# Écran de fin : morceau pop-électro dansant (composition originale)
+# Suite d'accords la plus courante de la pop actuelle (Am – F – C – G),
+# 4 temps au sol, claps, charleston, basse 808 et gimmick de synthé.
+# ---------------------------------------------------------------------------
+
+def kick(vel=1.0):
+    n = int(SR * 0.35)
+    t = np.arange(n) / SR
+    f = 50 + 110 * np.exp(-t * 30)
+    sig = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 9)
+    return attack(sig * vel, 1)
+
+
+def clap(vel=1.0):
+    n = int(SR * 0.22)
+    noise = rng.standard_normal(n)
+    noise = np.concatenate([[0], np.diff(noise)])
+    e = np.zeros(n)
+    for d in (0, 0.012, 0.024):
+        i = int(d * SR)
+        e[i:] += np.exp(-np.arange(n - i) / SR * 38)
+    return noise * e * 0.35 * vel
+
+
+def hat(vel=1.0, open_=False):
+    n = int(SR * (0.18 if open_ else 0.05))
+    noise = np.diff(rng.standard_normal(n + 1))
+    return noise * np.exp(-np.arange(n) / SR * (14 if open_ else 70)) * 0.18 * vel
+
+
+def sub808(f, dur, vel=1.0):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    sig = np.tanh(np.sin(2 * np.pi * f * t) * 1.6) * np.exp(-t * 1.6)
+    r = min(n, int(SR * 0.03))
+    sig[-r:] *= np.linspace(1, 0, r)
+    return attack(sig * vel, 3)
+
+
+def pluck(f, dur=0.35, vel=1.0):
+    """Gimmick de synthé : deux dents de scie désaccordées, filtre qui se ferme."""
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    saw = lambda fr: 2 * ((fr * t) % 1) - 1
+    sig = (saw(f * 1.003) + saw(f * 0.997)) * 0.5 + 0.3 * np.sin(2 * np.pi * f * 2 * t)
+    sig = lowpass_fast(sig * np.exp(-t * 7), 3200)
+    return attack(sig * vel, 2)
+
+
+def chord_stab(freqs, dur, vel=1.0):
+    return pad(freqs, dur, vel) * 1.4
+
+
+FETE_CHORDS = [("Am", ["A3", "C4", "E4"], "A1"), ("F", ["A3", "C4", "F4"], "F1"),
+               ("C", ["G3", "C4", "E4"], "C2"), ("G", ["G3", "B3", "D4"], "G1")]
+FETE_HOOK = [  # une mesure par accord, en temps
+    [("A4", 0.5), (None, 0.5), ("C5", 0.5), ("E5", 0.5), ("D5", 0.5), ("C5", 0.5), ("A4", 1)],
+    [("F4", 0.5), (None, 0.5), ("A4", 0.5), ("C5", 0.5), ("A4", 0.5), ("C5", 0.5), ("F5", 1)],
+    [("G4", 0.5), (None, 0.5), ("C5", 0.5), ("E5", 0.5), ("G5", 0.5), ("E5", 0.5), ("C5", 1)],
+    [("B4", 0.5), (None, 0.5), ("D5", 0.5), ("G5", 0.5), ("D5", 0.5), ("B4", 0.5), ("G4", 1)],
+]
+
+
+def fete():
+    beat = 60 / 124
+    bar = beat * 4
+    # intro (4) · refrain (8) · pause (4) · refrain (8)
+    plan = ["intro"] * 4 + ["hook"] * 8 + ["break"] * 4 + ["hook"] * 8
+    tr = Track(len(plan) * bar + 4)
+    for b, part in enumerate(plan):
+        t0 = 0.2 + b * bar
+        name, notes, root = FETE_CHORDS[b % 4]
+        tr.add(t0, chord_stab([freq(n) for n in notes], bar), 0.10 if part != "break" else 0.16)
+        if part != "break":
+            for k in range(4):
+                tr.add(t0 + k * beat, kick(), 0.9)
+                tr.add(t0 + k * beat + beat / 2, hat(open_=k % 2 == 1), 0.8)
+                tr.add(t0 + k * beat + beat / 4, hat(), 0.4)
+                tr.add(t0 + k * beat + 3 * beat / 4, hat(), 0.4)
+            tr.add(t0 + beat, clap(), 0.9)
+            tr.add(t0 + 3 * beat, clap(), 0.9)
+            for k, off in enumerate((0, 1.5, 2.5)):  # basse syncopée
+                tr.add(t0 + off * beat, sub808(freq(root), beat * (1.4 if k == 0 else 0.9)), 0.55)
+        if part == "hook" or (part == "break" and b % 2 == 1):
+            t = t0
+            for n, d in FETE_HOOK[b % 4]:
+                if n:
+                    tr.add(t, pluck(freq(n), min(0.4, d * beat + 0.08)), 0.22 if part == "hook" else 0.12)
+                t += d * beat
+    sig = tr.buf[: int(SR * (len(plan) * bar + 0.4))]
+    sig = reverb(sig, 1.2, 0.12)
+    sig = normalize(crossfade_loop(sig, 0.15), 0.6)
+    save_mp3(stereo(sig), "musique-fete.mp3", kbps=112)
+    # Volume harmonisé (morceau festif : bien présent, sans saturer).
+    out = os.path.join(OUT, "musique-fete.mp3")
+    tmp = out + ".tmp.mp3"
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-af", "loudnorm=I=-16:TP=-1.5:LRA=8",
+                    "-codec:a", "libmp3lame", "-b:a", "128k", tmp], check=True)
+    os.replace(tmp, out)
+
+
 if __name__ == "__main__":
     noel1()
     noel2()
     japon()
+    fete()

@@ -27,11 +27,11 @@
   var enabled = M.actif !== false && pref();
 
   function list(name) {
-    var v = name === 'japon' ? M.japon : M.noel;
+    var v = name === 'japon' ? M.japon : name === 'fete' ? M.fete : M.noel;
     return (Array.isArray(v) ? v : [v]).filter(Boolean);
   }
   function level(name) {
-    var v = name === 'japon' ? M.volumeVideo : M.volume;
+    var v = name === 'japon' ? M.volumeVideo : name === 'fete' ? M.volumeFete : M.volume;
     v = Math.max(0, Math.min(1, Number(v) || 0.05));
     return v * (ducked ? 0.15 : 1);
   }

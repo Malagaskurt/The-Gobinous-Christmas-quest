@@ -205,13 +205,18 @@ window.GAME_CONFIG.quetes = {
      * et sous-titres). */
     video: "assets/video/barnabe.mp4",
     videoVoix: "assets/audio/barnabe-video.mp3",
+    /* Présentation insérée juste après « Salut les gars ! » (à `apres`
+     * secondes de la voix), pendant que Barnabé fait le geste « six seven ».
+     * Fichier facultatif : sans lui, Barnabé fait seulement le geste. */
+    videoIntro: { audio: "assets/audio/barnabe-video-intro.mp3", texte: "C'est Barnabé Six Seven !", apres: 1.07 },
     camera: "CAM 33-07 · TRANSMISSION INTERCEPTÉE",
     /* Sous-titres de la vidéo : affichés de `de` à `a` secondes (temps de
      * la vidéo). `scene` : décor de la vidéo pendant la réplique (1 :
      * Barnabé de nuit, 2 : l'horloge +7 h, 3 : l'écran et la tour,
      * 4 : au revoir). */
     sousTitres: [
-      { de: 0.6, a: 2.9, scene: 1, texte: "Salut les gars ! Bon…" },
+      { de: 0.6, a: 1.7, scene: 1, texte: "Salut les gars !" },
+      { de: 1.7, a: 2.9, scene: 1, texte: "Bon…" },
       { de: 2.9, a: 7.7, scene: 1, texte: "Je dois l'avouer, vous avez géré : vous avez déjoué mon premier plan. GG à vous." },
       { de: 7.7, a: 12.4, scene: 1, texte: "Mais ne criez pas victoire trop vite : vous êtes encore loin d'avoir gagné." },
       { de: 12.4, a: 15.9, scene: 2, texte: "Pendant que vous courez partout là-bas, regardez l'heure qu'il est chez moi…" },
@@ -280,17 +285,9 @@ window.GAME_CONFIG.quetes = {
 
     boutonAccueil: "Retour à l'accueil",
 
-    /* Écran de fin. Icônes des consignes : gift, lock, elfWalk1, star, pin… */
-    finTitre: "Mission accomplie",
-    finSousTitre: "(ou presque…)",
-    finTexte: "Bravo **{equipe}** ! Barnabé est démasqué.",
-    finConsignesTitre: "Dernière ligne droite",
-    finConsignes: [
-      { icone: "lock", texte: "Gardez votre paquet **bien fermé**." },
-      { icone: "elfWalk1", texte: "Redescendez au **point de départ** !" },
-      { icone: "gift", texte: "Remettez-le aux organisateurs : verdict… est-ce le vrai ?" },
-    ],
-    finSignature: "Barnabé SIX-SEVEN, lutin (un peu farceur) du Gobinous Christmas Club",
-    finVoeux: "Joyeux Noël",
+    /* Écran de fin : grand titre, lutin qui danse, consigne en petit. */
+    finTitre: "Mission presque accomplie",
+    finTexte: "Bravo **{equipe}**",
+    finConsigne: "Rendez-vous au lieu de départ avec le paquet choisi pour découvrir ce qu'il contient.",
   },
 };

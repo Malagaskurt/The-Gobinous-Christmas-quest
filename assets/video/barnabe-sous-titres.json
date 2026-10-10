@@ -1,0 +1,62 @@
+[
+ {
+  "de": 0.6,
+  "a": 1.7,
+  "scene": 1,
+  "texte": "Salut les gars !"
+ },
+ {
+  "de": 1.7,
+  "a": 2.9,
+  "scene": 1,
+  "texte": "Bon…"
+ },
+ {
+  "de": 2.9,
+  "a": 7.7,
+  "scene": 1,
+  "texte": "Je dois l'avouer, vous avez géré : vous avez déjoué mon premier plan. GG à vous."
+ },
+ {
+  "de": 7.7,
+  "a": 12.4,
+  "scene": 1,
+  "texte": "Mais ne criez pas victoire trop vite : vous êtes encore loin d'avoir gagné."
+ },
+ {
+  "de": 12.4,
+  "a": 15.9,
+  "scene": 2,
+  "texte": "Pendant que vous courez partout là-bas, regardez l'heure qu'il est chez moi…"
+ },
+ {
+  "de": 15.9,
+  "a": 25.2,
+  "scene": 2,
+  "texte": "Avec mes sept heures d'avance, je me prépare déjà à aller me coucher après une longue journée, de l'autre côté du globe !"
+ },
+ {
+  "de": 25.2,
+  "a": 30.6,
+  "scene": 3,
+  "texte": "Regardez bien l'ordinateur derrière moi et zoomez sur cette immense tour de plus de 600 mètres."
+ },
+ {
+  "de": 30.6,
+  "a": 34.1,
+  "scene": 3,
+  "texte": "Vous voyez ce panorama de gratte-ciels de nuit, à perte de vue ?"
+ },
+ {
+  "de": 34.1,
+  "a": 41.2,
+  "scene": 4,
+  "texte": "Bref, je n'ai pas votre temps. Si vous connectez le décalage horaire, la hauteur de cette tour et l'histoire locale, vous trouverez le code."
+ },
+ {
+  "de": 41.2,
+  "a": 44,
+  "scene": 4,
+  "texte": "Allez, comme on dit ici : matané !"
+ }
+]
