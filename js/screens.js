@@ -665,9 +665,22 @@
     GQ.modal({ sheet: true, title: T.regles.titre, html: GQ.rulesHtml(), cancel: T.regles.boutonFermer });
   };
 
+  /* Le chrono démarre ici : on prévient l'équipe avant, pour éviter de le
+   * lancer par erreur. */
   actions['accept-rules'] = function () {
-    GQ.acceptRules();
-    goQuest();
+    if (GQ.state.clockStart) { GQ.acceptRules(); return goQuest(); }
+    var R = T.regles;
+    GQ.modal({
+      title: R.confirmTitre,
+      knit: 'clock',
+      html: '<p>' + t(R.confirmTexte, GQ.ruleVars()) + '</p>',
+      confirm: R.confirmOui,
+      cancel: R.confirmNon,
+    }).then(function (ok) {
+      if (!ok) return;
+      GQ.acceptRules();
+      goQuest();
+    });
   };
 
   /* Écran d'introduction → début de la quête. */

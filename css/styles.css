@@ -1286,3 +1286,6 @@ body.theme-party .help-link .icon { color: #00ade1; }
 /* Appel : la réplique en cours, en grand */
 .call-text { margin: 0; font-size: 1.08rem; line-height: 1.5; text-align: center; color: #fff; min-height: 4.5em; }
 .call-text.is-new { animation: fade-up 0.25s ease-out; }
+
+.finale-home { max-width: 360px; margin: 18px auto 10px; }
+.finale-home .btn { text-decoration: none; }

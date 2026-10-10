@@ -207,8 +207,16 @@ await step('Carte « Comment jouer ? » et règles plein écran dans la DA du je
   }
   assert((await page.locator('.modal-sheet .rule').count()) === 6, 'règles illustrées absentes');
   await page.click('[data-modal-cancel]');
-  await clickText("C'est parti");
-  assert((await hash()) === '#/quete/1', 'pas sur la quête 1');
+  // Le chrono ne part qu'après confirmation.
+  await page.click('[data-action="accept-rules"]');
+  assert(await has('Prêts à commencer') || norm(await page.locator('.modal').innerText()).includes('prêts à commencer'), 'pas d\'avertissement avant le chrono');
+  await page.click('[data-modal-cancel]');
+  await settle();
+  assert(!(await state()).clockStart && (await hash()) === '#/regles', 'chrono lancé sans confirmation');
+  await page.click('[data-action="accept-rules"]');
+  await page.click('[data-modal-ok]');
+  await settle();
+  assert((await hash()) === '#/quete/1' && (await state()).clockStart, 'pas sur la quête 1');
 });
 
 await step('Mot secret du hall : refusé s\'il est faux, accepté sans tenir compte de la casse', async () => {
@@ -513,9 +521,10 @@ await step('Mot secret CADEAU → transmission à usage unique, jamais « salle 
   await clickText('Continuer');
   assert(await has('Rapport d\'analyse'), 'rapport absent');
   // Indices interactifs : un appui révèle l'analyse.
-  assert(!(await has('Edo')), 'analyse affichée trop tôt');
+  assert(!(await has('son nom actuel')), 'analyse affichée trop tôt');
   for (let i = 0; i < 4; i++) await page.click(`[data-action="clue"][data-i="${i}"]`);
-  assert(await has('Soleil-Levant') && await has('Edo') && await has('634 m'), 'analyse des indices absente');
+  assert(await has('son nom actuel') && await has('pas du français'), 'analyse des indices absente');
+  assert(!(await has('Soleil-Levant')) && !(await has('Japon')) && !(await has('634')), 'le rapport en dit trop');
   assert(!(await forbidden()), '« salle » ou « porte » affiché trop tôt');
 });
 
@@ -558,6 +567,7 @@ await step('Appel de Barnabé puis écran de fin, conservé au rechargement', as
   assert((await state()).finished, 'fin non enregistrée');
   await reload();
   assert(await has('Mission accomplie'), 'fin perdue après rechargement');
+  assert((await page.locator('.finale-home a[href="#/"]').count()) === 1, 'pas de retour à l\'accueil du site');
   await noHorizontalScroll();
 });
 

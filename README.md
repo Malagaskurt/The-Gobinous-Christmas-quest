@@ -151,7 +151,9 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 ### Quête 5 : Opération Hotte (traque finale)
 
 - **Vidéo à lecture unique** : un petit film animé en pixel art (`assets/video/barnabe.mp4`, et `.webm` en secours) sur la **voix ElevenLabs fournie** (`traque.videoVoix`, `assets/audio/barnabe-video.mp3`) : Barnabé, de nuit devant un panorama de gratte-ciels, salue (« GG ») ; son réveil affiche presque minuit et « +7H » ; la caméra zoome sur son écran et la tour de plus de 600 m ; il lance « MATANÉ ! » et s'enfuit. Musique japonaise discrète en fond, sous-titres synchronisés (`traque.sousTitres`, champ `scene` pour le décor). Lecture unique : recharger la page affiche « Transmission autodétruite ». À la fin, le rapport s'affiche tout seul ; si la lecture coince, un bouton « Voir le rapport » apparaît. Pour refaire la vidéo après un changement de voix ou de sous-titres : `python3 tools/generer-video.py`.
-- **Rapport d'analyse** : 4 indices à toucher pour révéler leur analyse (décalage horaire de 7 h, tour géante, « matané », histoire locale/Edo), puis le code du repaire : **TOKYO** (un seul essai, gel de 45 s en cas d'erreur).
+- **Rapport d'analyse** : 4 indices à toucher (décalage horaire, tour géante, « matané », histoire locale). Chaque analyse relance la réflexion sans donner la réponse : le suspense reste entier jusqu'au code du repaire, **TOKYO** (un seul essai, gel de 45 s en cas d'erreur).
+- **Départ du chrono** : « C'est parti ! » demande une confirmation (« Prêts à commencer ? ») avant de lancer le chrono.
+- **Fin** : un bouton « Retour à l'accueil » ramène à la page du Club.
 - **Code du repaire** : un seul essai. Erreur : **gel de 45 secondes**, puis nouvel essai.
 - **Règle d'or** : aucun texte affiché avant TOKYO ne contient « salle » ni « porte ». `npm run check` le vérifie.
 - **TOKYO** : Barnabé démasqué (animation et bulle), puis gros bouton clignotant « Appeler Barnabé ».

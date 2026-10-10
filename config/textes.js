@@ -134,6 +134,11 @@ window.GAME_CONFIG.textes = {
     objectif: "",
     bouton: "C'est parti !",
     boutonFermer: "J'ai compris",
+    /* Confirmation avant le départ du chrono (une seule fois). */
+    confirmTitre: "Prêts à commencer ?",
+    confirmTexte: "Le chrono de **{chrono}** démarre dès que vous validez, et il ne s'arrête plus. Toute l'équipe est là ?",
+    confirmOui: "Lancer le chrono",
+    confirmNon: "Pas encore",
   },
 
   /* Bouton « Aide » (en haut de chaque écran) : appelle l'organisation.

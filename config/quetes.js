@@ -231,10 +231,10 @@ window.GAME_CONFIG.quetes = {
     rapportTitre: "Rapport d'analyse",
     rapport: "Barnabé se cache à cet étage, dans une pièce qui a le nom de sa ville. Touchez chaque indice pour l'analyser.",
     indices: [
-      { titre: "Le décalage horaire", recto: "« Sept heures d'avance » : chez lui, il fait déjà nuit.", verso: "Quand il est 16 h en France, il est 23 h chez lui : cap à l'est, jusqu'en Asie." },
-      { titre: "La tour géante", recto: "Une tour de plus de 600 m, au milieu d'un océan de gratte-ciels.", verso: "L'une des plus hautes tours du monde : une tour de télécom de 634 m." },
-      { titre: "Le mot de la fin", recto: "« Matané ! »", verso: "« Mata ne », c'est « à plus tard » au pays du Soleil-Levant." },
-      { titre: "L'histoire locale", recto: "« …et l'histoire locale. »", verso: "Sa ville s'appelait autrefois Edo, avant de prendre le nom qu'on lui connaît." },
+      { titre: "Le décalage horaire", recto: "« Sept heures d'avance » : chez lui, il fait déjà nuit.", verso: "Quand vous êtes en plein après-midi, lui va se coucher. Il vit loin, très loin…" },
+      { titre: "La tour géante", recto: "Une tour de plus de 600 m, au milieu d'un océan de gratte-ciels.", verso: "Des tours aussi hautes, il n'en existe qu'une poignée dans le monde." },
+      { titre: "Le mot de la fin", recto: "« Matané ! »", verso: "Ce n'est pas du français… Il l'a dit « comme on dit ici »." },
+      { titre: "L'histoire locale", recto: "« …et l'histoire locale. »", verso: "Sa ville n'a pas toujours porté son nom actuel." },
     ],
     conclusion: "Croisez les indices : le nom de sa ville est le code.",
     label: "Code du repaire (5 lettres)",
@@ -277,6 +277,8 @@ window.GAME_CONFIG.quetes = {
     paquetReprendre: "Reprendre",
     paquetSansPhoto: "Impossible de prendre la photo ? Continuer",
     paquetModele: "Le paquet choisi",
+
+    boutonAccueil: "Retour à l'accueil",
 
     /* Écran de fin. Icônes des consignes : gift, lock, elfWalk1, star, pin… */
     finTitre: "Mission accomplie",

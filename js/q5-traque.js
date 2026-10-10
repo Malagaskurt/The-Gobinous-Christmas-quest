@@ -413,6 +413,7 @@
         '</ul></section>' +
         '<p class="finale-voeux">' + GQ.knit.title(R.finVoeux, { alt: C.plain(R.finVoeux), color: '#E4323A', outline: true, cls: 'finale-voeux-img' }) + '</p>' +
         '<p class="finale-sign">— ' + t(R.finSignature) + '</p>' +
+        '<p class="finale-home"><a class="btn btn-red" href="#/">' + icon('retour') + esc(R.boutonAccueil || 'Retour à l\'accueil') + '</a></p>' +
         '<p class="finale-date">' + t(T.fin.termineeLe, {
           date: d.toLocaleDateString('fr-FR'),
           heure: d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
