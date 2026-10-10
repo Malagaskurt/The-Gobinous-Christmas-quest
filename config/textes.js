@@ -229,6 +229,9 @@ window.GAME_CONFIG.textes = {
     label: "Mot secret de l'étage",
     bouton: "Débloquer la quête",
     erreur: "Ce n'est pas le mot secret de cet étage. Cherchez bien autour de vous !",
+    /* Sortie de secours : affichée après `secoursApres` mauvais mots. */
+    secoursApres: 3,
+    secours: "Vous ne trouvez pas le mot secret ? Il est sur une affichette, à l'étage indiqué ci-dessus. Toujours bloqués ? Touchez « Un souci ? » en bas de l'écran : l'organisation vous le donnera.",
   },
 
   fin: {

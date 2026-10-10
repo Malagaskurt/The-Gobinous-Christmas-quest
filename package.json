@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node tools/serve.mjs",
     "check": "node tools/check-config.mjs",
+    "hors-ligne": "node tools/generer-hors-ligne.mjs",
     "test": "node tools/check-config.mjs && node tests/e2e.mjs"
   },
   "engines": {

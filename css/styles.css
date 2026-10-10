@@ -434,6 +434,12 @@ img { max-width: 100%; }
 .notice .icon { flex: none; color: var(--red); margin-top: 0.15em; }
 .notice-warn { background: #e3f6fc; color: #17428c; }
 .notice-warn .icon { color: #00ade1; }
+/* Sortie de secours (indice puis réponse après plusieurs erreurs). */
+.rescue { margin: 14px 0; padding: 14px 16px; border-radius: 12px; background: #e3f6fc; color: #17428c; border: 2px dashed #00ade1; text-align: left; }
+.rescue p { margin: 0; }
+.rescue-title { display: flex; align-items: center; gap: 8px; font-weight: 800; margin-bottom: 6px !important; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.85rem; }
+.rescue-pix { width: 22px; height: 22px; flex: none; }
+.rescue-answer { background: #fdecee; color: #a3112a; border-color: #e4323a; }
 
 /* Formulaires */
 .answer-form { margin-top: 1.2rem; text-align: center; }

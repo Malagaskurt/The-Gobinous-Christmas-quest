@@ -249,6 +249,16 @@ window.GAME_CONFIG.quetes = {
     gelSuite: "Ensuite, vous pourrez retenter votre chance.",
     indiceJoker: "La tour de 634 m s'appelle la Skytree. Dans quelle ville se trouve-t-elle ?",
 
+    /* Sortie de secours : après `indiceApres` mauvais codes, un indice de
+     * secours s'affiche ; après `reponseApres` mauvais codes, la réponse
+     * est donnée (plus de gel). Mettre 0 pour désactiver. */
+    indiceApres: 3,
+    indiceSecoursTitre: "Indice de secours",
+    indiceSecours: "La tour géante, c'est la Skytree (634 m). « Matané ! » veut dire « à plus ! » en japonais. Et sa ville s'appelait autrefois Edo…",
+    reponseApres: 4,
+    reponseSecoursTitre: "Le lutin a pitié de vous",
+    reponseSecours: "Le code du repaire est **TOKYO**. Saisissez-le pour le démasquer !",
+
     /* Après TOKYO : le lutin démasqué, puis le faux appel. */
     trouve:
       "Quoi ?! Vous m'avez retrouvé si vite ? OK, vous êtes des goats. Mon QG, c'est bien la SALLE TOKYO, au 33ᵉ étage. MAIS N'OUVREZ PAS LA PORTE ! Elle est piégée. Appelez-moi d'abord !",

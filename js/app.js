@@ -256,6 +256,13 @@
     setTimeout(hide, reduce ? 300 : 2000);
   }
 
+  /* Mode hors ligne : le téléphone garde une copie du site (sw.js). */
+  if ('serviceWorker' in navigator && /^https?:/.test(location.protocol) && !(GQ.cfg.parametres.horsLigne === false)) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () { /* navigateur sans service worker */ });
+    });
+  }
+
   if (!window.GQ_STOP) {
     loader();
     GQ.render();

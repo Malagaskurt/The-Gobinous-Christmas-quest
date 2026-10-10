@@ -94,7 +94,9 @@
         if (xhr.status === 404) { online = false; return resolve({ offline: true }); }
         reject(new Error(xhr.status === 413 ? 'lourd' : 'http'));
       };
-      xhr.onerror = function () { reject(new Error('reseau')); };
+      // Réseau coupé : le défi est validé sur le téléphone (à montrer aux
+      // organisateurs), comme sans serveur.
+      xhr.onerror = function () { resolve({ offline: true }); };
       xhr.send(blob);
     });
   }

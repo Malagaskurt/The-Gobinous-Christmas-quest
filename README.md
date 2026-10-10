@@ -222,6 +222,26 @@ Le gel résiste au rechargement de la page. Pendant le gel, seul le bouton des r
 
 ---
 
+### Sorties de secours (personne ne reste bloqué)
+
+| Étape | Si l'équipe bloque |
+|---|---|
+| Mot secret d'un étage | Après 3 mauvais mots, un encadré rappelle où chercher et invite à appeler l'organisation (« Un souci ? »). Réglage : `config/textes.js` → `acces.secoursApres`. |
+| Quête 1 · quiz | Après le blocage, le quiz est validé d'office. Deviner l'étage : indice bonus après la 1re erreur. |
+| Quêtes 2 et 4 | Après le gel, l'étape est validée d'office. |
+| Quête 3 · photos | La photo reprise après le refus du lutin est toujours acceptée. |
+| Quête 5 · TOKYO | Après 3 mauvais codes : **indice de secours**. Au 4e : **la réponse est donnée** (plus de gel). Réglages : `config/quetes.js` → `traque.indiceApres` / `reponseApres`. |
+
+### Mode hors ligne
+
+Au premier passage (avec réseau), le téléphone garde une copie de tout le site : pages, images, musiques, vidéo et message vocal de Barnabé (`sw.js`, liste des fichiers dans `hors-ligne.js`). Si le réseau tombe ensuite, le site s'ouvre et le jeu continue normalement. Ce qui doit partir au serveur attend ou bascule en local :
+- photos du jeu : gardées sur le téléphone et envoyées dès le retour du réseau ;
+- suivi des équipes : reprend tout seul au retour du réseau ;
+- défis de la Party : validés sur le téléphone (à montrer aux organisateurs) ;
+- Vlog, tirage du Secret Santa, avis : demandent le réseau (message clair sinon).
+
+Le mode hors ligne demande une adresse en `https` (Render, Netlify…). Après toute modification de fichier, `npm run check` met à jour `hors-ligne.js` (le serveur `npm start` le fait aussi tout seul). Conseil : faites ouvrir le site une fois à chaque équipe à l'accueil, avec le Wi-Fi, avant de lancer le jeu.
+
 ## 4. Modifier les contenus
 
 Tous les fichiers à modifier se trouvent dans `config/`. Chacun est commenté en français.

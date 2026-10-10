@@ -1,6 +1,6 @@
 // Vérifie les fichiers du dossier config/ sans ouvrir de navigateur.
 // Usage : npm run check
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
@@ -32,6 +32,17 @@ section('Erreurs', report.errors, '✖');
 section('Avertissements', report.warnings, '!');
 section('Textes provisoires [À CONFIGURER]', report.todos, '·');
 section('Informations à vérifier avant publication', report.toVerify, '?');
+
+// Liste des fichiers du mode hors ligne (hors-ligne.js) : remise à jour
+// si un fichier du site a changé.
+const { contenu } = await import('./generer-hors-ligne.mjs');
+const horsLigne = contenu();
+let ancien = '';
+try { ancien = readFileSync(root + 'hors-ligne.js', 'utf8'); } catch { /* absent */ }
+if (ancien !== horsLigne) {
+  writeFileSync(root + 'hors-ligne.js', horsLigne);
+  console.log('\n↻ hors-ligne.js mis à jour (mode hors ligne).');
+}
 
 const failed = syntaxErrors + report.errors.length;
 console.log(failed ? `\n✖ ${failed} erreur(s) à corriger.` : '\n✔ Configuration valide (pensez à traiter les points ci-dessus avant l\'événement).');

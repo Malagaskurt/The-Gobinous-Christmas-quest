@@ -428,6 +428,8 @@
         '<p class="floor-tag">' + icon('pin') + '<span>' + t(st.etage) + (st.lieu ? ' · ' + t(st.lieu) : '') + '</span></p>' +
         frame(typewriter('access-' + n, t(st.histoire), 'story')) +
         (A.consigne ? '<p class="muted center small">' + t(A.consigne) + '</p>' : '') +
+        (A.secours && A.secoursApres && (GQ.state.gel.fails['acces-' + n] || 0) >= A.secoursApres
+          ? '<section class="rescue"><p>' + t(A.secours) + '</p></section>' : '') +
         textAnswer({ form: 'access', label: A.label, button: A.bouton, caps: true, max: 40, fieldCls: 'field-code', expected: [st.motSecret], attrs: ' data-n="' + n + '"', btnCls: 'btn-red' }),
     };
   }
@@ -866,7 +868,12 @@
   forms.access = function (form, value) {
     var n = Number(form.dataset.n);
     if (!value.trim()) return formError(value, T.general.reponseVide);
-    if (!GQ.unlockQuest(n, value)) return formError(value, T.acces.erreur);
+    if (!GQ.unlockQuest(n, value)) {
+      var f = GQ.state.gel.fails;
+      f['acces-' + n] = (f['acces-' + n] || 0) + 1;
+      GQ.save();
+      return formError(value, T.acces.erreur);
+    }
     GQ.audio.sfx('unlock');
     GQ.uiReset();
     GQ.render();

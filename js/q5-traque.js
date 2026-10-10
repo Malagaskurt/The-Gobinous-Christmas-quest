@@ -231,11 +231,17 @@
       }).join('') + '</ul>' +
       (R.conclusion ? '<p class="terminal-text"><b>' + t(R.conclusion) + '</b></p>' : '') +
       '</section>';
+    var rescue = GQ.lairRescue();
     if (gel) {
       html += C.freezeView({ suite: R.gelSuite });
     } else {
-      html += '<p class="notice notice-warn">' + icon('cadenas') + '<span>' + t(R.unEssai.replace('{duree}', dur)) + '</span></p>' +
-        GQ.jokerBlock('q5', R.indiceJoker) +
+      html += (rescue === 'reponse'
+        ? '<section class="rescue rescue-answer"><p class="rescue-title">' + GQ.pix('gift', 'rescue-pix') + t(R.reponseSecoursTitre) + '</p><p>' + t(R.reponseSecours) + '</p></section>'
+        : rescue === 'indice'
+        ? '<section class="rescue"><p class="rescue-title">' + GQ.pix('loupe', 'rescue-pix') + t(R.indiceSecoursTitre) + '</p><p>' + t(R.indiceSecours) + '</p></section>' +
+          '<p class="notice notice-warn">' + icon('cadenas') + '<span>' + t(R.unEssai.replace('{duree}', dur)) + '</span></p>'
+        : '<p class="notice notice-warn">' + icon('cadenas') + '<span>' + t(R.unEssai.replace('{duree}', dur)) + '</span></p>') +
+        (rescue === 'reponse' ? '' : GQ.jokerBlock('q5', R.indiceJoker)) +
         C.textAnswer({ form: 'lair', label: R.label, button: R.bouton, caps: true, max: 12, fieldCls: 'field-code', expected: R.reponses, btnCls: 'btn-red' });
     }
     return {
@@ -520,7 +526,7 @@
     if (!value.trim()) return C.formError(value, T.general.reponseVide);
     var res = GQ.lairAnswer(value);
     GQ.uiReset();
-    if (!res || res.ok || res.frozen) return GQ.render();
+    if (!res || res.ok || res.frozen || res.revealed) return GQ.render();
     C.formError(value, T.general.mauvaiseReponse);
   };
 })();

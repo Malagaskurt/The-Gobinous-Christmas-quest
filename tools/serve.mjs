@@ -759,6 +759,12 @@ const server = createServer(async (req, res) => {
       return send(res, 400, { erreur: 'requête invalide' });
     }
   }
+  // Liste du mode hors ligne toujours à jour (fichiers modifiés sur le serveur).
+  if (path.endsWith('/hors-ligne.js')) {
+    const { contenu } = await import('./generer-hors-ligne.mjs');
+    res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'no-cache' });
+    return res.end(contenu());
+  }
   try {
     if (path.endsWith('/')) path += 'index.html';
     const file = normalize(join(root, path));

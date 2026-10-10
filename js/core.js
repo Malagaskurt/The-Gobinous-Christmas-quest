@@ -185,7 +185,7 @@
       // que le lutin refusera une fois ; rejected : modèle refusé.
       q3: { photos: {}, caprice: null, rejected: false },
       q4: { step: 0, forced: {} },
-      q5: { videoSeen: false },
+      q5: { videoSeen: false, errors: 0 },
       arrivals: {}, // n → horodatage de saisie du mot secret
       joker: { used: false, on: null, at: null },
       finished: null, // { at, by }
@@ -712,7 +712,23 @@
       GQ.save();
       return { ok: true };
     }
+    // Sortie de secours : au-delà de `reponseApres` erreurs, la réponse est
+    // donnée et il n'y a plus de gel.
+    s.q5.errors = (s.q5.errors || 0) + 1;
+    if (GQ.lairRescue() === 'reponse') {
+      GQ.save();
+      return { ok: false, frozen: false, revealed: true };
+    }
     return Object.assign({ ok: false }, GQ.penalize('q5', 'repaire'));
+  };
+
+  /* Niveau de secours de la quête 5 : null, 'indice' ou 'reponse'. */
+  GQ.lairRescue = function () {
+    var R = Q.traque;
+    var n = GQ.state.q5.errors || 0;
+    if (R.reponseApres && n >= R.reponseApres) return 'reponse';
+    if (R.indiceApres && n >= R.indiceApres) return 'indice';
+    return null;
   };
 
   /* ------------------------------------------------------------------ */

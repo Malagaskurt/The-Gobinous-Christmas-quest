@@ -230,6 +230,17 @@ await step('Carte « Comment jouer ? » et règles plein écran dans la DA du je
   assert((await hash()) === '#/quete/1' && (await state()).clockStart, 'pas sur la quête 1');
 });
 
+await step('Mot secret d\'étage introuvable : aide affichée après 3 erreurs', async () => {
+  await page.evaluate(() => window.GQ.jumpTo(2, 'access'));
+  await go(BASE + '#/quete/2');
+  for (const w of ['A', 'B']) await answer(w);
+  assert(!(await has('Toujours bloqués')), 'aide trop tôt');
+  await answer('C');
+  assert(await has('Toujours bloqués'), 'aide absente après 3 erreurs');
+  await page.evaluate(() => window.GQ.jumpTo(1, 'intro'));
+  await go(BASE + '#/quete/1');
+});
+
 await step('Quête 1 ouverte directement (le code a été saisi à l\'entrée)', async () => {
   assert(!(await has('Mot secret de l\'étage')), 'mot secret redemandé');
   assert(await has('Quiz Givré') && await has('Choisir un thème'), 'quête 1 non débloquée');
@@ -543,6 +554,18 @@ await step('Code du repaire : 1 seul essai, gel, puis nouvel essai → TOKYO', a
   assert(ms > 0 && ms <= SHORT, `gel inattendu : ${ms} ms`);
   await page.waitForTimeout(ms + 1200);
   assert((await page.locator('.answer-form').count()) === 1, 'saisie non rétablie');
+  assert(!(await has('Indice de secours')), 'indice de secours trop tôt');
+});
+
+await step('Sortie de secours : indice après 3 mauvais codes, puis la réponse', async () => {
+  await page.evaluate(() => { window.GQ.state.q5.errors = 2; window.GQ.save(); window.GQ.render(); });
+  await answer('osaka');
+  assert(await frozen(), 'pas de gel au 3e essai');
+  await page.waitForTimeout((await gelMs()) + 1200);
+  assert(await has('Indice de secours') && await has('Edo'), 'indice de secours absent');
+  await answer('kyoto');
+  assert(!(await frozen()), 'gel alors que la réponse doit être donnée');
+  assert(await has('Le code du repaire est TOKYO'), 'réponse non donnée après 4 erreurs');
   await answer('Tokyo');
   assert(await has('SALLE TOKYO') && await has('Appeler Barnabé'), 'lutin démasqué absent');
 });
@@ -767,6 +790,32 @@ await step('Wrap-Up : tirage du Secret Santa, un numéro unique par téléphone'
   }
   const sa = await api('santa');
   assert(sa.tires.length === 6, 'tirages non enregistrés');
+});
+
+await step('Hors ligne : le site, le jeu, la vidéo et les musiques restent disponibles', async () => {
+  const off = await browser.newContext({ viewport: { width: 375, height: 740 } });
+  const p3 = await off.newPage();
+  await p3.goto(BASE + '#/');
+  await p3.waitForSelector('#loader', { state: 'detached' });
+  await p3.evaluate(() => navigator.serviceWorker.ready);
+  await p3.reload();
+  await p3.waitForFunction(() => !!navigator.serviceWorker.controller);
+  // Le service worker n'est actif qu'une fois la copie complète faite.
+  await off.setOffline(true);
+  await p3.goto(BASE + '#/programme');
+  await p3.waitForSelector('.prog-card', { timeout: 15000 });
+  await p3.goto(BASE + '#/quest');
+  await p3.waitForSelector('[data-form="gate"]', { timeout: 15000 });
+  const r = await p3.evaluate(async () => {
+    const out = {};
+    for (const f of ['assets/video/barnabe.mp4', 'assets/audio/barnabe-appel.mp3', 'assets/audio/musique-noel-1.mp3']) {
+      const res = await fetch(f, { headers: { Range: 'bytes=0-99' } });
+      out[f] = res.status + ':' + (await res.arrayBuffer()).byteLength;
+    }
+    return out;
+  });
+  for (const [f, v] of Object.entries(r)) assert(v === '206:100', `${f} indisponible hors ligne (${v})`);
+  await off.close();
 });
 
 await step('Affichage ordinateur (1280 px) sans débordement', async () => {
