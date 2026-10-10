@@ -32,7 +32,10 @@ Une seule direction artistique, de l'écran de chargement jusqu'à la fin :
 - **Gel** : quand l'équipe est pénalisée, un givre apparaît sur les bords de l'écran, la saisie disparaît et un compte à rebours tricoté s'affiche. Seul le bouton des règles reste utilisable.
 - **Quête 4** : écran de « terminal de sécurité » (texte cyan, lignes de balayage) et badge du suspect qui se complète module après module.
 - **Quête 5** : transmission de caméra de surveillance, lutin démasqué, faux appel téléphonique.
-- **Règles** : page plein écran, une carte tricotée par règle.
+- **Règles** : bouton « Règles » bien visible en haut à droite, qui ouvre une page plein écran avec une carte tricotée par règle.
+- **Le lutin commente les gels** : une phrase rigolote pendant le gel, et une autre quand il vous laisse passer (« Le lutin a eu tellement pitié de vous… il est trop goat 🐐 »). Phrases dans `config/textes.js` (`lutin.gel` et `lutin.degel`).
+- **Musique** : instrumental de Noël discret pendant tout le parcours, musique japonaise sous la vidéo de Barnabé. Bouton « Son » en haut de l'écran pour la couper.
+- **Écran de fin** : une page à part, sans en-tête de jeu (ciel étoilé, scène tricotée, bilan de l'équipe, dernières consignes, « Joyeux Noël » et signature de Barnabé).
 - **Typographies** : Gotham (repli Montserrat), Arial, et VT323 pour les compteurs et les étiquettes.
 
 ---
@@ -95,13 +98,13 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 ### Quête 3 : le défi photo
 
 - Avant le défi : avertissement du **lutin capricieux** et information sur la transmission des photos aux organisateurs.
-- 6 modèles ; l'équipe en choisit 3. Toucher un modèle **ouvre directement l'appareil photo** (`capture="environment"`).
+- 6 modèles ; l'équipe en choisit 3. Toucher un modèle **ouvre l'appareil photo intégré au jeu** (viseur plein écran, déclencheur, bascule avant/arrière), sur téléphone comme sur ordinateur. Aucune galerie ni explorateur de fichiers n'est proposé.
 - Aperçu de la photo à côté du modèle : « Valider cette photo » ou « Retenter ».
 - **Caprice du lutin** : sur les 3 photos, la première tentative de l'une d'elles (tirée au hasard) est refusée avec une fenêtre humoristique. La photo reprise est toujours acceptée, et toutes les autres passent du premier coup.
 - Chaque photo validée est **envoyée au serveur** (redimensionnée à 1600 px). Sans réseau, elle attend dans le téléphone et repart automatiquement.
 - Après 3 photos validées, « Valider la Quête 3 » s'active.
 
-> `capture="environment"` ouvre l'appareil photo sur iPhone et sur la plupart des Android. Certains navigateurs Android proposent malgré tout la galerie : c'est le navigateur qui décide, le site ne peut pas l'empêcher totalement.
+> L'appareil photo demande l'autorisation du navigateur la première fois et ne fonctionne qu'avec une adresse **https://** (ou `localhost`). Si l'accès est refusé, le jeu explique comment l'autoriser.
 
 ### Quête 4 : l'enquête du Support 44
 
@@ -109,11 +112,32 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 
 ### Quête 5 : la traque finale
 
-- **Vidéo à lecture unique** : elle est marquée vue dès son lancement ; recharger la page affiche « Transmission autodétruite ». Tant qu'aucun fichier n'est fourni, une **transmission simulée** de 35 secondes la remplace (portrait de Barnabé, accessoires, sous-titres minutés dans `traque.sousTitres`). Pour utiliser la vraie vidéo : déposez-la dans `assets/video/` et renseignez `traque.video`.
+- **Vidéo à lecture unique** : elle est marquée vue dès son lancement ; recharger la page affiche « Transmission autodétruite ». Tant qu'aucun fichier vidéo n'est fourni, une **transmission simulée** la remplace : portrait de Barnabé, accessoires, sous-titres, **voix de Barnabé** (une réplique par séquence, `traque.sousTitres[].audio`) et **musique japonaise** en fond. Pour utiliser une vraie vidéo : déposez-la dans `assets/video/` et renseignez `traque.video`.
 - **Code du repaire** : un seul essai. Erreur : **gel de 45 secondes**, puis nouvel essai.
 - **Règle d'or** : aucun texte affiché avant TOKYO ne contient « salle » ni « porte ». `npm run check` le vérifie.
 - **TOKYO** : Barnabé démasqué (animation et bulle), puis gros bouton clignotant « Appeler Barnabé ».
-- **Faux appel** : sonnerie, puis message vocal. Sans fichier audio (`traque.audio`), le téléphone le lit avec sa voix de synthèse, sous-titres à l'écran. « Raccrocher » affiche l'écran de fin « Mission accomplie (ou presque…) » et arrête le chrono.
+- **Faux appel** : sonnerie, puis message vocal de Barnabé (`traque.audio`), sous-titres à l'écran. « Raccrocher » affiche l'écran de fin et arrête le chrono.
+
+### Voix de Barnabé (ElevenLabs)
+
+Les répliques de Barnabé sont des fichiers MP3 dans `assets/audio/` : `barnabe-video-1.mp3` à `barnabe-video-4.mp3` (vidéo) et `barnabe-appel.mp3` (appel). **Tant qu'ils n'existent pas, le téléphone lit le texte avec sa voix de synthèse**, qui sonne « robot ».
+
+Pour les créer avec [ElevenLabs](https://elevenlabs.io) :
+
+1. Dans ElevenLabs, ouvrez **Voices → Voice Design** et décrivez la voix, par exemple :
+   > *Voix de petit lutin de Noël malicieux, en français. Aiguë, pétillante et espiègle, avec un petit rire moqueur. Débit rapide mais très bien articulé, ton complice et taquin, jeune, à la façon d'un personnage de dessin animé. Pas de grosse voix, pas de voix d'enfant.*
+2. Enregistrez la voix qui vous plaît et copiez son **Voice ID**. Créez aussi une **clé API** (Profile → API Keys).
+3. Lancez :
+   ```bash
+   ELEVENLABS_API_KEY=votre_cle ELEVENLABS_VOICE_ID=id_de_la_voix node tools/generer-voix.mjs
+   ```
+   Le script lit les textes dans `config/quetes.js` (sous-titres de la vidéo et message vocal) et crée les 5 fichiers. Pour n'en refaire qu'un : `SEULEMENT=barnabe-appel.mp3`.
+
+Sans ligne de commande : générez chaque réplique sur le site d'ElevenLabs (Text to Speech, avec la voix créée) et déposez les MP3 dans `assets/audio/` avec ces noms.
+
+### Musique
+
+`assets/audio/musique-noel.mp3` (boucle d'environ 1 min 15 : « Jingle Bells », « We Wish You a Merry Christmas », « Douce nuit » à la boîte à musique et aux clochettes) et `assets/audio/musique-japon.mp3` (« Sakura Sakura » au koto) sont composées par `tools/generer-musique.py` à partir de mélodies du domaine public : aucun droit à payer. Pour une autre musique (Suno, banque sonore libre de droits…), remplacez simplement les fichiers. Volume et activation : `parametres.musique`.
 
 ### Pénalités (gel)
 
@@ -137,7 +161,7 @@ Tous les fichiers à modifier se trouvent dans `config/`. Chacun est commenté e
 
 | Fichier | Contenu |
 |---|---|
-| `config/parametres.js` | Quiz (thèmes ratés avant le gel, durée), pénalités des autres étapes, chrono, suivi des équipes, logo, mode test |
+| `config/parametres.js` | Quiz (thèmes ratés avant le gel, durée), pénalités des autres étapes, musique, chrono, suivi des équipes, logo, mode test |
 | `config/etapes.js` | Les 5 étages : nom, repère, **mot secret**, texte de récit qui guide vers l'étage |
 | `config/textes.js` | Accueil, nom d'équipe, carte « Comment jouer ? », règles, messages communs, joker |
 | `config/quiz.js` | Quête 1 : 4 thèmes × 8 questions, thème mystère, étage à deviner et indice bonus |
@@ -222,7 +246,7 @@ npx playwright install chromium
 npm test
 ```
 
-Les 32 vérifications couvrent notamment : mots secrets des 5 étages ; thème mystère ; absence de correction pendant les questions puis correction après les 8 réponses ; gel de 45 s du quiz (persistant, règles accessibles) et validation d'office ; étage à deviner (givre 10 s, indice bonus) ; message codé (symboles, tolérance de saisie, essais) ; joker ; défi photo (appareil photo forcé, refus capricieux unique, envoi au serveur, export ZIP protégé) ; modules de l'enquête (essais, gel, validation d'office, badge) ; traque (vidéo à lecture unique, absence de « salle »/« porte » avant TOKYO, code à un essai, appel, fin) ; tableau de bord (code, avancement, galerie, réinitialisation à distance) ; mode test (sauts, affichettes, remise à zéro) ; absence de défilement horizontal et d'erreur JavaScript.
+Les 33 vérifications couvrent notamment : bouton Règles et bouton du son ; mots secrets des 5 étages ; thème mystère ; absence de correction pendant les questions puis correction après les 8 réponses ; gel de 45 s du quiz (persistant, règles accessibles) et validation d'office ; étage à deviner (givre 10 s, indice bonus) ; message codé (symboles, tolérance de saisie, essais) ; joker ; défi photo (appareil photo intégré sans sélecteur de fichiers, refus capricieux unique, envoi au serveur, export ZIP protégé) ; modules de l'enquête (essais, gel, validation d'office, badge) ; traque (vidéo à lecture unique, absence de « salle »/« porte » avant TOKYO, code à un essai, appel, fin) ; tableau de bord (code, avancement, galerie, réinitialisation à distance) ; mode test (sauts, affichettes, remise à zéro) ; absence de défilement horizontal et d'erreur JavaScript.
 
 ---
 
@@ -253,7 +277,7 @@ Après la mise en ligne :
   - quête 5, indice 2 : vérifier que le vitrage de la Tokyo Skytree est bien attribué à Saint-Gobain ;
   - quiz « La Tour Saint-Gobain » : année de livraison, commune, nombre de niveaux.
 - [ ] **Matricule (quête 4)** : la consigne D (« année qui précède l'année en cours ») donne 5 en 2026. Si l'événement a lieu une autre année, mettez à jour `reponses` du module 2 et `fiche.matricule`.
-- [ ] **Vidéo de Barnabé** (`traque.video`) et **message vocal** (`traque.audio`), sinon la simulation et la voix de synthèse sont utilisées.
+- [ ] **Voix de Barnabé** générée avec ElevenLabs (voir § 3, « Voix de Barnabé »), sinon la voix de synthèse du téléphone est utilisée. Éventuellement une vraie vidéo (`traque.video`).
 - [ ] **Droits à l'image** des 6 photos modèles et des portraits.
 - [ ] **Codes** : mode test (`1225`) et suivi (`CODE_SUIVI`, `SUIVI2026` par défaut).
 - [ ] **Hébergement Node.js avec disque persistant** et HTTPS.
@@ -274,6 +298,8 @@ js/core.js              règles du jeu, gels et sauvegarde
 js/screens.js           composants, accueil, règles, mots secrets, quête 1
 js/q2-message.js        quête 2 : chiffre Pigpen (SVG)
 js/q3-photos.js         quête 3 : défi photo, envoi et file d'attente hors ligne
+js/camera.js            appareil photo intégré au jeu (viseur, déclencheur)
+js/audio.js             musique de fond, voix de Barnabé, bouton du son
 js/q4-enquete.js        quête 4 : terminal du Support 44
 js/q5-traque.js         quête 5 : vidéo, repaire, appel, fin
 js/knit.js              rendu tricot
@@ -288,7 +314,8 @@ js/app.js               navigation et événements
 js/validate.js          vérification de la configuration
 assets/fonts/           Montserrat, VT323 (SIL OFL)
 assets/img/             favicon, logo, photos modèles, portraits des suspects
-tools/                  serveur du jeu (site, suivi, photos) et vérification
+assets/audio/           musiques de fond et voix de Barnabé (MP3)
+tools/                  serveur du jeu (site, suivi, photos), vérification, génération de la musique et des voix
 tests/                  test automatisé de bout en bout
 data/                   équipes suivies et photos (créé par le serveur, non versionné)
 ```

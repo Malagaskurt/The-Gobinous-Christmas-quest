@@ -126,10 +126,9 @@
     return '<span class="photo-sent' + (sent ? ' is-sent' : '') + '">' + (sent ? icon('valide') + esc(F.envoiOk) : esc(F.envoiAttente)) + '</span>';
   }
 
-  /* Bouton qui ouvre directement l'appareil photo (capture). */
-  function cameraLabel(id, inner, cls, disabled) {
-    return '<label class="' + cls + (disabled ? ' is-disabled' : '') + '">' + inner +
-      '<input class="camera-input" type="file" accept="image/*" capture="environment" data-model="' + esc(id) + '"' + (disabled ? ' disabled' : '') + '></label>';
+  /* Bouton qui ouvre l'appareil photo intégré au jeu (js/camera.js). */
+  function cameraButton(id, inner, cls, disabled) {
+    return '<button type="button" class="' + cls + '" data-action="photo-take" data-model="' + esc(id) + '"' + (disabled ? ' disabled' : '') + '>' + inner + '</button>';
   }
 
   function intro() {
@@ -137,9 +136,9 @@
       key: 'q3-intro',
       html:
         C.questHead(3) +
+        C.frame('<p class="intro-text">' + t(F.intro) + '</p><p class="muted small">' + t(F.consentement) + '</p>') +
         '<div class="caprice-card">' + GQ.art.elf('elfWave', 'caprice-elf') +
         '<div><p class="caprice-title">' + icon('cadenas') + esc(F.avertissementTitre) + '</p><p>' + t(F.avertissement) + '</p></div></div>' +
-        C.frame('<p class="intro-text">' + t(F.intro) + '</p><p class="muted small">' + t(F.consentement) + '</p>') +
         C.cta(C.btn(esc(F.boutonIntro) + icon('fleche'), 'intro-next', ' data-n="3"')),
     };
   }
@@ -155,7 +154,7 @@
       C.feedbackSlot() +
       '<div class="btn-pair">' +
       C.btn(icon('valide') + esc(F.boutonValider), 'photo-validate', ' data-model="' + esc(pv.model) + '"', 'btn-red') +
-      cameraLabel(pv.model, icon('photo') + esc(F.boutonRetenter), 'btn btn-secondary btn-camera') +
+      cameraButton(pv.model, icon('photo') + esc(F.boutonRetenter), 'btn btn-secondary btn-camera') +
       '</div></section>'
     );
   }
@@ -176,7 +175,7 @@
           : refused ? '<span class="model-state is-refused">' + icon('croix') + esc(F.rejetTitre) + '</span>'
             : '<span class="model-cta">' + icon('photo') + esc(F.boutonPhoto) + '</span>');
       if (done) return '<li><div class="model-card is-done">' + inner + '</div></li>';
-      return '<li>' + cameraLabel(m.id, inner, 'model-card', full || !!pv) + '</li>';
+      return '<li>' + cameraButton(m.id, inner, 'model-card', full || !!pv) + '</li>';
     }).join('');
     var html =
       C.questHead(3) +
@@ -208,22 +207,25 @@
     return intro();
   };
 
-  /* Photo prise (ou reprise) : aperçu avant validation. */
-  document.addEventListener('change', function (e) {
-    var input = e.target.closest && e.target.closest('.camera-input');
-    if (!input || !input.files || !input.files[0]) return;
-    var id = input.dataset.model;
-    var file = input.files[0];
-    process(file).then(function (img) {
-      GQ.uiReset();
-      GQ.ui.preview = { model: id, thumb: img.thumb, full: img.full };
-      GQ.render();
-      var el = document.querySelector('.photo-preview');
-      if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' });
-    }, function () {
-      GQ.toast(F.erreurPhoto, 'error');
+  /* Photo prise (ou reprise) avec l'appareil photo du jeu : aperçu avant
+   * validation. */
+  GQ.actions['photo-take'] = function (el) {
+    var id = el.dataset.model;
+    var m = model(id);
+    if (!m || GQ.state.q3.photos[id]) return;
+    GQ.camera.open({ titre: m.titre, image: m.image }).then(function (blob) {
+      if (!blob) return;
+      return process(blob).then(function (img) {
+        GQ.uiReset();
+        GQ.ui.preview = { model: id, thumb: img.thumb, full: img.full };
+        GQ.render();
+        var pv = document.querySelector('.photo-preview');
+        if (pv) pv.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }, function () {
+        GQ.toast(F.erreurPhoto, 'error');
+      });
     });
-  });
+  };
 
   GQ.actions['photo-validate'] = function (el) {
     var pv = GQ.ui.preview;

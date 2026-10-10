@@ -56,6 +56,23 @@ window.GAME_CONFIG.textes = {
     finale: "Bon d'accord… Vous m'avez presque trouvé !",
     fin: "Vous m'avez démasqué ! Bien joué, l'équipe !",
     clic: ["Pas touche !", "Je ne dirai rien…", "Cherchez encore !", "Hi hi hi !", "Le cadeau ? Quel cadeau ?"],
+    /* Phrases affichées pendant un gel (tirées au hasard). */
+    gel: [
+      "Brrr… Le lutin a tout gelé. Même vos neurones sont en mode glaçon 🥶",
+      "Pause forcée : le lutin est parti se faire un chocolat chaud. Il revient (peut-être).",
+      "Le lutin a appuyé sur le bouton « freeze ». Respirez, ce n'est que du givre.",
+      "Oups, c'est gelé ! Le lutin trouve que vous allez un peu trop vite.",
+      "Le lutin vous a mis en mode glaçon. Ce n'est pas personnel… enfin, un peu.",
+      "Tout est figé ! Le lutin en profite pour danser dans votre dos.",
+    ],
+    /* Phrases affichées quand le lutin vous laisse passer après un gel. */
+    degel: [
+      "Le lutin a eu tellement pitié de vous qu'il a tout dégelé. Respect, il est trop goat 🐐",
+      "Bon… le lutin valide. Pas parce que vous avez trouvé, hein : juste parce qu'il est sympa.",
+      "Le lutin a fondu (de pitié). C'est cadeau, profitez !",
+      "Le lutin vous laisse passer. Il dit que c'est carré… mais il vous juge un peu.",
+      "Dégel express ! Le lutin a mieux à faire que de vous regarder grelotter.",
+    ],
   },
 
   /* Chrono global affiché en haut des écrans de jeu. */
@@ -130,7 +147,7 @@ window.GAME_CONFIG.textes = {
         icone: "flake",
         titre: "Attention au gel",
         texte:
-          "Le nombre d'essais est limité. Trop d'erreurs, et le lutin gèle tout pendant quelques secondes : on ne touche à rien, sauf aux règles. Ensuite, l'aventure reprend.",
+          "Le nombre d'essais est limité. Trop d'erreurs, et le lutin gèle tout pendant quelques secondes. Ensuite, l'aventure reprend.",
       },
       {
         icone: "clock",
@@ -169,8 +186,6 @@ window.GAME_CONFIG.textes = {
     continuer: "Continuer",
     partieReinitialisee: "Votre partie a été réinitialisée par les organisateurs.",
     gelTitre: "Tout est gelé !",
-    gelTexte:
-      "Le lutin a tout gelé ! Vous ne pouvez rien faire, à part relire les règles. Patientez jusqu'à la fin du compte à rebours…",
     gelLeve: "Le gel est levé !",
     gelCompteur: "Dégel dans",
     stockageIndisponible:

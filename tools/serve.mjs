@@ -44,6 +44,9 @@ const types = {
   '.woff': 'font/woff',
   '.txt': 'text/plain; charset=utf-8',
   '.ico': 'image/x-icon',
+  '.mp3': 'audio/mpeg',
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
 };
 
 /* ------------------------------------------------------------------ */

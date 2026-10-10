@@ -99,7 +99,7 @@
     });
     // Quête 5
     checkAnswers(Q.traque.reponses, 'Quête 5');
-    var avantTokyo = [Q.traque.titre, Q.traque.avertissementTitre, Q.traque.avertissement, Q.traque.rapportTitre, Q.traque.rapport, Q.traque.conclusion, Q.traque.label, Q.traque.unEssai, Q.traque.gelTexte, Q.traque.indiceJoker, cfg.etapes[5] && cfg.etapes[5].histoire, cfg.etapes[5] && cfg.etapes[5].lieu]
+    var avantTokyo = [Q.traque.titre, Q.traque.avertissementTitre, Q.traque.avertissement, Q.traque.rapportTitre, Q.traque.rapport, Q.traque.conclusion, Q.traque.label, Q.traque.unEssai, Q.traque.gelSuite, Q.traque.indiceJoker, cfg.etapes[5] && cfg.etapes[5].histoire, cfg.etapes[5] && cfg.etapes[5].lieu]
       .concat(Q.traque.indices || [])
       .concat((Q.traque.sousTitres || []).map(function (x) { return x.texte; }));
     if (avantTokyo.some(function (x) { return /\b(salle|porte)s?\b/i.test(String(x || '')); })) {

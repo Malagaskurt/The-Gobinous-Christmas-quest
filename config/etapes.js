@@ -66,6 +66,6 @@ window.GAME_CONFIG.etapes = {
     motSecret: "CADEAU",
     titre: "Cap sur l'étage 33",
     histoire:
-      "BADGE LOCALISÉ ! Le badge de Barnabé SIX-SEVEN vient de biper au portique du 33ᵉ étage ! Il s'est retranché au 33ᵉ étage avec le Cadeau Officiel du Gobinous Christmas Club. Montez immédiatement au 33ᵉ étage !",
+      "BADGE LOCALISÉ ! Le badge de Barnabé SIX-SEVEN vient de biper au portique du 33ᵉ étage : il s'y est retranché avec le Cadeau Officiel du Gobinous Christmas Club. Montez immédiatement !",
   },
 };

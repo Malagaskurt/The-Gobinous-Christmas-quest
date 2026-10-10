@@ -26,6 +26,8 @@
     retour: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
     croix: '<path d="M6 6l12 12M18 6L6 18"/>',
     valide: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    son: '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+    muet: '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>',
     photo: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
     tel: '<path d="M6.5 3.5l3 .5 1.5 4-2 1.5a11 11 0 0 0 5.5 5.5l1.5-2 4 1.5.5 3c0 1-1 2-2 2C11 19.5 4.5 13 4.5 5.5c0-1 1-2 2-2z"/>',
     badge: '<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6.5 16c.5-1.5 1.5-2 2.5-2s2 .5 2.5 2M14 10h4M14 13h3"/>',
@@ -97,7 +99,10 @@
       '<header class="topbar">' +
       '<div class="topbar-row">' +
       (GQ.clockHtml() || '<span></span>') +
-      '<button type="button" class="link-btn" data-action="show-rules" aria-label="' + esc(T.general.regles) + '">' + GQ.icon('livre') + '</button>' +
+      '<span class="top-actions">' +
+      (GQ.soundButton ? GQ.soundButton() : '') +
+      '<button type="button" class="top-btn rules-btn" data-action="show-rules">' + GQ.icon('livre') + '<span>' + esc(T.general.regles) + '</span></button>' +
+      '</span>' +
       '</div>' +
       '<div class="topbar-row topbar-sub">' +
       '<ol class="stepper" aria-label="Progression">' + steps + '</ol>' +

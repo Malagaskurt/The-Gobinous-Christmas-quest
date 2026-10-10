@@ -53,8 +53,12 @@ const api = async (path) => {
 const apiTeams = async () => (await api('equipes')).equipes;
 await new Promise((r) => setTimeout(r, 600));
 
-const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
-const ctx = await browser.newContext({ viewport: { width: 375, height: 740 }, isMobile: true, hasTouch: true });
+// Caméra simulée par Chromium (mire de test) pour l'appareil photo du jeu.
+const browser = await chromium.launch({
+  ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}),
+  args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
+});
+const ctx = await browser.newContext({ viewport: { width: 375, height: 740 }, isMobile: true, hasTouch: true, permissions: ['camera'] });
 const page = await ctx.newPage();
 const jsErrors = [];
 page.on('pageerror', (e) => jsErrors.push(e.message));
@@ -172,6 +176,20 @@ await step('Mot secret du hall : refusé s\'il est faux, accepté sans tenir com
   assert(await has("Ce n'est pas le mot secret"), 'mauvais mot accepté');
   await answer('  sapin ');
   assert(await has('Le grand quiz') && await has('Choisir un thème'), 'quête 1 non débloquée');
+});
+
+await step('Bouton « Règles » explicite et bouton du son dans l\'en-tête, musiques disponibles', async () => {
+  assert(norm(await page.locator('.topbar .rules-btn').innerText()).includes('règles'), 'bouton Règles sans libellé');
+  assert((await page.locator('.topbar .sound-btn').getAttribute('aria-pressed')) === 'true', 'son coupé par défaut');
+  await page.locator('.topbar .sound-btn').click();
+  await settle();
+  assert((await page.locator('.topbar .sound-btn').getAttribute('aria-pressed')) === 'false', 'le son ne se coupe pas');
+  await page.locator('.topbar .sound-btn').click();
+  await settle();
+  for (const f of ['musique-noel.mp3', 'musique-japon.mp3']) {
+    const r = await fetch(BASE + 'assets/audio/' + f);
+    assert(r.ok && r.headers.get('content-type') === 'audio/mpeg', `musique absente : ${f}`);
+  }
 });
 
 await step('Accès direct à une quête non débloquée → redirection', async () => {
@@ -325,17 +343,24 @@ await step('Mot secret GUIRLANDE → avertissement du lutin capricieux et 6 mod�
   assert(await has('particulièrement capricieux'), 'avertissement absent');
   await clickText('Relever le défi');
   assert((await page.locator('.model-card').count()) === 6, 'modèles absents');
-  const cap = await page.locator('.camera-input').first().getAttribute('capture');
-  assert(cap === 'environment', 'l\'appareil photo n\'est pas forcé');
+  assert((await page.locator('input[type=file]').count()) === 0, 'un sélecteur de fichiers est proposé');
 });
 
-await step('3 photos : un refus capricieux, la photo reprise est acceptée, puis quête validée', async () => {
-  const photo = join(root, 'assets/img/photos/modele-1.jpg');
+// Ouvre l'appareil photo du jeu sur un modèle et déclenche.
+async function shoot(id) {
+  await page.click(`[data-action="photo-take"][data-model="${id}"]`);
+  await page.waitForSelector('.cam');
+  await page.waitForFunction(() => { const v = document.querySelector('.cam-video'); return v && v.videoWidth > 0; });
+  await page.click('.cam-shutter');
+  await page.waitForSelector('.photo-preview');
+}
+
+await step('3 photos avec l\'appareil photo du jeu : un refus capricieux, puis quête validée', async () => {
   let rejections = 0;
   for (const id of ['avion', 'totem', 'duo']) {
     for (let attempt = 0; attempt < 2; attempt++) {
-      await page.setInputFiles(`.camera-input[data-model="${id}"]`, photo);
-      await page.waitForSelector('.photo-preview');
+      await shoot(id);
+      assert((await page.locator('.cam').count()) === 0, 'appareil photo resté ouvert');
       await page.click('[data-action="photo-validate"]');
       await settle();
       if (await page.locator('.modal').count()) {
@@ -449,6 +474,8 @@ await step('Appel de Barnabé puis écran de fin, conservé au rechargement', as
   await page.click('[data-action="hang-up"]');
   await settle();
   assert(await has('Mission accomplie') && await has('Votre temps'), 'écran de fin absent');
+  assert(await has('Les Testeurs') && await has('Dernière ligne droite'), 'bilan de fin incomplet');
+  assert((await page.locator('.topbar').count()) === 0, 'l\'écran de fin garde l\'en-tête du jeu');
   assert((await state()).finished, 'fin non enregistrée');
   await reload();
   assert(await has('Mission accomplie'), 'fin perdue après rechargement');

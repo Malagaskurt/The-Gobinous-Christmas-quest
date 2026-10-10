@@ -225,11 +225,23 @@
     });
   }
 
-  /* Gel des étapes (hors quiz). o : { titre, texte } pour personnaliser. */
+  /* Phrase du lutin tirée « au hasard », mais stable pour une même graine
+   * (elle ne change pas à chaque réaffichage). kind : 'gel' | 'degel'. */
+  function phrase(kind, seed) {
+    var list = (T.lutin && T.lutin[kind]) || [];
+    if (!list.length) return '';
+    var h = 0;
+    String(GQ.state.id + ':' + seed).split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) >>> 0; });
+    return list[h % list.length];
+  }
+  GQ.phrase = phrase;
+
+  /* Gel des étapes (hors quiz). o : { titre, suite } pour personnaliser. */
   function freezeView(o) {
     var G = T.general;
     o = o || {};
-    return lockDevice(GQ.freezeRemaining(), { titre: o.titre || G.gelTitre, texte: o.texte || G.gelTexte, compteur: G.gelCompteur });
+    var texte = phrase('gel', GQ.state.gel.until) + (o.suite ? '\n' + o.suite : '');
+    return lockDevice(GQ.freezeRemaining(), { titre: o.titre || G.gelTitre, texte: texte, compteur: G.gelCompteur });
   }
   function freezeAfter() { startCountdown(GQ.freezeRemaining, T.general.gelCompteur); }
 
@@ -286,6 +298,7 @@
       html:
         '<main class="screen-home">' +
         '<div class="garland" aria-hidden="true"></div>' +
+        '<div class="home-top">' + GQ.soundButton() + '</div>' +
         '<div class="home-logo" data-action="logo-tap">' + GQ.logo('clair') + '</div>' +
         '<div class="home-hero">' +
         opt(A.surtitre, '<p class="kicker">' + t(A.surtitre) + '</p>') +
@@ -375,7 +388,7 @@
 
   function quizLockTexts() {
     var X = QZ.textes;
-    return { titre: X.bloqueTitre, texte: X.bloqueTexte, compteur: X.bloqueCompteur };
+    return { titre: X.bloqueTitre, texte: phrase('gel', GQ.state.quiz.lockUntil) + '\n' + X.bloqueSuite, compteur: X.bloqueCompteur };
   }
 
   var THEME_ICONS = { sapin: 'tree', miroir: 'star', tour: 'tower', materiaux: 'dice', flocon: 'flake', etoile: 'star', cadeau: 'gift' };
@@ -514,9 +527,12 @@
       questHead(1, null, F.titre) +
       frame('<p class="card-label">' + icon('loupe') + esc(T.general.indice) + '</p>' + typewriter('floor', t(F.indice), 'story'));
     if (gel) {
-      html += freezeView({ titre: F.gelTitre, texte: F.gelTexte });
+      html += freezeView({ titre: F.gelTitre, suite: F.gelSuite });
     } else {
-      if (bonus) html += '<div class="joker-hint bonus-hint" role="note"><p class="joker-hint-title">' + icon('etoile') + esc(F.bonusTitre) + '</p><p>' + t(F.bonus) + '</p></div>';
+      if (bonus) {
+        html += '<p class="degel">' + t(phrase('degel', 'etage')) + '</p>' +
+          '<div class="joker-hint bonus-hint" role="note"><p class="joker-hint-title">' + icon('etoile') + esc(F.bonusTitre) + '</p><p>' + t(F.bonus) + '</p></div>';
+      }
       html += '<h2 class="section-title">' + t(F.question) + '</h2>' +
         textAnswer({ form: 'floor', label: F.label, button: F.bouton, numeric: true, max: 12, fieldCls: 'field-code', expected: F.reponses });
     }
@@ -549,7 +565,7 @@
           art: forced ? GQ.knit.icon('flake', 'success-ico') : undefined,
           score: forced ? '' : r ? r.score + '/' + r.total : '8/8',
           title: forced ? X.reussiteApresGelTitre : X.reussiteTitre,
-          html: '<p>' + t(forced ? X.reussiteApresGelTexte : X.reussiteTexte) + '</p>',
+          html: (forced ? '<p class="degel">' + t(phrase('degel', 'quiz')) + '</p>' : '') + '<p>' + t(forced ? X.reussiteApresGelTexte : X.reussiteTexte) + '</p>',
           after: r && !forced ? correction(r) : '',
           cta: btn(esc(X.boutonIndice) + icon('fleche'), 'to-floor'),
         }),

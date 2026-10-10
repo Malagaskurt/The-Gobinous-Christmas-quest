@@ -102,7 +102,7 @@
     var gel = GQ.freezeRemaining();
     var html =
       C.questHead(2) +
-      (gel ? C.freezeView() : '') +
+      (gel ? C.freezeView({ suite: M.gelSuite }) : '') +
       '<p class="muted center">' + t(M.consigne) + '</p>' +
       '<div class="pig-card' + (gel ? ' is-frosted' : '') + '">' + cipher(M.lignes) + '</div>' +
       '<p class="card-label center-label">' + icon('loupe') + esc(M.grilleTitre) + '</p>' +
@@ -133,7 +133,7 @@
         html: C.successBlock({
           art: f ? GQ.knit.icon('flake', 'success-ico') : GQ.knit.icon('loupe', 'success-ico'),
           title: f ? M.reussiteApresGelTitre : M.reussiteTitre,
-          html: '<p>' + t(f ? M.reussiteApresGelTexte : M.reussiteTexte) + '</p>',
+          html: (f ? '<p class="degel">' + t(GQ.phrase('degel', 'q2')) + '</p>' : '') + '<p>' + t(f ? M.reussiteApresGelTexte : M.reussiteTexte) + '</p>',
           cta: C.btn(esc(M.bouton2) + icon('fleche'), 'complete-quest', ' data-n="2"', 'btn-red'),
         }),
       };

@@ -48,6 +48,22 @@ window.GAME_CONFIG.parametres = {
     repaire: { essais: 1, gelSecondes: 45, apresGel: "reessayer" },
   },
 
+  /* ---- Musique de fond ------------------------------------------------
+   * Instrumental de Noël en boucle pendant le parcours, musique japonaise
+   * sous la vidéo de Barnabé (quête 5). Les joueurs peuvent couper le son
+   * avec le bouton « Son » en haut de l'écran.
+   * volume / volumeVideo : de 0 (muet) à 1 (maximum). Gardez la musique
+   * discrète pour ne pas déconcentrer les équipes.
+   * Pour utiliser d'autres musiques (Suno, banque sonore…), remplacez les
+   * fichiers MP3 ou changez les chemins. */
+  musique: {
+    actif: true,
+    volume: 0.18,
+    volumeVideo: 0.3,
+    noel: "assets/audio/musique-noel.mp3",
+    japon: "assets/audio/musique-japon.mp3",
+  },
+
   /* ---- Chrono global -------------------------------------------------
    * Compte à rebours affiché en haut de l'écran pendant toute la partie.
    * Il démarre au bouton « C'est parti ! » et s'arrête à la fin de

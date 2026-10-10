@@ -50,26 +50,57 @@
     );
   }
 
-  function runSimulation() {
-    var total = simDuration() * 1000;
-    var subs = R.sousTitres || [];
-    var last = -1;
-    GQ.every(200, function () {
-      var el = Date.now() - playingSince;
-      var bar = document.querySelector('[data-bar]');
-      if (bar) bar.style.width = Math.min(100, (el / total) * 100) + '%';
-      var sec = el / 1000;
-      var idx = -1;
-      subs.forEach(function (s, i) { if (sec >= s.de && sec < s.a) idx = i; });
-      if (idx !== last && idx !== -1) {
-        last = idx;
-        var sub = document.querySelector('[data-sub]');
-        var prop = document.querySelector('[data-prop]');
-        if (sub) sub.textContent = subs[idx].texte;
-        if (prop) { prop.textContent = subs[idx].accessoire || ''; prop.classList.remove('pop'); void prop.offsetWidth; prop.classList.add('pop'); }
-      }
-      if (el >= total) videoEnded();
+  /* Voix de Barnabé : fichier MP3 s'il existe, sinon voix de synthèse du
+   * téléphone. Retour : promesse résolue à la fin de la phrase. */
+  function say(file, text) {
+    GQ.audio.duck(true);
+    return GQ.audio.voice(file).catch(function () { return tts(text); }).then(function () {
+      GQ.audio.duck(false);
+    }, function () { GQ.audio.duck(false); });
+  }
+
+  function tts(text) {
+    return new Promise(function (resolve) {
+      if (!window.speechSynthesis || !window.SpeechSynthesisUtterance || navigator.webdriver) return resolve();
+      var u = new SpeechSynthesisUtterance(GQ.normalizeSpeech(text));
+      u.lang = 'fr-FR';
+      var v = frenchVoice();
+      if (v) u.voice = v;
+      u.rate = 1.1;
+      u.pitch = 1.6;
+      var guard = setTimeout(resolve, 1500 + String(text).length * 90);
+      u.onend = u.onerror = function () { clearTimeout(guard); resolve(); };
+      speechSynthesis.speak(u);
     });
+  }
+
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  var runId = 0;
+  function runSimulation() {
+    var id = ++runId;
+    var subs = R.sousTitres || [];
+    var total = simDuration() * 1000;
+    var startedAt = Date.now();
+    GQ.every(200, function () {
+      var bar = document.querySelector('[data-bar]');
+      if (bar) bar.style.width = Math.min(100, ((Date.now() - startedAt) / total) * 100) + '%';
+    });
+    function show(seg) {
+      var sub = document.querySelector('[data-sub]');
+      var prop = document.querySelector('[data-prop]');
+      if (sub) sub.textContent = seg.texte;
+      if (prop) { prop.textContent = seg.accessoire || ''; prop.classList.remove('pop'); void prop.offsetWidth; prop.classList.add('pop'); }
+    }
+    (function next(i) {
+      if (id !== runId || GQ.state.phase[5] !== 'video') return;
+      if (i >= subs.length) return wait(600).then(function () { if (id === runId) videoEnded(); });
+      var seg = subs[i];
+      show(seg);
+      // Chaque séquence dure au moins le temps prévu, et toujours jusqu'à la
+      // fin de la phrase de Barnabé.
+      Promise.all([say(seg.audio, seg.voix || seg.texte), wait((seg.a - seg.de) * 1000)]).then(function () { next(i + 1); });
+    })(0);
   }
 
   function realVideo() {
@@ -94,6 +125,9 @@
   function videoEnded() {
     if (GQ.state.phase[5] !== 'video') return;
     playingSince = 0;
+    runId++;
+    GQ.audio.stopVoice();
+    GQ.audio.duck(false);
     GQ.setPhase(5, 'report');
     GQ.uiReset();
     GQ.render();
@@ -113,6 +147,7 @@
     var real = !!String(R.video || '').trim();
     return {
       key: 'q5-video',
+      music: 'japon',
       html:
         '<h1 class="sr-only" tabindex="-1">' + t(R.titre) + '</h1>' +
         (real ? realVideo() : simulated()) +
@@ -133,7 +168,7 @@
       '<p class="terminal-text"><b>' + t(R.conclusion) + '</b></p>' +
       '</section>';
     if (gel) {
-      html += C.freezeView({ texte: R.gelTexte });
+      html += C.freezeView({ suite: R.gelSuite });
     } else {
       html += '<p class="notice notice-warn">' + icon('cadenas') + '<span>' + t(R.unEssai.replace('{duree}', dur)) + '</span></p>' +
         GQ.jokerBlock('q5', R.indiceJoker) +
@@ -210,25 +245,9 @@
       var el = document.querySelector('[data-call-status]');
       if (el) el.textContent = GQ.mmss(Date.now() - started);
     });
-    if (String(R.audio || '').trim()) {
-      var a = new Audio(R.audio);
-      a.addEventListener('ended', endCall);
-      a.play().catch(function () { /* lecture refusée : sous-titres seulement */ });
-      GQ.callAudio = a;
-      return;
-    }
-    if (window.speechSynthesis && window.SpeechSynthesisUtterance && !navigator.webdriver) {
-      var u = new SpeechSynthesisUtterance(GQ.normalizeSpeech(R.messageVocal));
-      u.lang = 'fr-FR';
-      var v = frenchVoice();
-      if (v) u.voice = v;
-      u.rate = 1.08;
-      u.pitch = 1.35;
-      u.onend = endCall;
-      speechSynthesis.cancel();
-      speechSynthesis.speak(u);
-    }
+    say(R.audio, R.messageVocal).then(endCall);
   }
+
   var EMOJI;
   try { EMOJI = new RegExp('\\p{Extended_Pictographic}', 'gu'); } catch (e) { EMOJI = /[\u2600-\u27BF]|[\uD83C-\uDBFF][\uDC00-\uDFFF]/g; }
 
@@ -239,8 +258,8 @@
 
   function stopAudio() {
     clearTimeout(callTimer);
-    if (window.speechSynthesis) speechSynthesis.cancel();
-    if (GQ.callAudio) { GQ.callAudio.pause(); GQ.callAudio = null; }
+    GQ.audio.stopVoice();
+    GQ.audio.duck(false);
   }
 
   function endCall() {
@@ -251,6 +270,7 @@
   function call() {
     return {
       key: 'q5-call',
+      music: null,
       html:
         '<h1 class="sr-only" tabindex="-1">' + t(R.appelNom) + '</h1>' +
         '<section class="phone">' +
@@ -264,25 +284,48 @@
     };
   }
 
+  /* Écran de fin : une page à part, sans en-tête de jeu, qui « signe »
+   * l'aventure (ciel étoilé, scène tricotée, bilan, dernières consignes). */
   function end() {
     var s = GQ.state;
     var c = GQ.clock();
     var d = new Date((s.finished && s.finished.at) || Date.now());
+    var stars = '';
+    for (var i = 0; i < 26; i++) {
+      stars += '<i style="left:' + ((i * 37) % 100) + '%;top:' + ((i * 53) % 70) + '%;animation-delay:' + ((i % 7) * 0.45).toFixed(2) + 's"></i>';
+    }
+    function stat(k, v) { return '<div><dt>' + esc(k) + '</dt><dd>' + v + '</dd></div>'; }
     return {
       key: 'q5-end',
+      bare: true,
       celebrate: 'big',
+      music: 'noel',
       html:
-        '<section class="success">' +
-        '<div class="success-art"><div class="elf-scene"><span class="elf-say">' + t(GQ.elf.line('fin')) + '</span>' + GQ.art.elf('elfGift', 'elf-big') + '</div></div>' +
-        '<p class="kicker">🏁</p>' +
+        '<main class="finale">' +
+        '<div class="garland" aria-hidden="true"></div>' +
+        '<div class="finale-sky" aria-hidden="true">' + stars + '</div>' +
+        '<div class="finale-inner">' +
+        GQ.logo('clair', 'finale-logo') +
+        '<p class="kicker">' + GQ.icon('etoile') + ' Fin de l\'aventure ' + GQ.icon('etoile') + '</p>' +
         C.knitTitle(R.finTitre, { color: '#E4323A', max: 9 }) +
-        C.frame('<p>' + t(R.finTexte) + '</p>' +
-          (c ? '<p class="final-time">' + t(T.chrono.tempsFinal, { temps: GQ.mmss(c.elapsed) }) + '</p>' : '') +
-          '<p class="muted small">' + t(T.fin.termineeLe, {
-            date: d.toLocaleDateString('fr-FR'),
-            heure: d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-          }) + '</p>', 'frame-center') +
-        '</section>',
+        '<p class="finale-sub">' + t(R.finSousTitre) + '</p>' +
+        '<div class="finale-scene">' + GQ.knit.scene('finale-knit') + '</div>' +
+        '<p class="finale-lead">' + t(R.finTexte, { equipe: s.team || '' }) + '</p>' +
+        '<dl class="finale-stats">' +
+        stat('Votre temps', c ? GQ.mmss(c.elapsed) : '—') +
+        stat('Quêtes', '5/5') +
+        stat('Joker', s.joker.used ? 'utilisé' : 'intact') +
+        '</dl>' +
+        '<section class="finale-card"><h2>' + t(R.finConsignesTitre) + '</h2><ul>' +
+        R.finConsignes.map(function (x) { return '<li><span class="finale-ico" aria-hidden="true">' + esc(x.icone) + '</span><span>' + t(x.texte) + '</span></li>'; }).join('') +
+        '</ul></section>' +
+        '<p class="finale-voeux">' + GQ.knit.title(R.finVoeux, { alt: C.plain(R.finVoeux), color: '#E4323A', outline: true, cls: 'finale-voeux-img' }) + '</p>' +
+        '<p class="finale-sign">— ' + t(R.finSignature) + '</p>' +
+        '<p class="finale-date">' + t(T.fin.termineeLe, {
+          date: d.toLocaleDateString('fr-FR'),
+          heure: d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        }) + '</p>' +
+        '</div></main>',
     };
   }
 
@@ -305,6 +348,7 @@
 
   GQ.actions['video-start'] = function () {
     if (!GQ.videoStart()) return GQ.render();
+    GQ.audio.prime((R.sousTitres[0] || {}).audio);
     playingSince = Date.now();
     GQ.uiReset();
     GQ.render();
@@ -313,6 +357,9 @@
   GQ.actions['video-skip'] = function () {
     if (GQ.state.phase[5] !== 'video') return GQ.render();
     playingSince = 0;
+    runId++;
+    GQ.audio.stopVoice();
+    GQ.audio.duck(false);
     GQ.setPhase(5, 'report');
     GQ.uiReset();
     GQ.render();
@@ -328,6 +375,7 @@
     if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
       try { speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch (e) { /* voix indisponible */ }
     }
+    GQ.audio.prime(R.audio);
     callTimer = null;
     GQ.setPhase(5, 'call');
     GQ.uiReset();

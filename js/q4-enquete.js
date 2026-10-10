@@ -84,7 +84,7 @@
       badge(step) +
       (GQ.ui.notice ? '<p class="notice">' + icon('valide') + '<span>' + t(GQ.ui.notice) + '</span></p>' : '') +
       '<h2 class="terminal-h">' + t(m.titre) + '</h2>' +
-      (gel ? C.freezeView() + (m.indice ? '<p class="terminal-text">' + t(m.indice) + '</p>' : '') : moduleBody(m, step)) +
+      (gel ? C.freezeView({ suite: E.gelSuite }) + (m.indice ? '<p class="terminal-text">' + t(m.indice) + '</p>' : '') : moduleBody(m, step)) +
       '</section>';
     return {
       key: 'q4-play-' + step + (gel ? '-gel' : ''),
@@ -110,7 +110,7 @@
 
   GQ.questScreens[4] = function () {
     var passed = GQ.freezeCheck();
-    if (passed && passed.indexOf('q4-') === 0) GQ.ui.notice = E.moduleForce;
+    if (passed && passed.indexOf('q4-') === 0) GQ.ui.notice = GQ.phrase('degel', passed) + ' ' + E.moduleForce;
     var ph = GQ.state.phase[4];
     if (ph === 'play') return play();
     if (ph === 'success') {

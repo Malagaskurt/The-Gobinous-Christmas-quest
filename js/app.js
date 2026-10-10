@@ -101,6 +101,9 @@
     document.body.classList.toggle('is-testing', GQ.test.isActive());
     document.body.classList.toggle('is-wide', !!scr.wide);
     document.body.classList.toggle('is-frozen', !!scr.frozen);
+    // Musique : Noël par défaut, rien sur les écrans des organisateurs.
+    var route = parseRoute().name;
+    GQ.audio.scene(scr.music !== undefined ? scr.music : route === 'organisateur' || route === 'suivi' ? null : 'noel');
 
     var changed = scr.key !== lastKey;
     lastKey = scr.key;
