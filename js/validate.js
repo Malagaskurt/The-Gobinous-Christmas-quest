@@ -136,6 +136,33 @@
     if (P.modeTest && P.modeTest.actif) {
       warn('Le mode test est actif (parametres.modeTest.actif). Désactivez-le ou changez son code avant l\'événement.');
     }
+
+    // Christmas Party
+    var PA = cfg.party;
+    if (PA) {
+      if (!String(PA.code || '').trim()) err('party.code : code secret manquant.');
+      (PA.defis || []).forEach(function (d, i) {
+        if (!String(d.titre || '').trim() || !String(d.texte || '').trim()) err('party.defis[' + (i + 1) + '] : titre ou texte manquant.');
+        if (!(Number(d.points) > 0)) err('party.defis[' + (i + 1) + '].points doit être un nombre > 0.');
+      });
+      if (!(PA.defis || []).length) err('party.defis : aucun défi.');
+    }
+
+    // Christmas Wrap-Up
+    var WU = cfg.wrapup;
+    if (WU) {
+      var qs = WU.questions || [];
+      if (qs.length > 5) warn('wrapup.questions : ' + qs.length + ' questions (5 maximum conseillé).');
+      var ids = {};
+      qs.forEach(function (q, i) {
+        var where = 'wrapup.questions[' + (i + 1) + ']';
+        if (!/^[a-z0-9_-]{1,30}$/i.test(q.id || '')) err(where + '.id invalide (lettres, chiffres, tirets).');
+        if (ids[q.id]) err(where + '.id en double : ' + q.id);
+        ids[q.id] = true;
+        if (['etoiles', 'echelle', 'choix', 'texte'].indexOf(q.type) === -1) err(where + '.type doit valoir etoiles, echelle, choix ou texte.');
+        if (q.type === 'choix' && !((q.options || []).length >= 2)) err(where + '.options : au moins 2 propositions.');
+      });
+    }
     return report;
   }
 

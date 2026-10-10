@@ -14,9 +14,14 @@
 // Photos du défi photo (quête 3) : enregistrées dans data/photos/<partie>/
 // et téléchargeables par les organisateurs depuis le tableau de bord
 // (une par une, ou toutes en un fichier ZIP classé par équipe).
+//
+// Christmas Party : défis validés par photo ou vidéo (data/party/), points
+// (Gobz) comptés ici d'après config/party.js, classement public.
+// Christmas Wrap-Up : réponses anonymes au questionnaire (data/avis.json).
 import { createServer } from 'node:http';
 import { readFile, stat, writeFile, mkdir, rename } from 'node:fs/promises';
-import { readFileSync } from 'node:fs';
+import { readFileSync, createWriteStream } from 'node:fs';
+import { unlink, rm } from 'node:fs/promises';
 import { dirname, extname, join, normalize, relative, sep } from 'node:path';
 import { networkInterfaces } from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -29,6 +34,14 @@ const MAX_TEAMS = 500;
 const PHOTO_DIR = join(dirname(FILE), 'photos');
 const PHOTO_INDEX = join(PHOTO_DIR, 'index.json');
 const MAX_PHOTO = 6 * 1024 * 1024;
+const PARTY_DIR = join(dirname(FILE), 'party');
+const PARTY_FILE = join(PARTY_DIR, 'joueurs.json');
+const AVIS_FILE = join(dirname(FILE), 'avis.json');
+const MAX_MEDIA = 80 * 1024 * 1024;
+const MEDIA = {
+  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/heic': 'heic', 'image/heif': 'heic',
+  'video/mp4': 'mp4', 'video/quicktime': 'mov', 'video/webm': 'webm', 'video/3gpp': '3gp',
+};
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -68,6 +81,67 @@ async function persistPhotos() {
   await mkdir(PHOTO_DIR, { recursive: true });
   await writeFile(PHOTO_INDEX + '.tmp', JSON.stringify(photos));
   await rename(PHOTO_INDEX + '.tmp', PHOTO_INDEX);
+}
+
+/* Christmas Party : joueurs et défis validés. */
+let party = {};
+try {
+  party = JSON.parse(readFileSync(PARTY_FILE, 'utf8')) || {};
+} catch { /* aucune partie de défis */ }
+async function persistParty() {
+  await mkdir(PARTY_DIR, { recursive: true });
+  await writeFile(PARTY_FILE + '.tmp', JSON.stringify(party));
+  await rename(PARTY_FILE + '.tmp', PARTY_FILE);
+}
+
+/* Christmas Wrap-Up : réponses anonymes (une par téléphone). */
+let avis = {};
+try {
+  avis = JSON.parse(readFileSync(AVIS_FILE, 'utf8')) || {};
+} catch { /* aucune réponse */ }
+async function persistAvis() {
+  await mkdir(dirname(AVIS_FILE), { recursive: true });
+  await writeFile(AVIS_FILE + '.tmp', JSON.stringify(avis));
+  await rename(AVIS_FILE + '.tmp', AVIS_FILE);
+}
+
+/* Défis et points : lus dans config/party.js (fichier du site), à chaque
+ * fois pour tenir compte d'une modification sans redémarrer. */
+async function partyConfig() {
+  try {
+    const src = await readFile(join(root, 'config', 'party.js'), 'utf8');
+    const win = {};
+    new Function('window', src)(win);
+    return (win.GAME_CONFIG && win.GAME_CONFIG.party) || { defis: [] };
+  } catch {
+    return { defis: [] };
+  }
+}
+
+function partyPoints(p) {
+  return Object.values(p.defis || {}).reduce((n, d) => n + (d.points || 0), 0);
+}
+
+function classement() {
+  return Object.entries(party)
+    .map(([id, p]) => ({ id, nom: p.nom, points: partyPoints(p), defis: Object.keys(p.defis || {}).length, dernier: p.dernier || 0 }))
+    .sort((a, b) => b.points - a.points || a.dernier - b.dernier || String(a.nom).localeCompare(String(b.nom), 'fr'));
+}
+
+/* Réception d'un fichier (photo ou vidéo) directement sur le disque. */
+function receive(req, file, max) {
+  return new Promise((resolve, reject) => {
+    let size = 0;
+    const out = createWriteStream(file);
+    req.on('data', (c) => {
+      size += c.length;
+      if (size > max) { req.destroy(); out.destroy(); reject(Object.assign(new Error('trop gros'), { code: 413 })); }
+    });
+    req.on('error', reject);
+    out.on('error', reject);
+    out.on('finish', () => resolve(size));
+    req.pipe(out);
+  });
 }
 
 let saveTimer = null;
@@ -247,8 +321,73 @@ async function api(req, res, path) {
     return send(res, 200, { ok: true });
   }
 
+  // Christmas Party : inscription d'un joueur (ou changement de nom).
+  if (path === '/api/party/joueur' && req.method === 'POST') {
+    const b = await body(req);
+    if (!validId(b.id) || !str(b.nom, 40).trim()) return send(res, 400, { erreur: 'joueur invalide' });
+    if (!party[b.id] && Object.keys(party).length >= MAX_TEAMS) return send(res, 503, { erreur: 'trop de joueurs' });
+    const p = party[b.id] || { defis: {}, debut: now };
+    p.nom = str(b.nom, 40).trim();
+    party[b.id] = p;
+    await persistParty();
+    return send(res, 200, { ok: true, points: partyPoints(p), defis: Object.keys(p.defis) });
+  }
+
+  // Christmas Party : preuve d'un défi (photo ou vidéo brute dans le corps).
+  if (path === '/api/party/preuve' && req.method === 'POST') {
+    const q = new URL(req.url, 'http://x').searchParams;
+    const id = q.get('id');
+    const n = Number(q.get('defi'));
+    const type = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
+    const cfg = await partyConfig();
+    const defi = cfg.defis[n - 1];
+    if (!validId(id) || !defi || !Number.isInteger(n)) return send(res, 400, { erreur: 'défi invalide' });
+    if (!MEDIA[type]) return send(res, 415, { erreur: 'format non pris en charge' });
+    const p = party[id] || { defis: {}, debut: now };
+    p.nom = str(q.get('nom'), 40).trim() || p.nom || 'Sans nom';
+    const dir = join(PARTY_DIR, id);
+    await mkdir(dir, { recursive: true });
+    const name = `defi-${String(n).padStart(2, '0')}.${MEDIA[type]}`;
+    const tmp = join(dir, name + '.part');
+    try {
+      await receive(req, tmp, MAX_MEDIA);
+    } catch (e) {
+      await unlink(tmp).catch(() => {});
+      return send(res, e.code === 413 ? 413 : 400, { erreur: e.code === 413 ? 'fichier trop lourd' : 'envoi interrompu' });
+    }
+    // Un seul fichier par défi : on remplace l'ancien s'il existe.
+    const old = p.defis[n];
+    if (old && old.fichier && old.fichier !== name) await unlink(join(dir, old.fichier)).catch(() => {});
+    await rename(tmp, join(dir, name));
+    p.defis[n] = { at: now, points: Number(defi.points) || 0, fichier: name, type, titre: str(defi.titre, 60) };
+    p.dernier = now;
+    party[id] = p;
+    await persistParty();
+    return send(res, 200, { ok: true, points: partyPoints(p), defis: Object.keys(p.defis) });
+  }
+
+  // Christmas Party : classement public (noms et points seulement).
+  if (path === '/api/party/classement' && req.method === 'GET') {
+    return send(res, 200, { now, joueurs: classement().map(({ id, nom, points, defis }) => ({ id, nom, points, defis })) });
+  }
+
+  // Christmas Wrap-Up : réponses anonymes (une par téléphone, modifiable).
+  if (path === '/api/avis' && req.method === 'POST') {
+    const b = await body(req, 16384);
+    if (!validId(b.id) || !b.reponses || typeof b.reponses !== 'object') return send(res, 400, { erreur: 'réponses invalides' });
+    if (!avis[b.id] && Object.keys(avis).length >= 5000) return send(res, 503, { erreur: 'trop de réponses' });
+    const reponses = {};
+    for (const [k, v] of Object.entries(b.reponses).slice(0, 10)) {
+      if (!/^[a-z0-9_-]{1,30}$/i.test(k)) continue;
+      reponses[k] = typeof v === 'number' ? Math.max(0, Math.min(10, Math.round(v))) : str(v, 1000);
+    }
+    avis[b.id] = { at: now, reponses };
+    await persistAvis();
+    return send(res, 200, { ok: true });
+  }
+
   // Tableau de bord : routes protégées par le code de suivi.
-  if (!path.startsWith('/api/equipes') && !path.startsWith('/api/photos')) return send(res, 404, { erreur: 'introuvable' });
+  if (!/^\/api\/(equipes|photos|party|avis)/.test(path)) return send(res, 404, { erreur: 'introuvable' });
   if (!authorized(req)) return send(res, 401, { erreur: 'code incorrect' });
 
   if (path === '/api/photos' && req.method === 'GET') {
@@ -287,6 +426,72 @@ async function api(req, res, path) {
 
   if (path === '/api/equipes' && req.method === 'GET') {
     return send(res, 200, { now, equipes: Object.values(teams) });
+  }
+
+  // Party (organisateurs) : joueurs, défis et preuves.
+  if (path === '/api/party' && req.method === 'GET') {
+    return send(res, 200, {
+      now,
+      joueurs: classement().map((c) => ({
+        ...c,
+        preuves: Object.entries(party[c.id].defis || {}).map(([n, d]) => ({
+          defi: Number(n), titre: d.titre, points: d.points, type: d.type, at: d.at,
+          url: `api/party/${c.id}/${d.fichier}`,
+        })).sort((a, b) => a.defi - b.defi),
+      })),
+    });
+  }
+  if (path === '/api/party.zip' && req.method === 'GET') {
+    const files = [];
+    for (const c of classement()) {
+      const folder = safeName(c.nom) + ' (' + c.id.slice(0, 4) + ')';
+      for (const d of Object.values(party[c.id].defis || {})) {
+        try { files.push({ name: `${folder}/${d.fichier}`, data: await readFile(join(PARTY_DIR, c.id, d.fichier)) }); } catch { /* manquant */ }
+      }
+    }
+    res.writeHead(200, {
+      'Content-Type': 'application/zip',
+      'Content-Disposition': 'attachment; filename="defis-gobinous-christmas-party.zip"',
+      'Cache-Control': 'no-store',
+    });
+    return res.end(zip(files));
+  }
+  const fm = path.match(/^\/api\/party\/([a-z0-9]+)\/(defi-\d{2}\.[a-z0-9]{2,5})$/);
+  if (fm && req.method === 'GET') {
+    if (!validId(fm[1])) return send(res, 404, { erreur: 'introuvable' });
+    const d = Object.values((party[fm[1]] || {}).defis || {}).find((x) => x.fichier === fm[2]);
+    if (!d) return send(res, 404, { erreur: 'introuvable' });
+    try {
+      const file = join(PARTY_DIR, fm[1], fm[2]);
+      const data = await readFile(file);
+      res.writeHead(200, { 'Content-Type': d.type, 'Cache-Control': 'private, max-age=60', 'Content-Length': data.length });
+      return res.end(data);
+    } catch {
+      return send(res, 404, { erreur: 'introuvable' });
+    }
+  }
+  const dm = path.match(/^\/api\/party\/([a-z0-9]+)(?:\/(\d{1,2}))?$/);
+  if (dm && req.method === 'DELETE' && party[dm[1]]) {
+    const p = party[dm[1]];
+    if (dm[2]) {
+      const d = p.defis[dm[2]];
+      if (d) { await unlink(join(PARTY_DIR, dm[1], d.fichier)).catch(() => {}); delete p.defis[dm[2]]; }
+    } else {
+      await rm(join(PARTY_DIR, dm[1]), { recursive: true, force: true });
+      delete party[dm[1]];
+    }
+    await persistParty();
+    return send(res, 200, { ok: true });
+  }
+
+  // Wrap-Up (organisateurs) : toutes les réponses.
+  if (path === '/api/avis' && req.method === 'GET') {
+    return send(res, 200, { now, avis: Object.values(avis).sort((a, b) => a.at - b.at) });
+  }
+  if (path === '/api/avis' && req.method === 'DELETE') {
+    avis = {};
+    await persistAvis();
+    return send(res, 200, { ok: true });
   }
   const m = path.match(/^\/api\/equipes\/([a-z0-9]+)(\/reinitialiser)?$/);
   if (!m || !teams[m[1]]) return send(res, 404, { erreur: 'équipe introuvable' });

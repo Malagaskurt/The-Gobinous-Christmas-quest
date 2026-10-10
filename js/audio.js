@@ -1,5 +1,5 @@
 /* Son du jeu : petit fond musical de Noël (deux morceaux très doux qui
- * s'enchaînent), voix de Barnabé et réactions parlées du lutin, effets
+ * s'enchaînent), voix de Barnabé (vidéo et appel de la quête 5), effets
  * sonores (réussite, erreur, gel, déverrouillage) et bouton pour couper le
  * son.
  * Les navigateurs n'autorisent le son qu'après un geste de l'utilisateur :
@@ -188,7 +188,7 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Voix (Barnabé et réactions du lutin)                                */
+  /* Voix de Barnabé (appel de la quête 5)                              */
   /* Les fichiers sont décodés puis joués par Web Audio : une fois le    */
   /* son débloqué par un premier appui, toutes les répliques passent,    */
   /* y compris sur iPhone. Chaque lecture a un minuteur de sécurité : la */
@@ -284,23 +284,6 @@
     } catch (e) { /* rien à débloquer */ }
   }
 
-  /* Réplique du lutin tirée au hasard dans config/textes.js → lutin.voix
-   * (réussite, échec, gel…). Pas deux fois de suite la même. */
-  var lastLine = {};
-  var lineBusyUntil = 0;
-  function line(kind) {
-    var V = (GQ.cfg.textes.lutin || {}).voix || {};
-    var list = (V[kind] || []).filter(function (l) { return l && l.audio; });
-    if (!list.length || speaking || Date.now() < lineBusyUntil) return null;
-    var i = Math.floor(Math.random() * list.length);
-    if (list.length > 1 && i === lastLine[kind]) i = (i + 1) % list.length;
-    lastLine[kind] = i;
-    lineBusyUntil = Date.now() + 1200;
-    var l = list[i];
-    playVoice(l.audio).catch(function () { /* pas de voix : la bulle suffit */ });
-    return l;
-  }
-
   GQ.audio = {
     isOn: function () { return enabled; },
     /* Ambiance voulue par l'écran affiché : 'noel', 'japon' ou null. */
@@ -332,7 +315,6 @@
     },
     preload: function (url) { if (String(url || '').trim()) load(url).catch(function () { /* facultatif */ }); },
     voice: playVoice,
-    line: line,
     stopVoice: stopVoice,
   };
 

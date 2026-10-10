@@ -12,7 +12,10 @@
 
   /* ------------------------------------------------------------------ */
   /* Navigation                                                          */
-  /*   #/                accueil                                         */
+  /*   #/                accueil du Gobinous Christmas Club              */
+  /*   #/programme       programme de la soirée                          */
+  /*   #/quest           accueil du jeu (Christmas Quest)                */
+  /*   #/party, #/battle, #/gift, #/wrapup : autres temps forts        */
   /*   #/equipe          nom de l'équipe                                 */
   /*   #/regles          règles                                          */
   /*   #/quete/N         quête N (redirige si elle n'est pas débloquée)  */
@@ -53,7 +56,19 @@
     var s = GQ.state;
     switch (r.name) {
       case '':
+        return GQ.screens.club();
+      case 'programme':
+        return GQ.screens.programme();
+      case 'quest':
         return GQ.screens.home();
+      case 'party':
+        return GQ.screens.party();
+      case 'battle':
+        return GQ.screens.battle();
+      case 'gift':
+        return GQ.screens.gift();
+      case 'wrapup':
+        return GQ.screens.wrapup();
       case 'equipe':
         return GQ.screens.team(r.arg);
       case 'regles':
@@ -69,7 +84,7 @@
       case 'organisateur':
         return GQ.screens.organizer(r.arg);
       case 'suivi':
-        return GQ.screens.suivi();
+        return GQ.screens.suivi(r.arg);
       default:
         return redirectTo('');
     }
@@ -103,6 +118,7 @@
     document.body.classList.toggle('is-testing', GQ.test.isActive());
     document.body.classList.toggle('is-wide', !!scr.wide);
     document.body.classList.toggle('is-frozen', !!scr.frozen);
+    document.body.classList.toggle('theme-party', !!scr.party);
     // Fond rouge de temps en temps (réussites, moments forts) ; bleu sinon.
     document.body.classList.toggle('tone-red', !scr.frozen && (scr.tone === 'red' || (!!scr.celebrate && scr.tone !== 'blue')));
     // Musique : Noël par défaut, rien sur les écrans des organisateurs.
@@ -111,8 +127,8 @@
 
     var changed = scr.key !== lastKey;
     lastKey = scr.key;
-    // Effets sonores et réaction parlée du lutin : gel, réussite, erreur
-    // (une seule fois par écran ou par message d'erreur).
+    // Effets sonores et bulle du lutin : gel, réussite, erreur (une seule
+    // fois par écran ou par message d'erreur). Le lutin ne parle pas.
     var msg = GQ.ui.msg;
     var voice = null;
     if (changed && scr.frozen) { GQ.audio.sfx('freeze'); voice = 'gel'; }
@@ -135,8 +151,8 @@
     if (voice) {
       clearTimeout(GQ._voiceTimer);
       GQ._voiceTimer = setTimeout(function () {
-        var l = GQ.audio.line(voice);
-        if (l) GQ.elf.peek(l.texte, 3200);
+        var line = GQ.elf.line({ gel: 'blocage', reussite: 'reussite', echec: 'echec' }[voice] || voice);
+        if (line) GQ.elf.peek(line, 3200);
         else if (changed && scr.elf) GQ.elf.react(scr.elf);
       }, 450);
     } else if (changed && scr.elf) {

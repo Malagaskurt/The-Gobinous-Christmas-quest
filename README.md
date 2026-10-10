@@ -1,6 +1,41 @@
+# The Gobinous Christmas Club
+
+**Le site de la soirée de Noël · Saint-Gobain.** Une page d'accueil, le programme des temps forts, et pour chacun ce qu'il faut sur le téléphone :
+
+| Adresse | Temps fort | Sur le téléphone |
+|---|---|---|
+| `#/` | **The Gobinous Christmas Club** | Page d'accueil animée ; un appui (ou glisser vers le haut) ouvre le programme. |
+| `#/programme` | **Le programme** | Les 5 temps forts, chacun avec son bouton. |
+| `#/quest` | **Gobinous Christmas Quest** | Le grand jeu en équipe (ci-dessous). |
+| `#/party` | **Gobinous Christmas Party** | Goûter, déco du sapin et bucket list « Treats & Chill » : 20 défis photo/vidéo qui rapportent des **Gobz**, classement en direct. **Code secret : `2020`** (`config/party.js`). |
+| `#/battle` | **Gobinous Christmas Battle** | Simple page d'info : jeux en live, sans téléphone. |
+| `#/gift` | **Gobinous Christmas Gift** | Simple page d'info : le Secret Santa (cadeaux numérotés). |
+| `#/wrapup` | **Gobinous Christmas Wrap-Up** | Questionnaire de satisfaction anonyme, 5 questions, sans code. |
+| `#/suivi` | Organisateurs | Tableau de bord en 3 onglets : équipes de la Quest, défis de la Party, avis du Wrap-Up (indicateurs et export CSV). |
+
+Textes : `config/club.js` (accueil, programme, Battle, Gift), `config/party.js` (code, défis, points), `config/wrapup.js` (questions).
+
+### Christmas Party
+
+- Code secret demandé à l'entrée (donné par les organisateurs au bon moment), puis prénom ou nom d'équipe : on joue en solo ou à plusieurs.
+- Le lutin présente le goûter et la déco du sapin Gobinous (polaroïds, kit déco, petits mots), puis la bucket list.
+- Chaque défi s'ouvre sur trois choix : **prendre une photo** (appareil photo intégré), **filmer une vidéo** (caméra du téléphone), **choisir dans la galerie**. Aperçu, puis « Valider (+N Gobz) » : la preuve part au serveur avec une barre de progression (vidéos jusqu'à 80 Mo).
+- Les **Gobz** sont comptés par le serveur d'après `config/party.js` ; le total, le rang et le classement (top 10) se mettent à jour en direct, sans chrono.
+- Côté organisateurs (`#/suivi/party`) : classement, toutes les preuves (photos et vidéos), retrait d'un défi ou d'un joueur, export ZIP.
+
+### Christmas Wrap-Up
+
+- 5 questions maximum, **anonymes** (aucun nom demandé), sans code : étoiles, échelle de 1 à 5, choix, réponse libre ; certaines obligatoires (`obligatoire: true`).
+- Une réponse par téléphone, modifiable après envoi.
+- Côté organisateurs (`#/suivi/avis`) : nombre de réponses, note moyenne, répartitions en barres, verbatims, **export CSV** (s'ouvre dans Excel).
+
+> **La Party et le Wrap-Up ont besoin du serveur du jeu** (`npm start`, ou hébergement Node.js : voir § 9) pour compter les Gobz, tenir le classement et collecter les avis. Sur un hébergement statique (Netlify Drop…), les défis sont validés sur le téléphone seulement (à montrer aux organisateurs), le classement est masqué et le questionnaire ne peut pas être envoyé.
+
+---
+
 # Gobinous Christmas Quest
 
-**La quête du cadeau disparu · Saint-Gobain**. Mini-site de jeu de Noël pour *The Gobinous Christmas Club*.
+**La quête du cadeau disparu.** Le grand jeu de la soirée.
 
 > Le lutin officiel du Gobinous Christmas Club était chargé de livrer l'ultime Cadeau Officiel de Noël dans la Tour Saint-Gobain. Mais sur un coup de tête capricieux, il a décidé d'aller cacher ce cadeau indispensable ! Sans ce sésame, impossible de démarrer la fête ni de lancer la distribution. Les équipes doivent remonter la piste du lutin, étage par étage, pour découvrir son identité et retrouver le précieux coffre caché !
 
@@ -34,7 +69,7 @@ Une seule direction artistique, de l'écran de chargement jusqu'à la fin :
 - **Quête 5** : transmission de caméra de surveillance, lutin démasqué, faux appel téléphonique.
 - **Règles** : bouton « Règles » bien visible en haut à droite, qui ouvre une page plein écran avec une carte tricotée par règle.
 - **Le lutin commente les gels** : une phrase rigolote pendant le gel, et une autre quand il vous laisse passer (« Le lutin a eu tellement pitié de vous… il est trop goat 🐐 »). Phrases dans `config/textes.js` (`lutin.gel` et `lutin.degel`).
-- **Son** : petit fond de Noël presque inaudible (boîte à musique), réactions parlées du lutin (« GG la team ! », « MDR, raté ! »…), effets sonores (réussite, erreur, gel, déverrouillage). Bouton « Son » en haut de l'écran pour tout couper.
+- **Son** : petit fond de Noël presque inaudible (boîte à musique), effets sonores (réussite, erreur, gel, déverrouillage). Le lutin réagit par des **bulles** (« GG la team ! », « MDR, raté ! »…), sans voix. Seul Barnabé parle, dans la vidéo et l'appel de la quête 5. Bouton « Son » en haut de l'écran pour tout couper.
 - **Décor animé** : guirlande qui clignote, sol enneigé avec sapins, tour de verre, immeubles et voitures qui passent. Fond bleu Saint-Gobain, ponctué de rouge de Noël sur les moments forts (réussites, rôles, lutin démasqué).
 - **Pictogrammes pixel maison** (cloche, chaussette, sapin, cadeau…) à la place des émojis du téléphone : écrire `[[bell]]`, `[[sock]]`, `[[tree]]`… dans un texte de configuration.
 - **Typographie** : chaque type de titre tricoté a une taille de lettres fixe, quelle que soit la longueur du texte, et tout est centré.
@@ -119,11 +154,13 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 - **Code du repaire** : un seul essai. Erreur : **gel de 45 secondes**, puis nouvel essai.
 - **Règle d'or** : aucun texte affiché avant TOKYO ne contient « salle » ni « porte ». `npm run check` le vérifie.
 - **TOKYO** : Barnabé démasqué (animation et bulle), puis gros bouton clignotant « Appeler Barnabé ».
-- **Faux appel** : sonnerie, puis message vocal de Barnabé (`traque.audio`), sous-titres à l'écran. « Raccrocher » affiche l'écran de fin et arrête le chrono.
+- **Faux appel** : sonnerie, puis message vocal de Barnabé (`traque.audio`), sous-titres à l'écran.
+- **Le paquet mystère** : après « Raccrocher », l'équipe entre dans la salle, choisit un seul paquet et se prend en photo avec lui (photo envoyée aux organisateurs, visible dans la galerie du tableau de bord). Puis écran de fin : le chrono s'arrête.
+- **Écran de fin** : redescendre au point de départ avec le paquet, toujours fermé.
 
 ### Voix de Barnabé
 
-Les répliques de Barnabé sont des fichiers MP3 dans `assets/audio/` : `barnabe-video-1.mp3` à `barnabe-video-4.mp3` (vidéo) et `barnabe-appel.mp3` (appel), plus les **réactions du lutin** `lutin-*.mp3` (`textes.lutin.voix` : réussite, erreur, gel, nom d'équipe), jouées à chaque quête réussie ou réponse fausse avec sa bulle. Les voix passent par Web Audio : une fois le son débloqué par un premier appui, elles fonctionnent aussi sur iPhone (même en mode silencieux sur iOS récent). Le texte prononcé est le champ `voix` (et `messageVocalVoix`) de `config/quetes.js`, écrit pour être bien lu à voix haute (« Six Sévène », « quarante-quatre »…).
+Les répliques de Barnabé sont des fichiers MP3 dans `assets/audio/` : `barnabe-video-1.mp3` à `barnabe-video-4.mp3` (vidéo) et `barnabe-appel.mp3` (appel). Les voix passent par Web Audio : une fois le son débloqué par un premier appui, elles fonctionnent aussi sur iPhone (même en mode silencieux sur iOS récent). Le texte prononcé est le champ `voix` (et `messageVocalVoix`) de `config/quetes.js`, écrit pour être bien lu à voix haute (« Six Sévène », « quarante-quatre »…).
 
 **Voix fournie** : générée hors ligne avec le moteur libre [Piper](https://github.com/rhasspy/piper) et la voix masculine française « gilles » (enregistrements CC0, moteur MIT : libre de droits). Débit volontairement posé, voix légèrement rajeunie, volume harmonisé. Pour la régénérer après une modification du texte :
 
@@ -257,7 +294,7 @@ npx playwright install chromium
 npm test
 ```
 
-Les 35 vérifications couvrent notamment : rôles Chef Lutin et Lutin Reporter ; bouton « Un souci ? » (lien d'appel) et voix du lutin ; bouton Règles et bouton du son ; mots secrets des 5 étages ; thème mystère ; absence de correction pendant les questions puis correction après les 8 réponses ; gel de 45 s du quiz (persistant, règles accessibles) et validation d'office ; étage à deviner (givre 10 s, indice bonus) ; message codé (symboles, tolérance de saisie, essais) ; joker ; défi photo (appareil photo intégré sans sélecteur de fichiers, refus capricieux unique, envoi au serveur, export ZIP protégé) ; modules de l'enquête (essais, gel, validation d'office, badge) ; traque (vidéo réellement lue avec sous-titres et passage automatique au rapport, lecture unique, absence de « salle »/« porte » avant TOKYO, code à un essai, appel, fin) ; tableau de bord (code, avancement, galerie, réinitialisation à distance) ; mode test (sauts, affichettes, remise à zéro) ; absence de défilement horizontal et d'erreur JavaScript.
+Les 40 vérifications couvrent notamment : accueil du Club et programme ; pages Battle et Gift ; Party (code, 20 défis, photo, vidéo et galerie, Gobz comptés par le serveur, classement) ; Wrap-Up (questions obligatoires, réponses et indicateurs) ; photo avec le paquet en fin de quête ; rôles Chef Lutin et Lutin Reporter ; bouton « Un souci ? » (lien d'appel) ; bouton Règles et bouton du son ; mots secrets des 5 étages ; thème mystère ; absence de correction pendant les questions puis correction après les 8 réponses ; gel de 45 s du quiz (persistant, règles accessibles) et validation d'office ; étage à deviner (givre 10 s, indice bonus) ; message codé (symboles, tolérance de saisie, essais) ; joker ; défi photo (appareil photo intégré sans sélecteur de fichiers, refus capricieux unique, envoi au serveur, export ZIP protégé) ; modules de l'enquête (essais, gel, validation d'office, badge) ; traque (vidéo réellement lue avec sous-titres et passage automatique au rapport, lecture unique, absence de « salle »/« porte » avant TOKYO, code à un essai, appel, fin) ; tableau de bord (code, avancement, galerie, réinitialisation à distance) ; mode test (sauts, affichettes, remise à zéro) ; absence de défilement horizontal et d'erreur JavaScript.
 
 ---
 
@@ -314,7 +351,10 @@ js/q3-photos.js         quête 3 : défi photo, envoi et file d'attente hors lig
 js/camera.js            appareil photo intégré au jeu (viseur, déclencheur)
 js/audio.js             musique de fond, voix de Barnabé, bouton du son
 js/q4-enquete.js        quête 4 : terminal du Support 44
-js/q5-traque.js         quête 5 : vidéo, repaire, appel, fin
+js/q5-traque.js         quête 5 : vidéo, repaire, appel, photo avec le paquet, fin
+js/club.js              accueil du Club, programme, pages Battle et Gift
+js/party.js             Christmas Party : code, défis, Gobz, classement
+js/wrapup.js            Christmas Wrap-Up : questionnaire anonyme
 js/knit.js              rendu tricot
 js/pixel.js             pixel art : pictogrammes et lutin
 js/elf.js               comportement du lutin (promenades, bulles)

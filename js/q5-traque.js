@@ -327,6 +327,26 @@
     };
   }
 
+  /* Dans la salle : un paquet, une photo de groupe avec lui. */
+  function paquet() {
+    var pv = GQ.ui.paquet;
+    var body = pv
+      ? '<figure class="paquet-shot"><img src="' + pv.thumb + '" alt="Votre photo"></figure>' +
+        '<div class="btn-pair">' + C.btn(icon('valide') + esc(R.paquetValider), 'paquet-validate', '', 'btn-red') +
+        C.btn(icon('photo') + esc(R.paquetReprendre), 'paquet-take', '', 'btn-secondary') + '</div>'
+      : '<div class="paquet-art">' + GQ.knit.icon('gift', 'paquet-gift') + GQ.knit.icon('elfWave', 'paquet-elf') + '</div>' +
+        C.cta(C.btn(icon('photo') + esc(R.boutonPhotoPaquet), 'paquet-take', '', 'btn-red btn-blink') +
+          '<button type="button" class="btn btn-ghost" data-action="paquet-skip">' + esc(R.paquetSansPhoto) + '</button>');
+    return {
+      key: 'q5-paquet' + (pv ? '-preview' : ''),
+      tone: 'red',
+      html:
+        C.questHead(5, null, R.paquetTitre) +
+        C.frame('<p class="intro-text">' + t(R.paquetTexte) + '</p>') +
+        body,
+    };
+  }
+
   /* Écran de fin : une page à part, sans en-tête de jeu, qui « signe »
    * l'aventure (ciel étoilé, scène tricotée, bilan, dernières consignes). */
   function end() {
@@ -382,6 +402,7 @@
     if (ph === 'report') return report();
     if (ph === 'found') return found();
     if (ph === 'call') return call();
+    if (ph === 'paquet') return paquet();
     if (ph === 'end') return end();
     return intro();
   };
@@ -428,6 +449,35 @@
 
   GQ.actions['hang-up'] = function () {
     stopAudio();
+    GQ.setPhase(5, 'paquet');
+    GQ.uiReset();
+    GQ.render();
+  };
+
+  /* Photo de l'équipe avec le paquet choisi. */
+  GQ.actions['paquet-take'] = function () {
+    GQ.camera.open({ titre: R.paquetModele, image: GQ.knit.src('gift') }).then(function (blob) {
+      if (!blob) return;
+      return GQ.photoTools.process(blob).then(function (img) {
+        GQ.ui.paquet = img;
+        GQ.render();
+      }, function () { GQ.toast(GQ.cfg.quetes.photos.erreurPhoto, 'error'); });
+    });
+  };
+
+  GQ.actions['paquet-validate'] = function () {
+    var img = GQ.ui.paquet;
+    var s = GQ.state;
+    if (!img || s.phase[5] !== 'paquet') return GQ.render();
+    GQ.photoTools.send({ id: s.id, equipe: s.team, modele: 'paquet', titre: R.paquetModele, image: img.full });
+    s.q5.paquet = Date.now();
+    GQ.finish('fin');
+    GQ.uiReset();
+    GQ.render();
+  };
+
+  GQ.actions['paquet-skip'] = function () {
+    if (GQ.state.phase[5] !== 'paquet') return GQ.render();
     GQ.finish('fin');
     GQ.uiReset();
     GQ.render();

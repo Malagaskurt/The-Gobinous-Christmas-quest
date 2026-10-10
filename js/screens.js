@@ -298,7 +298,7 @@
       html:
         '<main class="screen-home">' +
         '<div class="garland" aria-hidden="true"></div>' +
-        '<div class="home-top">' + GQ.soundButton() + '</div>' +
+        '<div class="home-top"><a class="back-link" href="#/programme">' + icon('retour') + 'Programme</a>' + GQ.soundButton() + '</div>' +
         '<div class="home-logo" data-action="logo-tap">' + GQ.logo('clair') + '</div>' +
         '<div class="home-hero">' +
         opt(A.surtitre, '<p class="kicker">' + t(A.surtitre) + '</p>') +
@@ -338,7 +338,6 @@
         key: 'team-roles',
         bare: true,
         tone: 'red',
-        voice: 'equipe',
         html:
           miniHeader() +
           '<main class="screen screen-plain">' +
@@ -360,7 +359,7 @@
       html:
         miniHeader() +
         '<main class="screen screen-plain">' +
-        '<a class="back-link" href="#/">' + icon('retour') + 'Accueil</a>' +
+        '<a class="back-link" href="#/quest">' + icon('retour') + 'Accueil</a>' +
         '<div class="center-head">' + knitTitle(E.titreCourt) + '</div>' +
         elfTalk('<p>' + t(T.lutin.equipe) + '</p>') +
         textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder, btnCls: 'btn-red' }) +
@@ -653,7 +652,7 @@
       GQ.go(testOn ? 'organisateur' : 'suivi');
     }
   };
-  actions['go-home'] = function () { GQ.go(''); };
+  actions['go-home'] = function () { GQ.go('quest'); };
   actions.resume = function () {
     var s = GQ.state;
     if (!s.team) return GQ.go('equipe');

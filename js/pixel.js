@@ -240,6 +240,16 @@
 
   Object.assign(ICONS, {
     /* Pictogrammes « emoji » du jeu (remplacent les émojis du téléphone). */
+    coin: [
+      '..yyyy..',
+      '.yWyyyy.',
+      'yWyyRyyy',
+      'yyyRRRyy',
+      'yyyyRyyy',
+      'yyyRyRyy',
+      '.yyyyyy.',
+      '..yyyy..',
+    ],
     crown: [
       'y...y...y',
       'yy.yyy.yy',

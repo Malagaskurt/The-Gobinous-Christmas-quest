@@ -136,7 +136,31 @@ const SHORT = CFG.parametres.modeTest.dureeBlocageCourtSecondes * 1000;
 
 console.log('\nDépart');
 
-await step('Accueil épuré : titre et bouton « Lancer la partie »', async () => {
+await step('Accueil « The Gobinous Christmas Club » → programme des 5 temps forts', async () => {
+  assert(await has('Christmas Club') && await has('découvrir le programme'), 'accueil du Club absent');
+  await noHorizontalScroll();
+  await page.click('.club-tap');
+  await settle();
+  assert((await hash()) === '#/programme', 'programme non affiché');
+  for (const n of ['Christmas Quest', 'Christmas Party', 'Christmas Battle', 'Christmas Gift', 'Christmas Wrap-Up']) {
+    assert(await has(n), `temps fort absent : ${n}`);
+  }
+  await noHorizontalScroll();
+});
+
+await step('Battle et Gift : pages d\'information, sans jeu', async () => {
+  await page.click('.prog-battle');
+  await settle();
+  assert(await has('Rangez les téléphones'), 'page Battle absente');
+  await go(BASE + '#/gift');
+  assert(await has('Secret Santa') && await has('numéro'), 'page Gift absente');
+  await go(BASE + '#/programme');
+});
+
+await step('Christmas Quest : accueil du jeu et bouton « Lancer la partie »', async () => {
+  await page.click('.prog-quest');
+  await settle();
+  assert((await hash()) === '#/quest', 'accueil du jeu non affiché');
   assert(await has('CHRISTMAS QUEST'), 'titre absent');
   assert(await has('Lancer la partie'), 'bouton absent');
   await noHorizontalScroll();
@@ -209,16 +233,11 @@ await step('Bouton « Règles » explicite et bouton du son dans l\'en-tête, mu
   }
 });
 
-await step('« Un souci ? » sur chaque écran : appel direct de l\'organisation, voix du lutin disponibles', async () => {
+await step('« Un souci ? » sur chaque écran : appel direct de l\'organisation', async () => {
   await page.click('[data-action="help"]');
   const href = await page.locator('.help-calls a').first().getAttribute('href');
   assert(href === 'tel:+33668213587', `lien d'appel incorrect : ${href}`);
   await page.click('[data-modal-cancel]');
-  const lines = Object.values(CFG.textes.lutin.voix).flat();
-  for (const l of lines) {
-    const r = await fetch(BASE + l.audio);
-    assert(r.ok, `voix du lutin absente : ${l.audio}`);
-  }
 });
 
 await step('Accès direct à une quête non débloquée → redirection', async () => {
@@ -285,7 +304,7 @@ await step('Chrono global de 30 minutes affiché pendant le jeu', async () => {
 });
 
 await step('Mode test : accès caché par 5 appuis sur le logo, code vérifié', async () => {
-  await go(BASE);
+  await go(BASE + '#/quest');
   for (let i = 0; i < 5; i++) await page.click('[data-action="logo-tap"]');
   await settle();
   assert((await hash()) === '#/organisateur', `accès caché inopérant : ${await hash()}`);
@@ -513,6 +532,15 @@ await step('Appel de Barnabé puis écran de fin, conservé au rechargement', as
   assert(await has('Barnabé SIX-SEVEN') && await has('Tchao'), 'message vocal absent');
   await page.click('[data-action="hang-up"]');
   await settle();
+  // Dans la salle : photo de groupe avec le paquet choisi.
+  assert(await has('Le paquet mystère') && await has('un seul paquet'), 'étape du paquet absente');
+  await page.click('[data-action="paquet-take"]');
+  await page.waitForSelector('.cam video');
+  await page.waitForFunction(() => { const v = document.querySelector('.cam video'); return v && v.videoWidth > 0; });
+  await page.click('.cam-shutter');
+  await page.waitForSelector('[data-action="paquet-validate"]');
+  await page.click('[data-action="paquet-validate"]');
+  await settle();
   assert(await has('Mission accomplie') && await has('Votre temps'), 'écran de fin absent');
   assert(await has('Les Testeurs') && await has('Dernière ligne droite'), 'bilan de fin incomplet');
   assert((await page.locator('.topbar').count()) === 0, 'l\'écran de fin garde l\'en-tête du jeu');
@@ -527,7 +555,7 @@ console.log('\nOrganisateurs');
 await step('Tableau de bord : code, avancement, galerie photos, réinitialisation à distance', async () => {
   const other = await browser.newContext({ viewport: { width: 375, height: 740 } });
   const p2 = await other.newPage();
-  await p2.goto(BASE);
+  await p2.goto(BASE + '#/quest');
   await p2.waitForSelector('#loader', { state: 'detached' });
   await p2.getByText('Lancer la partie').first().click();
   await p2.fill('.answer-form .field', 'Équipe B');
@@ -544,7 +572,8 @@ await step('Tableau de bord : code, avancement, galerie photos, réinitialisatio
   await page.waitForSelector('.thumbs img');
   const a = norm(await page.locator('.team-card', { hasText: 'Les Testeurs' }).innerText());
   assert(a.includes('terminée') && a.includes('3/3'), 'avancement incomplet');
-  assert((await page.locator('.thumbs img').count()) === 3, 'galerie photos incomplète');
+  assert((await page.locator('.thumbs img').count()) === 4, 'galerie photos incomplète (3 défis + paquet)');
+  assert(await has('Le paquet choisi'), 'photo avec le paquet absente');
   assert(await has('Télécharger toutes les photos'), 'export ZIP absent');
   await noHorizontalScroll();
 
@@ -575,6 +604,75 @@ await step('Mode test : aller à une quête, simuler le mot secret, affichettes,
   assert((await state()).team === null, 'partie non réinitialisée');
   await clickText('Quitter le mode test');
   assert(!(await page.locator('.test-bar').count()), 'mode test encore actif');
+});
+
+console.log('\nChristmas Party et Wrap-Up');
+
+await step('Party : code 2020 obligatoire, nom, 20 défis avec appareil photo, vidéo et galerie', async () => {
+  await go(BASE + '#/party');
+  assert(await has('Code secret de la Party'), 'code non demandé');
+  await answer('1234');
+  assert(await has('Mauvais code'), 'mauvais code accepté');
+  await answer(CFG.party.code);
+  assert(await has("C'est l'heure du goûter") && await has('sapin Gobinous'), 'présentation absente');
+  await answer('Les Givrés');
+  assert((await page.locator('.defi').count()) === 20, 'les 20 défis ne sont pas affichés');
+  assert(await has('Treats & Chill') || await has('Treats &amp; Chill'), 'titre de la liste absent');
+  await page.click('[data-action="defi-open"][data-n="12"]');
+  assert((await page.locator('.modal input[type=file][accept="video/*"][capture]').count()) === 1, 'caméra vidéo non proposée');
+  assert((await page.locator('.modal input[type=file][accept="image/*,video/*"]').count()) === 1, 'galerie non proposée');
+  await page.click('[data-modal-cancel]');
+});
+
+await step('Party : défi validé par photo → Gobz comptés par le serveur, classement en direct', async () => {
+  await page.click('[data-action="defi-open"][data-n="20"]');
+  await page.click('[data-action="defi-camera"]');
+  await page.waitForFunction(() => { const v = document.querySelector('.cam video'); return v && v.videoWidth > 0; });
+  await page.click('.cam-shutter');
+  await page.waitForSelector('[data-action="defi-send"]');
+  await page.click('[data-action="defi-send"]');
+  await page.waitForSelector('.defi.is-done');
+  const pts = CFG.party.defis[19].points;
+  const r = await (await fetch(BASE + 'api/party/classement')).json();
+  const me = r.joueurs.find((x) => x.nom === 'Les Givrés');
+  assert(me && me.points === pts, `points serveur inattendus : ${me && me.points}`);
+  // Galerie : une vidéo envoyée depuis un fichier.
+  await page.click('[data-action="defi-open"][data-n="8"]');
+  await page.setInputFiles('.modal input[accept="image/*,video/*"]', { name: 'declaration.webm', mimeType: 'video/webm', buffer: Buffer.from('1a45dfa3', 'hex') });
+  await page.waitForSelector('[data-action="defi-send"]');
+  await page.click('[data-action="defi-send"]');
+  await page.waitForFunction(() => document.querySelectorAll('.defi.is-done').length === 2);
+  const r2 = await (await fetch(BASE + 'api/party/classement')).json();
+  const me2 = r2.joueurs.find((x) => x.nom === 'Les Givrés');
+  assert(me2.points === pts + CFG.party.defis[7].points, 'vidéo non comptée');
+  await page.waitForSelector('.ranking li.is-me');
+  const d = await api('party');
+  assert(d.joueurs[0].preuves.length === 2, 'preuves absentes côté organisateurs');
+  await noHorizontalScroll();
+});
+
+await step('Wrap-Up : anonyme, questions obligatoires, réponses et indicateurs côté organisateurs', async () => {
+  await go(BASE + '#/wrapup');
+  assert(await has('100 % anonyme'), 'mention anonyme absente');
+  assert((await page.locator('.wq').count()) === CFG.wrapup.questions.length && CFG.wrapup.questions.length <= 5, 'plus de 5 questions');
+  await page.click('.wq-form button[type=submit]');
+  await settle();
+  assert(await has('Il manque une réponse obligatoire'), 'questionnaire incomplet accepté');
+  await page.click('[data-q="note"][data-v="4"]');
+  await page.click('[data-q="moment"][data-s="Christmas Party"]');
+  await page.click('[data-q="encore"][data-s="Oui, carrément !"]');
+  await page.fill('[data-wq-text="mot"]', 'Bravo aux lutins');
+  await page.click('.wq-form button[type=submit]');
+  await settle();
+  assert(await has('Merci'), 'remerciement absent');
+  const a = await api('avis');
+  assert(a.avis.length === 1 && a.avis[0].reponses.note === 4 && a.avis[0].reponses.mot === 'Bravo aux lutins', 'réponses non enregistrées');
+  await go(BASE + '#/suivi/avis');
+  await page.waitForSelector('.kpi-big');
+  assert(await has('4,0') && await has('Bravo aux lutins') && await has('Exporter en CSV'), 'indicateurs absents');
+  await go(BASE + '#/suivi/party');
+  await page.waitForSelector('.party-card');
+  assert(await has('Les Givrés'), 'joueur absent de l\'onglet Party');
 });
 
 await step('Affichage ordinateur (1280 px) sans débordement', async () => {

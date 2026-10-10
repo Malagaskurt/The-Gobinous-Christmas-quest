@@ -250,15 +250,25 @@ window.GAME_CONFIG.quetes = {
       "Èm dé èr ! Vous attendiez vraiment que je désactive la bombe ? Trop naïfs, vous me régalez ! Bon, la course est presque finie. Dans la pièce, il y a plein de paquets identiques… mais un seul est le vrai Cadeau Officiel. Interdit de les ouvrir ici ! Prenez-en un au hasard, ne dites rien à personne, et foncez au point de départ. Tchao !",
     boutonRaccrocher: "Raccrocher",
 
+    /* Dans la salle : chaque équipe choisit UN paquet puis se photographie
+     * avec lui (photo envoyée aux organisateurs). */
+    paquetTitre: "Le paquet mystère",
+    paquetTexte: "Entrez, choisissez **un seul paquet** sans l'ouvrir… puis prenez une photo de toute l'équipe avec lui !",
+    boutonPhotoPaquet: "Photo avec notre paquet",
+    paquetValider: "Valider la photo",
+    paquetReprendre: "Reprendre",
+    paquetSansPhoto: "Impossible de prendre la photo ? Continuer",
+    paquetModele: "Le paquet choisi",
+
     /* Écran de fin. Icônes des consignes : gift, lock, elfWalk1, star, pin… */
     finTitre: "Mission accomplie",
     finSousTitre: "(ou presque…)",
     finTexte: "Bravo **{equipe}** ! Barnabé est démasqué.",
     finConsignesTitre: "Dernière ligne droite",
     finConsignes: [
-      { icone: "gift", texte: "Prenez **un seul paquet**, au hasard." },
-      { icone: "lock", texte: "Ne l'ouvrez surtout pas." },
-      { icone: "elfWalk1", texte: "Foncez au **point de départ** !" },
+      { icone: "lock", texte: "Gardez votre paquet **bien fermé**." },
+      { icone: "elfWalk1", texte: "Redescendez au **point de départ** !" },
+      { icone: "gift", texte: "Remettez-le aux organisateurs : verdict… est-ce le vrai ?" },
     ],
     finSignature: "Barnabé SIX-SEVEN, lutin (un peu farceur) du Gobinous Christmas Club",
     finVoeux: "Joyeux Noël",

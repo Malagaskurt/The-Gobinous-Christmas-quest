@@ -67,29 +67,6 @@ window.GAME_CONFIG.textes = {
       "Dégel express ! Le lutin a mieux à faire que de vous regarder grelotter.",
     ],
 
-    /* Voix du lutin : réactions parlées, tirées au hasard.
-     *   texte : ce qu'il dit (affiché dans sa bulle)
-     *   voix  : orthographe phonétique pour la synthèse vocale (facultatif)
-     *   audio : fichier MP3 (généré avec tools/generer-voix-piper.py)
-     * Sans fichier, rien n'est dit (la bulle reste affichée). */
-    voix: {
-      reussite: [
-        { texte: "GG la team !", voix: "Djidji la tim !", audio: "assets/audio/lutin-reussite-1.mp3" },
-        { texte: "Vous êtes des goats !", voix: "Wouah ! Vous êtes des gôtes !", audio: "assets/audio/lutin-reussite-2.mp3" },
-        { texte: "Validé, c'est carré !", voix: "Validé ! C'est carré !", audio: "assets/audio/lutin-reussite-3.mp3" },
-      ],
-      echec: [
-        { texte: "MDR, raté !", voix: "Èm dé èr ! Raté !", audio: "assets/audio/lutin-echec-1.mp3" },
-        { texte: "Vous pouvez faire mieux, les gars !", voix: "Allez, vous pouvez faire mieux, les gars !", audio: "assets/audio/lutin-echec-2.mp3" },
-        { texte: "Oups… Même pas proche !", voix: "Oups ! Même pas proche !", audio: "assets/audio/lutin-echec-3.mp3" },
-      ],
-      gel: [
-        { texte: "Brrr… Tout est gelé !", voix: "Brrr ! Tout est gelé ! Pause chocolat chaud.", audio: "assets/audio/lutin-gel-1.mp3" },
-      ],
-      equipe: [
-        { texte: "Bête de nom ! J'adore.", voix: "Ouah, trop stylé, ce nom ! J'adore !", audio: "assets/audio/lutin-equipe-1.mp3" },
-      ],
-    },
   },
 
   /* Chrono global affiché en haut des écrans de jeu. */

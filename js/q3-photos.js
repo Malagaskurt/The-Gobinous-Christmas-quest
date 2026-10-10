@@ -117,6 +117,8 @@
   setInterval(flush, 15000);
   setTimeout(flush, 3000);
   GQ.photoQueue = { flush: flush };
+  /* Outils partagés (photo avec le paquet, quête 5). */
+  GQ.photoTools = { process: process, send: send };
 
   /* ------------------------------------------------------------------ */
   /* Écrans                                                              */

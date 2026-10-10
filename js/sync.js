@@ -45,7 +45,7 @@
       var mods = (CFG.quetes.enquete.modules || []).length;
       label = ph === 'success' ? 'Suspect identifié' : ph === 'play' ? 'Enquête : module ' + (s.q4.step + 1) + '/' + mods : 'Enquête : introduction';
     } else {
-      label = { intro: 'Traque : avant la vidéo', video: 'Regarde la vidéo', report: 'Cherche le repaire', found: 'Repaire trouvé', call: 'Appel de Barnabé', end: 'Écran de fin' }[ph] || 'Traque';
+      label = { intro: 'Traque : avant la vidéo', video: 'Regarde la vidéo', report: 'Cherche le repaire', found: 'Repaire trouvé', call: 'Appel de Barnabé', paquet: 'Photo avec le paquet', end: 'Écran de fin' }[ph] || 'Traque';
     }
     return label + (gel ? ' (gelée)' : '');
   }
@@ -90,7 +90,7 @@
     if (GQ.test) GQ.test.exit();
     if (GQ.closeModal) GQ.closeModal();
     GQ.uiReset();
-    GQ.go('');
+    GQ.go('quest');
     GQ.toast(CFG.textes.general.partieReinitialisee, 'info');
   }
 
