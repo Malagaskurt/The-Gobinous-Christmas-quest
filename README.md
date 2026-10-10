@@ -322,6 +322,7 @@ Les 42 vérifications couvrent notamment : accueil du Club et programme (4 temps
 Le suivi des équipes et **l'enregistrement des photos** demandent un hébergement capable de lancer Node.js 18 ou plus récent, avec la commande `node tools/serve.mjs` et la variable `CODE_SUIVI` :
 
 - **Serveur ou machine virtuelle interne Saint-Gobain** : copiez le dossier, lancez `CODE_SUIVI=… PORT=80 node tools/serve.mjs` (ou derrière le proxy HTTPS habituel).
+- **Test sur téléphone (gratuit)** : sur [Render](https://render.com), *New → Web Service → Public Git Repository*, collez l'adresse du dépôt GitHub, choisissez la branche, commande de démarrage `npm start`, offre *Free*. Le fichier `render.yaml` contient ces réglages. Attention : l'offre gratuite s'endort après 15 min sans visite et efface les fichiers déposés à chaque redémarrage.
 - **Render**, **Railway**, **Fly.io**… : service web Node.js, commande de démarrage `node tools/serve.mjs`, variable `CODE_SUIVI`. Choisissez une offre **avec disque persistant** (sinon les photos sont perdues au redémarrage) et où le service ne s'endort pas pendant l'événement.
 - **Le jour J, sur un ordinateur portable** : `npm start` sur le même Wi-Fi que les téléphones, puis adresse « Réseau » affichée au démarrage.
 

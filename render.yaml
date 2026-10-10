@@ -1,0 +1,20 @@
+# Hébergement de test sur Render (https://render.com), offre gratuite.
+# Le site complet tourne avec le serveur du jeu (Party, Vlog, Secret Santa,
+# avis, suivi des équipes). Offre gratuite : le service s'endort après
+# 15 min sans visite (premier chargement ~1 min) et les fichiers déposés
+# sont effacés à chaque redémarrage : parfait pour tester, pas pour le
+# jour J (prendre alors une offre avec disque persistant, voir README § 9).
+services:
+  - type: web
+    name: gobinous-christmas-club
+    runtime: node
+    plan: free
+    branch: claude/optimistic-albattani-1cknku
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: CODE_SUIVI
+        value: SUIVI2026
