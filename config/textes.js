@@ -84,12 +84,12 @@ window.GAME_CONFIG.textes = {
     description: "Carte du parcours : 5 quêtes, du départ jusqu'à la hotte.",
     depart: "DÉPART",
     /* Une étiquette courte par quête, affichée sur la carte. */
-    etapes: ["Le grand quiz", "L'énigme", "Le défi", "Le dernier indice", "La hotte"],
+    etapes: ["Le grand quiz", "Le message codé", "Le défi photo", "L'enquête", "La traque"],
     /* Légende de la carte : 3 règles clés seulement. */
     regles: [
-      { icone: "qr", texte: "Entre deux quêtes : trouvez le lieu, scannez son QR code." },
+      { icone: "pin", texte: "À chaque étage : trouvez le **mot secret** affiché sur place." },
       { icone: "star", texte: "**1 joker** = 1 indice bonus, une seule fois." },
-      { icone: "flake", texte: "**2 essais** par étape, puis {duree} de gel… et on passe à la suite." },
+      { icone: "flake", texte: "Trop d'erreurs ? **Tout gèle** quelques secondes… puis on avance." },
     ],
     detail: "Lire les règles détaillées",
   },
@@ -103,17 +103,18 @@ window.GAME_CONFIG.textes = {
    * chrono (config/parametres.js). */
   regles: {
     titre: "Les règles",
-    intro: "Un lutin farceur a caché la hotte de Noël dans la Tour. À vous de la retrouver !",
+    intro:
+      "Le lutin officiel du Gobinous Christmas Club a caché le Cadeau Officiel de Noël quelque part dans la Tour. Remontez sa piste, étage par étage !",
     liste: [
       {
         icone: "gift",
-        titre: "5 quêtes à résoudre",
-        texte: "Quiz, énigmes et défis : chaque quête réussie vous rapproche de la hotte.",
+        titre: "5 quêtes, 5 étages",
+        texte: "Quiz, message codé, défi photo, enquête et traque finale : chaque quête vous rapproche du cadeau.",
       },
       {
-        icone: "qr",
-        titre: "Suivez les indices",
-        texte: "Après chaque quête, devinez le lieu suivant, allez-y et scannez son QR code.",
+        icone: "pin",
+        titre: "Le mot secret de l'étage",
+        texte: "Chaque quête vous indique l'étage suivant. Une fois sur place, trouvez le mot secret affiché et saisissez-le pour débloquer la quête.",
       },
       {
         icone: "tree",
@@ -127,9 +128,9 @@ window.GAME_CONFIG.textes = {
       },
       {
         icone: "flake",
-        titre: "2 essais, puis le gel",
+        titre: "Attention au gel",
         texte:
-          "Quiz : 8/8 exigé, 2 thèmes possibles. Ailleurs : 2 essais par réponse. Après la 2e erreur, tout est gelé {duree}… puis vous passez à la suite.",
+          "Le nombre d'essais est limité. Trop d'erreurs, et le lutin gèle tout pendant quelques secondes : on ne touche à rien, sauf aux règles. Ensuite, l'aventure reprend.",
       },
       {
         icone: "clock",
@@ -138,7 +139,7 @@ window.GAME_CONFIG.textes = {
       },
     ],
     objectif:
-      "Votre objectif : retrouver la hotte et découvrir ce qu'elle vous réserve. Le contenu des cadeaux reste secret jusqu'à la révélation finale.",
+      "Votre objectif : démasquer le lutin et retrouver le Cadeau Officiel du Gobinous Christmas Club.",
     bouton: "C'est parti !",
     boutonFermer: "J'ai compris",
   },
@@ -157,10 +158,10 @@ window.GAME_CONFIG.textes = {
     mauvaiseReponse: "Ce n'est pas la bonne réponse. Réessayez !",
     mauvaiseReponseDernierEssai:
       "Ce n'est pas la bonne réponse. Dernier essai : encore une erreur et tout sera gelé pendant {duree}.",
-    gelLeveReponse: "Le gel est levé ! Voici la bonne réponse.",
     reponseVide: "Saisissez une réponse avant de valider.",
     choixVide: "Sélectionnez une réponse avant de valider.",
     votreReponse: "Votre réponse",
+    indice: "Indice",
     queteVerrouillee:
       "Cette quête n'est pas encore débloquée. Terminez d'abord la quête en cours.",
     queteTerminee: "Cette quête est déjà terminée. Voici votre quête en cours.",
@@ -169,8 +170,9 @@ window.GAME_CONFIG.textes = {
     partieReinitialisee: "Votre partie a été réinitialisée par les organisateurs.",
     gelTitre: "Tout est gelé !",
     gelTexte:
-      "Deuxième erreur : le lutin a tout gelé ! Vous ne pouvez rien faire, à part relire les règles. À la fin du compte à rebours, vous passerez directement à la suite.",
-    gelCompteur: "Suite de l'aventure dans",
+      "Le lutin a tout gelé ! Vous ne pouvez rien faire, à part relire les règles. Patientez jusqu'à la fin du compte à rebours…",
+    gelLeve: "Le gel est levé !",
+    gelCompteur: "Dégel dans",
     stockageIndisponible:
       "Ce navigateur bloque la sauvegarde (navigation privée ?). Votre progression sera perdue si la page est fermée ou rechargée.",
   },
@@ -189,57 +191,17 @@ window.GAME_CONFIG.textes = {
     statutUtilise: "Joker utilisé",
   },
 
-  /* Étape « deviner le lieu » puis « s'y rendre », commune aux quêtes 1 à 3. */
-  lieux: {
-    surtitre: "Indice",
-    titre: "Où se trouve la prochaine étape ?",
-    consigne:
-      "Lisez l'indice, discutez en équipe puis saisissez le lieu que vous pensez avoir identifié.",
-    label: "Votre proposition de lieu",
-    bouton: "Valider le lieu",
-    incorrect: "Ce n'est pas le bon lieu. Relisez l'indice et réessayez.",
-    trouveTitre: "Lieu trouvé !",
-    trouveSousTitre: "Vous pouvez vous rendre à : **{lieu}**",
-    scanConsigne:
-      "Une fois sur place, scannez le QR code avec l'appareil photo de ce téléphone pour débloquer la quête suivante.",
-    codeManuelTitre: "Le QR code ne s'ouvre pas ?",
-    codeManuelLabel: "Saisissez le code inscrit sous le QR code",
-    codeManuelBouton: "Valider le code",
-    codeIncorrect: "Ce code ne correspond pas au lieu attendu. Vérifiez-le et réessayez.",
-    boutonArrivee: "Nous sommes arrivés",
-    conseilNavigateur:
-      "Astuce : si le lien s'ouvre dans une autre application, revenez dans ce navigateur et saisissez le code à la main.",
-  },
-
-  /* Écran affiché après le scan d'un QR code. */
-  scan: {
-    okTitre: "Lieu validé !",
-    okTexte: "Vous êtes bien arrivés : **{lieu}**. La quête {n} est débloquée.",
-    boutonSuite: "Commencer la quête {n}",
-    dejaTitre: "Lieu déjà validé",
-    dejaTexte: "Ce lieu a déjà été validé par votre équipe.",
-    tropTotTitre: "Pas si vite !",
-    tropTotTexte:
-      "Ce lieu n'est pas encore débloqué pour votre équipe. Terminez d'abord votre quête en cours.",
-    inconnuTitre: "QR code non reconnu",
-    inconnuTexte: "Ce code ne correspond à aucune étape de l'aventure.",
-    pasDePartieTitre: "Aucune partie en cours",
-    pasDePartieTexte:
-      "Aucune partie n'a été trouvée dans ce navigateur. Si votre équipe a déjà commencé l'aventure, ouvrez ce lien dans le même navigateur que celui utilisé pour jouer (par exemple Safari sur iPhone ou Chrome sur Android), ou saisissez le code du lieu directement dans le jeu.",
-    finDesactiveeTexte:
-      "Présentez ce téléphone aux organisateurs pour valider la fin de votre aventure.",
-    boutonRetour: "Retourner à ma quête",
-    boutonAccueil: "Aller à l'accueil",
+  /* Écran de saisie du mot secret d'un étage (début de chaque quête). */
+  acces: {
+    kicker: "Quête {n} / 5 · verrouillée",
+    consigne: "Une fois sur place, trouvez le mot secret de l'étage et saisissez-le ci-dessous.",
+    label: "Mot secret de l'étage",
+    bouton: "Débloquer la quête",
+    erreur: "Ce n'est pas le mot secret de cet étage. Cherchez bien autour de vous !",
   },
 
   fin: {
-    organisateurTitre: "Réservé aux organisateurs",
-    organisateurAide: "Saisissez le code organisateur pour clôturer l'aventure de cette équipe.",
-    organisateurLabel: "Code organisateur",
-    organisateurBouton: "Valider la fin de l'aventure",
-    organisateurErreur: "Code incorrect.",
     termineeTitre: "Aventure terminée",
-    termineeTexte: "Bravo **{equipe}** ! Merci d'avoir participé à la Gobinous Christmas Quest. Joyeux Noël !",
-    termineeLe: "Aventure validée le {date} à {heure}.",
+    termineeLe: "Aventure terminée le {date} à {heure}.",
   },
 };

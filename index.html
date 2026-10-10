@@ -28,13 +28,13 @@
   <script src="config/textes.js"></script>
   <script src="config/quiz.js"></script>
   <script src="config/quetes.js"></script>
-  <script src="config/lieux.js"></script>
+  <script src="config/etapes.js"></script>
   <script>
     /* Si un fichier de configuration contient une erreur de syntaxe, on
      * l'indique clairement plutôt que d'afficher une page blanche. */
     (function () {
       var c = window.GAME_CONFIG || {};
-      var missing = ['parametres', 'textes', 'quiz', 'quetes', 'lieux'].filter(function (k) { return !c[k]; });
+      var missing = ['parametres', 'textes', 'quiz', 'quetes', 'etapes'].filter(function (k) { return !c[k]; });
       if (!missing.length) return;
       window.GQ_STOP = true;
       document.getElementById('app').innerHTML =
@@ -53,6 +53,10 @@
   <script src="js/elf.js"></script>
   <script src="js/board.js"></script>
   <script src="js/screens.js"></script>
+  <script src="js/q2-message.js"></script>
+  <script src="js/q3-photos.js"></script>
+  <script src="js/q4-enquete.js"></script>
+  <script src="js/q5-traque.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/sync.js"></script>
   <script src="js/suivi.js"></script>

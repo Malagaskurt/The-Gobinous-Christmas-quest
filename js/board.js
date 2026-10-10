@@ -1,6 +1,6 @@
 /* Carte du parcours (écran « Comment jouer ? ») : une route enneigée
  * serpente dans la nuit tricotée, de DÉPART jusqu'à la hotte. Les 5
- * quêtes sont des étapes illustrées, un QR code balise chaque trajet et
+ * quêtes sont des étapes illustrées, un repère d'étage balise chaque trajet et
  * le lutin parcourt la route en sautillant. */
 (function () {
   'use strict';
@@ -94,13 +94,13 @@
         }
         return best;
       });
-      // Un QR code à mi-chemin entre deux quêtes.
+      // Un repère d'étage (mot secret) à mi-chemin entre deux quêtes.
       for (var i = 0; i < marks.length - 1; i++) {
         var p = track.getPointAtLength((marks[i] + marks[i + 1]) / 2);
         var g = document.createElementNS(NS, 'g');
         g.setAttribute('class', 'b-pop');
         g.setAttribute('style', 'animation-delay:' + (1.6 + i * 0.15).toFixed(2) + 's');
-        g.innerHTML = '<rect x="' + (p.x - 13) + '" y="' + (p.y - 13) + '" width="26" height="26" rx="5" class="b-qr-bg"/>' + img('qr', p.x - 9, p.y - 11, 18);
+        g.innerHTML = '<rect x="' + (p.x - 13) + '" y="' + (p.y - 13) + '" width="26" height="26" rx="5" class="b-qr-bg"/>' + img('pin', p.x - 9, p.y - 11, 18);
         qrLayer.appendChild(g);
       }
 

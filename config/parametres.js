@@ -16,39 +16,36 @@ window.GAME_CONFIG.parametres = {
    * Changer cette valeur repart d'une partie vierge sur tous les
    * téléphones (utile entre une répétition et le jour J, ou pour une
    * nouvelle édition). */
-  cleSauvegarde: "gobinous-quest-2026-v2",
+  cleSauvegarde: "gobinous-quest-2026-v3",
 
   /* ---- Quête 1 : le grand quiz -------------------------------------- */
   quiz: {
-    /* Nombre de thèmes échoués avant le blocage du quiz. */
+    /* Nombre de thèmes ratés avant le gel du quiz. */
     tentativesAvantBlocage: 2,
 
-    /* Durée du blocage, en secondes. */
+    /* Durée du gel du quiz, en secondes. */
     dureeBlocageSecondes: 45,
 
-    /* true → à la fin du blocage, le quiz est validé d'office : l'équipe
-     * n'a plus à répondre et passe directement à l'indice du lieu A.
-     * false → à la fin du blocage, l'équipe choisit un nouveau thème. */
+    /* true → à la fin du gel, le quiz est validé d'office : l'équipe
+     * n'a plus à répondre et passe directement au premier indice. */
     valideApresBlocage: true,
-
-    /* Les réponses ne sont pas corrigées question par question : l'équipe
-     * découvre son score à la fin des 8 questions. Il faut 8/8 pour
-     * valider un thème ; un thème raté ne peut plus être rejoué (sauf si
-     * tous les thèmes ont été ratés). */
   },
 
-  /* ---- Pénalités des quêtes 2, 3 et 4 --------------------------------
-   * Même principe que le quiz. Chaque étape (énigme de la quête 2,
-   * chaque question du défi, énigme finale) laisse `essais` tentatives.
-   * Après la dernière erreur, tout est gelé pendant dureeSecondes (seules
-   * les règles restent consultables), puis, si valideApresGel vaut true,
-   * l'étape est validée d'office : l'équipe passe à la suite.
-   * La saisie des lieux et des codes n'est pas concernée. */
-  gel: {
-    actif: true,
-    essais: 2,
-    dureeSecondes: 45,
-    valideApresGel: true,
+  /* ---- Pénalités des autres étapes ----------------------------------
+   * essais       : nombre de réponses possibles avant le gel
+   * gelSecondes  : durée du gel (tout est bloqué, sauf les règles)
+   * apresGel     : "valider"   → l'étape est validée d'office
+   *                "reessayer" → l'équipe peut retenter */
+  penalites: {
+    /* Après le quiz : deviner l'étage (le gel fait apparaître l'indice
+     * bonus). */
+    etage: { essais: 1, gelSecondes: 10, apresGel: "reessayer" },
+    /* Quête 2 : le message codé (la solution s'affiche après le gel). */
+    message: { essais: 2, gelSecondes: 50, apresGel: "valider" },
+    /* Quête 4 : chacun des 4 modules de l'enquête. */
+    enquete: { essais: 2, gelSecondes: 45, apresGel: "valider" },
+    /* Quête 5 : le code du repaire (un seul essai à chaque fois). */
+    repaire: { essais: 1, gelSecondes: 45, apresGel: "reessayer" },
   },
 
   /* ---- Chrono global -------------------------------------------------
@@ -88,17 +85,7 @@ window.GAME_CONFIG.parametres = {
     promenadeSecondes: 50,
   },
 
-  /* ---- Lieux et QR codes -------------------------------------------- */
-  lieux: {
-    /* true  → après avoir trouvé un lieu, l'équipe doit scanner le QR code
-     *         (ou saisir le code inscrit dessous) pour débloquer la quête
-     *         suivante.
-     * false → un bouton « Nous sommes arrivés » remplace le QR code
-     *         (pratique si les QR codes ne sont pas imprimés). */
-    scanObligatoire: true,
-  },
-
-  /* ---- Réponses saisies au clavier (énigmes, lieux) ------------------
+  /* ---- Réponses saisies au clavier ----------------------------------
    * Les majuscules, accents, apostrophes, tirets et articles en début de
    * réponse (« le », « la », « l' »…) sont toujours ignorés.
    * toleranceFautes : nombre de fautes de frappe acceptées pour les
@@ -110,8 +97,8 @@ window.GAME_CONFIG.parametres = {
 
   /* ---- Adresse publique du site --------------------------------------
    * Adresse définitive du site une fois en ligne, par exemple
-   * "https://gobinous-quest.example.com/". Elle sert à générer les URL
-   * des QR codes. Laissez vide pour utiliser l'adresse actuelle. */
+   * "https://gobinous-quest.example.com/". Elle s'affiche sur les
+   * affichettes imprimées. Laissez vide pour utiliser l'adresse actuelle. */
   urlPublique: "",
 
   /* ---- Éléments de marque --------------------------------------------
@@ -128,24 +115,12 @@ window.GAME_CONFIG.parametres = {
     logoAlt: "Saint-Gobain",
   },
 
-  /* ---- Fin de partie -------------------------------------------------
-   * La partie passe à l'état « Aventure terminée » :
-   *   - lorsqu'un organisateur saisit codeOrganisateur sur le téléphone
-   *     de l'équipe (bouton discret sur l'écran final) ;
-   *   - ou, si qrFinalActif vaut true, lorsque l'équipe scanne le QR code
-   *     du lieu final (voir config/lieux.js). Conservez alors ce QR code
-   *     en main plutôt que de l'afficher librement.
-   * Laissez codeOrganisateur vide pour désactiver la saisie du code. */
-  finDePartie: {
-    codeOrganisateur: "HOTTE2026", // ⚠ À PERSONNALISER avant l'événement
-    qrFinalActif: true,
-  },
-
   /* ---- Mode test organisateur ----------------------------------------
    * Accès : ajoutez #/organisateur à l'adresse du site.
    * Ce mode permet de naviguer entre les quêtes, d'afficher les bonnes
-   * réponses, de simuler les QR codes, de tester le blocage du quiz et
-   * de remettre une partie à zéro.
+   * réponses, de simuler l'arrivée aux étages, de raccourcir les gels,
+   * d'imprimer les affichettes des mots secrets et de remettre une
+   * partie à zéro.
    *
    * ⚠ AVANT L'ÉVÉNEMENT : passez actif à false, ou au minimum changez le
    * code. Ce code protège seulement contre une ouverture accidentelle :

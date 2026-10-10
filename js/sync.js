@@ -23,36 +23,36 @@
     if (s.finished) return 'Aventure terminée';
     var n = s.quest;
     var ph = s.phase[n];
-    var placeId = GQ.placeIdForQuest(n);
-    var place = placeId ? GQ.place(placeId) : null;
-    if (ph === 'location') return 'Cherche le lieu ' + placeId;
-    if (ph === 'travel') return 'En route vers le lieu ' + placeId + (place ? ' (' + place.nom + ')' : '');
+    var st = GQ.stage(n);
+    if (ph === 'access') return 'En route vers : ' + st.etage + ' (mot secret ' + st.motSecret + ')';
+    var gel = GQ.freezeRemaining() || (n === 1 && GQ.quizLockRemaining());
+    var label = '';
     if (n === 1) {
       var q = s.quiz;
-      if (ph === 'intro') return 'Quiz : introduction';
-      if (ph === 'play' && q.current) {
+      if (ph === 'intro') label = 'Quiz : introduction';
+      else if (ph === 'play' && q.current) {
         var th = GQ.theme(q.current.themeId);
-        return 'Quiz : « ' + (th ? th.titre : '') + ' », question ' + (q.current.index + 1) + '/' + (th ? th.questions.length : 8);
-      }
-      if (ph === 'result') return 'Quiz : thème raté';
-      if (ph === 'success') return 'Quiz réussi';
-      return GQ.quizLockRemaining() ? 'Quiz gelé' : 'Quiz : choix du thème';
+        label = 'Quiz : « ' + (th ? th.titre : '') + ' », question ' + (q.current.index + 1) + '/' + (th ? th.questions.length : 8);
+      } else if (ph === 'result') label = 'Quiz : thème raté';
+      else if (ph === 'success') label = 'Quiz réussi';
+      else if (ph === 'floor') label = 'Devine l\'étage suivant';
+      else label = 'Quiz : choix du thème';
+    } else if (n === 2) {
+      label = ph === 'success' ? 'Message déchiffré' : ph === 'play' ? 'Déchiffre le message codé' : 'Message codé : introduction';
+    } else if (n === 3) {
+      label = ph === 'success' ? 'Défi photo réussi' : ph === 'play' ? 'Défi photo : ' + GQ.photosValidated() + '/' + GQ.photoCount() + ' photo(s)' : 'Défi photo : introduction';
+    } else if (n === 4) {
+      var mods = (CFG.quetes.enquete.modules || []).length;
+      label = ph === 'success' ? 'Suspect identifié' : ph === 'play' ? 'Enquête : module ' + (s.q4.step + 1) + '/' + mods : 'Enquête : introduction';
+    } else {
+      label = { intro: 'Traque : avant la vidéo', video: 'Regarde la vidéo', report: 'Cherche le repaire', found: 'Repaire trouvé', call: 'Appel de Barnabé', end: 'Écran de fin' }[ph] || 'Traque';
     }
-    if (n === 2) return ph === 'success' ? 'Énigme résolue' : ph === 'enigma' ? 'Énigme mystère' : 'Énigme : introduction';
-    if (n === 3) {
-      var total = (CFG.quetes.defi.questions || []).length;
-      if (ph === 'play') return 'Défi : question ' + Math.min(total, s.defi.index + 1) + '/' + total;
-      return ph === 'success' ? 'Défi relevé' : 'Défi : introduction';
-    }
-    if (n === 4) return ph === 'success' ? 'Lieu final trouvé' : ph === 'enigma' ? 'Énigme finale' : 'Dernier indice : introduction';
-    return 'Devant la hotte';
+    return label + (gel ? ' (gelée)' : '');
   }
 
   function summary() {
     var s = GQ.state;
     var c = GQ.clock();
-    var places = 0;
-    Object.keys(s.places).forEach(function (id) { if (s.places[id] && s.places[id].arrived) places++; });
     return {
       id: s.id,
       equipe: s.team,
@@ -64,7 +64,8 @@
       ecoule: c ? c.elapsed : 0,
       gelRestant: Math.max(GQ.freezeRemaining(), GQ.quizLockRemaining()),
       quizEchecs: s.quiz.attempts.filter(function (a) { return a.result === 'echec'; }).length,
-      lieux: places,
+      photos: GQ.photosValidated(),
+      etages: Object.keys(s.arrivals).length,
       test: !!(GQ.test && GQ.test.isActive()),
     };
   }
@@ -99,6 +100,7 @@
       var s = GQ.state;
       if (!enabled || !s || !s.team || busy) return Promise.resolve();
       busy = true;
+      if (GQ.photoQueue) GQ.photoQueue.flush();
       return post('sync', summary()).then(function (r) {
         GQ.sync.online = !!r;
         if (r && r.reset) applyReset();

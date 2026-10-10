@@ -45,6 +45,30 @@
   /* ------------------------------------------------------------------ */
 
   var ICONS = {
+    camera: [
+      '...bbb......',
+      '.bbbbbbbbbb.',
+      'bwwwwwwwwwwb',
+      'bwwwBBBBwwrb',
+      'bwwBCCccBwwb',
+      'bwwBCcccBwwb',
+      'bwwBccccBwwb',
+      'bwwwBBBBwwwb',
+      'bwwwwwwwwwwb',
+      '.bbbbbbbbbb.',
+    ],
+    badge: [
+      '....rrrr....',
+      '.....rr.....',
+      '.bbbbbbbbbb.',
+      'bwwwwwwwwwwb',
+      'bwsswwkkkkwb',
+      'bwSSwwwwwwwb',
+      'bwbbwwkkkwwb',
+      'bwwwwwwwwwwb',
+      'bwccccccccwb',
+      '.bbbbbbbbbb.',
+    ],
     star: [
       '....c....',
       '....c....',
@@ -306,5 +330,5 @@
     elf: function (pose, cls) { return GQ.knit.icon(pose || 'elfWave', 'elf-inline ' + (cls || '')); },
   };
   /* Pictogramme de chaque quête (carte, en-tête, introduction). */
-  GQ.questIcon = function (n) { return ['', 'quiz', 'loupe', 'tower', 'pin', 'gift'][n] || 'star'; };
+  GQ.questIcon = function (n) { return ['', 'quiz', 'loupe', 'camera', 'badge', 'gift'][n] || 'star'; };
 })();

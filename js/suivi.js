@@ -30,6 +30,7 @@
   }
 
   var data = null; // { now, equipes, recuLocal }
+  var gallery = null; // photos du défi photo : [{ id, equipe, photos: [{ modele, titre, url }] }]
   var error = '';
 
   function request(method, path) {
@@ -49,6 +50,7 @@
       d.recuLocal = Date.now();
       data = d;
       error = '';
+      return request('GET', 'photos').then(function (p) { gallery = p.equipes; }, function () { /* sans photos */ });
     }).catch(function (e) {
       if (e.code === 401) { setCode(''); data = null; error = 'Code incorrect.'; throw e; }
       error = 'Serveur de suivi injoignable. Le suivi nécessite le serveur du jeu (npm start, voir README).';
@@ -92,7 +94,8 @@
       (badges ? '<p class="tags">' + badges + '</p>' : '') +
       '<dl class="team-facts">' +
       '<div><dt>Temps</dt><dd>' + (t.chrono ? GQ.mmss(elapsed) : '—') + '</dd></div>' +
-      '<div><dt>Lieux</dt><dd>' + t.lieux + '/3</dd></div>' +
+      '<div><dt>Étages</dt><dd>' + (t.etages || 0) + '/5</dd></div>' +
+      '<div><dt>Photos</dt><dd>' + (t.photos || 0) + '/3</dd></div>' +
       '<div><dt>Joker</dt><dd>' + (t.joker ? 'utilisé' : 'disponible') + '</dd></div>' +
       '<div><dt>Quiz ratés</dt><dd>' + t.quizEchecs + '</dd></div>' +
       '<div><dt>Vu il y a</dt><dd>' + ago(since) + '</dd></div>' +
@@ -108,7 +111,7 @@
     return list.slice().sort(function (a, b) {
       if (a.termine !== b.termine) return a.termine ? -1 : 1;
       if (a.termine) return a.ecoule - b.ecoule;
-      return b.quete - a.quete || b.lieux - a.lieux || String(a.equipe).localeCompare(String(b.equipe), 'fr');
+      return b.quete - a.quete || (b.etages || 0) - (a.etages || 0) || String(a.equipe).localeCompare(String(b.equipe), 'fr');
     });
   }
 
@@ -128,9 +131,39 @@
     );
   }
 
+  /* Galerie du défi photo : vignettes par équipe et export ZIP. */
+  function withCode(url) {
+    return GQ.apiUrl(url.replace(/^api\//, '')) + '?code=' + encodeURIComponent(getCode());
+  }
+
+  function galleryHtml() {
+    if (!gallery) return '';
+    var total = gallery.reduce(function (n, t) { return n + t.photos.length; }, 0);
+    return (
+      '<section class="admin-card gallery"><h2>Photos du défi photo (' + total + ')</h2>' +
+      (total
+        ? '<p class="small muted">Touchez une photo pour l\'ouvrir en grand. L\'archive ZIP classe les photos par équipe.</p>' +
+          '<div class="btn-row"><a class="btn btn-small btn-primary" href="' + esc(withCode('api/photos.zip')) + '" download>' + icon('photo') + 'Télécharger toutes les photos (ZIP)</a></div>' +
+          gallery.filter(function (t) { return t.photos.length; }).map(function (t) {
+            return '<h3>' + esc(t.equipe || 'Sans nom') + ' · ' + t.photos.length + ' photo(s)</h3><ul class="thumbs">' +
+              t.photos.map(function (p) {
+                var u = esc(withCode(p.url));
+                return '<li><a href="' + u + '" target="_blank" rel="noopener"><img src="' + u + '" alt="' + esc(p.titre || p.modele) + '" loading="lazy"></a><span>' + esc(p.titre || p.modele) + '</span></li>';
+              }).join('') + '</ul>';
+          }).join('')
+        : '<p class="small muted">Aucune photo pour l\'instant. Elles arrivent ici dès qu\'une équipe valide une photo (quête 3).</p>') +
+      '</section>'
+    );
+  }
+
+  var lastGallery = '';
   function refreshList() {
     var el = document.getElementById('suivi-list');
     if (el) el.innerHTML = listHtml();
+    // La galerie n'est redessinée que si elle change (évite le clignotement).
+    var g = document.getElementById('suivi-gallery');
+    var html = galleryHtml();
+    if (g && html !== lastGallery) { g.innerHTML = html; lastGallery = html; }
   }
 
   function login() {
@@ -168,6 +201,7 @@
         '<p class="small muted">Actualisation automatique toutes les ' + REFRESH_MS / 1000 + ' secondes. ' +
         '« Réinitialiser » efface la partie sur le téléphone de l\'équipe à sa prochaine connexion (quelques secondes) : elle repart de l\'accueil.</p>' +
         '<div id="suivi-list">' + listHtml() + '</div>' +
+        '<div id="suivi-gallery">' + (lastGallery = galleryHtml()) + '</div>' +
         '<div class="btn-row">' +
         (P.modeTest && P.modeTest.actif ? '<a class="btn btn-small btn-secondary" href="#/organisateur">Mode test</a>' : '') +
         '<button type="button" class="btn btn-small btn-secondary" data-action="suivi-logout">Se déconnecter</button></div>' +

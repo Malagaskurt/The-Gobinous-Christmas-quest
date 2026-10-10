@@ -16,7 +16,6 @@
   /*   #/equipe          nom de l'équipe                                 */
   /*   #/regles          règles                                          */
   /*   #/quete/N         quête N (redirige si elle n'est pas débloquée)  */
-  /*   #/scan/CODE       arrivée sur un lieu (cible des QR codes)        */
   /*   #/organisateur    mode test (si activé)                           */
   /*   #/suivi           suivi des équipes (organisateurs)               */
   /* ------------------------------------------------------------------ */
@@ -65,8 +64,6 @@
         if (!s.team) return redirectTo('equipe');
         if (!s.rulesOk) return redirectTo('regles');
         return GQ.screens.quest(Number(r.arg) || s.quest);
-      case 'scan':
-        return GQ.screens.scan(r.arg);
       case 'organisateur':
         return GQ.screens.organizer(r.arg);
       case 'suivi':
@@ -103,6 +100,7 @@
     app.innerHTML = html;
     document.body.classList.toggle('is-testing', GQ.test.isActive());
     document.body.classList.toggle('is-wide', !!scr.wide);
+    document.body.classList.toggle('is-frozen', !!scr.frozen);
 
     var changed = scr.key !== lastKey;
     lastKey = scr.key;
@@ -157,8 +155,7 @@
     if (fn) fn(form, input ? input.value : '');
   });
 
-  /* Un QR code scanné peut ouvrir un nouvel onglet : on synchronise les
-   * onglets ouverts sur la même partie. */
+  /* Plusieurs onglets ouverts sur la même partie : on les synchronise. */
   window.addEventListener('storage', function (e) {
     if (e.key !== GQ.storageKey) return;
     GQ.reload();

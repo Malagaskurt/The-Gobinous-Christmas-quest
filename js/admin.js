@@ -1,5 +1,5 @@
-/* Mode test organisateur (#/organisateur) et fiches QR codes
- * (#/organisateur/qr). Accessible uniquement si
+/* Mode test organisateur (#/organisateur) et affichettes des mots
+ * secrets (#/organisateur/affiches). Accessible uniquement si
  * parametres.modeTest.actif vaut true. */
 (function () {
   'use strict';
@@ -47,13 +47,6 @@
     if (u) return u.split('#')[0];
     return location.href.split('#')[0];
   };
-  GQ.qrUrl = function (code) {
-    return GQ.publicBaseUrl() + '#/scan/' + encodeURIComponent(String(code).trim().toUpperCase());
-  };
-
-  function isLocalUrl(u) {
-    return /^file:|\/\/(localhost|127\.|0\.0\.0\.0|\[::1\])/i.test(u);
-  }
 
   /* ------------------------------------------------------------------ */
   /* Écrans                                                              */
@@ -65,7 +58,7 @@
       return { key: 'redirect', html: '' };
     }
     if (!GQ.test.isActive()) return login();
-    return sub === 'qr' ? qrSheet() : panel();
+    return sub === 'affiches' ? posters() : panel();
   };
 
   function suiviLink() {
@@ -94,9 +87,9 @@
 
   function phaseLabel(n, ph) {
     return ({
-      intro: 'introduction', themes: 'choix du thème', play: 'questions', result: 'résultat (thème raté)', enigma: 'énigme',
-      success: 'réussite', location: 'deviner le lieu', travel: 'se rendre au lieu / scanner',
-      final: 'écran final', done: 'terminée',
+      access: 'en route : saisie du mot secret de l\'étage', intro: 'introduction', themes: 'choix du thème', play: 'en jeu',
+      result: 'résultat (thème raté)', success: 'réussite', floor: 'deviner l\'étage', video: 'vidéo', report: 'rapport (code du repaire)',
+      found: 'lutin démasqué', call: 'appel de Barnabé', end: 'écran de fin', done: 'terminée',
     })[ph] || ph;
   }
 
@@ -109,16 +102,15 @@
     var report = window.GQValidate(CFG);
     var cur = q.current ? GQ.theme(q.current.themeId) : null;
 
-    var places = Object.keys(CFG.lieux).map(function (id) {
-      var p = CFG.lieux[id];
-      var st = s.places[id] || {};
-      var n = GQ.questForPlace(id);
-      return (
-        '<tr><td><b>' + esc(id) + '</b><br><span class="small muted">après quête ' + n + '</span></td>' +
-        '<td>' + esc(p.nom) + '<br><code>' + esc(p.codeQR) + '</code> · ' + (st.arrived ? 'arrivé ✓' : st.found ? 'trouvé' : '—') + '</td>' +
-        '<td><a class="btn btn-small btn-secondary" href="#/scan/' + encodeURIComponent(p.codeQR) + '">Simuler le scan</a></td></tr>'
-      );
-    }).join('');
+    var stages = '';
+    for (var k = 1; k <= GQ.QUEST_COUNT; k++) {
+      var st = GQ.stage(k);
+      var waiting = s.quest === k && s.phase[k] === 'access';
+      stages +=
+        '<tr><td><b>Quête ' + k + '</b><br><span class="small muted">' + esc(st.etage) + '</span></td>' +
+        '<td><code>' + esc(st.motSecret) + '</code><br><span class="small muted">' + (s.arrivals[k] ? 'saisi ✓' : waiting ? 'attendu' : '—') + '</span></td>' +
+        '<td>' + (waiting ? '<button type="button" class="btn btn-small btn-secondary" data-action="test-arrive" data-n="' + k + '">Saisir le mot</button>' : '') + '</td></tr>';
+    }
 
     var jumps = '';
     for (var n = 1; n <= GQ.QUEST_COUNT; n++) {
@@ -130,7 +122,6 @@
       return '<ul class="report ' + cls + '">' + items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>';
     }
 
-    var baseUrl = GQ.publicBaseUrl();
     return {
       key: 'org-panel',
       bare: true,
@@ -151,14 +142,15 @@
           q.attempts.length + ' tentative(s) · ' + q.failedSinceLock + ' échec(s) depuis le dernier blocage' +
           (lock ? '<br><b>Bloqué encore ' + Math.ceil(lock / 1000) + ' s</b>' + (q.passAfterLock ? ' (validé d\'office ensuite)' : '') : '') +
           (q.wonTheme ? '<br>Thème réussi : ' + esc((GQ.theme(q.wonTheme) || {}).titre || q.wonTheme) : '')) +
-        row('Gel (quêtes 2 à 4)', GQ.freezeRemaining() ? '<b>gelé encore ' + Math.ceil(GQ.freezeRemaining() / 1000) + ' s</b>' : 'aucun') +
+        row('Gel', GQ.freezeRemaining() ? '<b>gelé encore ' + Math.ceil(GQ.freezeRemaining() / 1000) + ' s</b> (' + esc(s.gel.key) + ', ' + esc(s.gel.after) + ')' : 'aucun') +
+        row('Photos (quête 3)', GQ.photosValidated() + ' / ' + GQ.photoCount() + ' validée(s)' + (s.q3.rejected ? ' · caprice du lutin passé' : '')) +
         row('Sauvegarde', GQ.storageOk ? 'localStorage (ce navigateur uniquement)' : '<b>indisponible</b> (navigation privée ?)') +
         '</table>' +
         '<div class="btn-row">' + '<button type="button" class="btn btn-small btn-primary" data-action="resume">Ouvrir la partie</button>' +
         '<a class="btn btn-small btn-secondary" href="#/">Accueil</a></div></section>' +
 
         '<section class="admin-card"><h2>Aller directement à une quête</h2>' +
-        '<p class="small muted">Les quêtes précédentes sont marquées comme terminées. Sert aussi à reprendre une partie sur un autre téléphone.</p>' +
+        '<p class="small muted">Ouvre l\'introduction de la quête (mot secret déjà saisi) ; les quêtes précédentes sont marquées comme terminées. Sert aussi à reprendre une partie sur un autre téléphone.</p>' +
         '<div class="btn-row">' + jumps + '</div></section>' +
 
         '<section class="admin-card"><h2>Options de test</h2>' +
@@ -172,7 +164,8 @@
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-reset-quiz">Effacer les tentatives</button>' +
         '</div></section>' +
 
-        '<section class="admin-card"><h2>Gel après une erreur (quêtes 2 à 4)</h2><div class="btn-row">' +
+        '<section class="admin-card"><h2>Gel des autres étapes</h2>' +
+        '<p class="small muted">Étage à deviner, message codé, modules de l\'enquête, code du repaire.</p><div class="btn-row">' +
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-unfreeze">Lever le gel</button>' +
         '</div></section>' +
 
@@ -186,12 +179,10 @@
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-joker" data-v="1">Marquer comme utilisé</button>' +
         '</div></section>' +
 
-        '<section class="admin-card"><h2>Lieux et QR codes</h2>' +
-        '<p class="small muted">Adresse utilisée pour les QR codes : <code>' + esc(baseUrl) + '</code>' +
-        (isLocalUrl(baseUrl) ? '<br><b>Adresse locale :</b> renseignez <code>urlPublique</code> dans config/parametres.js avant d\'imprimer.' : '') + '</p>' +
-        '<table class="places">' + places + '</table>' +
-        '<div class="btn-row"><a class="btn btn-small btn-primary" href="#/organisateur/qr">' + icon('qr') + 'Fiches QR codes à imprimer</a>' +
-        '<a class="btn btn-small btn-secondary" href="#/scan/INCONNU">Tester un QR inconnu</a></div></section>' +
+        '<section class="admin-card"><h2>Étages et mots secrets</h2>' +
+        '<p class="small muted">Chaque quête démarre quand l\'équipe saisit le mot secret affiché à son étage (config/etapes.js).</p>' +
+        '<table class="places">' + stages + '</table>' +
+        '<div class="btn-row"><a class="btn btn-small btn-primary" href="#/organisateur/affiches">' + icon('pin') + 'Affichettes des mots secrets à imprimer</a></div></section>' +
 
         '<section class="admin-card"><h2>Fin de partie</h2><div class="btn-row">' +
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-finish" data-v="1">Marquer « Aventure terminée »</button>' +
@@ -213,63 +204,33 @@
     };
   }
 
-  function qrSheet() {
-    var baseUrl = GQ.publicBaseUrl();
-    var finalId = GQ.finalPlaceId();
-    var cards = Object.keys(CFG.lieux).map(function (id) {
-      var p = CFG.lieux[id];
-      var url = GQ.qrUrl(p.codeQR);
-      var isFinal = id === finalId;
-      if (isFinal && !(P.finDePartie && P.finDePartie.qrFinalActif)) return '';
-      return (
-        '<article class="qr-card">' +
-        '<p class="qr-kicker">Gobinous Christmas Quest' + (isFinal ? ' · réservé aux organisateurs' : '') + '</p>' +
-        '<h2 class="qr-title">' + esc(p.nom) + '</h2>' +
-        '<div class="qr-code" data-qr="' + esc(url) + '"></div>' +
-        '<p class="qr-help">' + (isFinal
-          ? 'À scanner par l\'équipe pour clôturer son aventure.'
-          : 'Scannez ce QR code avec l\'appareil photo du téléphone de votre équipe.') + '</p>' +
-        '<p class="qr-manual">Code : <b>' + esc(String(p.codeQR).toUpperCase()) + '</b></p>' +
-        '<p class="qr-url">' + esc(url) + '</p>' +
+  /* Affichettes A4 : une par étage, avec le mot secret en grand. */
+  function posters() {
+    var cards = '';
+    for (var k = 1; k <= GQ.QUEST_COUNT; k++) {
+      var st = GQ.stage(k);
+      cards +=
+        '<article class="qr-card poster">' +
+        '<p class="qr-kicker">Gobinous Christmas Quest · ' + esc(st.etage) + '</p>' +
+        '<p class="poster-label">Mot secret de l\'étage</p>' +
+        '<p class="poster-word">' + esc(String(st.motSecret).toUpperCase()) + '</p>' +
+        '<p class="qr-help">Saisissez ce mot dans l\'application pour débloquer la quête ' + k + '.</p>' +
         GQ.logo('fonce', 'qr-logo') +
-        '</article>'
-      );
-    }).join('');
+        '</article>';
+    }
     return {
-      key: 'org-qr',
+      key: 'org-posters',
       bare: true,
       html:
         '<main class="screen screen-qr">' +
         '<div class="no-print">' +
         '<a class="back-link" href="#/organisateur">' + icon('retour') + 'Mode test</a>' +
-        '<h1 class="page-title" tabindex="-1">Fiches QR codes</h1>' +
-        '<p class="muted small">Une fiche par lieu. Les QR codes ouvrent <code>' + esc(baseUrl) + '#/scan/CODE</code>.</p>' +
-        (isLocalUrl(baseUrl) ? '<p class="notice notice-warn">' + icon('cadenas') + '<span>Cette adresse est locale : les QR codes ne fonctionneront pas sur les téléphones des équipes. Renseignez <code>urlPublique</code> dans config/parametres.js une fois le site en ligne.</span></p>' : '') +
+        '<h1 class="page-title" tabindex="-1">Affichettes des mots secrets</h1>' +
+        '<p class="muted small">Une page A4 par étage, à afficher bien en vue à l\'arrivée des équipes.</p>' +
         '<button type="button" class="btn btn-primary" data-action="print">Imprimer</button></div>' +
         '<div class="qr-grid">' + cards + '</div>' +
         '</main>',
-      after: renderQrCodes,
     };
-  }
-
-  function loadQrLib(cb) {
-    if (window.qrcode) return cb();
-    var s = document.createElement('script');
-    s.src = 'vendor/qrcode-generator.js';
-    s.onload = cb;
-    s.onerror = function () { GQ.toast('Impossible de charger le générateur de QR codes.', 'error'); };
-    document.head.appendChild(s);
-  }
-
-  function renderQrCodes() {
-    loadQrLib(function () {
-      document.querySelectorAll('[data-qr]').forEach(function (el) {
-        var qr = window.qrcode(0, 'M');
-        qr.addData(el.getAttribute('data-qr'));
-        qr.make();
-        el.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 4, scalable: true, alt: 'QR code' });
-      });
-    });
   }
 
   /* ------------------------------------------------------------------ */
@@ -367,6 +328,7 @@
     if (el.dataset.v === '1') {
       if (!GQ.state.team) GQ.jumpTo(5);
       GQ.finish('test');
+      GQ.uiReset();
       GQ.go('quete/5');
     } else {
       GQ.state.finished = null;
@@ -396,10 +358,12 @@
     GQ.go('');
   };
 
-  actions['test-scan'] = function (el) {
+  actions['test-arrive'] = function (el) {
     if (!guard()) return;
+    var n = Number(el.dataset.n);
+    GQ.unlockQuest(n, GQ.stage(n).motSecret);
     GQ.uiReset();
-    GQ.go('scan/' + encodeURIComponent(el.dataset.code));
+    GQ.go('quete/' + n);
   };
 
   actions.print = function () { window.print(); };

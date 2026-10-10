@@ -16,7 +16,7 @@
       err('Configuration introuvable (window.GAME_CONFIG).');
       return report;
     }
-    ['parametres', 'textes', 'quiz', 'quetes', 'lieux'].forEach(function (k) {
+    ['parametres', 'textes', 'quiz', 'quetes', 'etapes'].forEach(function (k) {
       if (!cfg[k]) err('Fichier manquant ou invalide : config/' + k + '.js');
     });
     if (report.errors.length) return report;
@@ -32,20 +32,25 @@
       }
     })(cfg, '');
 
-    function checkMcq(q, label, expectedChoices) {
+    function checkMcq(q, label) {
       if (!q || typeof q.question !== 'string' || !q.question.trim()) err(label + ' : texte de la question manquant.');
-      if (!Array.isArray(q.choix) || q.choix.length < 2) {
-        err(label + ' : la liste "choix" doit contenir au moins 2 propositions.');
+      checkChoice(q, label);
+      if (q && q.aVerifier) report.toVerify.push(label + ' — ' + q.aVerifier);
+    }
+
+    function checkChoice(q, label) {
+      if (!Array.isArray(q.choix) || q.choix.length < 2 || q.choix.length > 4) {
+        err(label + ' : la liste "choix" doit contenir de 2 à 4 propositions.');
         return;
-      }
-      if (expectedChoices && q.choix.length !== expectedChoices) {
-        warn(label + ' : ' + q.choix.length + ' propositions (' + expectedChoices + ' attendues).');
       }
       var idx = LETTERS.indexOf(String(q.reponse || '').trim().toUpperCase());
       if (idx === -1 || idx >= q.choix.length) {
         err(label + ' : "reponse" doit être une lettre parmi ' + LETTERS.slice(0, q.choix.length).split('').join(', ') + '.');
       }
-      if (q.aVerifier) report.toVerify.push(label + ' — ' + q.aVerifier);
+    }
+
+    function checkAnswers(list, label) {
+      if (!Array.isArray(list) || !list.filter(String).length) err(label + ' : la liste "reponses" est vide.');
     }
 
     // Quête 1 : quiz
@@ -64,78 +69,69 @@
           return;
         }
         if (t.questions.length !== 8) warn(tl + ' : ' + t.questions.length + ' questions (8 attendues).');
-        t.questions.forEach(function (q, qi) {
-          checkMcq(q, tl + ', question ' + (qi + 1), qi === 7 ? 4 : 3);
-        });
+        t.questions.forEach(function (q, qi) { checkMcq(q, tl + ', question ' + (qi + 1)); });
       });
     }
+    if (!cfg.quiz.etage) err('config/quiz.js : bloc "etage" manquant.');
+    else checkAnswers(cfg.quiz.etage.reponses, 'Quiz, étage à deviner');
 
     var Q = cfg.quetes;
-    ['enigme', 'defi', 'dernierIndice', 'hotte'].forEach(function (k) {
+    ['message', 'photos', 'enquete', 'traque'].forEach(function (k) {
       if (!Q[k]) err('config/quetes.js : bloc "' + k + '" manquant.');
     });
     if (report.errors.length) return report;
 
     // Quête 2
-    if (!Array.isArray(Q.enigme.reponses) || !Q.enigme.reponses.filter(String).length) {
-      err('Quête 2 : la liste "reponses" de l\'énigme est vide.');
-    }
+    checkAnswers(Q.message.reponses, 'Quête 2');
+    (Q.message.lignes || []).forEach(function (l, i) {
+      if (/[^A-Za-z\s]/.test(String(l))) warn('Quête 2, ligne ' + (i + 1) + ' : seules les lettres A à Z sont chiffrées (accents et ponctuation ignorés).');
+    });
     // Quête 3
-    if (!Array.isArray(Q.defi.questions) || !Q.defi.questions.length) {
-      err('Quête 3 : aucune question.');
-    } else {
-      if (Q.defi.questions.length !== 3) warn('Quête 3 : ' + Q.defi.questions.length + ' questions (3 attendues).');
-      Q.defi.questions.forEach(function (q, qi) { checkMcq(q, 'Quête 3, question ' + (qi + 1), 3); });
+    var models = Q.photos.modeles || [];
+    if (models.length < (Q.photos.nombre || 3)) err('Quête 3 : moins de modèles que de photos à prendre.');
+    models.forEach(function (m, i) { if (!m.id || !m.image) err('Quête 3, modèle ' + (i + 1) + ' : "id" ou "image" manquant.'); });
+    // Quête 4
+    (Q.enquete.modules || []).forEach(function (m, i) {
+      var ml = 'Quête 4, module ' + (i + 1);
+      if (m.choix) checkChoice(m, ml);
+      else checkAnswers(m.reponses, ml);
+      if (m.aVerifier) report.toVerify.push(ml + ' — ' + m.aVerifier);
+    });
+    // Quête 5
+    checkAnswers(Q.traque.reponses, 'Quête 5');
+    var avantTokyo = [Q.traque.titre, Q.traque.avertissementTitre, Q.traque.avertissement, Q.traque.rapportTitre, Q.traque.rapport, Q.traque.conclusion, Q.traque.label, Q.traque.unEssai, Q.traque.gelTexte, Q.traque.indiceJoker, cfg.etapes[5] && cfg.etapes[5].histoire, cfg.etapes[5] && cfg.etapes[5].lieu]
+      .concat(Q.traque.indices || [])
+      .concat((Q.traque.sousTitres || []).map(function (x) { return x.texte; }));
+    if (avantTokyo.some(function (x) { return /\b(salle|porte)s?\b/i.test(String(x || '')); })) {
+      err('Quête 5 : un texte affiché avant la découverte du repaire contient « salle » ou « porte ».');
     }
 
-    if (Q.enigme.aVerifier) report.toVerify.push('Quête 2, énigme — ' + Q.enigme.aVerifier);
-    if (Q.dernierIndice.aVerifier) report.toVerify.push('Quête 4, énigme finale — ' + Q.dernierIndice.aVerifier);
-
-    // Lieux
-    var L = cfg.lieux;
-    var refs = [
-      ['Quête 1 (quiz.lieu)', cfg.quiz.lieu],
-      ['Quête 2 (quetes.enigme.lieu)', Q.enigme.lieu],
-      ['Quête 3 (quetes.defi.lieu)', Q.defi.lieu],
-      ['Quête 4 (quetes.dernierIndice.lieu)', Q.dernierIndice.lieu],
-    ];
+    // Étages et mots secrets
     var seen = {};
-    refs.forEach(function (r) {
-      if (!r[1] || !L[r[1]]) err(r[0] + ' : le lieu "' + r[1] + '" n\'existe pas dans config/lieux.js.');
-      else if (seen[r[1]]) err(r[0] + ' : le lieu "' + r[1] + '" est déjà utilisé par une autre quête.');
-      seen[r[1]] = true;
-    });
-    var codes = {};
-    Object.keys(L).forEach(function (id) {
-      var p = L[id];
-      var pl = 'Lieu ' + id;
-      if (!p.nom) err(pl + ' : "nom" manquant.');
-      if (!Array.isArray(p.reponsesAcceptees) || !p.reponsesAcceptees.filter(String).length) {
-        err(pl + ' : la liste "reponsesAcceptees" est vide.');
-      }
-      var code = String(p.codeQR || '').trim().toUpperCase();
-      if (!code) err(pl + ' : "codeQR" manquant.');
-      else if (!/^[A-Z0-9-]+$/.test(code)) err(pl + ' : "codeQR" ne doit contenir que des lettres, chiffres ou tirets.');
-      else if (codes[code]) err(pl + ' : le code QR "' + code + '" est déjà utilisé par le lieu ' + codes[code] + '.');
-      codes[code] = id;
-      if (id !== Q.dernierIndice.lieu && !String(p.indice || '').trim()) warn(pl + ' : aucun indice défini.');
-      if (p.aVerifier) report.toVerify.push(pl + ' — ' + p.aVerifier);
-    });
+    for (var n = 1; n <= 5; n++) {
+      var st = cfg.etapes[n];
+      if (!st) { err('config/etapes.js : étape ' + n + ' manquante.'); continue; }
+      var w = String(st.motSecret || '').trim().toUpperCase();
+      if (!w) err('Étape ' + n + ' : "motSecret" manquant.');
+      else if (seen[w]) err('Étape ' + n + ' : le mot secret "' + w + '" est déjà utilisé par l\'étape ' + seen[w] + '.');
+      seen[w] = n;
+      if (!String(st.histoire || '').trim()) warn('Étape ' + n + ' : aucun texte "histoire".');
+    }
 
     // Paramètres
     var P = cfg.parametres;
     var pq = P.quiz || {};
     if (!(pq.tentativesAvantBlocage >= 1)) err('parametres.quiz.tentativesAvantBlocage doit être un nombre ≥ 1.');
     if (!(pq.dureeBlocageSecondes >= 0)) err('parametres.quiz.dureeBlocageSecondes doit être un nombre ≥ 0.');
-    if (P.gel && P.gel.actif !== false && !(P.gel.dureeSecondes >= 0)) {
-      err('parametres.gel.dureeSecondes doit être un nombre ≥ 0.');
-    }
+    ['etage', 'message', 'enquete', 'repaire'].forEach(function (k) {
+      var r = (P.penalites || {})[k];
+      if (!r) return err('parametres.penalites.' + k + ' manquant.');
+      if (!(r.essais >= 1)) err('parametres.penalites.' + k + '.essais doit être un nombre ≥ 1.');
+      if (!(r.gelSecondes >= 0)) err('parametres.penalites.' + k + '.gelSecondes doit être un nombre ≥ 0.');
+      if (['valider', 'reessayer'].indexOf(r.apresGel) === -1) err('parametres.penalites.' + k + '.apresGel doit valoir "valider" ou "reessayer".');
+    });
     if (P.chrono && P.chrono.actif !== false && !(P.chrono.dureeMinutes > 0)) {
       err('parametres.chrono.dureeMinutes doit être un nombre de minutes > 0.');
-    }
-    var fin = P.finDePartie || {};
-    if (!fin.codeOrganisateur && !fin.qrFinalActif) {
-      warn('Fin de partie : ni code organisateur ni QR final actif, la partie ne pourra pas être marquée comme terminée.');
     }
     if (P.modeTest && P.modeTest.actif) {
       warn('Le mode test est actif (parametres.modeTest.actif). Désactivez-le ou changez son code avant l\'événement.');
