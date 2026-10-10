@@ -19,10 +19,6 @@ window.GAME_CONFIG.club = {
     sousTitre: "Christmas Club",
     edition: "Noël 2026",
     appel: "Découvrir le programme",
-    /* Contexte narratif affiché sur la page d'accueil. */
-    histoireTitre: "Le colis a disparu",
-    histoire:
-      "Bienvenue au Gobinous Christmas Club. Habituellement, c'est le moment de l'année où Barnabé gère la distribution des colis à La Verrière. Sauf qu'avec lui, rien ne se passe jamais comme prévu : en bon gros troll, il a décidé d'en faire qu'à sa tête. Résultat, un des colis a totalement disparu des radars. Comme le service client brille par son absence, c'est à vous de jouer pour le retrouver dans les méandres de la Tour Saint-Gobain. Vu la taille du bâtiment, il va falloir ruser, grinder en équipe et speeder pour sauver l'événement. Que la Gobinous Christmas Quest commence.",
   },
 
   /* Programme : un bloc par temps fort, dans l'ordre de l'événement.
@@ -38,7 +34,7 @@ window.GAME_CONFIG.club = {
         id: "quest",
         icone: "tower",
         nom: "Gobi'Christmas Quest",
-        texte: "La traque du colis disparu : de La Verrière jusqu'au repaire de Barnabé, infiltrez la Tour Saint-Gobain en 5 étapes.",
+        texte: "Retrouvez le colis disparu dans la Tour Saint-Gobain, en 5 étapes.",
         badge: "En équipe · 30 min",
         bouton: "Découvrir",
       },
@@ -46,7 +42,7 @@ window.GAME_CONFIG.club = {
         id: "party",
         icone: "tree",
         nom: "Gobi'Christmas Party",
-        texte: "Le goûter, l'atelier sapin collaboratif et les 20 défis du lutin, en autonomie.",
+        texte: "Goûter, atelier sapin et 20 défis à relever en autonomie.",
         badge: "Code secret",
         bouton: "Découvrir",
       },
@@ -54,7 +50,7 @@ window.GAME_CONFIG.club = {
         id: "battle",
         icone: "star",
         nom: "Gobi'Christmas Battle",
-        texte: "Le grand jeu collectif final, en équipes : quiz interactif et classement en temps réel.",
+        texte: "Le grand jeu final : quiz interactif et classement en direct.",
         badge: "En équipes",
         bouton: "Découvrir",
       },
@@ -62,7 +58,7 @@ window.GAME_CONFIG.club = {
         id: "wrapup",
         icone: "gift",
         nom: "Gobi'Christmas Wrap-Up",
-        texte: "Le tirage au sort du Secret Santa et votre avis en 1 minute.",
+        texte: "Le tirage du Secret Santa et votre avis en 1 minute.",
         badge: "Secret Santa",
         bouton: "Découvrir",
       },
@@ -72,7 +68,7 @@ window.GAME_CONFIG.club = {
   /* Rubrique indépendante du programme : les photos et vidéos. */
   vlog: {
     nom: "Le Vlog des Gobinous",
-    texte: "Reporters ou pas, déposez ici toutes vos photos et vidéos de l'événement, même les longues.",
+    texte: "Photos et vidéos de l'événement : tout le monde peut déposer.",
     bouton: "Découvrir",
   },
 

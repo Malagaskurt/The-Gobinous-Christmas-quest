@@ -31,7 +31,7 @@ window.GAME_CONFIG = window.GAME_CONFIG || {};
 window.GAME_CONFIG.quiz = {
   titre: "Check-in",
   intro:
-    "Pour quitter La Verrière, la zone sécurisée, et lancer la traque, validez votre identité : choisissez un thème et répondez aux 8 questions **sans faute (8/8)**. Vous avez **2 thèmes** pour réussir.",
+    "Validez votre identité pour quitter La Verrière : un thème, 8 questions, **8/8** exigé. 2 thèmes maximum.",
   boutonIntro: "Choisir un thème",
 
   textes: {
@@ -70,7 +70,7 @@ window.GAME_CONFIG.quiz = {
     bloqueSuite: "Ensuite, le quiz sera validé d'office.",
     bloqueCompteur: "Suite de l'aventure dans",
     reussiteTitre: "Check-in réussi",
-    reussiteTexte: "Accès autorisé : vous pouvez quitter La Verrière. Le premier signal de Barnabé vous attend.",
+    reussiteTexte: "Vous pouvez quitter La Verrière. Le premier signal vous attend.",
     /* Animation « scan de pièce d'identité » après le quiz. */
     scanTitre: "Scan d'identité",
     scanEquipe: "Équipe",

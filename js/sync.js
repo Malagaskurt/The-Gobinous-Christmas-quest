@@ -123,6 +123,44 @@
     },
   };
 
+  /* Efface tout ce que ce téléphone a gardé : partie, Party, avis, Vlog,
+   * photos en attente. Seuls la préférence du son et le code du tableau
+   * de bord sont conservés. */
+  GQ.wipeLocal = function () {
+    try {
+      var keys = [];
+      for (var i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
+      keys.forEach(function (k) {
+        if (/^gobinous-/.test(k) && !/:(son|suivi|epoque)$/.test(k)) localStorage.removeItem(k);
+      });
+    } catch (e) { /* stockage indisponible */ }
+    try { if (window.indexedDB) indexedDB.deleteDatabase('gobinous-photos'); } catch (e) { /* rien */ }
+  };
+
+  /* Réinitialisation globale décidée par les organisateurs : le serveur
+   * change d'« époque », et chaque téléphone repart de zéro. */
+  var EKEY = 'gobinous-club:epoque';
+  function checkEpoch() {
+    if (!enabled) return Promise.resolve();
+    return fetch(GQ.apiUrl('epoque'), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || d.epoque == null) return;
+      var mine = null;
+      try { mine = localStorage.getItem(EKEY); } catch (e) { return; }
+      if (mine === null) { try { localStorage.setItem(EKEY, d.epoque); } catch (e) { /* rien */ } return; }
+      if (mine === String(d.epoque)) return;
+      GQ.wipeLocal();
+      try { localStorage.setItem(EKEY, d.epoque); } catch (e) { /* rien */ }
+      location.replace(location.pathname + location.search + '#/');
+      location.reload();
+    }).catch(function () { /* hors ligne */ });
+  }
+  GQ.checkEpoch = checkEpoch;
+  if (enabled) {
+    checkEpoch();
+    setInterval(checkEpoch, 30000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) checkEpoch(); });
+  }
+
   if (!enabled) return;
 
   var save = GQ.save;

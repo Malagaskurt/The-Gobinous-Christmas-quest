@@ -340,13 +340,15 @@
     if (!guard()) return;
     GQ.modal({
       title: 'Réinitialiser la partie ?',
-      text: 'Toute la progression enregistrée dans ce navigateur sera effacée (équipe, quêtes, joker, quiz).',
+      text: 'Tout ce que ce téléphone a enregistré sera effacé : partie, défis de la Party, avis, envois du Vlog.',
       confirm: 'Réinitialiser',
       cancel: 'Annuler',
       icon: 'cadenas',
     }).then(function (ok) {
       if (!ok) return;
       GQ.resetGame();
+      // Tout le reste de ce téléphone aussi : Party, avis, Vlog.
+      if (GQ.wipeLocal) GQ.wipeLocal();
       GQ.uiReset();
       done('Partie réinitialisée.');
     });

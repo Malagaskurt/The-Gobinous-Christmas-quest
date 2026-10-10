@@ -186,7 +186,8 @@ await step('Nom d\'équipe vide refusé, puis accepté', async () => {
 });
 
 await step('Rôles : encadré « choisissez vos rôles avec soin », Capitaine et Reporter obligatoires', async () => {
-  assert(await has('Bête de nom'), 'réaction du lutin absente');
+  await page.waitForTimeout(1400);
+  assert(await has('pas mal du tout ce nom'), 'réaction de Barnabé absente');
   assert(await has('Le Gobinous Reporter') && await has('Le Gobinous Capitaine') && await has('choisissez vos rôles avec soin'), 'encadré des rôles absent');
   await page.click('.roles-form button[type=submit]');
   await settle();
@@ -215,7 +216,7 @@ await step('La map (La Verrière, Tour Saint-Gobain, 5 étapes) et les 5 règles
   assert(await has('La Verrière'), 'point de base absent');
   await clickText('Toutes les règles');
   const modal = norm(await page.locator('.modal').innerText());
-  for (const s of ['Les règles', '30 minutes chrono', 'Le Joker Unique', 'Le Gel du Système', 'Plus de deux erreurs consécutives', "Esprit d'équipe", 'Fair-play absolu']) {
+  for (const s of ['Les règles', '30 minutes chrono', 'Joker unique', 'Gel du système', "Plus de 2 erreurs d'affilée", "Esprit d'équipe", 'Fair-play']) {
     assert(modal.includes(norm(s)), `texte manquant dans les règles : ${s}`);
   }
   assert((await page.locator('.modal-sheet .rule').count()) === 5, 'règles illustrées absentes');
@@ -416,7 +417,7 @@ await step('Erreur → essais restants, puis « Barnabé a perdu le contrôle »
   assert(!(await frozen()), 'gel dès la première erreur');
   await answer('BARNABÉ a perdu   le CONTRÔLE');
   assert(await has('Cheat code activé'), 'bonne réponse refusée');
-  assert(await has('PAS. DE. PANIQUE') && await has('accélérer'), 'bulle de panique absente');
+  assert(await has('PAS. DE. PANIQUE') && await has('accélérez'), 'bulle de panique absente');
 });
 
 console.log('\nQuête 3 : le défi photo');
@@ -804,6 +805,27 @@ await step('Wrap-Up : tirage du Secret Santa, un numéro unique par téléphone'
   }
   const sa = await api('santa');
   assert(sa.tires.length === 6, 'tirages non enregistrés');
+});
+
+await step('Tout réinitialiser : serveur et téléphones repartent de zéro', async () => {
+  const bad = await fetch(BASE + 'api/tout-reinitialiser', { method: 'POST' });
+  assert(bad.status === 401, 'réinitialisation possible sans code');
+  await go(BASE + '#/party');
+  const before = await page.evaluate(() => Object.keys(localStorage).filter((k) => /^gobinous-(quest|club:party|club:avis)/.test(k)).length);
+  assert(before > 0, 'aucune donnée locale à effacer');
+  const r = await fetch(BASE + 'api/tout-reinitialiser', { method: 'POST', headers: { 'X-Code-Suivi': SUIVI_CODE } });
+  assert(r.ok, 'réinitialisation refusée');
+  assert((await apiTeams()).length === 0, 'équipes encore présentes');
+  assert((await api('photos')).equipes.length === 0, 'photos encore présentes');
+  assert((await api('santa')).tires.length === 0, 'tirage encore présent');
+  assert((await api('avis')).avis.length === 0, 'avis encore présents');
+  // Le téléphone voit la nouvelle « époque » et efface tout.
+  await page.evaluate(() => window.GQ.checkEpoch());
+  await page.waitForTimeout(1500);
+  await page.waitForSelector('#app');
+  const after = await page.evaluate(() => Object.keys(localStorage).filter((k) => /^gobinous-(quest|club:party|club:avis|club:vlog)/.test(k) && !/:(son|suivi|epoque)$/.test(k)));
+  assert(after.length === 0, `données locales restantes : ${after.join(', ')}`);
+  assert((await hash()) === '#/', `pas revenu à l'accueil : ${await hash()}`);
 });
 
 await step('Hors ligne : le site, le jeu, la vidéo et les musiques restent disponibles', async () => {

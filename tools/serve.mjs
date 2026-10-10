@@ -290,6 +290,25 @@ async function persistVlog() {
 }
 const newKey = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
 
+/* Réinitialisation globale : numéro d'« époque » des données. Quand il
+ * change, chaque téléphone efface tout ce qu'il a gardé (jeu, Party,
+ * avis, Vlog) à sa prochaine connexion. */
+const EPOCH_FILE = join(dirname(FILE), 'epoch.json');
+let epoch = '0';
+try {
+  epoch = String(JSON.parse(readFileSync(EPOCH_FILE, 'utf8')).epoch || '0');
+} catch { /* jamais réinitialisé */ }
+
+async function resetAll() {
+  teams = {}; photos = {}; party = {}; avis = {}; santa = {}; vlog = {};
+  await Promise.all([PHOTO_DIR, PARTY_DIR, VLOG_DIR].map((d) => rm(d, { recursive: true, force: true })));
+  await mkdir(dirname(FILE), { recursive: true });
+  await writeFile(FILE, '{}');
+  await Promise.all([persistPhotos(), persistParty(), persistAvis(), persistSanta(), persistVlog()]);
+  epoch = Date.now().toString(36);
+  await writeFile(EPOCH_FILE, JSON.stringify({ epoch, at: Date.now() }));
+}
+
 let saveTimer = null;
 function persist() {
   clearTimeout(saveTimer);
@@ -442,6 +461,11 @@ async function api(req, res, path) {
     return send(res, 200, { ok: true });
   }
 
+  // Époque des données (réinitialisation globale), lue par chaque téléphone.
+  if (path === '/api/epoque' && req.method === 'GET') {
+    return send(res, 200, { epoque: epoch });
+  }
+
   // Un téléphone abandonne sa partie (réinitialisée depuis le mode test).
   if (path === '/api/oublier' && req.method === 'POST') {
     const b = await body(req);
@@ -588,8 +612,15 @@ async function api(req, res, path) {
   }
 
   // Tableau de bord : routes protégées par le code de suivi.
-  if (!/^\/api\/(equipes|photos|party|avis|vlog|santa)/.test(path)) return send(res, 404, { erreur: 'introuvable' });
+  if (!/^\/api\/(equipes|photos|party|avis|vlog|santa|tout-reinitialiser)/.test(path)) return send(res, 404, { erreur: 'introuvable' });
   if (!authorized(req)) return send(res, 401, { erreur: 'code incorrect' });
+
+  // Tout remettre à zéro : équipes, photos, Party, avis, Secret Santa, Vlog.
+  if (path === '/api/tout-reinitialiser' && req.method === 'POST') {
+    clearTimeout(saveTimer);
+    await resetAll();
+    return send(res, 200, { ok: true, epoque: epoch });
+  }
 
   if (path === '/api/photos' && req.method === 'GET') {
     return send(res, 200, { equipes: photoList() });

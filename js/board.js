@@ -16,17 +16,15 @@
   var GROUND = 470;          // pied des tours
   var TOWER = { x: 206, w: 52, top: 54 };
   var FLOOR_PX = 9.4;        // hauteur d'un étage sur la Tour
-  var VERRIERE = { x: 74, y: 492 };
+  var VERRIERE_Y = 430;
 
-  /* Étage de chaque étape (La Verrière = 0). */
-  var FLOORS = [0, 5, 23, 20, 33];
-
-  function floorY(f) { return GROUND - f * FLOOR_PX; }
 
   /* Position de chaque étape sur la map. */
+  // Étapes réparties régulièrement le long de la Tour (aucun étage
+  // affiché : la map ne doit rien dévoiler de l'enquête). L'étape 1 est à
+  // La Verrière, à l'intérieur de la Tour, dans le bas.
   function spot(i) {
-    if (i === 0) return { x: VERRIERE.x, y: VERRIERE.y - 26 };
-    return { x: TOWER.x + TOWER.w / 2, y: floorY(FLOORS[i]) };
+    return { x: TOWER.x + TOWER.w / 2, y: VERRIERE_Y - i * 84 };
   }
 
   /* Bâtiments du quartier : [x, haut, largeur, teinte]. */
@@ -78,13 +76,16 @@
       '</g>';
   }
 
-  /* La Verrière : pavillon de verre au pied de la Tour (point de base). */
+  /* La Verrière : grand plateau vitré, à l'intérieur de la Tour (le point
+   * de base, d'où l'on part et où l'on revient). */
   function verriere() {
-    var x = VERRIERE.x, y = VERRIERE.y;
+    var x = TOWER.x - 4, w = TOWER.w + 18, y = VERRIERE_Y - 13;
     return '<g class="m-verriere">' +
-      '<ellipse cx="' + x + '" cy="' + (y + 10) + '" rx="62" ry="10" fill="#8fe3ff" opacity=".18" class="m-halo"/>' +
-      '<path d="M' + (x - 48) + ' ' + (y + 8) + 'V' + (y - 4) + 'Q' + x + ' ' + (y - 40) + ' ' + (x + 48) + ' ' + (y - 4) + 'V' + (y + 8) + 'Z" fill="url(#m-verre)" stroke="#bdefff" stroke-width="1.2"/>' +
-      '<path d="M' + (x - 30) + ' ' + (y + 8) + 'V' + (y - 14) + 'M' + (x - 10) + ' ' + (y + 8) + 'V' + (y - 20) + 'M' + (x + 10) + ' ' + (y + 8) + 'V' + (y - 20) + 'M' + (x + 30) + ' ' + (y + 8) + 'V' + (y - 14) + '" stroke="#e3f6fc" stroke-width=".8" opacity=".55"/>' +
+      '<rect x="' + (x - 6) + '" y="' + (y - 6) + '" width="' + (w + 12) + '" height="38" rx="10" fill="#8fe3ff" opacity=".16" class="m-halo"/>' +
+      '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="26" rx="4" fill="url(#m-verre)" stroke="#e3f6fc" stroke-width="1.2"/>' +
+      '<path d="M' + (x + 12) + ' ' + y + 'v26M' + (x + 26) + ' ' + y + 'v26M' + (x + 40) + ' ' + y + 'v26M' + (x + 54) + ' ' + y + 'v26" stroke="#fff" stroke-width=".7" opacity=".5"/>' +
+      '<text x="' + (x + w + 8) + '" y="' + (y + 11) + '" class="m-tag m-tag-base">LA VERRIÈRE</text>' +
+      '<text x="' + (x + w + 8) + '" y="' + (y + 21) + '" class="m-tag">POINT DE BASE</text>' +
       '</g>';
   }
 
@@ -94,7 +95,7 @@
       '<path d="M0 548H' + W + '" stroke="#2a5db0" stroke-width="14" opacity=".55"/>' +
       '<path d="M0 548H' + W + '" stroke="#f6efe2" stroke-width="1" stroke-dasharray="8 10" opacity=".45"/>' +
       '<g class="m-car m-car-a"><rect x="0" y="541" width="22" height="9" rx="4" fill="#e4323a"/><rect x="5" y="537" width="11" height="6" rx="2.5" fill="#8fe3ff"/><circle cx="21" cy="545" r="1.6" fill="#fff"/></g>' +
-      '<g class="m-car m-car-b"><rect x="0" y="544" width="26" height="10" rx="4" fill="#2fc0ee"/><rect x="4" y="540" width="14" height="6" rx="2.5" fill="#e3f6fc"/><circle cx="1.5" cy="549" r="1.6" fill="#fff"/></g>';
+      '<g class="m-car m-car-b"><rect x="0" y="544" width="26" height="10" rx="4" fill="#2fc0ee"/><rect x="8" y="540" width="14" height="6" rx="2.5" fill="#e3f6fc"/><circle cx="24.5" cy="549" r="1.6" fill="#fff"/></g>';
   }
 
   function state(n) {
@@ -107,33 +108,29 @@
 
   /* Étiquette d'une étape : à gauche de la Tour (étape 1 : à droite de
    * La Verrière). */
-  var LABEL_Y = [null, 0, -8, 18, 0];
+
   function marker(i) {
     var n = i + 1;
     var P = GQ.cfg.textes.plateau;
     var st = state(n);
     var p = spot(i);
     var name = String(P.etapes[i] || GQ.questCfg(n).titre).toUpperCase();
-    var where = String(GQ.stage(n).etage || '').replace(/ᵉ/g, 'E');
-    var lx, ly, anchor;
-    if (i === 0) { lx = p.x; ly = VERRIERE.y + 33; anchor = 'middle'; }
-    else { lx = TOWER.x - 26; ly = p.y + LABEL_Y[i]; anchor = 'end'; }
-    var lead = i === 0 ? '' : '<path d="M' + (lx + 4) + ' ' + (ly - 4) + 'H' + (p.x - 10) + '" class="m-lead"/>';
+    var lx = TOWER.x - 22, ly = p.y + 3, anchor = 'end';
+    var lead = '<path d="M' + (lx + 4) + ' ' + (ly - 4) + 'H' + (p.x - 10) + '" class="m-lead"/>';
     var dot = st === 'done' ? '<path d="M' + (p.x - 4) + ' ' + p.y + 'l3 3 5-6" class="m-check"/>' : '<text x="' + p.x + '" y="' + (p.y + 3.6) + '" text-anchor="middle" class="m-num">' + n + '</text>';
     return '<g class="m-step is-' + st + '" style="animation-delay:' + (0.6 + i * 0.25).toFixed(2) + 's">' +
       lead +
       (st === 'current' ? '<circle cx="' + p.x + '" cy="' + p.y + '" r="9" class="m-ping"/>' : '') +
       '<circle cx="' + p.x + '" cy="' + p.y + '" r="9" class="m-dot"/>' + dot +
-      '<text x="' + lx + '" y="' + (ly - 9) + '" text-anchor="' + anchor + '" class="m-kicker">ÉTAPE ' + n + ' · ' + esc(String(where).toUpperCase()) + '</text>' +
+      '<text x="' + lx + '" y="' + (ly - 9) + '" text-anchor="' + anchor + '" class="m-kicker">ÉTAPE ' + n + '</text>' +
       '<text x="' + lx + '" y="' + (ly + 4) + '" text-anchor="' + anchor + '" class="m-name">' + esc(name) + '</text>' +
       '</g>';
   }
 
-  /* Ascenseur lumineux : de La Verrière au 33ᵉ étage. */
+  /* Ascenseur lumineux : de La Verrière à la dernière étape. */
   function route() {
-    var cx = TOWER.x + TOWER.w / 2;
-    var start = spot(0);
-    return 'M' + start.x + ' ' + (start.y + 8) + 'C' + (start.x + 60) + ' ' + (GROUND + 22) + ' ' + (cx - 30) + ' ' + (GROUND + 6) + ' ' + cx + ' ' + GROUND + 'V' + floorY(33);
+    var a = spot(0), b = spot(4);
+    return 'M' + a.x + ' ' + a.y + 'V' + b.y;
   }
 
   function html(opts) {

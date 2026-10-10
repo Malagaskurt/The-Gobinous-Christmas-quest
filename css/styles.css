@@ -121,9 +121,8 @@ img { max-width: 100%; }
 /* Voitures qui passent sur la neige */
 .ground-car { position: absolute; bottom: 9px; left: 0; width: 44px; animation: drive 16s linear infinite; }
 .ground-car .car-img { width: 100%; }
-.car-b { animation-duration: 21s; animation-delay: -9s; animation-direction: reverse; }
-.car-b .car-img { transform: scaleX(-1); }
-@keyframes drive { from { transform: translateX(-60px); } to { transform: translateX(620px); } }
+.car-b { animation-duration: 21s; animation-delay: -9s; }
+@keyframes drive { from { transform: translateX(-60px); } to { transform: translateX(calc(100vw + 60px)); } }
 /* Lien d'aide (appel des organisateurs), au-dessus du sol */
 .help-row { display: flex; justify-content: center; padding: 18px var(--gutter) 6px; }
 .help-link {
@@ -1598,7 +1597,7 @@ body.tone-red {
 .m-halo { animation: halo 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 @keyframes halo { 50% { opacity: 0.45; transform: scale(1.08); } }
 .m-car-a { animation: m-drive 7s linear infinite; }
-.m-car-b { animation: m-drive-back 9s linear infinite 1.5s; }
+.m-car-b { animation: m-drive 10s linear infinite -4s; }
 @keyframes m-drive { from { transform: translateX(-40px); } to { transform: translateX(400px); } }
 @keyframes m-drive-back { from { transform: translateX(400px); } to { transform: translateX(-40px); } }
 .m-route-glow { fill: none; stroke: #2fc0ee; stroke-width: 9; opacity: 0.18; stroke-linecap: round; }
@@ -1675,3 +1674,108 @@ body.tone-red {
 .push-ico.art3d { width: 20px; filter: none; }
 .push-time { margin-left: auto; font-weight: 600; letter-spacing: 0; text-transform: none; }
 @keyframes push-in { from { opacity: 0; transform: translateY(-30px) scale(0.96); } to { opacity: 1; transform: none; } }
+
+/* =====================================================================
+ * DA « 2D GAMING ÉPURÉ »
+ * Aplats francs, ombres décalées nettes (pas de flou, pas de reflets),
+ * deux polices seulement (Montserrat + VT323 pour les écrans de
+ * terminal), espaces généreux, rouge réservé aux actions.
+ * ===================================================================== */
+:root {
+  --font-head: "Montserrat", Arial, sans-serif;
+  --font-body: "Montserrat", Arial, sans-serif;
+  --ink-soft: #3b4a6b;
+  --shadow-2d: 0 4px 0 rgba(3, 10, 30, 0.45);
+  --card: #fbf7ef;
+}
+body, body.tone-red { background: var(--bg); }
+body.tone-red { --bg: #0b1d45; }
+strong, b { font-weight: 700; }
+
+/* Illustrations : aplats, sans ombre portée. */
+.art3d, .quest-ico.art3d, .prog-ico.art3d, .theme-card .art3d, .rule-ico.art3d, .loader-star.art3d { filter: none !important; }
+.scene3d-snow { display: none; }
+
+/* Titres : couleurs pleines. */
+.ptext, .ptext.is-cream, .ptext.is-red, .ptext.is-sky { background: none !important; -webkit-text-fill-color: currentColor; filter: none !important; }
+.ptext.is-cream { color: #fff; }
+.ptext.is-red { color: #e4323a; }
+.ptext.is-sky { color: #2fc0ee; }
+.club-knit.ptext, .home-knit-title.ptext, .loader-title.ptext { text-shadow: 0 4px 0 #8e0a20; filter: none !important; }
+.finale .k-title-img.ptext { color: #fff; }
+
+/* Boutons de jeu 2D. */
+.btn { border-radius: 14px; font-weight: 800; letter-spacing: 0.08em; }
+.btn-red { background: #e4323a; box-shadow: 0 4px 0 #9b0f24; }
+.btn-red:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #9b0f24; }
+.btn-primary, .btn-gold { background: #2fc0ee; color: #0b1d45; box-shadow: 0 4px 0 #0080b0; }
+.btn-primary:active:not(:disabled), .btn-gold:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #0080b0; }
+.btn-cream { background: #fff; color: var(--blue); box-shadow: 0 4px 0 #c9bba2; }
+.btn-cream:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #c9bba2; }
+.btn-blink { animation: none; }
+
+/* Cartes : aplat clair, ombre nette décalée, coins arrondis. */
+.frame, .prog-card, .theme-card, .elf-talk-bubble, .roles-box, .modal, .rule, .pig-card, .id-card, .wq, .santa, .finale-card, .idscan-card {
+  background: var(--card) !important; box-shadow: var(--shadow-2d) !important; border-radius: 16px !important;
+}
+.roles-box { box-shadow: var(--shadow-2d), inset 0 0 0 2px rgba(23, 66, 140, 0.15) !important; }
+.theme-card.is-mystery { box-shadow: var(--shadow-2d), inset 0 0 0 2px #2fc0ee !important; }
+.idscan-card { box-shadow: var(--shadow-2d), inset 0 0 0 2px #2fc0ee !important; }
+.prog-card:active, .theme-card:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 rgba(3, 10, 30, 0.45) !important; }
+.vlog-card, .club-story, .push { backdrop-filter: none; box-shadow: var(--shadow-2d); }
+.vlog-card { background: rgba(255, 255, 255, 0.06); border: 1.5px solid rgba(255, 255, 255, 0.14); }
+.push { background: #fff; }
+.prog-art, .role-card-ico, .rule-art, .idscan-photo, .legend-ico { background: #17428c !important; }
+.modal-backdrop { backdrop-filter: none; background: rgba(5, 14, 36, 0.75); }
+.topbar { background: #0b1d45; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.field { border: 2px solid rgba(23, 66, 140, 0.18); box-shadow: none; border-radius: 12px; }
+.idscan-status { box-shadow: 0 3px 0 #0080b0; }
+.idscan-beam { box-shadow: 0 0 10px 3px rgba(47, 192, 238, 0.5); }
+.map { box-shadow: var(--shadow-2d), 0 0 0 1.5px rgba(255, 255, 255, 0.12); }
+
+/* Barnabé : portrait rond, simple liseré. */
+.barnabe { box-shadow: 0 0 0 3px #fff, var(--shadow-2d); background: #17428c; }
+.elf-face { box-shadow: 0 0 0 3px #fff, var(--shadow-2d); }
+
+/* Pas de texte rouge criard : le rouge reste aux boutons. */
+.elf-talk-big, .panic .elf-talk-big, .roles-box-title, .theme-card.is-mystery .theme-title, .club-story-title, .frame .degel, .success-title { color: var(--blue); font-weight: 800; }
+.success-title { color: #fff; }
+.elf-talk-big { font-size: 1.02rem; }
+.elf-talk-big strong { color: var(--blue); }
+.prog-go { color: #e4323a; font-weight: 700; }
+
+/* Plus d'air. */
+.center-head { margin-bottom: 30px; }
+.frame { margin: 28px 0; }
+.frame-in { padding: 24px 22px; }
+.elf-talk { margin: 10px 0 18px; }
+.answer-form { margin-top: 26px; }
+.prog { gap: 18px !important; }
+
+/* Déco de Noël discrète. */
+.garland { height: 24px; background-size: auto 24px; opacity: 0.75; }
+.garland::after { background-size: auto 24px; }
+body::before, body::after { opacity: 0.45; }
+
+/* Entrée du jeu : briefing (contexte), puis le code. */
+.briefing { margin: 6px 0 4px; padding: 20px 20px 18px; border-radius: 16px; text-align: left; background: rgba(255, 255, 255, 0.06); border: 1.5px solid rgba(255, 255, 255, 0.14); box-shadow: var(--shadow-2d); animation: fade-up 0.6s ease-out 0.3s both; }
+.briefing p { margin: 0; font-size: 0.94rem; line-height: 1.65; color: var(--on-night); }
+.briefing strong { color: #fff; }
+.briefing-title { display: flex; align-items: center; gap: 8px; margin-bottom: 10px !important; font: 800 0.72rem/1 var(--font-head) !important; letter-spacing: 0.22em; text-transform: uppercase; color: var(--cyan-light) !important; }
+.briefing-pix { width: 1.4em; }
+.gate-hint { margin: 14px 0 0; text-align: center; font-size: 0.85rem; color: var(--on-night-muted); }
+.home-gate .answer-form { margin-top: 22px; }
+
+/* Bulle animée de Barnabé : « en train d'écrire… », puis le texte. */
+.talk-pop .elf-talk-bubble { animation: pop-soft 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.talk-pop .elf-talk-bubble { position: relative; }
+.talk-pop .typing { position: absolute; left: 18px; top: 18px; display: inline-flex; gap: 5px; animation: fade-away 0.2s linear 1.1s forwards; }
+.talk-pop .typing i { width: 7px; height: 7px; border-radius: 50%; background: #9fb3d6; animation: dot 0.9s ease-in-out infinite; }
+.talk-pop .typing i:nth-child(2) { animation-delay: 0.15s; }
+.talk-pop .typing i:nth-child(3) { animation-delay: 0.3s; }
+.talk-pop .talk-text { opacity: 0; animation: talk-in 0.3s ease-out 1.15s forwards; }
+@keyframes dot { 50% { transform: translateY(-4px); opacity: 0.5; } }
+@keyframes fade-away { to { opacity: 0; visibility: hidden; } }
+@keyframes talk-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .talk-pop .typing { display: none; } .talk-pop .talk-text { opacity: 1; animation: none; } }
+.modal.modal-sheet { background: var(--night) !important; box-shadow: none !important; border-radius: 0 !important; }

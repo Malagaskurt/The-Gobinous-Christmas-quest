@@ -25,7 +25,7 @@ window.GAME_CONFIG.quetes = {
   message: {
     titre: "Cheat Code",
     intro:
-      "Info clé : sur le comptoir du café, Barnabé a oublié un message écrit dans son alphabet secret… avec sa grille de décodage. Déchiffrez-le : ce cheat code vous donnera une longueur d'avance sur lui.",
+      "Barnabé a oublié un message codé sur le comptoir… avec sa grille. Déchiffrez-le pour prendre de l'avance.",
     boutonIntro: "Découvrir le message",
     consigne: "",
     /* Message chiffré, ligne par ligne (lettres A à Z et espaces). */
@@ -42,7 +42,7 @@ window.GAME_CONFIG.quetes = {
     reussiteTexte: "« Barnabé a perdu le contrôle » : vous avez une longueur d'avance sur lui.",
     /* Bulle de Barnabé qui panique, après le cheat code. */
     paniqueBulle: "Quoi ?! Qui vous a filé ce code ?! Pas de panique… PAS. DE. PANIQUE.",
-    paniqueTexte: "Le troll commence à paniquer : c'est le moment d'accélérer !",
+    paniqueTexte: "Le troll panique : accélérez !",
     reussiteApresGelTitre: "Le gel est levé !",
     reussiteApresGelTexte: "La phrase secrète était : « BARNABÉ A PERDU LE CONTRÔLE ».",
     gelSuite: "Ensuite, Barnabé vous soufflera la solution.",
@@ -55,9 +55,9 @@ window.GAME_CONFIG.quetes = {
   photos: {
     titre: "Fake Stream",
     avertissementTitre: "Attention !",
-    avertissement: "Barnabé flaire parfois l'arnaque : il peut refuser une photo parfaite, juste pour vous ralentir !",
+    avertissement: "Barnabé flaire parfois l'arnaque et refuse une photo.",
     intro:
-      "Barnabé vous a repérés : faites diversion ! Inondez son système de photos absurdes pour saturer son attention pendant que vous avancez. Choisissez **3 modèles sur 6** et reproduisez-les avec toute l'équipe.",
+      "Saturez les caméras de Barnabé : reproduisez **3 photos sur 6**, avec toute l'équipe.",
     consentement:
       "Les photos validées sont envoyées aux organisateurs.",
     boutonIntro: "Relever le défi",
@@ -89,7 +89,7 @@ window.GAME_CONFIG.quetes = {
     boutonQuete: "Lancer la diversion",
 
     reussiteTitre: "Diversion réussie !",
-    reussiteTexte: "Barnabé est noyé sous vos photos… Pendant ce temps, une alerte vient de tomber au Support 44.",
+    reussiteTexte: "Barnabé est noyé sous vos photos. Une alerte tombe au Support 44…",
     bouton: "Découvrir la suite",
   },
 
@@ -102,7 +102,7 @@ window.GAME_CONFIG.quetes = {
     titre: "ID Check",
     terminalTitre: "Support 44 · Analyse de badge",
     intro:
-      "Un badge inconnu a été scanné aujourd'hui dans la Tour, mais le Support 44 n'a aucune info dessus. Analysez-le : décodez les **4 modules** de sa fiche pour identifier son propriétaire.",
+      "Un badge inconnu a été scanné aujourd'hui. Décodez les **4 modules** pour identifier son propriétaire.",
     boutonIntro: "Analyser le badge",
     erreur: "Données incorrectes. Encore {n} essai(s) avant le gel du système !",
     moduleValide: "Module validé",
@@ -212,7 +212,7 @@ window.GAME_CONFIG.quetes = {
     notif: "Attendez, on vient de trouver une vidéo qu'il a laissée derrière lui !",
     avertissementTitre: "Vidéo à usage unique",
     avertissement:
-      "Une vidéo de nuit de Barnabé SIX-SEVEN. Regroupez-vous et montez le son : vous ne pourrez la voir **qu'une seule fois** !",
+      "Regroupez-vous, montez le son : elle ne se lit **qu'une seule fois**.",
     boutonVideo: "Lancer la vidéo",
 
     /* Vidéo animée de Barnabé (MP4, voix et musique incluses), générée

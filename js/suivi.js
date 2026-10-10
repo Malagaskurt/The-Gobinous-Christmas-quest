@@ -397,7 +397,11 @@
       ? '<p class="small muted">Actualisation automatique toutes les ' + REFRESH_MS / 1000 + ' secondes. ' +
         '« Réinitialiser » efface la partie sur le téléphone de l\'équipe à sa prochaine connexion (quelques secondes) : elle repart de l\'accueil.</p>' +
         '<div id="suivi-list">' + listHtml() + '</div>' +
-        '<div id="suivi-gallery">' + (lastGallery = galleryHtml()) + '</div>'
+        '<div id="suivi-gallery">' + (lastGallery = galleryHtml()) + '</div>' +
+        '<section class="admin-card danger-zone"><h2>Tout remettre à zéro</h2>' +
+        '<p class="small">Efface <b>tout</b> : équipes et progression, photos, défis et Gobz de la Party, avis, tirage du Secret Santa, Vlog. ' +
+        'Chaque téléphone efface aussi ses données à sa prochaine connexion et repart de l\'accueil. Définitif.</p>' +
+        '<button type="button" class="btn btn-small btn-danger" data-action="suivi-reset-all">Tout réinitialiser</button></section>'
       : '<div id="suivi-tab">' + (tab === 'party' ? partyHtml() : tab === 'vlog' ? vlogHtml() : avisHtml()) + '</div>';
     return {
       key: 'suivi-' + tab,
@@ -443,6 +447,26 @@
     var t = data && data.equipes.filter(function (x) { return x.id === id; })[0];
     return t ? t.equipe : 'cette équipe';
   }
+
+  actions['suivi-reset-all'] = function () {
+    GQ.modal({
+      title: 'Tout réinitialiser ?',
+      text: 'Équipes, photos, Party, avis, Secret Santa et Vlog seront effacés, sur le serveur et sur tous les téléphones.',
+      confirm: 'Oui, tout effacer',
+      cancel: 'Annuler',
+      icon: 'cadenas',
+    }).then(function (ok) {
+      if (!ok) return null;
+      return GQ.modal({ title: 'Vraiment ?', text: 'C\'est définitif : aucune donnée ne pourra être récupérée.', confirm: 'Tout effacer', cancel: 'Annuler', icon: 'cadenas' });
+    }).then(function (ok) {
+      if (!ok) return;
+      request('POST', 'tout-reinitialiser').then(function () {
+        GQ.toast('Tout a été remis à zéro.', 'info');
+        if (GQ.checkEpoch) GQ.checkEpoch();
+        load();
+      }, function () { GQ.toast('Impossible de joindre le serveur.', 'error'); });
+    });
+  };
 
   actions['suivi-reset'] = function (el) {
     var id = el.dataset.id;

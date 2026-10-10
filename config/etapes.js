@@ -30,12 +30,12 @@ window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.etapes = {
   1: {
-    etage: "La Verrière",
+    etage: "La Verrière, 4ᵉ étage",
     lieu: "Point de base",
     motSecret: "SAPIN",
     titre: "Check-in à La Verrière",
     histoire:
-      "Tout le monde est regroupé à La Verrière, le point de base. Le code secret vous sera donné par les organisateurs au top départ.",
+      "Point de base : La Verrière. Le code vous sera donné au top départ.",
   },
 
   2: {
@@ -44,7 +44,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "LUTIN",
     titre: "Cap sur l'étage 5",
     histoire:
-      "Accès autorisé : vous quittez La Verrière. Premier signal de Barnabé : le coin café du 5ᵉ étage, près du mur végétal. Il y a laissé traîner une info clé… Montez : le mot secret est affiché sur place.",
+      "Accès autorisé ! Premier signal de Barnabé : le coin café du 5ᵉ étage, près du mur végétal. Le mot secret est sur place.",
   },
 
   3: {
@@ -53,7 +53,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "GUIRLANDE",
     titre: "Cap sur l'étage 23",
     histoire:
-      "Coup de théâtre : Barnabé a repris la main et s'est aperçu que vous progressez ! Il faut faire diversion, vite. Le meilleur endroit pour lancer un faux live : l'espace matériaux du 23ᵉ étage.",
+      "Barnabé vous a repérés ! Lancez la diversion depuis l'espace matériaux du 23ᵉ étage.",
   },
 
   4: {
@@ -62,7 +62,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "ETOILE",
     titre: "Cap sur l'étage 20",
     histoire:
-      "ALERTE SYSTÈME : un badge inconnu a été scanné aujourd'hui dans la Tour, et le Support 44 n'a aucune info dessus. Descendez au 20ᵉ étage pour les aider à l'analyser !",
+      "Alerte : un badge inconnu a été scanné dans la Tour. Le Support 44 (20ᵉ étage) a besoin de vous.",
   },
 
   5: {
@@ -71,6 +71,6 @@ window.GAME_CONFIG.etapes = {
     motSecret: "CADEAU",
     titre: "Cap sur l'étage 33",
     histoire:
-      "Dernier bip du badge de Barnabé SIX-SEVEN : 33ᵉ étage. C'est là qu'il a sévi en dernier… et là que se cache le colis. Montez, vite !",
+      "Dernier bip du badge : 33ᵉ étage. Le colis est là-haut. Foncez !",
   },
 };

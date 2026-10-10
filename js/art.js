@@ -28,8 +28,9 @@
   function defs(keys) {
     return '<defs>' + keys.map(function (k) {
       var c = TONES[k];
-      return "<linearGradient id='" + k + "' x1='.15' y1='0' x2='.85' y2='1'>" +
-        "<stop offset='0' stop-color='" + c[0] + "'/><stop offset='.45' stop-color='" + c[1] + "'/><stop offset='1' stop-color='" + c[2] + "'/></linearGradient>";
+      // Aplat 2D : une seule couleur par forme.
+      return "<linearGradient id='" + k + "' x1='0' y1='0' x2='0' y2='1'>" +
+        "<stop offset='0' stop-color='" + c[1] + "'/><stop offset='1' stop-color='" + c[1] + "'/></linearGradient>";
     }).join('') +
       "<radialGradient id='gl' cx='.3' cy='.25' r='.6'><stop offset='0' stop-color='#fff' stop-opacity='.75'/><stop offset='1' stop-color='#fff' stop-opacity='0'/></radialGradient>" +
       '</defs>';
@@ -213,8 +214,15 @@
     var a = ART[name];
     if (!a) return null;
     if (!cache[name]) {
+      // Style 2D épuré : sans ombre portée ni reflets.
+      var body = a[1]
+        .replace(SHADOW, '')
+        .replace(/<(rect|ellipse|circle|path)[^>]*fill='#fff' opacity='[^']*'[^>]*\/>/g, '')
+        .replace(/<(rect|ellipse|circle|path)[^>]*stroke='#fff'[^>]*opacity='[^']*'[^>]*\/>/g, '')
+        .replace(/<circle[^>]*fill='url\(#gl\)'[^>]*\/>/g, '')
+        .replace(/Arial Black,Arial/g, 'Montserrat,Arial');
       cache[name] = 'data:image/svg+xml,' + encodeURIComponent(
-        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>" + defs(a[0]) + a[1] + '</svg>');
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>" + defs(a[0]) + body + '</svg>');
     }
     return cache[name];
   }

@@ -293,8 +293,9 @@
     // Jeu verrouillé tant que le code d'entrée (mot secret de la quête 1)
     // n'a pas été saisi : personne ne peut lancer la partie en avance.
     var action = GQ.gameLocked()
-      ? elfTalk('<p>' + t(EN.bulle) + '</p>') +
-        textAnswer({ form: 'gate', label: EN.label, button: EN.bouton, caps: true, max: 40, fieldCls: 'field-code', expected: [GQ.stage(1).motSecret], btnCls: 'btn-red' })
+      ? (EN.contexte ? '<section class="briefing"><p class="briefing-title">' + GQ.pix('gift', 'briefing-pix') + t(EN.contexteTitre || '') + '</p><p>' + t(EN.contexte) + '</p></section>' : '') +
+        textAnswer({ form: 'gate', label: EN.label, button: EN.bouton, caps: true, max: 40, fieldCls: 'field-code', expected: [GQ.stage(1).motSecret], btnCls: 'btn-red' }) +
+        '<p class="gate-hint">' + t(EN.bulle) + '</p>'
       : s.team
       ? '<p class="home-resume">' + t(A.partieEnCours, { equipe: s.team }) + '</p>' + btn(esc(A.boutonReprendre) + icon('fleche'), 'resume', '', 'btn-red')
       : btn(esc(A.bouton) + icon('fleche'), 'start', '', 'btn-red');
@@ -348,7 +349,9 @@
           miniHeader() +
           '<main class="screen screen-plain">' +
           '<div class="center-head">' + knitTitle(E.rolesTitre) + '</div>' +
-          elfTalk('<p class="elf-talk-big">' + t(E.rolesBulle, { equipe: s.team }) + '</p>') +
+          // Petite réaction de Barnabé sur le nom d'équipe (bulle animée).
+          '<div class="talk-pop">' + elfTalk('<span class="typing" aria-hidden="true"><i></i><i></i><i></i></span><div class="talk-text"><p class="elf-talk-big">' + t(E.rolesBulle, { equipe: s.team }) + '</p>' +
+            (E.rolesBulleSuite ? '<p>' + t(E.rolesBulleSuite) + '</p>' : '') + '</div>') + '</div>' +
           '<section class="roles-box">' +
           '<p class="roles-box-title">' + GQ.pix('bell', 'roles-box-pix') + t(E.rolesAlerteTitre) + '</p>' +
           '<p class="roles-box-lead">' + t(E.rolesAlerte) + '</p>' +

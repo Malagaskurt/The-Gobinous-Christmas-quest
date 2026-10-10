@@ -45,7 +45,10 @@ window.GAME_CONFIG.textes = {
    * (config/etapes.js, « SAPIN »), donné par les organisateurs au top
    * départ : personne ne peut lancer la partie en avance. */
   entree: {
-    bulle: "Pas si vite ! La chasse s'ouvre avec un code secret. Les organisateurs vous le donneront au top départ.",
+    /* Contexte narratif : affiché à l'entrée du jeu (pas sur l'accueil du site). */
+    contexteTitre: "Briefing",
+    contexte: "Bienvenue au Gobinous Christmas Club. Habituellement, c'est le moment où Barnabé gère les colis à **La Verrière** (située au 4ᵉ étage). Sauf qu'avec lui, ce gros troll a décidé d'en faire qu'à sa tête : un des colis a disparu. Comme le service client est aux abonnés absents, à vous de le retrouver dans la Tour Saint-Gobain. 30 minutes chrono, ruse et esprit d'équipe : que la Gobinous Christmas Quest commence !",
+    bulle: "Le code ? Les organisateurs le donnent au top départ.",
     label: "Code secret du jeu",
     bouton: "Entrer dans le jeu",
     erreur: "Ce n'est pas le bon code. Attendez le top départ des organisateurs !",
@@ -55,7 +58,7 @@ window.GAME_CONFIG.textes = {
    * hasard. Laissez "" pour qu'il reste silencieux. */
   lutin: {
     accueil: "Psst… Le colis ? Quel colis ? Hi hi !",
-    equipe: "Alors, qui ose me traquer ? Donnez-moi un nom d'équipe !",
+    equipe: "Un nom d'équipe, et que ça saute !",
     reussite: ["GG la team !", "Vous êtes des goats !", "Validé, c'est carré !"],
     echec: ["MDR, raté !", "Vous pouvez faire mieux, les gars !"],
     blocage: "Brrr… Tout est gelé !",
@@ -97,21 +100,22 @@ window.GAME_CONFIG.textes = {
 
     /* Les rôles : réaction du lutin, puis l'encadré d'avertissement. */
     rolesTitre: "Vos rôles",
-    rolesBulle: "**{equipe}** ? Bête de nom. Mais pour me traquer, il vous faut un chef et un reporter !",
+    rolesBulle: "Oh, pas mal du tout ce nom d'équipe… **{equipe}**.",
+    rolesBulleSuite: "Maintenant, un chef et un reporter.",
     rolesAlerteTitre: "Attention : choisissez vos rôles avec soin !",
     rolesAlerte:
-      "Pour mener votre équipe vers la victoire, chaque membre doit assumer son rôle à fond. Êtes-vous prêts à relever le défi ?",
+      "Chacun assume son rôle à fond.",
     roles: [
       {
         icone: "crown",
         nom: "Le Gobinous Capitaine",
-        texte: "C'est le leader incontesté de la team. C'est lui qui motive ses troupes, coordonne la stratégie et guide son équipe du début à la fin de l'événement.",
+        texte: "Le leader : il motive, coordonne et guide la team jusqu'au bout.",
       },
       {
         icone: "camera",
         nom: "Le Gobinous Reporter",
-        texte: "C'est le vidéaste de choc ! Son objectif : capturer un max de photos et de vidéos de l'événement en mode « vlogger YouTube » pour prouver que votre équipe est la meilleure.",
-        ou: "Où tout déposer ? Dans **Le Vlog des Gobinous** : depuis l'accueil, ouvrez le programme, la rubrique est juste en dessous des temps forts.",
+        texte: "Le vidéaste : un max de photos et vidéos, façon vlog.",
+        ou: "Tout se dépose dans **Le Vlog des Gobinous** (programme, sous les temps forts).",
       },
     ],
     rolesNote: "",
@@ -129,15 +133,15 @@ window.GAME_CONFIG.textes = {
   plateau: {
     titre: "La map",
     description: "La map de la quête : de La Verrière jusqu'au sommet de la Tour Saint-Gobain, en 5 étapes.",
-    intro: "Votre terrain de jeu : la Tour Saint-Gobain. Point de base : **La Verrière**. Suivez la map, étape par étape.",
+    intro: "Point de base : **La Verrière**. Suivez la map, étape par étape.",
     depart: "BASE",
     /* Une étiquette courte par étape, affichée sur la map. */
     etapes: ["Check-in", "Cheat Code", "Fake Stream", "ID Check", "Ultimate Signal"],
     /* Légende de la map : 3 repères. */
     regles: [
-      { icone: "pin", texte: "À chaque étage, le **mot secret** affiché sur place débloque l'étape." },
-      { icone: "flake", texte: "Plus de **2 erreurs** d'affilée : **gel du système** ({gel})." },
-      { icone: "star", texte: "**1 joker** par équipe, à garder pour un vrai blocage." },
+      { icone: "pin", texte: "Un **mot secret** par étage pour débloquer l'étape." },
+      { icone: "flake", texte: "Plus de **2 erreurs** : gel du système." },
+      { icone: "star", texte: "**1 joker** de secours par équipe." },
     ],
     detail: "Toutes les règles",
   },
@@ -149,13 +153,13 @@ window.GAME_CONFIG.textes = {
    * {chrono} est remplacé par la durée du chrono (config/parametres.js). */
   regles: {
     titre: "Les règles",
-    intro: "Un colis a disparu des radars : retrouvez-le dans la Tour Saint-Gobain avant que Barnabé ne s'en aperçoive.",
+    intro: "",
     liste: [
-      { icone: "clock", titre: "{chrono} chrono", texte: "Pas une de plus pour retrouver le colis, sous peine de devoir traiter avec le service client de Barnabé." },
-      { icone: "star", titre: "Le Joker Unique", texte: "Un bonus de secours par équipe, à activer stratégiquement en cas de blocage total." },
-      { icone: "flake", titre: "Le Gel du Système", texte: "Plus de deux erreurs consécutives dans les quêtes et Barnabé bloque temporairement vos accès ({gel})." },
-      { icone: "crown", titre: "Esprit d'équipe", texte: "Chacun trouve sa place et tout le monde avance ensemble pour mener la team vers la victoire." },
-      { icone: "check", titre: "Fair-play absolu", texte: "Zéro triche et une bonne foi irréprochable pour sauver cet événement avec panache." },
+      { icone: "clock", titre: "{chrono} chrono", texte: "Pas une de plus pour retrouver le colis." },
+      { icone: "star", titre: "Joker unique", texte: "Un seul bonus de secours par équipe." },
+      { icone: "flake", titre: "Gel du système", texte: "Plus de 2 erreurs d'affilée : accès bloqués ({gel})." },
+      { icone: "crown", titre: "Esprit d'équipe", texte: "Tout le monde avance ensemble." },
+      { icone: "check", titre: "Fair-play", texte: "Zéro triche, bonne foi absolue." },
     ],
     objectif: "",
     bouton: "C'est parti !",

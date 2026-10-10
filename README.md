@@ -69,7 +69,11 @@ Les équipes de 5 à 10 personnes jouent avec un seul téléphone. Elles résolv
 
 Composants tiers inclus : les polices **Montserrat** (remplaçante libre de Gotham) et **VT323** (police « informatique »), sous SIL Open Font License.
 
-### Direction artistique : « Nuit de Noël tricotée »
+### Direction artistique : « 2D gaming épuré »
+
+Aplats francs, ombres nettes décalées (sans flou ni reflets), deux polices seulement (Montserrat partout, VT323 pour les écrans de terminal), rouge réservé aux actions, décor de Noël discret. La map de la quête montre la Tour Saint-Gobain avec La Verrière (point de base, au 4ᵉ étage) à l'intérieur, et les 5 étapes réparties le long de la Tour, **sans aucun numéro d'étage**. Le contexte narratif s'affiche à l'entrée du jeu, pas sur l'accueil du site.
+
+### Ancienne direction artistique : « Nuit de Noël tricotée »
 
 Une seule direction artistique, de l'écran de chargement jusqu'à la fin :
 
@@ -304,6 +308,8 @@ Accès : `#/suivi`, le bouton « Suivi des équipes » du mode test, ou 5 appuis
 **Avancement** : chaque téléphone envoie sa progression toutes les 10 secondes et à chaque action. Pour chaque équipe : quête et étape en cours (« Enquête : module 3/4 », « En route vers : 23ᵉ étage »…), temps de jeu, étages atteints, photos, joker, thèmes ratés, et les états **Terminée**, **Gelée**, **Sans nouvelles depuis…**, **Mode test**. Actualisation toutes les 4 secondes.
 
 **Actions** : **Réinitialiser** (efface la partie sur le téléphone de l'équipe à sa prochaine connexion ; elle revient à l'accueil) et **Retirer de la liste**.
+
+**Tout réinitialiser** (en bas de l'onglet Quest, double confirmation) : efface **tout** sur le serveur (équipes, photos, défis et Gobz de la Party, avis, tirage du Secret Santa, Vlog) et change l'« époque » des données. Chaque téléphone le détecte en moins de 30 secondes (ou à sa prochaine ouverture) : il efface tout ce qu'il avait gardé (partie, Party, avis, Vlog, photos en attente) et repart de l'accueil. Seuls la préférence du son et le code du tableau de bord sont conservés. Le bouton « Réinitialiser la partie » du mode test efface lui aussi toutes les données locales du téléphone.
 
 **Photos du défi photo** : vignettes par équipe (touchez pour ouvrir en grand) et bouton **« Télécharger toutes les photos (ZIP) »**, classées dans un dossier par équipe. Les photos sont stockées sur le serveur dans `data/photos/` (non versionné) et ne sont pas effacées quand une équipe est réinitialisée ou retirée.
 
