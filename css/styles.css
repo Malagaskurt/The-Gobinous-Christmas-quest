@@ -1259,3 +1259,30 @@ body.theme-party .help-link .icon { color: #00ade1; }
 .kpi-bar i { display: block; height: 100%; background: var(--blue); }
 .kpi-val { color: #5d6a85; white-space: nowrap; }
 .kpi-quotes { margin: 6px 0 0; padding-left: 1rem; display: grid; gap: 6px; font-size: 0.9rem; }
+
+/* Appareil photo : onglets Photo / Vidéo et enregistrement */
+.cam-modes { justify-self: start; display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(0, 0, 0, 0.45); }
+.cam-modes button { padding: 7px 12px; border: 0; border-radius: 999px; cursor: pointer; background: none; color: #fff; font: 400 1.1rem/1 var(--font-pixel); letter-spacing: 0.06em; text-transform: uppercase; }
+.cam-modes button.is-on { background: #fff; color: var(--night); }
+.cam.is-video .cam-shutter span { background: var(--red); }
+.cam.is-recording .cam-shutter span { transform: scale(0.5); border-radius: 6px; }
+.cam.is-recording .cam-modes { visibility: hidden; }
+.cam-rec { position: relative; z-index: 1; align-self: center; margin: 12px 0 0; padding: 6px 12px; border-radius: 999px; background: var(--red); color: #fff; font: 400 1.3rem/1 var(--font-pixel); letter-spacing: 0.06em; }
+.cam-rec:empty { display: none; }
+
+/* Quête 5 : indices du rapport, à toucher pour les analyser */
+.clues { list-style: none; margin: 4px 0 12px; padding: 0; display: grid; gap: 10px; }
+.clue {
+  width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 12px 14px; border: 0; border-radius: 10px; cursor: pointer;
+  text-align: left; font: inherit; color: #d7f5ff; background: rgba(0, 173, 225, 0.1); box-shadow: inset 0 0 0 1.5px rgba(0, 173, 225, 0.45);
+}
+.clue.is-open { background: rgba(0, 173, 225, 0.18); box-shadow: inset 0 0 0 2px var(--cyan); cursor: default; }
+.clue-title { display: flex; align-items: center; gap: 8px; font: 400 1.25rem/1 var(--font-pixel); letter-spacing: 0.06em; text-transform: uppercase; color: var(--cyan); }
+.clue-pix { width: 18px; }
+.clue-front { font-size: 0.95rem; line-height: 1.5; color: #fff; }
+.clue-hint { font: 400 1.05rem/1 var(--font-pixel); letter-spacing: 0.05em; text-transform: uppercase; color: #7fd8f5; animation: blink 1.6s steps(1) infinite; }
+.clue-back { display: flex; gap: 6px; align-items: flex-start; padding-top: 6px; border-top: 1px dashed rgba(0, 173, 225, 0.5); width: 100%; font-size: 0.92rem; line-height: 1.5; color: var(--cyan-light); animation: fade-up 0.3s ease-out; }
+.clue-back .icon { flex: none; width: 1em; height: 1em; margin-top: 0.25em; }
+/* Appel : la réplique en cours, en grand */
+.call-text { margin: 0; font-size: 1.08rem; line-height: 1.5; text-align: center; color: #fff; min-height: 4.5em; }
+.call-text.is-new { animation: fade-up 0.25s ease-out; }

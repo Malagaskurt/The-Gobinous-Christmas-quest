@@ -227,7 +227,7 @@ await step('Bouton « Règles » explicite et bouton du son dans l\'en-tête, mu
   assert((await page.locator('.topbar .sound-btn').getAttribute('aria-pressed')) === 'false', 'le son ne se coupe pas');
   await page.locator('.topbar .sound-btn').click();
   await settle();
-  for (const f of ['musique-noel-1.mp3', 'musique-noel-2.mp3', 'musique-japon.mp3', 'barnabe-appel.mp3', 'barnabe-video-1.mp3']) {
+  for (const f of ['musique-noel-1.mp3', 'musique-noel-2.mp3', 'musique-japon.mp3', 'barnabe-appel.mp3', 'barnabe-video.mp3']) {
     const r = await fetch(BASE + 'assets/audio/' + f);
     assert(r.ok && r.headers.get('content-type') === 'audio/mpeg', `musique absente : ${f}`);
   }
@@ -506,12 +506,16 @@ await step('Mot secret CADEAU → transmission à usage unique, jamais « salle 
   await page.evaluate(() => { const v = document.querySelector('.cctv-video'); v.currentTime = v.duration - 0.5; });
   await page.waitForFunction(() => window.GQ.state.phase[5] === 'report', null, { timeout: 8000 });
   await settle();
-  assert(await has('UTC+9'), 'rapport absent après la vidéo');
+  assert(await has('Le décalage horaire') && await has('Touchez pour analyser'), 'rapport absent après la vidéo');
   // Vidéo interrompue (rechargement pendant la lecture) : autodétruite.
   await page.evaluate(() => { window.GQ.setPhase(5, 'video'); window.GQ.render(); });
   assert(await has('autodétruite'), 'la vidéo peut être revue');
   await clickText('Continuer');
-  assert(await has('UTC+9'), 'rapport absent');
+  assert(await has('Rapport d\'analyse'), 'rapport absent');
+  // Indices interactifs : un appui révèle l'analyse.
+  assert(!(await has('Edo')), 'analyse affichée trop tôt');
+  for (let i = 0; i < 4; i++) await page.click(`[data-action="clue"][data-i="${i}"]`);
+  assert(await has('Soleil-Levant') && await has('Edo') && await has('634 m'), 'analyse des indices absente');
   assert(!(await forbidden()), '« salle » ou « porte » affiché trop tôt');
 });
 
@@ -528,10 +532,17 @@ await step('Code du repaire : 1 seul essai, gel, puis nouvel essai → TOKYO', a
 
 await step('Appel de Barnabé puis écran de fin, conservé au rechargement', async () => {
   await page.click('[data-action="call"]');
-  await page.waitForTimeout(600);
-  assert(await has('Barnabé SIX-SEVEN') && await has('Tchao'), 'message vocal absent');
+  // Sous-titres synchronisés sur la voix (fichier fourni) après la sonnerie.
+  await page.waitForFunction(() => { const el = document.querySelector('[data-call-line]'); return el && el.textContent.length > 10; }, null, { timeout: 10000 });
+  assert(await has('Barnabé SIX-SEVEN') && await has('MDR'), 'message vocal absent');
+  await page.evaluate(() => {
+    window.__sfx = [];
+    const f = window.GQ.audio.sfx;
+    window.GQ.audio.sfx = (n) => { window.__sfx.push(n); return f(n); };
+  });
   await page.click('[data-action="hang-up"]');
   await settle();
+  assert((await page.evaluate(() => window.__sfx)).includes('hangup'), 'pas de son de fin d\'appel');
   // Dans la salle : photo de groupe avec le paquet choisi.
   assert(await has('Le paquet mystère') && await has('un seul paquet'), 'étape du paquet absente');
   await page.click('[data-action="paquet-take"]');
@@ -619,7 +630,8 @@ await step('Party : code 2020 obligatoire, nom, 20 défis avec appareil photo, v
   assert((await page.locator('.defi').count()) === 20, 'les 20 défis ne sont pas affichés');
   assert(await has('Treats & Chill') || await has('Treats &amp; Chill'), 'titre de la liste absent');
   await page.click('[data-action="defi-open"][data-n="12"]');
-  assert((await page.locator('.modal input[type=file][accept="video/*"][capture]').count()) === 1, 'caméra vidéo non proposée');
+  assert((await page.locator('.modal [data-action="defi-camera"][data-mode="video"]').count()) === 1, 'caméra vidéo non proposée');
+  assert((await page.locator('.modal [data-action="defi-camera"][data-mode="photo"]').count()) === 1, 'appareil photo non proposé');
   assert((await page.locator('.modal input[type=file][accept="image/*,video/*"]').count()) === 1, 'galerie non proposée');
   await page.click('[data-modal-cancel]');
 });
@@ -636,18 +648,30 @@ await step('Party : défi validé par photo → Gobz comptés par le serveur, cl
   const r = await (await fetch(BASE + 'api/party/classement')).json();
   const me = r.joueurs.find((x) => x.nom === 'Les Givrés');
   assert(me && me.points === pts, `points serveur inattendus : ${me && me.points}`);
+  // Vidéo filmée dans l'appareil du jeu (onglet Vidéo, avec le son).
+  await page.click('[data-action="defi-open"][data-n="12"]');
+  await page.click('.modal [data-action="defi-camera"][data-mode="video"]');
+  await page.waitForFunction(() => { const v = document.querySelector('.cam video'); return v && v.videoWidth > 0; });
+  assert(await page.locator('.cam.is-video').count() === 1, 'mode vidéo non actif');
+  await page.click('.cam-shutter');
+  await page.waitForTimeout(1300);
+  await page.click('.cam-shutter');
+  await page.waitForSelector('.proof video');
+  await page.click('[data-action="defi-send"]');
+  await page.waitForFunction(() => document.querySelectorAll('.defi.is-done').length === 2);
   // Galerie : une vidéo envoyée depuis un fichier.
   await page.click('[data-action="defi-open"][data-n="8"]');
   await page.setInputFiles('.modal input[accept="image/*,video/*"]', { name: 'declaration.webm', mimeType: 'video/webm', buffer: Buffer.from('1a45dfa3', 'hex') });
   await page.waitForSelector('[data-action="defi-send"]');
   await page.click('[data-action="defi-send"]');
-  await page.waitForFunction(() => document.querySelectorAll('.defi.is-done').length === 2);
+  await page.waitForFunction(() => document.querySelectorAll('.defi.is-done').length === 3);
   const r2 = await (await fetch(BASE + 'api/party/classement')).json();
   const me2 = r2.joueurs.find((x) => x.nom === 'Les Givrés');
-  assert(me2.points === pts + CFG.party.defis[7].points, 'vidéo non comptée');
+  assert(me2.points === pts + CFG.party.defis[7].points + CFG.party.defis[11].points, `vidéos non comptées : ${me2.points}`);
   await page.waitForSelector('.ranking li.is-me');
   const d = await api('party');
-  assert(d.joueurs[0].preuves.length === 2, 'preuves absentes côté organisateurs');
+  assert(d.joueurs[0].preuves.length === 3, 'preuves absentes côté organisateurs');
+  assert(d.joueurs[0].preuves.some((p) => p.defi === 12 && /^video\//.test(p.type)), 'vidéo filmée absente côté organisateurs');
   await noHorizontalScroll();
 });
 

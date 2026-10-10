@@ -19,7 +19,7 @@ Textes : `config/club.js` (accueil, programme, Battle, Gift), `config/party.js` 
 
 - Code secret demandé à l'entrée (donné par les organisateurs au bon moment), puis prénom ou nom d'équipe : on joue en solo ou à plusieurs.
 - Le lutin présente le goûter et la déco du sapin Gobinous (polaroïds, kit déco, petits mots), puis la bucket list.
-- Chaque défi s'ouvre sur trois choix : **prendre une photo** (appareil photo intégré), **filmer une vidéo** (caméra du téléphone), **choisir dans la galerie**. Aperçu, puis « Valider (+N Gobz) » : la preuve part au serveur avec une barre de progression (vidéos jusqu'à 80 Mo).
+- Chaque défi s'ouvre sur trois choix : **prendre une photo** ou **filmer une vidéo** (appareil intégré avec onglets Photo / Vidéo, son compris, 60 s maximum), ou **choisir dans la galerie** (photo ou vidéo). Aperçu, puis « Valider (+N Gobz) » : la preuve part au serveur avec une barre de progression (vidéos jusqu'à 80 Mo).
 - Les **Gobz** sont comptés par le serveur d'après `config/party.js` ; le total, le rang et le classement (top 10) se mettent à jour en direct, sans chrono.
 - Côté organisateurs (`#/suivi/party`) : classement, toutes les preuves (photos et vidéos), retrait d'un défi ou d'un joueur, export ZIP.
 
@@ -150,11 +150,12 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 
 ### Quête 5 : Opération Hotte (traque finale)
 
-- **Vidéo à lecture unique** : un petit film animé en pixel art (`assets/video/barnabe.mp4`, et `.webm` en secours), filmé par une « caméra de surveillance » : Barnabé ricane près du sac, montre son mug « +8H » et un cerisier en fleurs, désigne la tour de 634 m sur son écran, salue et s'enfuit. Voix et musique japonaise sont incluses dans la vidéo, les sous-titres s'affichent en dessous (`traque.sousTitres`, minutage `de`/`a`). La vidéo est marquée vue dès son lancement ; recharger la page affiche « Transmission autodétruite ». À la fin, le rapport s'affiche tout seul ; si la lecture coince, un bouton « Voir le rapport » apparaît : le jeu ne peut plus rester bloqué. Pour la refaire après un changement de texte : `python3 tools/generer-voix-piper.py …` puis `python3 tools/generer-video.py` (qui affiche le nouveau minutage des sous-titres).
+- **Vidéo à lecture unique** : un petit film animé en pixel art (`assets/video/barnabe.mp4`, et `.webm` en secours) sur la **voix ElevenLabs fournie** (`traque.videoVoix`, `assets/audio/barnabe-video.mp3`) : Barnabé, de nuit devant un panorama de gratte-ciels, salue (« GG ») ; son réveil affiche presque minuit et « +7H » ; la caméra zoome sur son écran et la tour de plus de 600 m ; il lance « MATANÉ ! » et s'enfuit. Musique japonaise discrète en fond, sous-titres synchronisés (`traque.sousTitres`, champ `scene` pour le décor). Lecture unique : recharger la page affiche « Transmission autodétruite ». À la fin, le rapport s'affiche tout seul ; si la lecture coince, un bouton « Voir le rapport » apparaît. Pour refaire la vidéo après un changement de voix ou de sous-titres : `python3 tools/generer-video.py`.
+- **Rapport d'analyse** : 4 indices à toucher pour révéler leur analyse (décalage horaire de 7 h, tour géante, « matané », histoire locale/Edo), puis le code du repaire : **TOKYO** (un seul essai, gel de 45 s en cas d'erreur).
 - **Code du repaire** : un seul essai. Erreur : **gel de 45 secondes**, puis nouvel essai.
 - **Règle d'or** : aucun texte affiché avant TOKYO ne contient « salle » ni « porte ». `npm run check` le vérifie.
 - **TOKYO** : Barnabé démasqué (animation et bulle), puis gros bouton clignotant « Appeler Barnabé ».
-- **Faux appel** : sonnerie, puis message vocal de Barnabé (`traque.audio`), sous-titres à l'écran.
+- **Faux appel** : sonnerie, puis message vocal de Barnabé (voix ElevenLabs fournie, `traque.audio`) avec sous-titres synchronisés (`traque.messageVocalSousTitres`). « Raccrocher » joue le « tu-tu-tu » de fin d'appel.
 - **Le paquet mystère** : après « Raccrocher », l'équipe entre dans la salle, choisit un seul paquet et se prend en photo avec lui (photo envoyée aux organisateurs, visible dans la galerie du tableau de bord). Puis écran de fin : le chrono s'arrête.
 - **Écran de fin** : redescendre au point de départ avec le paquet, toujours fermé.
 
@@ -162,7 +163,9 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 
 Les répliques de Barnabé sont des fichiers MP3 dans `assets/audio/` : `barnabe-video-1.mp3` à `barnabe-video-4.mp3` (vidéo) et `barnabe-appel.mp3` (appel). Les voix passent par Web Audio : une fois le son débloqué par un premier appui, elles fonctionnent aussi sur iPhone (même en mode silencieux sur iOS récent). Le texte prononcé est le champ `voix` (et `messageVocalVoix`) de `config/quetes.js`, écrit pour être bien lu à voix haute (« Six Sévène », « quarante-quatre »…).
 
-**Voix fournie** : générée hors ligne avec le moteur libre [Piper](https://github.com/rhasspy/piper) et la voix masculine française « gilles » (enregistrements CC0, moteur MIT : libre de droits). Débit volontairement posé, voix légèrement rajeunie, volume harmonisé. Pour la régénérer après une modification du texte :
+**Voix de la vidéo et de l'appel** : fichiers ElevenLabs fournis par l'organisation. Le script Piper ci-dessous ne les écrase jamais (sauf `ECRASER=1`).
+
+**Ancienne voix de synthèse** : générée hors ligne avec le moteur libre [Piper](https://github.com/rhasspy/piper) et la voix masculine française « gilles » (enregistrements CC0, moteur MIT : libre de droits). Débit volontairement posé, voix légèrement rajeunie, volume harmonisé. Pour la régénérer après une modification du texte :
 
 ```bash
 pip install piper-tts

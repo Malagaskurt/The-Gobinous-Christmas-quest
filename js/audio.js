@@ -169,6 +169,13 @@
       for (var i = 0; i < 7; i++) tone(c, out, 2600 - i * 230, t + i * 0.05, 0.35, 'sine', 0.06);
       tone(c, out, 880, t, 0.8, 'triangle', 0.05, 440);
     },
+    // Fin d'appel : « tu-tu-tu », comme sur un téléphone.
+    hangup: function (c, out, t) {
+      for (var i = 0; i < 3; i++) {
+        tone(c, out, 425, t + i * 0.32, 0.18, 'sine', 0.3);
+        tone(c, out, 850, t + i * 0.32, 0.18, 'sine', 0.04);
+      }
+    },
     // Déverrouillage : mot secret accepté.
     unlock: function (c, out, t) {
       tone(c, out, 523, t, 0.12, 'triangle', 0.12, 784);
@@ -228,7 +235,7 @@
   /* Lit un fichier de voix. Résolue à la fin (ou au plus tard à la durée
    * du fichier + 1,5 s) ; rejetée si le fichier est illisible ou si le son
    * n'est pas disponible. Son coupé : résolue tout de suite. */
-  function playVoice(url) {
+  function playVoice(url, onStart) {
     if (!String(url || '').trim()) return Promise.reject(new Error('aucun fichier'));
     if (!enabled) return Promise.resolve();
     return load(url).then(function (buf) {
@@ -267,6 +274,7 @@
         ducked = true;
         apply();
         src.start(0);
+        if (onStart) onStart();
       });
     });
   }

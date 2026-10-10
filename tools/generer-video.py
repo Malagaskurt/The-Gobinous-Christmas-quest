@@ -6,16 +6,14 @@
 
 Un vrai petit film en pixel art, dans la DA du jeu, filmé par une « caméra
 de surveillance » du 33ᵉ étage :
-  1. Barnabé ricane à côté de son gros sac (le Cadeau Officiel) ;
-  2. il montre son mug « +8H » et une branche de cerisier en fleurs ;
-  3. il désigne son écran : une tour de télécom de 634 m, toute vitrée ;
-  4. il salue… et file avec le sac. Signal perdu.
-La bouche de Barnabé bouge au rythme de sa voix. Les voix (fichiers
-barnabe-video-1…4.mp3) et la musique japonaise sont mixées dans la vidéo.
-
-Le minutage de chaque réplique est affiché à la fin : reportez-le dans
-config/quetes.js → traque.sousTitres (champs `de` et `a`) pour que les
-sous-titres du jeu restent synchronisés.
+  1. de nuit, devant un panorama de gratte-ciels, Barnabé salue (« GG ») ;
+  2. son réveil affiche presque minuit, « +7H » : il bâille, la lune brille ;
+  3. la caméra zoome sur son écran : une tour immense de plus de 600 m ;
+  4. il salue (« MATANÉ ! »)… et file avec le sac. Signal perdu.
+La bouche de Barnabé bouge au rythme de sa voix. La voix (traque.videoVoix,
+fichier ElevenLabs fourni) et une musique japonaise discrète sont mixées dans
+la vidéo. Les décors suivent les sous-titres de config/quetes.js
+(traque.sousTitres, champ `scene`), décalés de 0,6 s (début de la voix).
 
 Tout est dessiné ici (aucune image externe) : la vidéo est libre de droits.
 Prérequis : Python 3 avec numpy, Node.js (lecture de la configuration) et
@@ -64,7 +62,7 @@ def config():
     js = (
         "global.window={};require(process.argv[1]);"
         "const r=window.GAME_CONFIG.quetes.traque;"
-        "console.log(JSON.stringify({subs:r.sousTitres}));"
+        "console.log(JSON.stringify({subs:r.sousTitres,voix:r.videoVoix}));"
     )
     out = subprocess.run(["node", "-e", js, os.path.join(ROOT, "config", "quetes.js")], capture_output=True, text=True, check=True)
     return json.loads(out.stdout)
@@ -307,7 +305,7 @@ def hud(img, t, frame):
     text(img, "REC", 10, 3, "w")
     label = "CAM 33-07"
     text(img, label, W - 3 - text_width(label), 3, "C")
-    secs = 23 * 3600 + 59 * 60 + 12 + int(t)
+    secs = 23 * 3600 + 48 * 60 + 12 + int(t)
     stamp = f"{secs // 3600 % 24:02d}:{secs // 60 % 60:02d}:{secs % 60:02d}"
     rect(img, 0, H - 11, W, 11, "K")
     text(img, stamp, 3, H - 9, "C")
@@ -318,54 +316,65 @@ def hud(img, t, frame):
 # Accessoires des scènes
 # ---------------------------------------------------------------------------
 
-def mug(img, x, y, t):
-    rect(img, x, y, 26, 24, "w")
-    rect(img, x, y, 26, 2, "W")
-    rect(img, x + 26, y + 5, 4, 2, "w")
-    rect(img, x + 28, y + 5, 2, 12, "w")
-    rect(img, x + 26, y + 15, 4, 2, "w")
-    rect(img, x + 2, y + 20, 22, 2, "r")
-    blink = int(t * 2) % 2 == 0
-    text(img, "+8H", x + 2, y + 7, "r" if blink else "R")
-    for i in range(3):  # vapeur
-        sy = y - 4 - ((t * 6 + i * 3) % 9)
-        rect(img, x + 6 + i * 6 + int(math.sin(t * 3 + i) * 1.5), int(sy), 1, 2, "C")
+def clock(img, x, y, t):
+    """Réveil sur le bureau : il est presque minuit chez Barnabé (+7 h)."""
+    rect(img, x, y, 50, 30, "k")
+    rect(img, x + 2, y + 2, 46, 26, (6, 16, 40))
+    rect(img, x + 6, y + 30, 6, 3, "k")
+    rect(img, x + 38, y + 30, 6, 3, "k")
+    mins = 47 + int(t / 8) % 3
+    sep = ":" if int(t * 2) % 2 == 0 else " "
+    text(img, f"23{sep}{mins:02d}", x + 7, y + 5, "r")
+    text(img, "+7H", x + 15, y + 17, "C")
+    # lune et « z z z » de fatigue
+    blit(img, [".www.", "wwww.", "www..", "wwww.", ".www."], x + 52, y - 18, 2)
+    for i in range(3):
+        k = (t * 1.2 + i * 0.6) % 2.4
+        if k < 1.8:
+            text(img, "Z", x - 4 + i * 6, int(y - 14 - k * 8 - i * 6), "C")
 
 
-def blossom(img, x, y, t):
-    rect(img, x + 4, y + 18, 10, 12, "c")  # vase
-    rect(img, x + 4, y + 18, 10, 2, "C")
-    branch = [(8, 17), (8, 15), (7, 13), (7, 11), (6, 9), (9, 12), (11, 10), (12, 8), (5, 7), (4, 5)]
-    for bx, by in branch:
-        rect(img, x + bx, y + by, 1, 2, "o")
-    for fx, fy in [(4, 4), (6, 8), (11, 7), (13, 9), (8, 10), (3, 6), (10, 12), (6, 12)]:
-        rect(img, x + fx - 1, y + fy - 1, 3, 3, "p")
-        rect(img, x + fx, y + fy, 1, 1, "P")
-    for i in range(6):  # pétales qui tombent
-        py = y + 10 + ((t * 8 + i * 7) % 40)
-        px = x + 2 + i * 3 + math.sin(t * 2 + i) * 3
-        if py < 132:
-            rect(img, int(px), int(py), 1, 1, "p")
-
-
-def monitor(img, x, y, t):
-    rect(img, x, y, 46, 34, "k")
-    rect(img, x + 2, y + 2, 42, 30, (6, 16, 40))
-    rect(img, x + 20, y + 34, 6, 6, "k")
-    rect(img, x + 14, y + 40, 18, 2, "k")
-    # la tour : fine, tout en verre (reflets qui défilent)
-    cx = x + 14
-    rect(img, cx - 1, y + 4, 2, 4, "C")
-    for yy in range(y + 8, y + 30):
-        half = 1 + (yy - y - 8) // 7
+def big_screen(img, x, y, t):
+    """Écran d'ordinateur : panorama de gratte-ciels de nuit et une tour
+    immense (plus de 600 m), toute vitrée, avec son feu rouge clignotant."""
+    w, h = 62, 48
+    rect(img, x, y, w, h, "k")
+    rect(img, x + 2, y + 2, w - 4, h - 4, (4, 10, 30))
+    base = y + h - 3
+    k = 0
+    for bx in range(x + 3, x + w - 4, 5):  # gratte-ciels
+        bh = 8 + (bx * 7 % 13)
+        rect(img, bx, base - bh, 4, bh, (14, 34, 78))
+        for wy in range(base - bh + 2, base - 1, 3):
+            if (bx + wy + k) % 3:
+                rect(img, bx + 1, wy, 1, 1, "C" if (bx + wy) % 4 else "W")
+        k += 1
+    cx = x + w // 2
+    top = y + 5
+    for yy in range(top + 6, base):  # la tour : fine, élancée, deux plateformes
+        half = 1 + (yy - top) // 12
         for xx in range(cx - half, cx + half + 1):
-            shine = (xx + yy + int(t * 10)) % 9 == 0
+            shine = (xx + yy + int(t * 12)) % 8 == 0
             rect(img, xx, yy, 1, 1, "W" if shine else ("c" if (xx + yy) % 2 else "C"))
-    rect(img, cx - 4, y + 14, 9, 2, "C")
-    rect(img, cx - 5, y + 20, 11, 1, "C")
-    text(img, "634", x + 22, y + 6, "W")
-    text(img, "M", x + 34, y + 16, "W")
-    rect(img, x + 22, y + 26, 20 if int(t * 3) % 2 else 12, 2, "c")
+    rect(img, cx, top, 1, 6, "C")
+    if int(t * 2) % 2 == 0:
+        rect(img, cx, top - 1, 1, 1, "r")
+    rect(img, cx - 4, top + 15, 9, 2, "W")
+    rect(img, cx - 5, top + 24, 11, 2, "W")
+    text(img, "600", x + 4, y + 4, "W")
+    text(img, "M+", x + 4, y + 13, "W")
+    rect(img, x + w // 2 - 4, y + h, 8, 5, "k")
+    rect(img, x + w // 2 - 10, y + h + 5, 20, 2, "k")
+
+
+def bubble(img, x, y, label):
+    """Bulle de BD avec un mot en lettres pixel."""
+    wpx = text_width(label) + 7
+    rect(img, x, y, wpx, 13, "k")
+    rect(img, x + 1, y + 1, wpx - 2, 11, "w")
+    rect(img, x + 4, y + 13, 4, 2, "k")
+    rect(img, x + 5, y + 12, 2, 2, "w")
+    text(img, label, x + 4, y + 3, "r")
 
 
 def static(img, amount=1.0):
@@ -401,29 +410,22 @@ def envelope(sig):
 # ---------------------------------------------------------------------------
 
 def main():
-    subs = config()["subs"]
-    voices = [decode(os.path.join(ROOT, s["audio"])) for s in subs]
-    lead = 0.8
-    gap = 0.9
-    starts, ends = [], []
-    t = lead
-    for v in voices:
-        starts.append(t)
-        ends.append(t + len(v) / SR)
-        t = ends[-1] + gap
-    escape = 2.2  # Barnabé file avec le sac
-    total = t - gap + escape + 1.2
+    cfg = config()
+    subs = cfg["subs"]
+    voice = decode(os.path.join(ROOT, cfg["voix"]))
+    lead = 0.6
+    end_voice = lead + len(voice) / SR
+    total = end_voice + 1.8
     n_frames = int(total * FPS)
 
-    # piste son : voix + musique japonaise discrète
+    # piste son : voix fournie + musique japonaise discrète
     mix = np.zeros(int(total * SR) + SR)
+    i = int(lead * SR)
+    mix[i:i + len(voice)] += voice
     env = np.zeros(n_frames + FPS)
-    for st, v in zip(starts, voices):
-        i = int(st * SR)
-        mix[i:i + len(v)] += v
-        e = envelope(v)
-        f0 = int(st * FPS)
-        env[f0:f0 + len(e)] = e[: len(env) - f0]
+    e = envelope(voice)
+    f0 = int(lead * FPS)
+    env[f0:f0 + len(e)] = e[: len(env) - f0]
     music = decode(os.path.join(ROOT, "assets", "audio", "musique-japon.mp3"))
     music = np.tile(music, int(math.ceil(len(mix) / len(music))))[: len(mix)]
     fade = np.ones(len(mix))
@@ -432,7 +434,7 @@ def main():
     end_i = int((total - 0.4) * SR)
     fade[end_i - k:end_i] = np.linspace(1, 0, k)
     fade[end_i:] = 0
-    mix += music * 0.16 * fade
+    mix += music * 0.12 * fade
     mix = mix / (np.max(np.abs(mix)) or 1) * 0.9
 
     tmp = tempfile.mkdtemp()
@@ -442,6 +444,15 @@ def main():
         w.setsampwidth(2)
         w.setframerate(SR)
         w.writeframes((np.clip(mix, -1, 1) * 32767).astype(np.int16).tobytes())
+
+    # début de chaque décor (scènes 2, 3, 4) d'après les sous-titres
+    cuts = []
+    for n in (2, 3, 4):
+        firsts = [x["de"] for x in subs if x.get("scene") == n]
+        cuts.append(min(firsts) if firsts else total)
+    last = subs[-1]
+    matane = last["de"]
+    leave = end_voice + 0.1
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     ff = subprocess.Popen(
@@ -459,8 +470,6 @@ def main():
     vig = 1 - 0.28 * (((xx / (W * SCALE) - 0.5) ** 2 + (yy / (H * SCALE) - 0.5) ** 2) * 2.2)
     shade = (scan * vig[..., None]).astype(np.float32)
 
-    cuts = [starts[1] - gap / 2, starts[2] - gap / 2, starts[3] - gap / 2]
-    leave = ends[3] + 0.4
     img = np.zeros((H, W, 3), dtype=np.uint8)
     for f in range(n_frames):
         t = f / FPS
@@ -468,36 +477,48 @@ def main():
         talk = env[f] if f < len(env) else 0
         mouth = 2 if talk > 0.55 else 1 if talk > 0.18 else 0
         blink = (f % 40) in (0, 1)
-        bounce = -1 if (scene == 0 and talk > 0.3 and f % 4 < 2) else 0
-        room(img, t, desk=scene in (1, 2))
         y = 54  # Barnabé (×3) : pieds sur le sol
+        room(img, t, desk=scene in (1, 2))
         if scene == 0:
-            blit(img, barnabe(mouth, blink, arm="carry"), 2, y + bounce, 3)
+            gg = 2.9 <= t < 7.7  # « GG à vous » : il salue
+            blit(img, barnabe(mouth, blink, arm="wave" if gg else "carry", wave=(f // 3) % 2), 2, y, 3)
             blit(img, sack(t), 84, 122, 2)
         elif scene == 1:
-            blit(img, barnabe(mouth, blink, arm="point"), -2, y, 3)
-            mug(img, 80, 94, t)
-            blossom(img, 112, 88, t)
+            blit(img, barnabe(mouth, blink or (f % 24) < 3, arm="point"), -2, y, 3)
+            clock(img, 80, 86, t)
         elif scene == 2:
+            # « zoomez sur cette tour » : la caméra s'approche de l'écran
             blit(img, barnabe(mouth, blink, arm="point"), -4, y, 3)
-            monitor(img, 84, 76, t)
+            big_screen(img, 70, 66, t)
         else:
             if t < leave:
                 blit(img, barnabe(mouth, blink, arm="wave", wave=(f // 3) % 2), 4, y, 3)
                 blit(img, sack(t), 86, 122, 2)
+                if t >= matane:
+                    bubble(img, 62, 40, "MATANE !")
             else:
                 run = (t - leave) * 80
                 x = int(4 + run)
                 blit(img, barnabe(0, False, legs=(f // 2) % 2, arm="carry"), x, y - (f % 2), 3)
                 blit(img, sack(t * 3), x + 70, 122 - (f % 2), 2)
-        hud(img, t, f)
-        if any(abs(t - c) < 0.17 for c in cuts) or t > total - 1.1:
-            static(img, 0.85 if t > total - 1.1 else 0.6)
-            if t > total - 1.1:
-                rect(img, 20, 80, 95, 18, "K")
+        frame = img
+        if scene == 2:
+            z = 1 + 0.55 * min(1, (t - cuts[1]) / 3.5)
+            cw, ch = int(W / z), int(H / z)
+            cx = min(W - cw, max(0, int(101 - cw / 2)))
+            cy = min(H - ch, max(0, int(90 - ch / 2)))
+            crop = img[cy:cy + ch, cx:cx + cw]
+            ys = (np.arange(H) * ch / H).astype(int)
+            xs = (np.arange(W) * cw / W).astype(int)
+            frame = crop[ys][:, xs].copy()
+        hud(frame, t, f)
+        if any(abs(t - c) < 0.17 for c in cuts) or t > total - 1.0:
+            static(frame, 0.85 if t > total - 1.0 else 0.6)
+            if t > total - 1.0:
+                rect(frame, 20, 80, 95, 18, "K")
                 label = "SIGNAL PERDU"
-                text(img, label, (W - text_width(label)) // 2, 85, "r")
-        big = img.repeat(SCALE, axis=0).repeat(SCALE, axis=1).astype(np.float32) * shade
+                text(frame, label, (W - text_width(label)) // 2, 85, "r")
+        big = frame.repeat(SCALE, axis=0).repeat(SCALE, axis=1).astype(np.float32) * shade
         ff.stdin.write(np.clip(big, 0, 255).astype(np.uint8).tobytes())
     ff.stdin.close()
     ff.wait()
@@ -511,9 +532,6 @@ def main():
         check=True,
     )
     print("✔", os.path.relpath(webm, ROOT), f"({os.path.getsize(webm) // 1024} Ko)")
-    print("Minutage des sous-titres (config/quetes.js → traque.sousTitres) :")
-    for i, (st, en) in enumerate(zip(starts, ends)):
-        print(f"  réplique {i + 1} : de: {st:.1f}, a: {en + 0.4:.1f}")
 
 
 if __name__ == "__main__":

@@ -200,36 +200,46 @@ window.GAME_CONFIG.quetes = {
     boutonVideo: "Lancer la vidéo",
 
     /* Vidéo animée de Barnabé (MP4, voix et musique incluses), générée
-     * avec tools/generer-video.py. Laissez "" pour une transmission
-     * simulée (image fixe, sous-titres et voix ci-dessous). */
+     * avec tools/generer-video.py à partir de la voix `videoVoix`.
+     * Laissez video: "" pour une transmission simulée (image fixe, voix
+     * et sous-titres). */
     video: "assets/video/barnabe.mp4",
+    videoVoix: "assets/audio/barnabe-video.mp3",
     camera: "CAM 33-07 · TRANSMISSION INTERCEPTÉE",
-    /* Répliques de la vidéo : sous-titre affiché de `de` à `a` secondes
-     * (minutage donné par tools/generer-video.py), voix de Barnabé
-     * (fichier MP3, généré avec tools/generer-voix-piper.py) et `voix` :
-     * texte prononcé s'il diffère du sous-titre. */
+    /* Sous-titres de la vidéo : affichés de `de` à `a` secondes (temps de
+     * la vidéo). `scene` : décor de la vidéo pendant la réplique (1 :
+     * Barnabé de nuit, 2 : l'horloge +7 h, 3 : l'écran et la tour,
+     * 4 : au revoir). */
     sousTitres: [
-      { de: 0.8, a: 9.8, audio: "assets/audio/barnabe-video-1.mp3", texte: "Ha ha ha ! Coucou le Support 44 ! Vous cherchez ce gros sac ? Trop tard, le Cadeau Officiel est avec moi !", voix: "Ha ha ha ! Coucou le Support quarante-quatre ! Vous cherchez ce gros sac ? Trop tard… le Cadeau Officiel est avec moi !" },
-      { de: 10.3, a: 18.4, audio: "assets/audio/barnabe-video-2.mp3", texte: "Regardez mon mug : +8 h. Et ces jolies fleurs… Demain, mon petit-déjeuner, je le prends de l'autre côté du monde !", voix: "Regardez mon mug : plus huit heures. Et ces jolies fleurs… Demain, mon petit-déjeuner, je le prends de l'autre côté du monde !" },
-      { de: 18.9, a: 32.7, audio: "assets/audio/barnabe-video-3.mp3", texte: "Et ça, sur mon écran ? Une tour de télécom de 634 mètres. Ces vitres panoramiques ? Du savoir-faire Saint-Gobain, évidemment !", voix: "Et ça, sur mon écran ? Une tour de télécom de six cent trente-quatre mètres. Ces vitres panoramiques ? Du savoir-faire Saint-Gobain, évidemment !" },
-      { de: 33.2, a: 40.4, audio: "assets/audio/barnabe-video-4.mp3", texte: "Si vous inversez le temps et l'histoire, vous trouverez le code. Allez, K-Y-O tout le monde !", voix: "Si vous inversez le temps… et l'histoire… vous trouverez le code. Allez, K, Y, O, tout le monde !" },
+      { de: 0.6, a: 2.9, scene: 1, texte: "Salut les gars ! Bon…" },
+      { de: 2.9, a: 7.7, scene: 1, texte: "Je dois l'avouer, vous avez géré : vous avez déjoué mon premier plan. GG à vous." },
+      { de: 7.7, a: 12.4, scene: 1, texte: "Mais ne criez pas victoire trop vite : vous êtes encore loin d'avoir gagné." },
+      { de: 12.4, a: 15.9, scene: 2, texte: "Pendant que vous courez partout là-bas, regardez l'heure qu'il est chez moi…" },
+      { de: 15.9, a: 25.2, scene: 2, texte: "Avec mes sept heures d'avance, je me prépare déjà à aller me coucher après une longue journée, de l'autre côté du globe !" },
+      { de: 25.2, a: 30.6, scene: 3, texte: "Regardez bien l'ordinateur derrière moi et zoomez sur cette immense tour de plus de 600 mètres." },
+      { de: 30.6, a: 34.1, scene: 3, texte: "Vous voyez ce panorama de gratte-ciels de nuit, à perte de vue ?" },
+      { de: 34.1, a: 41.2, scene: 4, texte: "Bref, je n'ai pas votre temps. Si vous connectez le décalage horaire, la hauteur de cette tour et l'histoire locale, vous trouverez le code." },
+      { de: 41.2, a: 44, scene: 4, texte: "Allez, comme on dit ici : matané !" },
     ],
     videoDetruite: "Transmission autodétruite.",
     boutonApresVideo: "Voir le rapport",
     videoBloquee: "La vidéo ne démarre pas ?",
     videoToucher: "Touchez pour lancer la vidéo",
 
+    /* Rapport affiché après la vidéo : des indices à toucher pour les
+     * analyser (recto : ce qu'on a vu ou entendu ; verso : la piste). */
     rapportTitre: "Rapport d'analyse",
-    rapport: "Barnabé se cache à cet étage, dans une pièce baptisée du nom d'une destination emblématique.",
+    rapport: "Barnabé se cache à cet étage, dans une pièce qui a le nom de sa ville. Touchez chaque indice pour l'analyser.",
     indices: [
-      "Son mug affiche +8 h : le fuseau UTC+9, en décembre.",
-      "Sa ville abrite une tour de télécom de 634 m, vitrée par Saint-Gobain.",
-      "Le nom (5 lettres) inverse les syllabes de l'ancienne capitale : KYO-TO.",
+      { titre: "Le décalage horaire", recto: "« Sept heures d'avance » : chez lui, il fait déjà nuit.", verso: "Quand il est 16 h en France, il est 23 h chez lui : cap à l'est, jusqu'en Asie." },
+      { titre: "La tour géante", recto: "Une tour de plus de 600 m, au milieu d'un océan de gratte-ciels.", verso: "L'une des plus hautes tours du monde : une tour de télécom de 634 m." },
+      { titre: "Le mot de la fin", recto: "« Matané ! »", verso: "« Mata ne », c'est « à plus tard » au pays du Soleil-Levant." },
+      { titre: "L'histoire locale", recto: "« …et l'histoire locale. »", verso: "Sa ville s'appelait autrefois Edo, avant de prendre le nom qu'on lui connaît." },
     ],
-    conclusion: "",
+    conclusion: "Croisez les indices : le nom de sa ville est le code.",
     label: "Code du repaire (5 lettres)",
     bouton: "Valider le code",
-    reponses: ["tokyo"],
+    reponses: ["tokyo", "tokio"],
     unEssai: "Un seul essai ! En cas d'erreur, tout gèle pendant {duree}.",
     gelSuite: "Ensuite, vous pourrez retenter votre chance.",
     indiceJoker: "La tour de 634 m s'appelle la Skytree. Dans quelle ville se trouve-t-elle ?",
@@ -239,15 +249,23 @@ window.GAME_CONFIG.quetes = {
       "Quoi ?! Vous m'avez retrouvé si vite ? OK, vous êtes des goats. Mon QG, c'est bien la SALLE TOKYO, au 33ᵉ étage. MAIS N'OUVREZ PAS LA PORTE ! Elle est piégée. Appelez-moi d'abord !",
     boutonAppel: "Appeler Barnabé",
 
-    /* Message vocal de Barnabé (MP3, généré avec tools/generer-voix-piper.py). */
+    /* Message vocal de Barnabé (MP3 fourni, voix ElevenLabs) et ses
+     * sous-titres, affichés de `de` à `a` secondes du message. */
     audio: "assets/audio/barnabe-appel.mp3",
     appelEnCours: "Appel en cours…",
     appelNom: "Barnabé SIX-SEVEN",
+    appelTermine: "Appel terminé",
+    messageVocalSousTitres: [
+      { de: 0, a: 4.6, texte: "MDR ! Vous attendiez vraiment que je « désactive la bombe » ?" },
+      { de: 4.6, a: 9.3, texte: "Trop naïfs, vous me régalez ! Bon, la course est presque finie." },
+      { de: 9.3, a: 11.9, texte: "Dans la pièce, plein de paquets identiques…" },
+      { de: 11.9, a: 14.4, texte: "…mais un seul est le VRAI Cadeau Officiel." },
+      { de: 14.4, a: 16.1, texte: "Interdit de les ouvrir ici !" },
+      { de: 16.1, a: 23, texte: "Prenez-en un au hasard, ne dites rien à personne et foncez au point de départ. Tchao !" },
+    ],
+    /* Texte complet (affiché si le son est coupé). */
     messageVocal:
       "MDR ! Vous attendiez vraiment que je « désactive la bombe » ? Trop naïfs, vous me régalez ! Bon, la course est presque finie. Dans la pièce, plein de paquets identiques… mais un seul est le VRAI Cadeau Officiel. Interdit de les ouvrir ici ! Prenez-en un au hasard, ne dites rien à personne et foncez au point de départ. Tchao !",
-    /* Texte prononcé (orthographe phonétique pour la voix de synthèse). */
-    messageVocalVoix:
-      "Èm dé èr ! Vous attendiez vraiment que je désactive la bombe ? Trop naïfs, vous me régalez ! Bon, la course est presque finie. Dans la pièce, il y a plein de paquets identiques… mais un seul est le vrai Cadeau Officiel. Interdit de les ouvrir ici ! Prenez-en un au hasard, ne dites rien à personne, et foncez au point de départ. Tchao !",
     boutonRaccrocher: "Raccrocher",
 
     /* Dans la salle : chaque équipe choisit UN paquet puis se photographie

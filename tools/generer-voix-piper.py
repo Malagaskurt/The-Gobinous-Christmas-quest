@@ -92,12 +92,16 @@ def main():
         sys.exit(1)
     model = sys.argv[1]
     c = config()
-    jobs = [(s["audio"], s.get("voix") or s["texte"], LENGTH_SCALE) for s in c["subs"]] + [(c["audio"], c["msg"], LENGTH_SCALE)]
+    jobs = [(s["audio"], s.get("voix") or s["texte"], LENGTH_SCALE) for s in c["subs"] if s.get("audio")] + [(c["audio"], c["msg"], LENGTH_SCALE)]
     # Réactions du lutin : courtes et pêchues, débit normal.
     jobs += [(l["audio"], l.get("voix") or l["texte"], 1.0) for l in c["lines"] if l.get("audio")]
     only = os.environ.get("SEULEMENT", "")
     for path, text, scale in jobs:
         if only and only not in path:
+            continue
+        # Les voix fournies (ElevenLabs) ne sont jamais écrasées par défaut.
+        if os.path.exists(os.path.join(ROOT, path)) and os.environ.get("ECRASER") != "1":
+            print("·", path, "existe déjà (ECRASER=1 pour le régénérer)")
             continue
         synth(model, spoken(text), os.path.join(ROOT, path), scale)
 

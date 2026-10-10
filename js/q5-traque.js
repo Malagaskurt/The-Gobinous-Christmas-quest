@@ -51,9 +51,9 @@
 
   /* Voix de Barnabé : fichier MP3 s'il existe, sinon voix de synthèse du
    * téléphone. Retour : promesse résolue à la fin de la phrase. */
-  function say(file, text) {
+  function say(file, text, onStart) {
     GQ.audio.duck(true);
-    return GQ.audio.voice(file).catch(function () { return tts(text); }).then(function () {
+    return GQ.audio.voice(file, onStart).catch(function () { if (onStart) onStart(true); return tts(text); }).then(function () {
       GQ.audio.duck(false);
     }, function () { GQ.audio.duck(false); });
   }
@@ -75,29 +75,35 @@
 
   function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
+  /* Sous-titre en cours à l'instant `sec` d'une liste { de, a, texte }. */
+  function lineAt(list, sec) {
+    var seg = (list || []).filter(function (x) { return sec >= x.de && sec < x.a; })[0];
+    return seg ? seg.texte : '';
+  }
+
+  /* Transmission simulée (sans fichier vidéo) : voix de Barnabé et
+   * sous-titres minutés sur sa voix. */
   var runId = 0;
   function runSimulation() {
     var id = ++runId;
     var subs = R.sousTitres || [];
     var total = simDuration() * 1000;
-    var startedAt = Date.now();
+    var startedAt = 0;
+    var offset = subs.length ? subs[0].de : 0;
     GQ.every(200, function () {
+      if (!startedAt) return;
+      var ms = Date.now() - startedAt;
       var bar = document.querySelector('[data-bar]');
-      if (bar) bar.style.width = Math.min(100, ((Date.now() - startedAt) / total) * 100) + '%';
-    });
-    function show(seg) {
+      if (bar) bar.style.width = Math.min(100, (ms / total) * 100) + '%';
       var sub = document.querySelector('[data-sub]');
-      if (sub) sub.textContent = seg.texte;
-    }
-    (function next(i) {
-      if (id !== runId || GQ.state.phase[5] !== 'video') return;
-      if (i >= subs.length) return wait(600).then(function () { if (id === runId) videoEnded(); });
-      var seg = subs[i];
-      show(seg);
-      // Chaque séquence dure au moins le temps prévu, et toujours jusqu'à la
-      // fin de la phrase de Barnabé.
-      Promise.all([say(seg.audio, seg.voix || seg.texte), wait((seg.a - seg.de) * 1000)]).then(function () { next(i + 1); });
-    })(0);
+      var txt = lineAt(subs, ms / 1000 + offset);
+      if (sub && sub.textContent !== txt) sub.textContent = txt;
+    });
+    var all = subs.map(function (x) { return x.texte; }).join(' ');
+    Promise.all([
+      say(R.videoVoix, all, function () { startedAt = Date.now(); }),
+      wait(total),
+    ]).then(function () { if (id === runId) wait(600).then(function () { if (id === runId) videoEnded(); }); });
   }
 
   /* Vraie vidéo (MP4 avec voix et musique) : sous-titres synchronisés,
@@ -207,7 +213,15 @@
       '<section class="terminal">' +
       '<p class="terminal-title">' + t(R.rapportTitre) + '</p>' +
       '<p class="terminal-text">' + t(R.rapport) + '</p>' +
-      '<ol class="audit">' + R.indices.map(function (x, i) { return '<li>' + t(x) + '</li>'; }).join('') + '</ol>' +
+      '<ul class="clues">' + R.indices.map(function (x, i) {
+        if (typeof x === 'string') return '<li class="clue is-open"><span class="clue-front">' + t(x) + '</span></li>';
+        var open = GQ.ui.clues && GQ.ui.clues[i];
+        return '<li><button type="button" class="clue' + (open ? ' is-open' : '') + '" data-action="clue" data-i="' + i + '" aria-expanded="' + !!open + '">' +
+          '<span class="clue-title">' + GQ.pix(['clock', 'tower', 'bell', 'loupe'][i] || 'star', 'clue-pix') + t(x.titre) + '</span>' +
+          '<span class="clue-front">' + t(x.recto) + '</span>' +
+          (open ? '<span class="clue-back">' + icon('fleche') + t(x.verso) + '</span>' : '<span class="clue-hint">Touchez pour analyser</span>') +
+          '</button></li>';
+      }).join('') + '</ul>' +
       (R.conclusion ? '<p class="terminal-text"><b>' + t(R.conclusion) + '</b></p>' : '') +
       '</section>';
     if (gel) {
@@ -277,18 +291,30 @@
     return voices.filter(function (v) { return /^fr/i.test(v.lang); })[0] || null;
   }
 
+  /* Message vocal : sous-titres synchronisés sur la voix de Barnabé. */
   function speak() {
     var status = document.querySelector('[data-call-status]');
     if (status) status.textContent = '00:00';
     var sub = document.querySelector('.call-sub');
     if (sub) sub.classList.add('is-on');
-    C.runTypewriters();
-    var started = Date.now();
-    GQ.every(500, function () {
+    var started = 0;
+    var lines = R.messageVocalSousTitres || [];
+    var fallback = false;
+    GQ.every(150, function () {
+      if (!started) return;
+      var ms = Date.now() - started;
       var el = document.querySelector('[data-call-status]');
-      if (el) el.textContent = GQ.mmss(Date.now() - started);
+      if (el) el.textContent = GQ.mmss(ms);
+      var box = document.querySelector('[data-call-line]');
+      var txt = fallback || !lines.length ? R.messageVocal : lineAt(lines, ms / 1000);
+      if (box && txt && box.textContent !== txt) {
+        box.textContent = txt;
+        box.classList.remove('is-new');
+        void box.offsetWidth;
+        box.classList.add('is-new');
+      }
     });
-    say(R.audio, R.messageVocal).then(endCall);
+    say(R.audio, R.messageVocal, function (tts) { started = Date.now(); fallback = !!tts; }).then(endCall);
   }
 
   var EMOJI;
@@ -308,6 +334,8 @@
   function endCall() {
     var b = document.querySelector('[data-action="hang-up"]');
     if (b) b.classList.add('btn-blink');
+    var box = document.querySelector('[data-call-line]');
+    if (box) box.textContent = R.messageVocal;
   }
 
   function call() {
@@ -320,7 +348,7 @@
         '<div class="phone-avatar"><img src="' + esc(E.fiche.photo) + '" alt=""><span class="phone-wave"></span></div>' +
         '<p class="phone-name">' + t(R.appelNom) + '</p>' +
         '<p class="phone-status" data-call-status>' + t(R.appelEnCours) + '</p>' +
-        '<div class="call-sub">' + C.typewriter('q5-call', t(R.messageVocal), 'call-text') + '</div>' +
+        '<div class="call-sub"><p class="call-text" data-call-line aria-live="polite"></p></div>' +
         '</section>' +
         C.cta(C.btn(icon('tel') + esc(R.boutonRaccrocher), 'hang-up', '', 'btn-red btn-hangup')),
       after: function () { if (!callTimer) ring(speak); },
@@ -449,6 +477,7 @@
 
   GQ.actions['hang-up'] = function () {
     stopAudio();
+    GQ.audio.sfx('hangup');
     GQ.setPhase(5, 'paquet');
     GQ.uiReset();
     GQ.render();
@@ -480,6 +509,15 @@
     if (GQ.state.phase[5] !== 'paquet') return GQ.render();
     GQ.finish('fin');
     GQ.uiReset();
+    GQ.render();
+  };
+
+  /* Rapport : un indice touché révèle son analyse (et le reste). */
+  GQ.actions.clue = function (el) {
+    GQ.ui.clues = GQ.ui.clues || {};
+    GQ.ui.clues[el.dataset.i] = true;
+    var keep = document.querySelector('.answer-form .field');
+    if (keep) GQ.ui.value = keep.value;
     GQ.render();
   };
 

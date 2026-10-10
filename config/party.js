@@ -41,7 +41,7 @@ window.GAME_CONFIG.party = {
   /* Fenêtre d'un défi. */
   boutonPhoto: "Prendre une photo",
   boutonVideo: "Filmer une vidéo",
-  boutonGalerie: "Choisir dans la galerie",
+  boutonGalerie: "Ma galerie",
   boutonValider: "Valider (+{points} {monnaie})",
   boutonReprendre: "Changer",
   envoiEnCours: "Envoi en cours… {pct} %",
