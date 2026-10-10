@@ -107,7 +107,7 @@
       '</span>' +
       '</div>' +
       '<div class="topbar-row topbar-sub">' +
-      '<ol class="stepper" aria-label="Progression">' + steps + '</ol>' +
+      '<ol class="stepper" aria-label="Progression : ouvrir la map" role="button" tabindex="0" data-action="show-map">' + steps + '</ol>' +
       '<span class="joker-chip ' + (used ? 'is-used' : '') + '" title="' + esc(s.team) + '">' + GQ.icon('etoile') +
       esc(used ? T.joker.statutUtilise : T.joker.statutDisponible) + '</span>' +
       '</div>' +

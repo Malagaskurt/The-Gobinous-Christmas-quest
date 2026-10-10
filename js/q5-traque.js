@@ -30,7 +30,8 @@
       key: 'q5-intro',
       html:
         C.questHead(5) +
-        '<div class="alert-card" role="alert">' + GQ.knit.icon('lock', 'alert-ico') +
+        (R.notif ? '<div class="push" role="alert"><span class="push-app">' + GQ.knit.icon('bell', 'push-ico') + esc(R.notifApp) + '<span class="push-time">' + esc(R.notifHeure) + '</span></span><p>' + t(R.notif) + '</p></div>' : '') +
+        '<div class="alert-card">' + GQ.knit.icon('lock', 'alert-ico') +
         '<p class="alert-title">' + t(R.avertissementTitre) + '</p><p>' + t(R.avertissement) + '</p></div>' +
         C.cta(C.btn(GQ.pix('play', 'btn-pix') + esc(R.boutonVideo), 'video-start', '', 'btn-red btn-blink')),
     };

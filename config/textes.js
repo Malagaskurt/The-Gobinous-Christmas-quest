@@ -54,8 +54,8 @@ window.GAME_CONFIG.textes = {
   /* Répliques du lutin (bulles). Une liste [ ] = une réplique tirée au
    * hasard. Laissez "" pour qu'il reste silencieux. */
   lutin: {
-    accueil: "Psst… Le Cadeau Officiel ? C'est moi qui l'ai caché. Hi hi !",
-    equipe: "Alors, qui ose me courir après ? Donnez-moi un nom d'équipe !",
+    accueil: "Psst… Le colis ? Quel colis ? Hi hi !",
+    equipe: "Alors, qui ose me traquer ? Donnez-moi un nom d'équipe !",
     reussite: ["GG la team !", "Vous êtes des goats !", "Validé, c'est carré !"],
     echec: ["MDR, raté !", "Vous pouvez faire mieux, les gars !"],
     blocage: "Brrr… Tout est gelé !",
@@ -97,7 +97,7 @@ window.GAME_CONFIG.textes = {
 
     /* Les rôles : réaction du lutin, puis l'encadré d'avertissement. */
     rolesTitre: "Vos rôles",
-    rolesBulle: "**{equipe}** ? Bête de nom. Mais il vous faut un chef et un reporter !",
+    rolesBulle: "**{equipe}** ? Bête de nom. Mais pour me traquer, il vous faut un chef et un reporter !",
     rolesAlerteTitre: "Attention : choisissez vos rôles avec soin !",
     rolesAlerte:
       "Pour mener votre équipe vers la victoire, chaque membre doit assumer son rôle à fond. Êtes-vous prêts à relever le défi ?",
@@ -127,16 +127,17 @@ window.GAME_CONFIG.textes = {
    * Les règles complètes (ci-dessous, « regles ») restent accessibles via
    * le bouton « Règles » en haut des écrans de jeu. */
   plateau: {
-    titre: "Comment jouer ?",
-    description: "La piste de Barnabé : 5 quêtes, 5 étages, jusqu'au Cadeau Officiel.",
-    depart: "DÉPART",
-    /* Une étiquette courte par quête, affichée sur la carte. */
-    etapes: ["Quiz Givré", "Code Cristal", "Flash Lutin", "Dossier 44", "Opération Hotte"],
-    /* Légende de la carte : 3 règles clés seulement. */
+    titre: "La map",
+    description: "La map de la quête : de La Verrière jusqu'au sommet de la Tour Saint-Gobain, en 5 étapes.",
+    intro: "Votre terrain de jeu : la Tour Saint-Gobain. Point de base : **La Verrière**. Suivez la map, étape par étape.",
+    depart: "BASE",
+    /* Une étiquette courte par étape, affichée sur la map. */
+    etapes: ["Check-in", "Cheat Code", "Fake Stream", "ID Check", "Ultimate Signal"],
+    /* Légende de la map : 3 repères. */
     regles: [
-      { icone: "pin", texte: "À chaque étage, trouvez le **mot secret** affiché sur place." },
-      { icone: "flake", texte: "**2 erreurs** sur une même énigme = **{gel} de gel**, puis le lutin vous laisse passer." },
-      { icone: "star", texte: "**1 joker** par équipe = 1 indice, sur l'énigme de votre choix." },
+      { icone: "pin", texte: "À chaque étage, le **mot secret** affiché sur place débloque l'étape." },
+      { icone: "flake", texte: "Plus de **2 erreurs** d'affilée : **gel du système** ({gel})." },
+      { icone: "star", texte: "**1 joker** par équipe, à garder pour un vrai blocage." },
     ],
     detail: "Toutes les règles",
   },
@@ -148,14 +149,13 @@ window.GAME_CONFIG.textes = {
    * {chrono} est remplacé par la durée du chrono (config/parametres.js). */
   regles: {
     titre: "Les règles",
-    intro: "Cette nuit, Barnabé, le lutin rebelle du Gobinous Christmas Club, a volé le Cadeau Officiel et l'a caché dans la Tour. À chaque étage, il a laissé une quête. Suivez sa piste jusqu'au cadeau !",
+    intro: "Un colis a disparu des radars : retrouvez-le dans la Tour Saint-Gobain avant que Barnabé ne s'en aperçoive.",
     liste: [
-      { icone: "gift", titre: "5 quêtes, 5 étages", texte: "Chaque quête réussie vous révèle l'étage suivant de la piste." },
-      { icone: "pin", titre: "Le mot secret", texte: "Arrivés à l'étage, trouvez l'affichette et saisissez son mot secret pour débloquer la quête." },
-      { icone: "flake", titre: "2 erreurs = le gel", texte: "2 mauvaises réponses sur une même énigme : tout gèle **{gel}**, puis le lutin la valide pour vous. Au quiz : 2 thèmes ratés." },
-      { icone: "lock", titre: "Le code final", texte: "Après le gel, on retente. Indice de secours au **3ᵉ** code raté, réponse donnée au **4ᵉ**." },
-      { icone: "star", titre: "1 joker", texte: "Un indice bonus sur l'énigme de votre choix, une seule fois dans toute l'aventure." },
-      { icone: "clock", titre: "{chrono} chrono", texte: "Il démarre quand vous validez le départ. Dépassé ? Finissez quand même !" },
+      { icone: "clock", titre: "{chrono} chrono", texte: "Pas une de plus pour retrouver le colis, sous peine de devoir traiter avec le service client de Barnabé." },
+      { icone: "star", titre: "Le Joker Unique", texte: "Un bonus de secours par équipe, à activer stratégiquement en cas de blocage total." },
+      { icone: "flake", titre: "Le Gel du Système", texte: "Plus de deux erreurs consécutives dans les quêtes et Barnabé bloque temporairement vos accès ({gel})." },
+      { icone: "crown", titre: "Esprit d'équipe", texte: "Chacun trouve sa place et tout le monde avance ensemble pour mener la team vers la victoire." },
+      { icone: "check", titre: "Fair-play absolu", texte: "Zéro triche et une bonne foi irréprochable pour sauver cet événement avec panache." },
     ],
     objectif: "",
     bouton: "C'est parti !",
@@ -181,7 +181,7 @@ window.GAME_CONFIG.textes = {
 
   general: {
     quete: "Quête",
-    queteNumero: "Quête {n}",
+    queteNumero: "Étape {n}",
     bravo: "Bravo !",
     equipe: "Équipe",
     regles: "Règles",
@@ -197,8 +197,8 @@ window.GAME_CONFIG.textes = {
     votreReponse: "Votre réponse",
     indice: "Indice",
     queteVerrouillee:
-      "Cette quête n'est pas encore débloquée. Terminez d'abord la quête en cours.",
-    queteTerminee: "Cette quête est déjà terminée. Voici votre quête en cours.",
+      "Cette étape n'est pas encore débloquée. Terminez d'abord l'étape en cours.",
+    queteTerminee: "Cette étape est déjà terminée. Voici votre étape en cours.",
     commencer: "Commencer",
     continuer: "Continuer",
     partieReinitialisee: "Votre partie a été réinitialisée par les organisateurs.",
@@ -224,10 +224,10 @@ window.GAME_CONFIG.textes = {
 
   /* Écran de saisie du mot secret d'un étage (début de chaque quête). */
   acces: {
-    kicker: "Quête {n} / 5 · verrouillée",
+    kicker: "Étape {n} / 5 · verrouillée",
     consigne: "",
     label: "Mot secret de l'étage",
-    bouton: "Débloquer la quête",
+    bouton: "Débloquer l'étape",
     erreur: "Ce n'est pas le mot secret de cet étage. Cherchez bien autour de vous !",
     /* Sortie de secours : affichée après `secoursApres` mauvais mots. */
     secoursApres: 3,

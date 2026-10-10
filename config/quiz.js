@@ -29,9 +29,9 @@
 window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.quiz = {
-  titre: "Quiz Givré",
+  titre: "Check-in",
   intro:
-    "Barnabé ne parle qu'aux vrais Gobinous. Prouvez-le : choisissez un thème et répondez aux 8 questions **sans faute (8/8)**. Vous avez **2 thèmes** pour réussir. Récompense : le premier indice de sa piste.",
+    "Pour quitter La Verrière, la zone sécurisée, et lancer la traque, validez votre identité : choisissez un thème et répondez aux 8 questions **sans faute (8/8)**. Vous avez **2 thèmes** pour réussir.",
   boutonIntro: "Choisir un thème",
 
   textes: {
@@ -69,11 +69,17 @@ window.GAME_CONFIG.quiz = {
     bloqueTitre: "Tout est gelé !",
     bloqueSuite: "Ensuite, le quiz sera validé d'office.",
     bloqueCompteur: "Suite de l'aventure dans",
-    reussiteTitre: "Quiz réussi !",
-    reussiteTexte: "Barnabé n'en revient pas. Le premier indice de sa piste est à vous !",
+    reussiteTitre: "Check-in réussi",
+    reussiteTexte: "Accès autorisé : vous pouvez quitter La Verrière. Le premier signal de Barnabé vous attend.",
+    /* Animation « scan de pièce d'identité » après le quiz. */
+    scanTitre: "Scan d'identité",
+    scanEquipe: "Équipe",
+    scanNiveau: "Accréditation",
+    scanNiveauValeur: "Gobinous · Niveau 1",
+    scanStatut: "Identité validée · Accès autorisé",
     reussiteApresGelTitre: "Le gel est levé !",
-    reussiteApresGelTexte: "Le quiz est validé : votre premier indice est débloqué.",
-    boutonIndice: "Voir le 1er indice",
+    reussiteApresGelTexte: "Barnabé vous laisse passer : accès autorisé, le premier signal vous attend.",
+    boutonIndice: "Voir le premier signal",
     revelationBouton: "C'est parti !",
   },
 
@@ -81,9 +87,9 @@ window.GAME_CONFIG.quiz = {
    * Une mauvaise réponse gèle le jeu (parametres.penalites.etage), puis
    * l'indice bonus apparaît. */
   etage: {
-    titre: "Le premier indice",
+    titre: "Premier signal",
     indice:
-      "Votre prochaine destination : l'étage du mur végétal Saint-Gobain, de la pause café avec vue sur la Tour Eiffel et de l'équipe Recrutement.",
+      "Barnabé a été repéré à l'étage du mur végétal Saint-Gobain, de la pause café avec vue sur la Tour Eiffel et de l'équipe Recrutement.",
     question: "Quel est cet étage ?",
     label: "Numéro de l'étage",
     bouton: "Valider l'étage",

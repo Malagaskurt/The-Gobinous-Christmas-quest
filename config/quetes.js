@@ -23,38 +23,41 @@ window.GAME_CONFIG.quetes = {
   /* des lignes ci-dessous.                                              */
   /* ------------------------------------------------------------------ */
   message: {
-    titre: "Code Cristal",
+    titre: "Cheat Code",
     intro:
-      "Sur le comptoir du café, Barnabé a oublié un message écrit dans son alphabet secret… avec sa grille de décodage. Traduisez-le : il vous dira où chercher ensuite.",
+      "Info clé : sur le comptoir du café, Barnabé a oublié un message écrit dans son alphabet secret… avec sa grille de décodage. Déchiffrez-le : ce cheat code vous donnera une longueur d'avance sur lui.",
     boutonIntro: "Découvrir le message",
     consigne: "",
     /* Message chiffré, ligne par ligne (lettres A à Z et espaces). */
-    lignes: ["LA CLE", "DU MYSTERE", "EST LE VERRE"],
+    lignes: ["BARNABE A", "PERDU LE", "CONTROLE"],
     grilleTitre: "Grille de décodage",
     label: "Le message déchiffré",
     bouton: "Valider le message",
-    reponses: ["la cle du mystere est le verre", "la clef du mystere est le verre"],
-    erreur: "Phrase incorrecte. Il vous reste {n} essai !",
+    reponses: ["barnabe a perdu le controle"],
+    erreur: "Phrase incorrecte. Encore {n} essai(s) avant le gel du système !",
     indiceJoker:
       "Chaque symbole reprend la forme des traits qui entourent la lettre dans la grille. Un point dans le symbole ? La lettre est dans une grille à points.",
 
-    reussiteTitre: "Message déchiffré !",
-    reussiteTexte: "« La clé du mystère est le verre ». Le verre ? Vous savez où il faut aller…",
+    reussiteTitre: "Cheat code activé !",
+    reussiteTexte: "« Barnabé a perdu le contrôle » : vous avez une longueur d'avance sur lui.",
+    /* Bulle de Barnabé qui panique, après le cheat code. */
+    paniqueBulle: "Quoi ?! Qui vous a filé ce code ?! Pas de panique… PAS. DE. PANIQUE.",
+    paniqueTexte: "Le troll commence à paniquer : c'est le moment d'accélérer !",
     reussiteApresGelTitre: "Le gel est levé !",
-    reussiteApresGelTexte: "La solution était : « LA CLÉ DU MYSTÈRE EST LE VERRE ».",
+    reussiteApresGelTexte: "La phrase secrète était : « BARNABÉ A PERDU LE CONTRÔLE ».",
     gelSuite: "Ensuite, Barnabé vous soufflera la solution.",
-    bouton2: "Découvrir la suite",
+    bouton2: "Foncer",
   },
 
   /* ------------------------------------------------------------------ */
   /* QUÊTE 3 — LE DÉFI PHOTO (23ᵉ étage)                                 */
   /* ------------------------------------------------------------------ */
   photos: {
-    titre: "Flash Lutin",
+    titre: "Fake Stream",
     avertissementTitre: "Attention !",
-    avertissement: "Barnabé est capricieux : il peut refuser une photo parfaite, juste pour rire !",
+    avertissement: "Barnabé flaire parfois l'arnaque : il peut refuser une photo parfaite, juste pour vous ralentir !",
     intro:
-      "Barnabé a caché son prochain indice ici… et ne le rendra qu'en échange de photos. Choisissez **3 de ses 6 photos préférées** et reproduisez-les avec toute l'équipe.",
+      "Barnabé vous a repérés : faites diversion ! Inondez son système de photos absurdes pour saturer son attention pendant que vous avancez. Choisissez **3 modèles sur 6** et reproduisez-les avec toute l'équipe.",
     consentement:
       "Les photos validées sont envoyées aux organisateurs.",
     boutonIntro: "Relever le défi",
@@ -81,12 +84,12 @@ window.GAME_CONFIG.quetes = {
     envoiAttente: "Sera envoyée dès que le réseau le permet",
     rejetTitre: "Refusé !",
     rejetTexte:
-      "Le lutin exige que vous la repreniez… avec plus de passion !",
+      "Barnabé n'y croit pas une seconde. Refaites-la… en encore plus absurde !",
     rejetBouton: "On la refait !",
-    boutonQuete: "Valider la Quête 3",
+    boutonQuete: "Lancer la diversion",
 
-    reussiteTitre: "Défi photo réussi !",
-    reussiteTexte: "Quelle équipe de comédiens ! Barnabé est tellement fan qu'il vous lâche un indice…",
+    reussiteTitre: "Diversion réussie !",
+    reussiteTexte: "Barnabé est noyé sous vos photos… Pendant ce temps, une alerte vient de tomber au Support 44.",
     bouton: "Découvrir la suite",
   },
 
@@ -96,12 +99,12 @@ window.GAME_CONFIG.quetes = {
   /* `reponses` = liste des réponses acceptées.                          */
   /* ------------------------------------------------------------------ */
   enquete: {
-    titre: "Dossier 44",
-    terminalTitre: "Terminal de sécurité du Support 44",
+    titre: "ID Check",
+    terminalTitre: "Support 44 · Analyse de badge",
     intro:
-      "Au Support 44, le terminal de sécurité a gardé la trace du badge du voleur. Décodez les **4 modules** de sa fiche pour révéler son identité.",
-    boutonIntro: "Lancer l'investigation",
-    erreur: "Données incorrectes. Il vous reste {n} essai !",
+      "Un badge inconnu a été scanné aujourd'hui dans la Tour, mais le Support 44 n'a aucune info dessus. Analysez-le : décodez les **4 modules** de sa fiche pour identifier son propriétaire.",
+    boutonIntro: "Analyser le badge",
+    erreur: "Données incorrectes. Encore {n} essai(s) avant le gel du système !",
     moduleValide: "Module validé",
     moduleForce: "Le terminal a validé ce module automatiquement.",
     gelSuite: "Ensuite, le terminal validera ce module tout seul.",
@@ -176,15 +179,24 @@ window.GAME_CONFIG.quetes = {
 
     /* Carte d'identité affichée à la fin de l'enquête. */
     fiche: {
-      titre: "Badge d'accès · Support 44",
+      titre: "Badge inconnu · Support 44",
       photo: "assets/img/suspects/c.jpg",
       nom: "Barnabé SIX-SEVEN",
       matricule: "2575",
       service: "Division Bêtises & Emballage",
+      /* Passages du badge dans la Tour (le dernier = l'étage de l'étape 5). */
+      passagesTitre: "Passages du badge aujourd'hui",
+      passages: [
+        { heure: "08:12", lieu: "La Verrière" },
+        { heure: "11:47", lieu: "5ᵉ étage" },
+        { heure: "14:30", lieu: "23ᵉ étage" },
+        { heure: "16:58", lieu: "33ᵉ étage" },
+      ],
+      dernierBip: "Dernier bip",
     },
-    reussiteTitre: "Dossier déverrouillé !",
-    reussiteTexte: "Identité confirmée : le voleur, c'est lui ! Activation du GPS de son badge…",
-    bouton: "Localiser le badge",
+    reussiteTitre: "Badge analysé !",
+    reussiteTexte: "Propriétaire identifié. Dernier étage où il a sévi : 33ᵉ étage.",
+    bouton: "Remonter la piste",
   },
 
   /* ------------------------------------------------------------------ */
@@ -193,10 +205,14 @@ window.GAME_CONFIG.quetes = {
   /*   doit contenir les mots « salle » ou « porte ».                   */
   /* ------------------------------------------------------------------ */
   traque: {
-    titre: "Opération Hotte",
+    titre: "Ultimate Signal",
+    /* Notification d'alerte reçue en arrivant au 33ᵉ étage. */
+    notifApp: "Support 44",
+    notifHeure: "maintenant",
+    notif: "Attendez, on vient de trouver une vidéo qu'il a laissée derrière lui !",
     avertissementTitre: "Vidéo à usage unique",
     avertissement:
-      "Une caméra a intercepté un message de Barnabé SIX-SEVEN. Regroupez-vous et montez le son : vous ne pourrez la voir **qu'une seule fois** !",
+      "Une vidéo de nuit de Barnabé SIX-SEVEN. Regroupez-vous et montez le son : vous ne pourrez la voir **qu'une seule fois** !",
     boutonVideo: "Lancer la vidéo",
 
     /* Vidéo animée de Barnabé (MP4, voix et musique incluses), générée
@@ -245,7 +261,7 @@ window.GAME_CONFIG.quetes = {
     label: "Code du repaire (5 lettres)",
     bouton: "Valider le code",
     reponses: ["tokyo", "tokio"],
-    unEssai: "Attention : 2 erreurs et tout gèle pendant {duree}.",
+    unEssai: "Attention : plus de 2 erreurs d'affilée et c'est le gel du système ({duree}).",
     gelSuite: "Ensuite, vous pourrez retenter votre chance.",
     indiceJoker: "La tour de 634 m s'appelle la Skytree. Dans quelle ville se trouve-t-elle ?",
 
@@ -285,19 +301,19 @@ window.GAME_CONFIG.quetes = {
 
     /* Dans la salle : chaque équipe choisit UN paquet puis se photographie
      * avec lui (photo envoyée aux organisateurs). */
-    paquetTitre: "Le paquet mystère",
-    paquetTexte: "Entrez, choisissez **un seul paquet** sans l'ouvrir… puis prenez une photo de toute l'équipe avec lui !",
-    boutonPhotoPaquet: "Photo avec notre paquet",
+    paquetTitre: "Le colis mystère",
+    paquetTexte: "Entrez, choisissez **un seul colis** sans l'ouvrir… puis prenez une photo de toute l'équipe avec lui !",
+    boutonPhotoPaquet: "Photo avec notre colis",
     paquetValider: "Valider la photo",
     paquetReprendre: "Reprendre",
     paquetSansPhoto: "Impossible de prendre la photo ? Continuer",
-    paquetModele: "Le paquet choisi",
+    paquetModele: "Le colis choisi",
 
     boutonAccueil: "Retour à l'accueil",
 
     /* Écran de fin : grand titre, lutin qui danse, consigne en petit. */
     finTitre: "Mission presque accomplie",
     finTexte: "Bravo **{equipe}**",
-    finConsigne: "Rendez-vous au lieu de départ avec le paquet choisi pour découvrir ce qu'il contient.",
+    finConsigne: "Rendez-vous à La Verrière avec le colis choisi pour découvrir ce qu'il contient.",
   },
 };

@@ -53,6 +53,7 @@
         (A.edition ? '<p class="club-edition">' + GQ.pix('star') + t(A.edition) + GQ.pix('star') + '</p>' : '') +
         '<div class="club-scene">' + GQ.knit.scene('club-scene-img') + '</div>' +
         '</div>' +
+        (A.histoire ? '<section class="club-story"><p class="club-story-title">' + GQ.pix('bell', 'club-story-pix') + t(A.histoireTitre || '') + '</p><p>' + t(A.histoire) + '</p></section>' : '') +
         '<div class="club-cta">' + C.btn(esc(A.appel) + icon('fleche'), 'to-programme', '', 'btn-red') + '</div>' +
         '</main>',
     };

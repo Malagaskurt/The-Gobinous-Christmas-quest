@@ -117,13 +117,13 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 
 | Étape | Étage · mot secret | Ce que fait l'équipe |
 |---|---|---|
-| Départ | Hall · `SAPIN` | **Code d'entrée du jeu** : `SAPIN` est demandé dès l'ouverture du Christmas Quest, avant tout le reste (personne ne peut lancer la partie en avance ; les organisateurs le donnent au top départ). Puis nom d'équipe, puis un encadré « Attention : choisissez vos rôles avec soin ! » fait nommer le **Gobinous Capitaine** (leader) et le **Gobinous Reporter** (photos et vidéos de l'événement, déposées dans le Vlog des Gobinous). Règles, puis la quête 1 s'ouvre directement. |
-| **Quête 1 · Quiz Givré** | Hall | Choisit un thème parmi 4 (Noël, Histoire de Saint-Gobain, La Tour Saint-Gobain, **Thème mystère**) et répond aux 8 questions. |
+| Départ | La Verrière (point de base) · `SAPIN` | **Code d'entrée du jeu** : `SAPIN` est demandé dès l'ouverture du Christmas Quest, avant tout le reste (personne ne peut lancer la partie en avance ; les organisateurs le donnent au top départ). Puis nom d'équipe, puis un encadré « Attention : choisissez vos rôles avec soin ! » fait nommer le **Gobinous Capitaine** (leader) et le **Gobinous Reporter** (photos et vidéos de l'événement, déposées dans le Vlog des Gobinous). Puis **la map** (quartier d'affaires façon La Défense, Tour Saint-Gobain et étapes placées à leur étage) et les 5 règles ; la quête 1 s'ouvre ensuite directement. |
+| **Étape 1 · Check-in** | La Verrière | Valide l'identité de l'équipe par le quiz (thème au choix parmi 4, 8 questions, 8/8). Réussite : animation « scan de pièce d'identité » au nom de l'équipe, « Identité validée · Accès autorisé ». |
 | Premier indice | — | Lit l'indice (effet machine à écrire) et devine l'étage : **5**. |
-| **Quête 2 · Code Cristal** | 5ᵉ étage, coin café · `LUTIN` | Déchiffre un message en alphabet Pigpen avec la grille de décodage : « LA CLÉ DU MYSTÈRE EST LE VERRE ». |
-| **Quête 3 · Flash Lutin** | 23ᵉ étage, espace matériaux · `GUIRLANDE` | Reproduit 3 des 6 photos modèles avec l'appareil photo du téléphone. |
-| **Quête 4 · Dossier 44** | 20ᵉ étage, Support 44 · `ETOILE` | Résout 4 modules de sécurité pour reconstituer le badge du suspect : Barnabé SIX-SEVEN. |
-| **Quête 5 · Opération Hotte** | 33ᵉ étage · `CADEAU` | Regarde une vidéo à lecture unique, trouve le repaire (TOKYO), appelle Barnabé, puis redescend avec un paquet. |
+| **Étape 2 · Cheat Code** | 5ᵉ étage, coin café · `LUTIN` | Déchiffre un message en alphabet Pigpen : « BARNABÉ A PERDU LE CONTRÔLE ». Bulle : Barnabé panique, il faut accélérer. |
+| **Étape 3 · Fake Stream** | 23ᵉ étage, espace matériaux · `GUIRLANDE` | Diversion : inonde le système de Barnabé de photos absurdes (3 des 6 modèles à reproduire). |
+| **Étape 4 · ID Check** | 20ᵉ étage, Support 44 · `ETOILE` | Analyse le badge inconnu scanné dans la journée (4 modules) : propriétaire Barnabé SIX-SEVEN, horaires de passage, dernier bip au 33ᵉ étage. |
+| **Étape 5 · Ultimate Signal** | 33ᵉ étage · `CADEAU` | Notification « on vient de trouver une vidéo qu'il a laissée derrière lui ! », vidéo de nuit à lecture unique, code TOKYO, appel de Barnabé, photo avec le colis, retour à La Verrière. |
 
 **Mots secrets** : insensibles à la casse, aux accents et aux espaces. Un mauvais mot affiche simplement un message, sans pénalité.
 
@@ -227,10 +227,10 @@ Le gel résiste au rechargement de la page. Pendant le gel, seul le bouton des r
 | Étape | Si l'équipe bloque |
 |---|---|
 | Mot secret d'un étage | Après 3 mauvais mots, un encadré rappelle où chercher et invite à appeler l'organisation (« Un souci ? »). Réglage : `config/textes.js` → `acces.secoursApres`. |
-| Quête 1 · quiz | 2 thèmes ratés : gel, puis le quiz est validé d'office. Deviner l'étage : indice bonus après la 1re erreur ; à la 2e, gel puis le lutin donne l'étage. |
-| Quêtes 2 et 4 | 2 erreurs sur une même énigme : 45 s de gel, puis elle est validée d'office. |
+| Étape 1 · quiz | 2 thèmes ratés : gel, puis le quiz est validé d'office. Deviner l'étage : indice bonus après la 1re erreur ; à la 3e, gel puis le lutin donne l'étage. |
+| Étapes 2 et 4 | Plus de 2 erreurs d'affilée (3e erreur) : 45 s de gel, puis l'énigme est validée d'office. |
 | Quête 3 · photos | La photo reprise après le refus du lutin est toujours acceptée. |
-| Quête 5 · TOKYO | 2 erreurs : gel, puis on retente. Au 3e mauvais code : **indice de secours**. Au 4e : **la réponse est donnée** (plus de gel). Réglages : `config/quetes.js` → `traque.indiceApres` / `reponseApres`. |
+| Étape 5 · TOKYO | Au 3e mauvais code : gel, puis **indice de secours**. Au 4e : **la réponse est donnée** (plus de gel). Réglages : `config/quetes.js` → `traque.indiceApres` / `reponseApres`. |
 
 ### Direction artistique
 
@@ -254,7 +254,7 @@ Tous les fichiers à modifier se trouvent dans `config/`. Chacun est commenté e
 |---|---|
 | `config/parametres.js` | Quiz (thèmes ratés avant le gel, durée), pénalités des autres étapes, musique, chrono, suivi des équipes, logo, mode test |
 | `config/etapes.js` | Les 5 étages : nom, repère, **mot secret**, texte de récit qui guide vers l'étage |
-| `config/textes.js` | Accueil, nom d'équipe, carte « Comment jouer ? », règles, messages communs, joker |
+| `config/textes.js` | Accueil, nom d'équipe, map de la quête, règles, messages communs, joker |
 | `config/quiz.js` | Quête 1 : 4 thèmes × 8 questions, thème mystère, étage à deviner et indice bonus |
 | `config/quetes.js` | Quêtes 2 à 5 : message codé, défi photo (modèles), enquête (4 modules, badge), traque (vidéo, rapport, message vocal, fin) |
 
@@ -403,7 +403,7 @@ js/wrapup.js            Christmas Wrap-Up : questionnaire anonyme
 js/knit.js              rendu tricot
 js/pixel.js             pixel art : pictogrammes et lutin
 js/elf.js               comportement du lutin (promenades, bulles)
-js/board.js             carte du parcours (« Comment jouer ? »)
+js/board.js             map de la quête (La Défense, Tour Saint-Gobain)
 js/ui.js                logo, chrono, en-tête, fenêtres, règles, animations
 js/admin.js             mode test et affichettes des mots secrets
 js/sync.js              envoi de la progression au serveur (suivi)

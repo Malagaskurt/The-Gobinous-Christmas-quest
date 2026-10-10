@@ -29,6 +29,18 @@
     );
   }
 
+  /* Données du badge : horaires de passage et bips dans la Tour. */
+  function passages() {
+    var f = E.fiche;
+    if (!f.passages || !f.passages.length) return '';
+    var last = f.passages.length - 1;
+    return '<div class="bips"><p class="bips-title">' + icon('chrono') + esc(f.passagesTitre) + '</p><ol>' +
+      f.passages.map(function (p, i) {
+        return '<li class="' + (i === last ? 'is-last' : '') + '" style="animation-delay:' + (0.5 + i * 0.45).toFixed(2) + 's"><span class="bip-h">' + esc(p.heure) + '</span><span class="bip-l">' + t(p.lieu) + '</span>' +
+          (i === last ? '<span class="bip-tag">' + esc(f.dernierBip) + '</span>' : '') + '</li>';
+      }).join('') + '</ol></div>';
+  }
+
   function terminalHead(step) {
     var m = E.modules[step];
     return (
@@ -123,6 +135,7 @@
           '<section class="success">' +
           '<h2 class="success-title" tabindex="-1">' + t(E.reussiteTitre) + '</h2>' +
           badge(4, true) +
+          passages() +
           '<p class="terminal-ok">' + t(E.reussiteTexte) + '</p>' +
           '</section>' +
           C.cta(C.btn(icon('pin') + esc(E.bouton), 'complete-quest', ' data-n="4"', 'btn-red')),

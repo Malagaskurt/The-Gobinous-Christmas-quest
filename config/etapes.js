@@ -30,12 +30,12 @@ window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.etapes = {
   1: {
-    etage: "Hall",
-    lieu: "Point de départ",
+    etage: "La Verrière",
+    lieu: "Point de base",
     motSecret: "SAPIN",
-    titre: "Le point de départ",
+    titre: "Check-in à La Verrière",
     histoire:
-      "Barnabé, le lutin rebelle du Gobinous Christmas Club, a volé le Cadeau Officiel ! Sans lui, pas de fête.\n\nLe code secret vous sera donné par les organisateurs au top départ.",
+      "Tout le monde est regroupé à La Verrière, le point de base. Le code secret vous sera donné par les organisateurs au top départ.",
   },
 
   2: {
@@ -44,7 +44,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "LUTIN",
     titre: "Cap sur l'étage 5",
     histoire:
-      "Bien vu ! Barnabé a fait une pause café au 5ᵉ étage, près du mur végétal… et il y a oublié quelque chose. Montez : le mot secret est affiché sur place.",
+      "Accès autorisé : vous quittez La Verrière. Premier signal de Barnabé : le coin café du 5ᵉ étage, près du mur végétal. Il y a laissé traîner une info clé… Montez : le mot secret est affiché sur place.",
   },
 
   3: {
@@ -53,7 +53,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "GUIRLANDE",
     titre: "Cap sur l'étage 23",
     histoire:
-      "« La clé du mystère est le verre »… Le verre, c'est la spécialité de Saint-Gobain ! Cap sur l'espace matériaux du 23ᵉ étage : Barnabé y a planqué un nouvel indice.",
+      "Coup de théâtre : Barnabé a repris la main et s'est aperçu que vous progressez ! Il faut faire diversion, vite. Le meilleur endroit pour lancer un faux live : l'espace matériaux du 23ᵉ étage.",
   },
 
   4: {
@@ -62,7 +62,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "ETOILE",
     titre: "Cap sur l'étage 20",
     histoire:
-      "Bluffé par vos photos, Barnabé a lâché une info sans le vouloir : il a perdu son badge au Support 44, là où naissent les badges de la Tour. Descendez au 20ᵉ étage !",
+      "ALERTE SYSTÈME : un badge inconnu a été scanné aujourd'hui dans la Tour, et le Support 44 n'a aucune info dessus. Descendez au 20ᵉ étage pour les aider à l'analyser !",
   },
 
   5: {
@@ -71,6 +71,6 @@ window.GAME_CONFIG.etapes = {
     motSecret: "CADEAU",
     titre: "Cap sur l'étage 33",
     histoire:
-      "BADGE LOCALISÉ ! Celui de Barnabé SIX-SEVEN vient de biper au 33ᵉ étage. Il s'y cache avec le Cadeau Officiel. Montez, vite !",
+      "Dernier bip du badge de Barnabé SIX-SEVEN : 33ᵉ étage. C'est là qu'il a sévi en dernier… et là que se cache le colis. Montez, vite !",
   },
 };

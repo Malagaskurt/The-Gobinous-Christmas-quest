@@ -397,7 +397,8 @@
       html:
         miniHeader() +
         '<main class="screen screen-plain screen-board">' +
-        '<div class="center-head">' + knitTitle(PL.titre) + '</div>' +
+        '<div class="center-head">' + knitTitle(PL.titre) +
+        (PL.intro ? '<p class="map-intro">' + t(PL.intro) + '</p>' : '') + '</div>' +
         GQ.board.html() +
         frame('<ul class="legend">' + PL.regles.map(function (r) {
           return '<li>' + GQ.knit.icon(r.icone, 'legend-ico') + '<span>' + t(r.texte, GQ.ruleVars()) + '</span></li>';
@@ -596,6 +597,25 @@
     };
   }
 
+  /* Étape 1 réussie : scan de la pièce d'identité de l'équipe. */
+  function idScan() {
+    var X = QZ.textes;
+    var s = GQ.state;
+    return '<section class="idscan" aria-label="' + esc(X.scanStatut) + '">' +
+      '<p class="idscan-kicker">' + esc(X.scanTitre) + '</p>' +
+      '<div class="idscan-card">' +
+      '<div class="idscan-photo">' + GQ.knit.icon('badge', 'idscan-ico') + '</div>' +
+      '<dl class="idscan-fields">' +
+      '<div><dt>' + esc(X.scanEquipe) + '</dt><dd>' + esc(s.team || '') + '</dd></div>' +
+      '<div><dt>' + esc(X.scanNiveau) + '</dt><dd>' + esc(X.scanNiveauValeur) + '</dd></div>' +
+      '<div><dt>Capitaine</dt><dd>' + esc((s.roles && s.roles.chef) || '—') + '</dd></div>' +
+      '</dl>' +
+      '<span class="idscan-beam" aria-hidden="true"></span><span class="idscan-grid" aria-hidden="true"></span>' +
+      '</div>' +
+      '<p class="idscan-status">' + icon('valide') + '<span>' + esc(X.scanStatut) + '</span></p>' +
+      '</section>';
+  }
+
   function quest1() {
     GQ.quizCheckPass();
     if (GQ.freezeCheck() === 'etage') {
@@ -617,8 +637,9 @@
         key: 'q1-success',
         celebrate: true,
         elf: { say: 'reussite' },
-        html: successBlock({
-          art: forced ? GQ.knit.icon('flake', 'success-ico') : undefined,
+        html: idScan() + successBlock({
+          art: '',
+          script: '',
           score: forced ? '' : r ? r.score + '/' + r.total : '8/8',
           title: forced ? X.reussiteApresGelTitre : X.reussiteTitre,
           html: (forced ? '<p class="degel">' + t(phrase('degel', 'quiz')) + '</p>' : '') + '<p>' + t(forced ? X.reussiteApresGelTexte : X.reussiteTexte) + '</p>',
