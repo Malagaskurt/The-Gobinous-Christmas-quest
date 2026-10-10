@@ -25,7 +25,7 @@ window.GAME_CONFIG.quetes = {
   message: {
     titre: "Code Cristal",
     intro:
-      "Le lutin a griffonné un message dans un alphabet secret… et oublié sa grille de décodage. Oups !",
+      "Sur le comptoir du café, Barnabé a oublié un message écrit dans son alphabet secret… avec sa grille de décodage. Traduisez-le : il vous dira où chercher ensuite.",
     boutonIntro: "Découvrir le message",
     consigne: "",
     /* Message chiffré, ligne par ligne (lettres A à Z et espaces). */
@@ -39,10 +39,10 @@ window.GAME_CONFIG.quetes = {
       "Chaque symbole reprend la forme des traits qui entourent la lettre dans la grille. Un point dans le symbole ? La lettre est dans une grille à points.",
 
     reussiteTitre: "Message déchiffré !",
-    reussiteTexte: "« La clé du mystère est le verre ». Le lutin est bluffé !",
+    reussiteTexte: "« La clé du mystère est le verre ». Le verre ? Vous savez où il faut aller…",
     reussiteApresGelTitre: "Le gel est levé !",
     reussiteApresGelTexte: "La solution était : « LA CLÉ DU MYSTÈRE EST LE VERRE ».",
-    gelSuite: "Ensuite, le lutin vous soufflera la solution.",
+    gelSuite: "Ensuite, Barnabé vous soufflera la solution.",
     bouton2: "Découvrir la suite",
   },
 
@@ -52,9 +52,9 @@ window.GAME_CONFIG.quetes = {
   photos: {
     titre: "Flash Lutin",
     avertissementTitre: "Attention !",
-    avertissement: "Le lutin est capricieux : il peut refuser une photo parfaite, juste pour rire !",
+    avertissement: "Barnabé est capricieux : il peut refuser une photo parfaite, juste pour rire !",
     intro:
-      "Choisissez **3 modèles sur 6** et reproduisez-les en photo, avec toute l'équipe.",
+      "Barnabé a caché son prochain indice ici… et ne le rendra qu'en échange de photos. Choisissez **3 de ses 6 photos préférées** et reproduisez-les avec toute l'équipe.",
     consentement:
       "Les photos validées sont envoyées aux organisateurs.",
     boutonIntro: "Relever le défi",
@@ -86,7 +86,7 @@ window.GAME_CONFIG.quetes = {
     boutonQuete: "Valider la Quête 3",
 
     reussiteTitre: "Défi photo réussi !",
-    reussiteTexte: "Quelle équipe de comédiens ! Les 3 photos sont dans la boîte.",
+    reussiteTexte: "Quelle équipe de comédiens ! Barnabé est tellement fan qu'il vous lâche un indice…",
     bouton: "Découvrir la suite",
   },
 
@@ -99,7 +99,7 @@ window.GAME_CONFIG.quetes = {
     titre: "Dossier 44",
     terminalTitre: "Terminal de sécurité du Support 44",
     intro:
-      "Le suspect a été vu ici pour la dernière fois. Décodez les **4 modules** de sa fiche de sécurité pour révéler son identité.",
+      "Au Support 44, le terminal de sécurité a gardé la trace du badge du voleur. Décodez les **4 modules** de sa fiche pour révéler son identité.",
     boutonIntro: "Lancer l'investigation",
     erreur: "Données incorrectes. Il vous reste {n} essai !",
     moduleValide: "Module validé",
@@ -183,7 +183,7 @@ window.GAME_CONFIG.quetes = {
       service: "Division Bêtises & Emballage",
     },
     reussiteTitre: "Dossier déverrouillé !",
-    reussiteTexte: "Identité confirmée. Activation du GPS du badge…",
+    reussiteTexte: "Identité confirmée : le voleur, c'est lui ! Activation du GPS de son badge…",
     bouton: "Localiser le badge",
   },
 
@@ -245,7 +245,7 @@ window.GAME_CONFIG.quetes = {
     label: "Code du repaire (5 lettres)",
     bouton: "Valider le code",
     reponses: ["tokyo", "tokio"],
-    unEssai: "Un seul essai ! En cas d'erreur, tout gèle pendant {duree}.",
+    unEssai: "Attention : 2 erreurs et tout gèle pendant {duree}.",
     gelSuite: "Ensuite, vous pourrez retenter votre chance.",
     indiceJoker: "La tour de 634 m s'appelle la Skytree. Dans quelle ville se trouve-t-elle ?",
 

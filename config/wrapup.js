@@ -19,7 +19,7 @@
 window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.wrapup = {
-  titre: "Christmas Wrap-Up",
+  titre: "Gobi'Christmas Wrap-Up",
 
   /* Tirage au sort du Secret Santa : chaque téléphone tire un numéro
    * unique entre 1 et `total` (le nombre de cadeaux numérotés). Le tirage
@@ -44,10 +44,10 @@ window.GAME_CONFIG.wrapup = {
       id: "moment",
       type: "choix",
       question: "Votre temps fort préféré ?",
-      options: ["Christmas Quest", "Christmas Party", "Christmas Battle", "Secret Santa"],
+      options: ["Gobi'Christmas Quest", "Gobi'Christmas Party", "Gobi'Christmas Battle", "Secret Santa"],
       obligatoire: true,
     },
-    { id: "quest", type: "echelle", question: "Le Christmas Quest, c'était…", min: "Trop facile", max: "Trop dur", obligatoire: false },
+    { id: "quest", type: "echelle", question: "La Gobi'Christmas Quest, c'était…", min: "Trop facile", max: "Trop dur", obligatoire: false },
     {
       id: "encore",
       type: "choix",

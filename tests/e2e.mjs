@@ -213,7 +213,7 @@ await step('Carte « Comment jouer ? » et règles plein écran dans la DA du je
   assert((await page.locator('.board-svg').count()) === 1, 'plateau absent');
   await clickText('Toutes les règles');
   const modal = norm(await page.locator('.modal').innerText());
-  for (const s of ['Les règles', 'Le mot secret', '1 joker', 'Le gel', '30 minutes chrono']) {
+  for (const s of ['Les règles', 'Le mot secret', '1 joker', '2 erreurs = le gel', 'Le code final', '30 minutes chrono']) {
     assert(modal.includes(norm(s)), `texte manquant dans les règles : ${s}`);
   }
   assert((await page.locator('.modal-sheet .rule').count()) === 6, 'règles illustrées absentes');
@@ -363,16 +363,20 @@ await step('Quiz réussi à 8/8 (thème « La Tour »), correction consultable',
   assert(await has('Voir la correction'), 'correction absente');
 });
 
-await step('Étage à deviner : erreur → givré 10 s, puis indice bonus, puis 5 accepté', async () => {
+await step('Étage à deviner : 1re erreur → indice bonus, 2e erreur → gel, puis 5 accepté', async () => {
   await clickText('Voir le 1er indice');
   assert(await has('mur végétal Saint-Gobain'), 'premier indice absent');
-  await answer('3');
-  assert(await frozen(), 'pas de gel après une mauvaise réponse');
-  const ms = await gelMs();
-  assert(ms > 0 && ms <= 10000, `gel inattendu : ${ms} ms`);
   assert(!(await has('3 + 2')), 'indice bonus affiché trop tôt');
-  await page.waitForTimeout(ms + 1200);
+  await answer('3');
+  assert(!(await frozen()), 'gel dès la 1re erreur');
   assert(await has('Indice bonus') && await has('3 + 2'), 'indice bonus absent');
+  await answer('4');
+  assert(await frozen(), 'pas de gel après 2 erreurs');
+  const ms = await gelMs();
+  assert(ms > 0 && ms <= 45000, `gel inattendu : ${ms} ms`);
+  // Fin du gel simulée : l'équipe retente et trouve.
+  await page.evaluate(() => { const g = window.GQ.state.gel; g.until = 0; g.key = null; g.after = null; window.GQ.save(); window.GQ.render(); });
+  await settle();
   await answer('5');
   assert((await state()).quest === 2 && (await hash()) === '#/quete/2', 'quête 2 non atteinte');
   assert(await has('5ᵉ étage'), 'destination absente');
@@ -547,9 +551,11 @@ await step('Mot secret CADEAU → transmission à usage unique, jamais « salle 
   assert(!(await forbidden()), '« salle » ou « porte » affiché trop tôt');
 });
 
-await step('Code du repaire : 1 seul essai, gel, puis nouvel essai → TOKYO', async () => {
+await step('Code du repaire : 2 erreurs → gel, puis nouvel essai', async () => {
   await answer('kyoto');
-  assert(await frozen(), 'pas de gel après une erreur');
+  assert(!(await frozen()), 'gel dès la 1re erreur');
+  await answer('osaka');
+  assert(await frozen(), 'pas de gel après 2 erreurs');
   const ms = await gelMs();
   assert(ms > 0 && ms <= SHORT, `gel inattendu : ${ms} ms`);
   await page.waitForTimeout(ms + 1200);
@@ -558,10 +564,8 @@ await step('Code du repaire : 1 seul essai, gel, puis nouvel essai → TOKYO', a
 });
 
 await step('Sortie de secours : indice après 3 mauvais codes, puis la réponse', async () => {
-  await page.evaluate(() => { window.GQ.state.q5.errors = 2; window.GQ.save(); window.GQ.render(); });
-  await answer('osaka');
-  assert(await frozen(), 'pas de gel au 3e essai');
-  await page.waitForTimeout((await gelMs()) + 1200);
+  await answer('nagoya');
+  assert(!(await frozen()), 'gel au 3e essai');
   assert(await has('Indice de secours') && await has('Edo'), 'indice de secours absent');
   await answer('kyoto');
   assert(!(await frozen()), 'gel alors que la réponse doit être donnée');
@@ -594,7 +598,7 @@ await step('Appel de Barnabé puis écran de fin, conservé au rechargement', as
   await settle();
   assert(await has('Mission presque accomplie'), 'écran de fin absent');
   assert(await has('Les Testeurs') && await has('Rendez-vous au lieu de départ avec le paquet choisi'), 'consigne de fin absente');
-  assert((await page.locator('.dance-elf .dance-frame').count()) === 4, 'le lutin ne danse pas');
+  assert((await page.locator('.dance-elf .dance-face.barnabe:not(.is-masked)').count()) === 1, 'Barnabé démasqué ne danse pas');
   const fete = await fetch(BASE + 'assets/audio/musique-fete.mp3');
   assert(fete.ok, 'musique de fin absente');
   assert((await page.locator('.topbar').count()) === 0, 'l\'écran de fin garde l\'en-tête du jeu');
@@ -729,7 +733,7 @@ await step('Wrap-Up : anonyme, questions obligatoires, réponses et indicateurs 
   await settle();
   assert(await has('Il manque une réponse obligatoire'), 'questionnaire incomplet accepté');
   await page.click('[data-q="note"][data-v="4"]');
-  await page.click('[data-q="moment"][data-s="Christmas Party"]');
+  await page.click('[data-q="moment"][data-s="Gobi\'Christmas Party"]');
   await page.click('[data-q="encore"][data-s="Oui, carrément !"]');
   await page.fill('[data-wq-text="mot"]', 'Bravo aux lutins');
   await page.click('.wq-form button[type=submit]');

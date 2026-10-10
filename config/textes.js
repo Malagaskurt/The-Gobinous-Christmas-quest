@@ -28,7 +28,7 @@ window.GAME_CONFIG.textes = {
    *   accroche: "Un cadeau de Noël a disparu ! Résolvez les quêtes en équipe pour retrouver la hotte." */
   accueil: {
     titre: "Gobinous",
-    titreSuite: "Christmas Quest",
+    titreSuite: "Gobi'Christmas Quest",
     bouton: "Lancer la partie",
     boutonReprendre: "Reprendre la partie",
     partieEnCours: "Partie en cours : **{equipe}**",
@@ -45,7 +45,7 @@ window.GAME_CONFIG.textes = {
    * (config/etapes.js, « SAPIN »), donné par les organisateurs au top
    * départ : personne ne peut lancer la partie en avance. */
   entree: {
-    bulle: "Pas si vite ! Le jeu s'ouvre avec un code secret. Les organisateurs vous le donneront au top départ.",
+    bulle: "Pas si vite ! La chasse s'ouvre avec un code secret. Les organisateurs vous le donneront au top départ.",
     label: "Code secret du jeu",
     bouton: "Entrer dans le jeu",
     erreur: "Ce n'est pas le bon code. Attendez le top départ des organisateurs !",
@@ -54,12 +54,12 @@ window.GAME_CONFIG.textes = {
   /* Répliques du lutin (bulles). Une liste [ ] = une réplique tirée au
    * hasard. Laissez "" pour qu'il reste silencieux. */
   lutin: {
-    accueil: "Psst… Le cadeau ? C'est moi qui l'ai caché. Hi hi !",
-    equipe: "Juste un nom d'équipe. Rien de perso, promis !",
+    accueil: "Psst… Le Cadeau Officiel ? C'est moi qui l'ai caché. Hi hi !",
+    equipe: "Alors, qui ose me courir après ? Donnez-moi un nom d'équipe !",
     reussite: ["GG la team !", "Vous êtes des goats !", "Validé, c'est carré !"],
     echec: ["MDR, raté !", "Vous pouvez faire mieux, les gars !"],
     blocage: "Brrr… Tout est gelé !",
-    lieu: "Je vous attends là-haut… ou pas !",
+    lieu: "Vous êtes sur ma piste ? Même pas peur !",
     fin: "Vous m'avez démasqué ! Bien joué !",
     clic: ["Pas touche !", "Je ne dirai rien…", "Cherchez encore !", "Hi hi hi !", "Le cadeau ? Quel cadeau ?"],
     /* Phrases affichées pendant un gel (tirées au hasard). */
@@ -97,7 +97,7 @@ window.GAME_CONFIG.textes = {
 
     /* Les rôles : réaction du lutin, puis l'encadré d'avertissement. */
     rolesTitre: "Vos rôles",
-    rolesBulle: "**{equipe}** ? Bête de nom, j'adore !",
+    rolesBulle: "**{equipe}** ? Bête de nom. Mais il vous faut un chef et un reporter !",
     rolesAlerteTitre: "Attention : choisissez vos rôles avec soin !",
     rolesAlerte:
       "Pour mener votre équipe vers la victoire, chaque membre doit assumer son rôle à fond. Êtes-vous prêts à relever le défi ?",
@@ -128,15 +128,15 @@ window.GAME_CONFIG.textes = {
    * le bouton « Règles » en haut des écrans de jeu. */
   plateau: {
     titre: "Comment jouer ?",
-    description: "Carte du parcours : 5 quêtes, du départ jusqu'à la hotte.",
+    description: "La piste de Barnabé : 5 quêtes, 5 étages, jusqu'au Cadeau Officiel.",
     depart: "DÉPART",
     /* Une étiquette courte par quête, affichée sur la carte. */
     etapes: ["Quiz Givré", "Code Cristal", "Flash Lutin", "Dossier 44", "Opération Hotte"],
     /* Légende de la carte : 3 règles clés seulement. */
     regles: [
-      { icone: "pin", texte: "À chaque étage, trouvez le **mot secret**." },
-      { icone: "star", texte: "**1 joker** = 1 indice, une seule fois." },
-      { icone: "flake", texte: "Trop d'erreurs ? **Tout gèle**, puis on avance." },
+      { icone: "pin", texte: "À chaque étage, trouvez le **mot secret** affiché sur place." },
+      { icone: "flake", texte: "**2 erreurs** sur une même énigme = **{gel} de gel**, puis le lutin vous laisse passer." },
+      { icone: "star", texte: "**1 joker** par équipe = 1 indice, sur l'énigme de votre choix." },
     ],
     detail: "Toutes les règles",
   },
@@ -148,14 +148,14 @@ window.GAME_CONFIG.textes = {
    * {chrono} est remplacé par la durée du chrono (config/parametres.js). */
   regles: {
     titre: "Les règles",
-    intro: "Barnabé, le lutin du Gobinous Christmas Club, a caché le Cadeau Officiel dans la Tour. Retrouvez-le !",
+    intro: "Cette nuit, Barnabé, le lutin rebelle du Gobinous Christmas Club, a volé le Cadeau Officiel et l'a caché dans la Tour. À chaque étage, il a laissé une quête. Suivez sa piste jusqu'au cadeau !",
     liste: [
-      { icone: "gift", titre: "5 quêtes, 5 étages", texte: "Chaque quête vous indique l'étage suivant." },
-      { icone: "pin", titre: "Le mot secret", texte: "Sur place, trouvez-le et saisissez-le pour débloquer la quête." },
-      { icone: "tree", titre: "Un seul téléphone", texte: "On réfléchit ensemble, on avance ensemble." },
-      { icone: "star", titre: "1 joker", texte: "Un indice bonus, une seule fois dans toute l'aventure." },
-      { icone: "flake", titre: "Le gel", texte: "Trop d'erreurs et tout gèle quelques secondes. Ensuite, ça repart." },
-      { icone: "clock", titre: "{chrono} chrono", texte: "Il tourne dès le départ. Dépassé ? Finissez quand même !" },
+      { icone: "gift", titre: "5 quêtes, 5 étages", texte: "Chaque quête réussie vous révèle l'étage suivant de la piste." },
+      { icone: "pin", titre: "Le mot secret", texte: "Arrivés à l'étage, trouvez l'affichette et saisissez son mot secret pour débloquer la quête." },
+      { icone: "flake", titre: "2 erreurs = le gel", texte: "2 mauvaises réponses sur une même énigme : tout gèle **{gel}**, puis le lutin la valide pour vous. Au quiz : 2 thèmes ratés." },
+      { icone: "lock", titre: "Le code final", texte: "Après le gel, on retente. Indice de secours au **3ᵉ** code raté, réponse donnée au **4ᵉ**." },
+      { icone: "star", titre: "1 joker", texte: "Un indice bonus sur l'énigme de votre choix, une seule fois dans toute l'aventure." },
+      { icone: "clock", titre: "{chrono} chrono", texte: "Il démarre quand vous validez le départ. Dépassé ? Finissez quand même !" },
     ],
     objectif: "",
     bouton: "C'est parti !",
@@ -191,7 +191,7 @@ window.GAME_CONFIG.textes = {
     terminer: "Terminer",
     bonneReponse: "Bonne réponse !",
     mauvaiseReponse: "Ce n'est pas la bonne réponse. Réessayez !",
-    mauvaiseReponseDernierEssai: "Raté ! Dernier essai avant le gel ({duree}).",
+    mauvaiseReponseDernierEssai: "Raté ! Encore une erreur et tout gèle ({gel}).",
     reponseVide: "Saisissez une réponse avant de valider.",
     choixVide: "Sélectionnez une réponse avant de valider.",
     votreReponse: "Votre réponse",

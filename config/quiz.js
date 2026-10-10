@@ -31,7 +31,7 @@ window.GAME_CONFIG = window.GAME_CONFIG || {};
 window.GAME_CONFIG.quiz = {
   titre: "Quiz Givré",
   intro:
-    "Choisissez un thème et répondez aux 8 questions. Objectif : **8 sur 8**. Vous avez droit à **deux thèmes**.",
+    "Barnabé ne parle qu'aux vrais Gobinous. Prouvez-le : choisissez un thème et répondez aux 8 questions **sans faute (8/8)**. Vous avez **2 thèmes** pour réussir. Récompense : le premier indice de sa piste.",
   boutonIntro: "Choisir un thème",
 
   textes: {
@@ -70,7 +70,7 @@ window.GAME_CONFIG.quiz = {
     bloqueSuite: "Ensuite, le quiz sera validé d'office.",
     bloqueCompteur: "Suite de l'aventure dans",
     reussiteTitre: "Quiz réussi !",
-    reussiteTexte: "Le lutin n'en revient pas. Votre premier indice est débloqué !",
+    reussiteTexte: "Barnabé n'en revient pas. Le premier indice de sa piste est à vous !",
     reussiteApresGelTitre: "Le gel est levé !",
     reussiteApresGelTexte: "Le quiz est validé : votre premier indice est débloqué.",
     boutonIndice: "Voir le 1er indice",
@@ -90,7 +90,8 @@ window.GAME_CONFIG.quiz = {
     reponses: ["5", "5e", "5eme", "5ieme", "cinq", "cinquieme"],
     erreur: "Mauvaise réponse !",
     gelTitre: "Givré !",
-    gelSuite: "Un indice bonus arrive juste après le dégel…",
+    gelSuite: "Ensuite, le lutin vous donnera l'étage.",
+    gelPasse: "Le lutin a eu pitié : c'était le **5ᵉ étage** !",
     bonusTitre: "Indice bonus",
     bonus: "Rendez-vous à l'étage 3 + 2 !",
   },

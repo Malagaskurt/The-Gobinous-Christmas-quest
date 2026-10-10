@@ -111,7 +111,7 @@
         clubHeader({ href: 'programme', label: 'Programme' }) +
         '<main class="screen screen-plain screen-info">' +
         '<div class="center-head">' + GQ.knit.icon(temps.icone || 'star', 'head-ico') +
-        '<p class="kicker">Gobinous</p>' + C.knitTitle(I.titre.replace(/^Christmas\s+/i, '')) + '</div>' +
+        '<p class="kicker">Gobi\'Christmas</p>' + C.knitTitle(I.titre.replace(/^(Gobi'|Gobi’)?Christmas\s+/i, '')) + '</div>' +
         GQ.elfTalk('<p class="elf-talk-big">' + t(I.bulle) + '</p><p>' + t(I.texte) + '</p>') +
         '<ul class="info-list">' + I.points.map(function (p) {
           return '<li><span class="info-ico">' + GQ.pix(p.icone) + '</span><span>' + t(p.texte) + '</span></li>';

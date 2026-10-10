@@ -397,9 +397,8 @@
     for (var i = 0; i < 22; i++) {
       stars += '<i style="left:' + ((i * 37) % 100) + '%;top:' + ((i * 53) % 70) + '%;animation-delay:' + ((i % 7) * 0.45).toFixed(2) + 's"></i>';
     }
-    var frames = ['elfWave', 'elfWalk1', 'elfGift', 'elfWalk2'].map(function (f, i) {
-      return GQ.knit.icon(f, 'dance-frame dance-f' + i);
-    }).join('');
+    // Barnabé démasqué danse sur la musique de fin.
+    var frames = GQ.knit.icon('elfWave', 'dance-face');
     return {
       key: 'q5-end',
       bare: true,

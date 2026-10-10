@@ -27,7 +27,7 @@
     root.id = 'elf';
     root.className = 'elf';
     root.setAttribute('aria-hidden', 'true');
-    root.innerHTML = '<div class="elf-bubble"></div><img class="elf-sprite pixel" alt="">';
+    root.innerHTML = '<div class="elf-bubble"></div><span class="elf-face"><img class="elf-sprite" alt=""></span>';
     document.body.appendChild(root);
     sprite = root.querySelector('.elf-sprite');
     bubble = root.querySelector('.elf-bubble');
@@ -38,7 +38,11 @@
     });
   }
 
-  function frame(name) { sprite.src = GQ.knit.src(name); }
+  // Portrait de Barnabé (flouté tant qu'il n'est pas démasqué).
+  function frame() {
+    sprite.src = GQ.art3d.photo();
+    root.classList.toggle('is-masked', !GQ.art3d.unmasked());
+  }
 
   function legs(on) {
     clearInterval(frameTimer);
@@ -83,6 +87,9 @@
    * (par défaut, juste sous l'en-tête). */
   function walk(opts) {
     opts = opts || {};
+    // Plus de promenade : Barnabé apparaît seulement pour parler.
+    if (opts.say) peek(opts.say);
+    return;
     if (!enabled() || reduceMotion || state !== 'hidden' || busy()) return;
     if (!opts.anchor && document.querySelector('.choices')) return; // pas pendant une question
     var h = 60;
@@ -128,8 +135,8 @@
     hide();
     var col = column();
     state = 'peek';
-    frame('elfWave');
     root.className = 'elf is-peek';
+    frame();
     root.style.transition = '';
     root.style.transform = '';
     // Sous l'en-tête, en haut à droite : jamais par-dessus les boutons.

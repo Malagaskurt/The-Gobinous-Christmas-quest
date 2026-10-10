@@ -1,12 +1,13 @@
 /* Généré par tools/generer-hors-ligne.mjs : ne pas modifier à la main. */
 self.HORS_LIGNE = {
- "version": "b00ecea993e4",
+ "version": "0294258e08e9",
  "fichiers": [
   "index.html",
   "css/fonts.css",
   "css/styles.css",
   "js/admin.js",
   "js/app.js",
+  "js/art.js",
   "js/audio.js",
   "js/board.js",
   "js/camera.js",

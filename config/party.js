@@ -11,7 +11,7 @@
 window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.party = {
-  titre: "Christmas Party",
+  titre: "Gobi'Christmas Party",
   /* Code secret d'accès (majuscules et espaces ignorés). */
   code: "2020",
   codeLabel: "Code secret de la Party",

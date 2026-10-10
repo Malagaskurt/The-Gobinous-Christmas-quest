@@ -39,13 +39,13 @@ window.GAME_CONFIG.parametres = {
   penalites: {
     /* Après le quiz : deviner l'étage (le gel fait apparaître l'indice
      * bonus). */
-    etage: { essais: 1, gelSecondes: 10, apresGel: "reessayer" },
+    etage: { essais: 2, gelSecondes: 45, apresGel: "valider" },
     /* Quête 2 : le message codé (la solution s'affiche après le gel). */
-    message: { essais: 2, gelSecondes: 50, apresGel: "valider" },
+    message: { essais: 2, gelSecondes: 45, apresGel: "valider" },
     /* Quête 4 : chacun des 4 modules de l'enquête. */
     enquete: { essais: 2, gelSecondes: 45, apresGel: "valider" },
     /* Quête 5 : le code du repaire (un seul essai à chaque fois). */
-    repaire: { essais: 1, gelSecondes: 45, apresGel: "reessayer" },
+    repaire: { essais: 2, gelSecondes: 45, apresGel: "reessayer" },
   },
 
   /* ---- Son : fond musical, voix et effets sonores -------------------

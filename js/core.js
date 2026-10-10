@@ -345,6 +345,7 @@
     return {
       duree: durationLabel(Math.max(0, Number((P.quiz || {}).dureeBlocageSecondes) || 0) * 1000),
       chrono: (Number(c.dureeMinutes) || 30) + ' minutes',
+      gel: durationLabel(rule('enquete').sec * 1000),
     };
   };
 
@@ -580,6 +581,14 @@
     s.q1.floorBonus = true;
     return Object.assign({ ok: false }, GQ.penalize('etage', 'etage'));
   };
+
+  // Fin du gel après 2 erreurs sur l'étage : le lutin donne l'étage.
+  GQ.onFreezePass('etage', function () {
+    var s = GQ.state;
+    if (s.quest !== 1 || s.phase[1] !== 'floor') return false;
+    GQ.completeQuest(1);
+    return true;
+  });
 
   /* ------------------------------------------------------------------ */
   /* Quête 2 : le message codé                                           */

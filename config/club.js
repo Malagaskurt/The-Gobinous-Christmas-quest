@@ -33,23 +33,23 @@ window.GAME_CONFIG.club = {
       {
         id: "quest",
         icone: "tower",
-        nom: "Christmas Quest",
-        texte: "Le jeu d'infiltration : l'énigme des portraits de Barnabé, la course à travers la Tour et le code d'accès final.",
+        nom: "Gobi'Christmas Quest",
+        texte: "La chasse au lutin : suivez la piste de Barnabé d'étage en étage dans la Tour et récupérez le Cadeau Officiel.",
         badge: "En équipe · 30 min",
-        bouton: "Jouer",
+        bouton: "Découvrir",
       },
       {
         id: "party",
         icone: "tree",
-        nom: "Christmas Party",
+        nom: "Gobi'Christmas Party",
         texte: "Le goûter, l'atelier sapin collaboratif et les 20 défis du lutin, en autonomie.",
         badge: "Code secret",
-        bouton: "Entrer",
+        bouton: "Découvrir",
       },
       {
         id: "battle",
         icone: "star",
-        nom: "Christmas Battle",
+        nom: "Gobi'Christmas Battle",
         texte: "Le grand jeu collectif final, en équipes : quiz interactif et classement en temps réel.",
         badge: "En équipes",
         bouton: "Découvrir",
@@ -57,10 +57,10 @@ window.GAME_CONFIG.club = {
       {
         id: "wrapup",
         icone: "gift",
-        nom: "Christmas Wrap-Up",
+        nom: "Gobi'Christmas Wrap-Up",
         texte: "Le tirage au sort du Secret Santa et votre avis en 1 minute.",
         badge: "Secret Santa",
-        bouton: "Y aller",
+        bouton: "Découvrir",
       },
     ],
   },
@@ -69,12 +69,12 @@ window.GAME_CONFIG.club = {
   vlog: {
     nom: "Le Vlog des Gobinous",
     texte: "Reporters ou pas, déposez ici toutes vos photos et vidéos de l'événement, même les longues.",
-    bouton: "Déposer",
+    bouton: "Découvrir",
   },
 
   /* Pages d'information (pas de jeu sur le téléphone). */
   battle: {
-    titre: "Christmas Battle",
+    titre: "Gobi'Christmas Battle",
     bulle: "Le grand jeu final, c'est maintenant !",
     texte: "Un quiz interactif en équipes, animé par les organisateurs, avec le classement en temps réel. Que la meilleure équipe gagne !",
     points: [

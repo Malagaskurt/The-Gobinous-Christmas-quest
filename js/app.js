@@ -239,12 +239,11 @@
     for (var i = 0; i < 12; i++) cells += '<i style="animation-delay:' + (0.25 + i * 0.09).toFixed(2) + 's"></i>';
     el.innerHTML =
       '<div class="loader-inner">' +
-      GQ.knit.icon('star', 'loader-star') +
+      GQ.knit.icon('gift', 'loader-star') +
       GQ.knit.text(String(GQ.cfg.textes.accueil.titre).toUpperCase(), { cls: 'loader-title', alt: '', outline: true, color: '#E4323A' }) +
-      '<p class="pixel-text loader-text">' + GQ.t(T.chargement.texte) + '<span class="cursor">_</span></p>' +
+      '<p class="loader-text">' + GQ.t(T.chargement.texte) + '</p>' +
       '<span class="loader-cells" aria-hidden="true">' + cells + '</span>' +
       '</div>' +
-      '<div class="loader-elf" aria-hidden="true"><img class="pixel" src="' + GQ.knit.src('elfWalk1') + '" alt=""><img class="pixel" src="' + GQ.knit.src('elfWalk2') + '" alt=""></div>' +
       '<div class="loader-logo">' + GQ.logo('clair') + '</div>';
     el.classList.add('is-on');
     var hide = function () {

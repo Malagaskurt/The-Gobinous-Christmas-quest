@@ -227,10 +227,14 @@ Le gel résiste au rechargement de la page. Pendant le gel, seul le bouton des r
 | Étape | Si l'équipe bloque |
 |---|---|
 | Mot secret d'un étage | Après 3 mauvais mots, un encadré rappelle où chercher et invite à appeler l'organisation (« Un souci ? »). Réglage : `config/textes.js` → `acces.secoursApres`. |
-| Quête 1 · quiz | Après le blocage, le quiz est validé d'office. Deviner l'étage : indice bonus après la 1re erreur. |
-| Quêtes 2 et 4 | Après le gel, l'étape est validée d'office. |
+| Quête 1 · quiz | 2 thèmes ratés : gel, puis le quiz est validé d'office. Deviner l'étage : indice bonus après la 1re erreur ; à la 2e, gel puis le lutin donne l'étage. |
+| Quêtes 2 et 4 | 2 erreurs sur une même énigme : 45 s de gel, puis elle est validée d'office. |
 | Quête 3 · photos | La photo reprise après le refus du lutin est toujours acceptée. |
-| Quête 5 · TOKYO | Après 3 mauvais codes : **indice de secours**. Au 4e : **la réponse est donnée** (plus de gel). Réglages : `config/quetes.js` → `traque.indiceApres` / `reponseApres`. |
+| Quête 5 · TOKYO | 2 erreurs : gel, puis on retente. Au 3e mauvais code : **indice de secours**. Au 4e : **la réponse est donnée** (plus de gel). Réglages : `config/quetes.js` → `traque.indiceApres` / `reponseApres`. |
+
+### Direction artistique
+
+Univers « Noël premium », aligné sur le portrait 3D de Barnabé : illustrations en relief doux générées en SVG (`js/art.js` : cadeau, sapin, Tour, étoile…), cartes arrondies, titres en Montserrat, guirlande lumineuse et skyline animée. Le lutin qui parle, c'est Barnabé : son portrait reste **flouté et en noir et blanc** tant que l'équipe ne l'a pas démasqué (fin de la quête 4), puis il apparaît en couleur et danse sur l'écran de fin. Les écrans « informatiques » (terminal du Support 44, caméra de la quête 5) gardent leur police de terminal.
 
 ### Mode hors ligne
 

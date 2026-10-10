@@ -35,7 +35,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "SAPIN",
     titre: "Le point de départ",
     histoire:
-      "Barnabé, le lutin du Gobinous Christmas Club, a caché le Cadeau Officiel de Noël ! Sans lui, pas de fête.\n\nLe code secret vous sera donné par les organisateurs au top départ.",
+      "Barnabé, le lutin rebelle du Gobinous Christmas Club, a volé le Cadeau Officiel ! Sans lui, pas de fête.\n\nLe code secret vous sera donné par les organisateurs au top départ.",
   },
 
   2: {
@@ -44,7 +44,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "LUTIN",
     titre: "Cap sur l'étage 5",
     histoire:
-      "Bien vu ! Direction le coin café du 5ᵉ étage, près du mur végétal. Le mot secret vous y attend.",
+      "Bien vu ! Barnabé a fait une pause café au 5ᵉ étage, près du mur végétal… et il y a oublié quelque chose. Montez : le mot secret est affiché sur place.",
   },
 
   3: {
@@ -53,7 +53,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "GUIRLANDE",
     titre: "Cap sur l'étage 23",
     histoire:
-      "Le verre a livré son secret ! Cap sur le 23ᵉ étage, là où la matière prend vie avec les plus belles solutions Saint-Gobain.",
+      "« La clé du mystère est le verre »… Le verre, c'est la spécialité de Saint-Gobain ! Cap sur l'espace matériaux du 23ᵉ étage : Barnabé y a planqué un nouvel indice.",
   },
 
   4: {
@@ -62,7 +62,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "ETOILE",
     titre: "Cap sur l'étage 20",
     histoire:
-      "Épuisé par vos talents de comédiens, le lutin vous laisse passer. Descendez au 20ᵉ étage, au Support 44 : là où naissent les badges de la tour.",
+      "Bluffé par vos photos, Barnabé a lâché une info sans le vouloir : il a perdu son badge au Support 44, là où naissent les badges de la Tour. Descendez au 20ᵉ étage !",
   },
 
   5: {
@@ -71,6 +71,6 @@ window.GAME_CONFIG.etapes = {
     motSecret: "CADEAU",
     titre: "Cap sur l'étage 33",
     histoire:
-      "BADGE LOCALISÉ ! Celui de Barnabé SIX-SEVEN vient de biper au 33ᵉ étage. Il s'y cache avec le cadeau. Montez, vite !",
+      "BADGE LOCALISÉ ! Celui de Barnabé SIX-SEVEN vient de biper au 33ᵉ étage. Il s'y cache avec le Cadeau Officiel. Montez, vite !",
   },
 };

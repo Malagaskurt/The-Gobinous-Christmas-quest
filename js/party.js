@@ -147,7 +147,7 @@
       html:
         header() +
         '<main class="screen screen-plain">' +
-        '<div class="center-head">' + GQ.knit.icon('tree', 'head-ico') + '<p class="kicker">Gobinous</p>' + C.knitTitle(PC.titre.replace(/^Christmas\s+/i, '')) + '</div>' +
+        '<div class="center-head">' + GQ.knit.icon('tree', 'head-ico') + '<p class="kicker">Gobi\'Christmas</p>' + C.knitTitle(PC.titre.replace(/^(Gobi'|Gobi’)?Christmas\s+/i, '')) + '</div>' +
         GQ.elfTalk('<p>' + t(PC.codeBulle) + '</p>') +
         C.textAnswer({ form: 'party-code', label: PC.codeLabel, button: 'Entrer', caps: true, max: 20, fieldCls: 'field-code', btnCls: 'btn-red', expected: [PC.code] }) +
         '</main>',
@@ -163,7 +163,7 @@
       html:
         header() +
         '<main class="screen screen-plain">' +
-        '<div class="center-head"><p class="kicker">Gobinous</p>' + C.knitTitle(PC.titre.replace(/^Christmas\s+/i, '')) + '</div>' +
+        '<div class="center-head"><p class="kicker">Gobi\'Christmas</p>' + C.knitTitle(PC.titre.replace(/^(Gobi'|Gobi’)?Christmas\s+/i, '')) + '</div>' +
         GQ.elfTalk('<p class="elf-talk-big">' + t(PC.bulle) + '</p><p>' + t(PC.texte) + '</p><p>' + t(PC.defiTexte) + '</p>') +
         C.textAnswer({ form: 'party-name', label: PC.nomLabel, button: PC.nomBouton, placeholder: PC.nomPlaceholder, max: 40, btnCls: 'btn-red' }) +
         '</main>',

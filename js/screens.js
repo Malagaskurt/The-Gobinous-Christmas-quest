@@ -582,8 +582,7 @@
       html += freezeView({ titre: F.gelTitre, suite: F.gelSuite });
     } else {
       if (bonus) {
-        html += '<p class="degel">' + t(phrase('degel', 'etage')) + '</p>' +
-          '<div class="joker-hint bonus-hint" role="note"><p class="joker-hint-title">' + icon('etoile') + esc(F.bonusTitre) + '</p><p>' + t(F.bonus) + '</p></div>';
+        html += '<div class="joker-hint bonus-hint" role="note"><p class="joker-hint-title">' + icon('etoile') + esc(F.bonusTitre) + '</p><p>' + t(F.bonus) + '</p></div>';
       }
       html += '<h2 class="section-title">' + t(F.question) + '</h2>' +
         textAnswer({ form: 'floor', label: F.label, button: F.bouton, numeric: true, max: 12, fieldCls: 'field-code', expected: F.reponses });
@@ -599,7 +598,12 @@
 
   function quest1() {
     GQ.quizCheckPass();
-    GQ.freezeCheck();
+    if (GQ.freezeCheck() === 'etage') {
+      // 2 erreurs sur l'étage : à la fin du gel, le lutin le donne.
+      GQ.toast(QZ.etage.gelPasse, 'info');
+      GQ.redirect('quete/2');
+      return { key: 'redirect', html: '' };
+    }
     var ph = GQ.state.phase[1];
     var X = QZ.textes;
     if (ph === 'intro') return introScreen(1);
