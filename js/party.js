@@ -140,9 +140,9 @@
       html:
         header() +
         '<main class="screen screen-plain">' +
-        '<div class="center-head">' + GQ.knit.icon('tree', 'head-ico') + '<p class="kicker">Gobinous</p>' + C.knitTitle(PC.titre.replace(/^Christmas\s+/i, ''), { max: 9 }) + '</div>' +
+        '<div class="center-head">' + GQ.knit.icon('tree', 'head-ico') + '<p class="kicker">Gobinous</p>' + C.knitTitle(PC.titre.replace(/^Christmas\s+/i, '')) + '</div>' +
         GQ.elfTalk('<p>' + t(PC.codeBulle) + '</p>') +
-        C.textAnswer({ form: 'party-code', label: PC.codeLabel, button: 'Entrer', caps: true, max: 20, fieldCls: 'field-code', btnCls: 'btn-gold', expected: [PC.code] }) +
+        C.textAnswer({ form: 'party-code', label: PC.codeLabel, button: 'Entrer', caps: true, max: 20, fieldCls: 'field-code', btnCls: 'btn-red', expected: [PC.code] }) +
         '</main>',
     };
   }
@@ -156,9 +156,9 @@
       html:
         header() +
         '<main class="screen screen-plain">' +
-        '<div class="center-head"><p class="kicker">Gobinous</p>' + C.knitTitle(PC.titre.replace(/^Christmas\s+/i, ''), { max: 9 }) + '</div>' +
+        '<div class="center-head"><p class="kicker">Gobinous</p>' + C.knitTitle(PC.titre.replace(/^Christmas\s+/i, '')) + '</div>' +
         GQ.elfTalk('<p class="elf-talk-big">' + t(PC.bulle) + '</p><p>' + t(PC.texte) + '</p><p>' + t(PC.defiTexte) + '</p>') +
-        C.textAnswer({ form: 'party-name', label: PC.nomLabel, button: PC.nomBouton, placeholder: PC.nomPlaceholder, max: 40, btnCls: 'btn-gold' }) +
+        C.textAnswer({ form: 'party-name', label: PC.nomLabel, button: PC.nomBouton, placeholder: PC.nomPlaceholder, max: 40, btnCls: 'btn-red' }) +
         '</main>',
     };
   }
@@ -175,7 +175,7 @@
       '<p class="gobz-hello">' + esc(me.nom) + '</p>' +
       '<div class="gobz-count">' + GQ.pix('coin', 'gobz-coin') +
       '<span class="sr-only">' + esc(money(total())) + '</span>' +
-      GQ.knit.text(String(total()), { alt: '', color: '#F2C14E', outline: true, cls: 'gobz-img' }) +
+      GQ.knit.text(String(total()), { alt: '', color: '#00ADE1', outline: true, cls: 'gobz-img' }) +
       '<span class="gobz-unit">' + esc(PC.monnaie) + '</span></div>' +
       '<p class="gobz-meta">' + Object.keys(me.done).length + ' / ' + PC.defis.length + ' défis' +
       (r ? ' · <b>' + (r === 1 ? '1er' : r + 'e') + '</b> sur ' + board.length : '') + '</p></div>';
@@ -220,7 +220,7 @@
       '<p class="proof-progress" data-progress' + (pv.sending ? '' : ' hidden') + '><i style="width:0"></i><span></span></p>' +
       C.feedbackSlot() +
       '<div class="btn-pair">' +
-      C.btn(icon('valide') + esc(PC.boutonValider.replace('{points}', d.points).replace('{monnaie}', PC.monnaie)), 'defi-send', '', 'btn-gold') +
+      C.btn(icon('valide') + esc(PC.boutonValider.replace('{points}', d.points).replace('{monnaie}', PC.monnaie)), 'defi-send', '', 'btn-red') +
       C.btn(esc(PC.boutonReprendre), 'defi-cancel', '', 'btn-secondary') +
       '</div></section>';
   }
@@ -237,7 +237,7 @@
         scoreHtml() +
         (pv ? previewHtml(pv) : '') +
         '<div class="center-head party-list-head"><p class="kicker">' + t(PC.listeSousTitre) + '</p>' +
-        C.knitTitle(PC.listeTitre, { max: 10 }) + '</div>' +
+        C.knitTitle(PC.listeTitre) + '</div>' +
         '<ul class="defis">' + PC.defis.map(function (d, i) { return cardHtml(d, i + 1); }).join('') + '</ul>' +
         '<section class="party-board" data-board>' + boardHtml() + '</section>' +
         '<p class="center"><button type="button" class="btn btn-ghost" data-action="party-rename">Changer de nom</button></p>' +
@@ -303,8 +303,8 @@
     var d = defi(n);
     if (!d) return;
     var done = me.done[n];
-    var photo = '<button type="button" class="btn btn-gold" data-action="defi-camera" data-n="' + n + '">' + icon('photo') + esc(PC.boutonPhoto) + '</button>';
-    var video = '<label class="btn ' + (d.video ? 'btn-gold' : 'btn-secondary') + ' btn-file">' + GQ.pix('play', 'btn-pix') + esc(PC.boutonVideo) +
+    var photo = '<button type="button" class="btn btn-red" data-action="defi-camera" data-n="' + n + '">' + icon('photo') + esc(PC.boutonPhoto) + '</button>';
+    var video = '<label class="btn ' + (d.video ? 'btn-red' : 'btn-secondary') + ' btn-file">' + GQ.pix('play', 'btn-pix') + esc(PC.boutonVideo) +
       '<input type="file" accept="video/*" capture="environment" data-defi-file="' + n + '"></label>';
     var gallery = '<label class="btn btn-secondary btn-file">' + GQ.pix('star', 'btn-pix') + esc(PC.boutonGalerie) +
       '<input type="file" accept="image/*,video/*" data-defi-file="' + n + '"></label>';

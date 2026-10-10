@@ -46,7 +46,7 @@ PAL = {
     "b": (23, 66, 140), "B": (14, 42, 94),
     "c": (0, 173, 225), "C": (143, 220, 245),
     "r": (200, 16, 46), "R": (142, 10, 32),
-    "m": (120, 20, 40), "y": (255, 204, 77),
+    "m": (120, 20, 40), "y": (143, 220, 245),
     "p": (255, 170, 200), "P": (230, 110, 150),
     "n": (90, 60, 40), "o": (60, 40, 28),
 }
@@ -227,15 +227,15 @@ def tree(img, x, y, t):
     """Petit sapin du bureau, guirlande qui clignote."""
     g = [
         "....y....",
-        "....g....",
-        "...ggg...",
-        "..ggggg..",
-        "...ggg...",
-        "..ggggg..",
-        ".ggggggg.",
-        "..ggggg..",
-        ".ggggggg.",
-        "ggggggggg",
+        "....b....",
+        "...bbb...",
+        "..bbbbb..",
+        "...bbb...",
+        "..bbbbb..",
+        ".bbbbbbb.",
+        "..bbbbb..",
+        ".bbbbbbb.",
+        "bbbbbbbbb",
         "....n....",
         "...ooo...",
     ]
@@ -243,7 +243,7 @@ def tree(img, x, y, t):
     lights = [(3, 3), (5, 5), (2, 6), (6, 8), (3, 9), (5, 9)]
     for i, (lx, ly) in enumerate(lights):
         on = (int(t * 4) + i) % 3 != 0
-        rect(img, x + lx * 2, y + ly * 2, 2, 2, ("r", "c", "y")[i % 3] if on else "G")
+        rect(img, x + lx * 2, y + ly * 2, 2, 2, ("r", "c", "W")[i % 3] if on else "B")
 
 
 # ---------------------------------------------------------------------------
@@ -285,8 +285,8 @@ def room(img, t, desk=False):
     rect(img, 66, 18, 3, 76, "k")  # montant de la fenêtre
     # guirlande au-dessus de la fenêtre
     for x in range(8, 127, 6):
-        rect(img, x, 15 + (1 if (x // 6) % 2 else 0), 6, 1, "G")
-        rect(img, x + 2, 17, 2, 2, ("r", "y", "c")[(x // 6 + int(t * 3)) % 3])
+        rect(img, x, 15 + (1 if (x // 6) % 2 else 0), 6, 1, "B")
+        rect(img, x + 2, 17, 2, 2, ("r", "W", "c")[(x // 6 + int(t * 3)) % 3])
     # sol
     rect(img, 0, 132, W, 48, (24, 52, 110))
     for y in range(136, 180, 6):
@@ -363,8 +363,8 @@ def monitor(img, x, y, t):
             rect(img, xx, yy, 1, 1, "W" if shine else ("c" if (xx + yy) % 2 else "C"))
     rect(img, cx - 4, y + 14, 9, 2, "C")
     rect(img, cx - 5, y + 20, 11, 1, "C")
-    text(img, "634", x + 22, y + 6, "y")
-    text(img, "M", x + 34, y + 16, "y")
+    text(img, "634", x + 22, y + 6, "W")
+    text(img, "M", x + 34, y + 16, "W")
     rect(img, x + 22, y + 26, 20 if int(t * 3) % 2 else 12, 2, "c")
 
 

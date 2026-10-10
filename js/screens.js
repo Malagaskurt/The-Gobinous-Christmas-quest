@@ -58,7 +58,7 @@
   function knitTitle(text, opts) {
     opts = opts || {};
     return '<h1 class="k-title ' + (opts.cls || '') + '" tabindex="-1"><span class="sr-only">' + t(text) + '</span>' +
-      GQ.knit.title(plain(text), { alt: '', color: opts.color, max: opts.max || 10, outline: true, cls: 'k-title-img' }) + '</h1>';
+      GQ.knit.title(plain(text), { alt: '', color: opts.color, cols: opts.cols, outline: true, cls: 'k-title-img' }) + '</h1>';
   }
   GQ.knitTitle = knitTitle;
 
@@ -382,7 +382,7 @@
       html:
         miniHeader() +
         '<main class="screen screen-plain screen-board">' +
-        '<div class="center-head">' + knitTitle(PL.titre, { max: 8 }) + '</div>' +
+        '<div class="center-head">' + knitTitle(PL.titre) + '</div>' +
         GQ.board.html() +
         frame('<ul class="legend">' + PL.regles.map(function (r) {
           return '<li>' + GQ.knit.icon(r.icone, 'legend-ico') + '<span>' + t(r.texte, GQ.ruleVars()) + '</span></li>';
@@ -478,7 +478,7 @@
         '<section class="success reveal">' +
         '<div class="success-art">' + themeIcon(theme, true) + '</div>' +
         '<p class="kicker">' + t(theme.revelation) + '</p>' +
-        knitTitle(theme.titre, { color: '#E4323A', max: 9 }) +
+        knitTitle(theme.titre, { color: '#E4323A' }) +
         frame('<p>' + t(theme.revelationTexte) + '</p>', 'frame-center') +
         '</section>' +
         cta(btn(esc(X.revelationBouton) + icon('fleche'), 'quiz-reveal', '', 'btn-red')),

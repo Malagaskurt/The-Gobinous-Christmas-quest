@@ -171,7 +171,7 @@
         (opts.knit ? GQ.knit.icon(opts.knit, 'modal-knit') : opts.icon ? '<div class="modal-icon">' + GQ.icon(opts.icon) + '</div>' : '') +
         (opts.sheet
           ? '<h2 id="modal-title" class="sheet-title"><span class="sr-only">' + t(opts.title) + '</span>' +
-            GQ.knit.title(String(opts.title).toUpperCase(), { alt: '', max: 10, outline: true, cls: 'k-title-img' }) + '</h2>'
+            GQ.knit.title(String(opts.title).toUpperCase(), { alt: '', outline: true, cls: 'k-title-img' }) + '</h2>'
           : '<h2 id="modal-title" class="modal-title">' + t(opts.title) + '</h2>') +
         (opts.html || (opts.text ? '<p>' + t(opts.text) + '</p>' : '')) +
         '<div class="modal-actions">' +

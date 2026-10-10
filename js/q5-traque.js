@@ -371,7 +371,7 @@
         '<div class="finale-inner">' +
         GQ.logo('clair', 'finale-logo') +
         '<p class="kicker">' + GQ.icon('etoile') + ' Fin de l\'aventure ' + GQ.icon('etoile') + '</p>' +
-        C.knitTitle(R.finTitre, { color: '#E4323A', max: 9 }) +
+        C.knitTitle(R.finTitre, { color: '#E4323A' }) +
         '<p class="finale-sub">' + t(R.finSousTitre) + '</p>' +
         '<div class="finale-scene">' + GQ.knit.scene('finale-knit') + '</div>' +
         '<p class="finale-lead">' + t(R.finTexte, { equipe: s.team || '' }) + '</p>' +
@@ -383,7 +383,7 @@
         '<section class="finale-card"><h2>' + t(R.finConsignesTitre) + '</h2><ul>' +
         R.finConsignes.map(function (x) { return '<li><span class="finale-ico" aria-hidden="true">' + GQ.pix(x.icone) + '</span><span>' + t(x.texte) + '</span></li>'; }).join('') +
         '</ul></section>' +
-        '<p class="finale-voeux">' + GQ.knit.title(R.finVoeux, { alt: C.plain(R.finVoeux), max: 12, color: '#E4323A', outline: true, cls: 'finale-voeux-img' }) + '</p>' +
+        '<p class="finale-voeux">' + GQ.knit.title(R.finVoeux, { alt: C.plain(R.finVoeux), color: '#E4323A', outline: true, cls: 'finale-voeux-img' }) + '</p>' +
         '<p class="finale-sign">— ' + t(R.finSignature) + '</p>' +
         '<p class="finale-date">' + t(T.fin.termineeLe, {
           date: d.toLocaleDateString('fr-FR'),

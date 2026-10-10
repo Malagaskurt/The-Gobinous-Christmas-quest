@@ -85,12 +85,11 @@
         '<span class="prog-num" aria-hidden="true">' + ('0' + (i + 1)).slice(-2) + '</span>' +
         '<span class="prog-art">' + GQ.knit.icon(x.icone || 'star', 'prog-ico') + '</span>' +
         '<span class="prog-body">' +
-        '<span class="prog-kicker">Gobinous</span>' +
         '<span class="prog-name">' + t(x.nom) + '</span>' +
         '<span class="prog-text">' + t(x.texte) + '</span>' +
-        (x.badge ? '<span class="prog-badge">' + t(x.badge) + '</span>' : '') +
         '</span>' +
-        (x.bouton ? '<span class="prog-go">' + t(x.bouton) + icon('fleche') + '</span>' : '') +
+        '<span class="prog-foot">' + (x.badge ? '<span class="prog-badge">' + t(x.badge) + '</span>' : '<span></span>') +
+        (x.bouton ? '<span class="prog-go">' + t(x.bouton) + icon('fleche') + '</span>' : '') + '</span>' +
         '</a></li>';
     }).join('');
     return {
@@ -99,7 +98,7 @@
       html:
         clubHeader({ href: '', label: 'Accueil' }) +
         '<main class="screen screen-plain screen-programme">' +
-        '<div class="center-head">' + C.knitTitle(P.titre, { max: 9 }) +
+        '<div class="center-head">' + C.knitTitle(P.titre) +
         (P.intro ? '<p class="prog-intro">' + t(P.intro) + '</p>' : '') + '</div>' +
         '<ol class="prog">' + cards + '</ol>' +
         '</main>',
@@ -121,7 +120,7 @@
         clubHeader({ href: 'programme', label: 'Programme' }) +
         '<main class="screen screen-plain screen-info">' +
         '<div class="center-head">' + GQ.knit.icon(temps.icone || 'star', 'head-ico') +
-        '<p class="kicker">Gobinous</p>' + C.knitTitle(I.titre.replace(/^Christmas\s+/i, ''), { max: 9 }) + '</div>' +
+        '<p class="kicker">Gobinous</p>' + C.knitTitle(I.titre.replace(/^Christmas\s+/i, '')) + '</div>' +
         GQ.elfTalk('<p class="elf-talk-big">' + t(I.bulle) + '</p><p>' + t(I.texte) + '</p>') +
         '<ul class="info-list">' + I.points.map(function (p) {
           return '<li><span class="info-ico">' + GQ.pix(p.icone) + '</span><span>' + t(p.texte) + '</span></li>';

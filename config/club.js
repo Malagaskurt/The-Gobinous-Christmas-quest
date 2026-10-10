@@ -68,7 +68,7 @@ window.GAME_CONFIG.club = {
         nom: "Christmas Wrap-Up",
         texte: "5 questions, 1 minute : votre avis sur la soirée.",
         badge: "100 % anonyme",
-        bouton: "Donner mon avis",
+        bouton: "Mon avis",
       },
     ],
   },

@@ -290,15 +290,26 @@
   var KNIT_PAL = {
     r: '#E4323A', R: '#A3141F', w: '#F6EFE2', W: '#FFFFFF', s: '#F3C7A1', S: '#D9967A',
     b: '#3B78D4', B: '#2A5DB0', c: '#00ADE1', C: '#9EE0F5', k: '#0A1F45', n: '#17428C', m: '#1B4A99', p: '#E2D7C3', d: '#0E2A5E',
-    y: '#F2C14E', g: '#2E9E6E',
+    y: '#9EE0F5', g: '#00ADE1',
   };
 
-  function wrapWords(text, max) {
+  /* Largeur d'une ligne de texte brodé, en mailles. */
+  function textCols(line) {
+    return String(line).toUpperCase().split('').reduce(function (n, c, i) {
+      var g = FONT[ACCENTS[c] || c] || FONT[' '];
+      return n + g[0].length + (i ? 1 : 0);
+    }, 0);
+  }
+
+  /* Coupe un titre seulement s'il ne tient pas sur une ligne : la limite
+   * est une largeur en mailles (88 ≈ la largeur d'un téléphone), pas un
+   * nombre de lettres. */
+  function wrapWords(text, maxCols) {
     var lines = [];
     String(text).split('\n').forEach(function (part) {
       var line = '';
       part.split(' ').forEach(function (w) {
-        if (line && (line + ' ' + w).length > max) { lines.push(line); line = w; }
+        if (line && textCols(line + ' ' + w) > maxCols) { lines.push(line); line = w; }
         else line = line ? line + ' ' + w : w;
       });
       if (line) lines.push(line);
@@ -363,10 +374,13 @@
 
   Object.assign(GQ.knit, {
     PAL: KNIT_PAL,
-    /* Titre brodé avec retour à la ligne automatique. */
+    /* Titre brodé, sur une seule ligne s'il tient, sinon coupé entre
+     * deux mots (opts.cols : largeur maximale en mailles). */
     title: function (text, opts) {
       opts = opts || {};
-      return GQ.knit.text(wrapWords(String(text).toUpperCase(), opts.max || 10), opts);
+      // La ponctuation française (« ? », « ! », « : ») reste collée au mot.
+      var s = String(text).toUpperCase().replace(/ ([?!:;])/g, '\u00A0$1');
+      return GQ.knit.text(wrapWords(s, opts.cols || 88), opts);
     },
     /* Pictogramme ou personnage pixel (pixel.js) rendu en tricot. */
     icon: function (name, cls, alt) {

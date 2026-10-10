@@ -61,7 +61,7 @@
   screens.wrapup = function () {
     var head = GQ.clubHeader({ href: 'programme', label: 'Programme' }) +
       '<main class="screen screen-plain screen-wrapup">' +
-      '<div class="center-head">' + GQ.knit.icon('check', 'head-ico') + '<p class="kicker">Gobinous</p>' + C.knitTitle(W.titre.replace(/^Christmas\s+/i, ''), { max: 9 }) + '</div>';
+      '<div class="center-head">' + GQ.knit.icon('check', 'head-ico') + '<p class="kicker">Gobinous</p>' + C.knitTitle(W.titre.replace(/^Christmas\s+/i, '')) + '</div>';
     if (me.envoye && !GQ.ui.edit) {
       return {
         key: 'wrapup-merci',

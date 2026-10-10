@@ -17,9 +17,9 @@
     c: '#00ADE1', // bleu clair
     C: '#8FDCF5', // bleu très clair
     k: '#0A1F45', // contours, yeux
-    y: '#F2C14E', // or (cloches, phares)
-    g: '#2E9E6E', // vert (bonnet de Barnabé)
-    n: '#6B4A2E', // bois
+    y: '#8FDCF5', // bleu ciel clair (cloches, phares, fenêtres)
+    g: '#00ADE1', // bleu ciel
+    n: '#17428C', // bleu
   };
 
   function svg(grid, opts) {
