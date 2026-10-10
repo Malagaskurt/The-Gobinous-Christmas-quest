@@ -314,6 +314,6 @@ window.GAME_CONFIG.quetes = {
     /* Écran de fin : grand titre, lutin qui danse, consigne en petit. */
     finTitre: "Mission presque accomplie",
     finTexte: "Bravo **{equipe}**",
-    finConsigne: "Rendez-vous à La Verrière avec le colis choisi pour découvrir ce qu'il contient.",
+    finConsigne: "Retour à La Verrière (4ᵉ étage) avec le colis choisi pour découvrir ce qu'il contient.",
   },
 };

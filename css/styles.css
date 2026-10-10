@@ -1779,3 +1779,56 @@ body::before, body::after { opacity: 0.45; }
 @keyframes talk-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .talk-pop .typing { display: none; } .talk-pop .talk-text { opacity: 1; animation: none; } }
 .modal.modal-sheet { background: var(--night) !important; box-shadow: none !important; border-radius: 0 !important; }
+
+/* Ascenseur de la map (entre deux étapes). */
+.access-kicker { margin: 4px 0 12px; }
+.map-compact { max-width: 340px; margin: 0 auto 18px; }
+.map-compact .map-svg { max-height: 46vh; width: auto; margin: 0 auto; }
+.m-cabin { fill: #e3f6fc; opacity: 0.85; transition: transform 1.8s cubic-bezier(0.65, 0, 0.35, 1); }
+.m-cabin.is-moving { transform: translateY(var(--to)); }
+.m-team { transition: transform 1.8s cubic-bezier(0.65, 0, 0.35, 1); }
+
+/* =====================================================================
+ * FLAT STRICT
+ * Aucun relief : ni ombre portée, ni bouton « en épaisseur ». Titres en
+ * police gaming (VT323), textes en Montserrat : deux polices en tout.
+ * ===================================================================== */
+:root { --shadow-2d: none; }
+.btn, .btn-red, .btn-primary, .btn-gold, .btn-cream, .btn-secondary, .btn-ghost, .btn-joker, .btn-test, .btn-small {
+  box-shadow: none !important; text-shadow: none !important;
+}
+.btn-secondary, .btn-ghost, .btn-joker { box-shadow: inset 0 0 0 2px currentColor !important; }
+.btn:active:not(:disabled), .btn-red:active:not(:disabled), .btn-primary:active:not(:disabled), .btn-gold:active:not(:disabled), .btn-cream:active:not(:disabled) {
+  transform: scale(0.97) !important; box-shadow: none !important; filter: brightness(0.92);
+}
+.frame, .prog-card, .theme-card, .elf-talk-bubble, .roles-box, .modal, .rule, .pig-card, .id-card, .wq, .santa, .finale-card, .idscan-card,
+.vlog-card, .briefing, .push, .map, .barnabe, .elf-face, .idscan-status, .club-story, .alert-card, .notice, .rescue, .joker-hint, .model-card, .defi, .rank, .team-card, .admin-card {
+  box-shadow: none !important; filter: none !important;
+}
+.prog-card:active, .theme-card:active:not(:disabled) { transform: scale(0.985); box-shadow: none !important; }
+.roles-box { border: 2px solid rgba(23, 66, 140, 0.15) !important; }
+.theme-card.is-mystery, .idscan-card { border: 2px solid #2fc0ee !important; }
+.map { border: 1.5px solid rgba(255, 255, 255, 0.14); }
+.barnabe, .elf-face { border: 3px solid #fff; }
+.barnabe.is-masked img, .elf.is-masked .elf-sprite { filter: none !important; transform: none !important; }
+.barnabe.is-masked::after, .elf.is-masked .elf-face::after { content: none !important; display: none !important; }
+.club-knit.ptext, .home-knit-title.ptext, .loader-title.ptext { text-shadow: none !important; }
+
+/* Titres : police gaming. */
+.ptext, .k-title-img.ptext, .club-knit.ptext, .home-knit-title.ptext, .loader-title.ptext, .script-img.ptext, .score-img.ptext,
+.santa-img.ptext, .gobz-img.ptext, .lock-img.ptext, .success-title, .modal-title, .page-title, .m-name {
+  font-family: var(--font-pixel) !important; font-weight: 400 !important; letter-spacing: 0.04em;
+}
+.k-title-img.ptext { font-size: clamp(2.6rem, 11.5vw, 3.3rem); line-height: 0.95; text-transform: uppercase; }
+.club-knit.ptext, .home-knit-title.ptext { font-size: clamp(4rem, 21vw, 5.6rem); line-height: 0.9; letter-spacing: 0.06em; }
+.loader-title.ptext { font-size: 4rem; }
+.script-img.ptext { font-size: 2.8rem; }
+.score-img.ptext { font-size: 4.6rem; }
+.lock-img.ptext { font-size: 4.2rem; }
+.santa-img.ptext { font-size: 6.4rem; }
+.gobz-img.ptext { font-size: 3.8rem; }
+.success-title { font-size: 1.7rem !important; letter-spacing: 0.06em; }
+.modal-title { font-size: 1.6rem !important; text-transform: uppercase; }
+.m-name { font-size: 13px !important; letter-spacing: 1px; }
+.map-compact .map-svg { height: min(46vh, 420px); max-height: none; width: auto; max-width: 100%; }
+.map-compact { display: flex; justify-content: center; border: 0; }

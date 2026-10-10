@@ -354,7 +354,7 @@
             (E.rolesBulleSuite ? '<p>' + t(E.rolesBulleSuite) + '</p>' : '') + '</div>') + '</div>' +
           '<section class="roles-box">' +
           '<p class="roles-box-title">' + GQ.pix('bell', 'roles-box-pix') + t(E.rolesAlerteTitre) + '</p>' +
-          '<p class="roles-box-lead">' + t(E.rolesAlerte) + '</p>' +
+          (E.rolesAlerte ? '<p class="roles-box-lead">' + t(E.rolesAlerte) + '</p>' : '') +
           E.roles.map(function (r) {
             return '<div class="role-card"><span class="role-card-ico">' + GQ.pix(r.icone) + '</span><div><p class="role-card-name">' + t(r.nom) + '</p><p>' + t(r.texte) + '</p>' +
               (r.ou ? '<p class="role-card-where">' + icon('pin') + '<span>' + t(r.ou) + '</span></p>' : '') + '</div></div>';
@@ -422,13 +422,13 @@
     return {
       key: 'q' + n + '-access',
       elf: { say: 'lieu' },
-      after: runTypewriters,
+      after: function () { runTypewriters(); GQ.board.animate(); },
+      // Pas de titre « Cap sur l'étage » : l'ascenseur de la map monte
+      // jusqu'à la prochaine étape.
       html:
-        '<div class="quest-head">' +
-        GQ.knit.icon('pin', 'quest-ico') +
-        '<p class="kicker">' + t(A.kicker, { n: n }) + '</p>' +
-        knitTitle(st.titre || st.etage) +
-        '</div>' +
+        '<h1 class="sr-only" tabindex="-1">' + t(st.titre || st.etage) + '</h1>' +
+        '<p class="kicker access-kicker">' + t(A.kicker, { n: n }) + '</p>' +
+        GQ.board.html({ from: n - 1, compact: true }) +
         '<p class="floor-tag">' + icon('pin') + '<span>' + t(st.etage) + (st.lieu ? ' · ' + t(st.lieu) : '') + '</span></p>' +
         frame(typewriter('access-' + n, t(st.histoire), 'story')) +
         (A.consigne ? '<p class="muted center small">' + t(A.consigne) + '</p>' : '') +

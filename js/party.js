@@ -310,13 +310,12 @@
     var d = defi(n);
     if (!d) return;
     var done = me.done[n];
-    // Appareil photo intégré (photo ou vidéo avec le son) et galerie.
-    var canFilm = GQ.camera.canRecord();
+    // Photo : appareil photo du jeu. Vidéo : la caméra du téléphone, ouverte
+    // directement en mode vidéo (capture native : marche partout, sans
+    // limite de durée, avec le son). Galerie : photos et vidéos existantes.
     var photo = '<button type="button" class="btn ' + (d.video ? 'btn-secondary' : 'btn-red') + '" data-action="defi-camera" data-mode="photo" data-n="' + n + '">' + icon('photo') + esc(PC.boutonPhoto) + '</button>';
-    var video = canFilm
-      ? '<button type="button" class="btn ' + (d.video ? 'btn-red' : 'btn-secondary') + '" data-action="defi-camera" data-mode="video" data-n="' + n + '">' + icon('video') + esc(PC.boutonVideo) + '</button>'
-      : '<label class="btn ' + (d.video ? 'btn-red' : 'btn-secondary') + ' btn-file">' + icon('video') + esc(PC.boutonVideo) +
-        '<input type="file" accept="video/*" capture="environment" data-defi-file="' + n + '"></label>';
+    var video = '<label class="btn ' + (d.video ? 'btn-red' : 'btn-secondary') + ' btn-file">' + icon('video') + esc(PC.boutonVideo) +
+      '<input type="file" accept="video/*" capture="environment" data-defi-file="' + n + '"></label>';
     var gallery = '<label class="btn btn-secondary btn-file">' + icon('galerie') + esc(PC.boutonGalerie) +
       '<input type="file" accept="image/*,video/*" data-defi-file="' + n + '"></label>';
     GQ.modal({
@@ -343,7 +342,7 @@
   actions['defi-camera'] = function (el) {
     var n = Number(el.dataset.n);
     if (GQ.closeModal) GQ.closeModal();
-    GQ.camera.open({ titre: defi(n).titre, video: true, mode: el.dataset.mode }).then(function (blob) {
+    GQ.camera.open({ titre: defi(n).titre }).then(function (blob) {
       if (blob) choose(n, blob);
     });
   };

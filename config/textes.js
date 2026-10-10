@@ -104,18 +104,18 @@ window.GAME_CONFIG.textes = {
     rolesBulleSuite: "Maintenant, un chef et un reporter.",
     rolesAlerteTitre: "Attention : choisissez vos rôles avec soin !",
     rolesAlerte:
-      "Chacun assume son rôle à fond.",
+      "",
     roles: [
       {
         icone: "crown",
         nom: "Le Gobinous Capitaine",
-        texte: "Le leader : il motive, coordonne et guide la team jusqu'au bout.",
+        texte: "Il mène la team.",
       },
       {
         icone: "camera",
         nom: "Le Gobinous Reporter",
-        texte: "Le vidéaste : un max de photos et vidéos, façon vlog.",
-        ou: "Tout se dépose dans **Le Vlog des Gobinous** (programme, sous les temps forts).",
+        texte: "Il filme tout, façon vlog.",
+        ou: "Dépôt : **Le Vlog des Gobinous**, dans le programme.",
       },
     ],
     rolesNote: "",

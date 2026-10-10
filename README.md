@@ -32,7 +32,7 @@ Textes : `config/club.js` (accueil, programme, Battle), `config/party.js` (code,
 
 - Code secret demandé à l'entrée (donné par les organisateurs au bon moment), puis prénom ou nom d'équipe : on joue en solo ou à plusieurs.
 - Le lutin présente le goûter et la déco du sapin Gobinous (polaroïds, kit déco, petits mots), puis la bucket list.
-- Chaque défi s'ouvre sur trois choix : **prendre une photo** ou **filmer une vidéo** (appareil intégré avec onglets Photo / Vidéo, son compris, 60 s maximum), ou **choisir dans la galerie** (photo ou vidéo). Aperçu, puis « Valider (+N Gobz) » : la preuve part au serveur avec une barre de progression (vidéos jusqu'à 80 Mo).
+- Chaque défi s'ouvre sur trois choix : **prendre une photo** ou **filmer une vidéo** (la caméra du téléphone s'ouvre directement en mode vidéo : capture native, fiable sur iPhone et Android, son compris, sans limite de durée), ou **choisir dans la galerie** (photo ou vidéo). Aperçu, puis « Valider (+N Gobz) » : la preuve part au serveur avec une barre de progression (vidéos jusqu'à 80 Mo).
 - Les **Gobz** sont comptés par le serveur d'après `config/party.js` ; le total, le rang et le classement (top 10) se mettent à jour en direct, sans chrono.
 - Côté organisateurs (`#/suivi/party`) : classement, toutes les preuves (photos et vidéos), retrait d'un défi ou d'un joueur, export ZIP.
 
@@ -71,7 +71,7 @@ Composants tiers inclus : les polices **Montserrat** (remplaçante libre de Goth
 
 ### Direction artistique : « 2D gaming épuré »
 
-Aplats francs, ombres nettes décalées (sans flou ni reflets), deux polices seulement (Montserrat partout, VT323 pour les écrans de terminal), rouge réservé aux actions, décor de Noël discret. La map de la quête montre la Tour Saint-Gobain avec La Verrière (point de base, au 4ᵉ étage) à l'intérieur, et les 5 étapes réparties le long de la Tour, **sans aucun numéro d'étage**. Le contexte narratif s'affiche à l'entrée du jeu, pas sur l'accueil du site.
+Flat design strict (aucune ombre portée, aucun bouton en relief), deux polices seulement : VT323 (police gaming) pour les titres, Montserrat pour les textes. Barnabé apparaît en silhouette sombre dans un cercle tant qu'il n'est pas démasqué. Entre deux étapes, l'ascenseur de la map monte jusqu'à l'étape suivante. Appareil photo : si le navigateur refuse la caméra, un bouton ouvre l'appareil photo du téléphone, rouge réservé aux actions, décor de Noël discret. La map de la quête montre la Tour Saint-Gobain avec La Verrière (point de base, au 4ᵉ étage) à l'intérieur, et les 5 étapes réparties le long de la Tour, **sans aucun numéro d'étage**. Le contexte narratif s'affiche à l'entrée du jeu, pas sur l'accueil du site.
 
 ### Ancienne direction artistique : « Nuit de Noël tricotée »
 

@@ -244,9 +244,18 @@
     var Q = GQ.cfg.quetes || {};
     return (Q.enquete && Q.enquete.fiche && Q.enquete.fiche.photo) || 'assets/img/suspects/c.jpg';
   }
+  /* Silhouette sombre du troll (oreilles pointues, bonnet), tant qu'il
+   * n'est pas démasqué. */
+  var SILHOUETTE = 'data:image/svg+xml,' + encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='#17428C'/>" +
+    "<path d='M14 64C15 50 22 45 32 45S49 50 50 64Z' fill='#081634'/>" +
+    "<path d='M8 27L20 31L20 37ZM56 27L44 31L44 37Z' fill='#081634'/>" +
+    "<ellipse cx='32' cy='33' rx='13' ry='14' fill='#081634'/>" +
+    "<path d='M18 27Q18 10 32 10Q46 10 46 27Z' fill='#081634'/><circle cx='32' cy='9' r='3.5' fill='#081634'/>" +
+    "<circle cx='27' cy='33' r='1.8' fill='#2FC0EE'/><circle cx='37' cy='33' r='1.8' fill='#2FC0EE'/></svg>");
   function avatar(cls) {
     var m = unmasked();
-    return '<span class="barnabe ' + (cls || '') + (m ? '' : ' is-masked') + '" aria-hidden="true"><img src="' + esc(photo()) + '" alt="" draggable="false"></span>';
+    return '<span class="barnabe ' + (cls || '') + (m ? '' : ' is-masked') + '" aria-hidden="true"><img src="' + (m ? esc(photo()) : SILHOUETTE) + '" alt="" draggable="false"></span>';
   }
 
   /* ------------------------------------------------------------------ */
@@ -296,7 +305,7 @@
   K.title = ptext;
   K.scene = scene;
   GQ.pix = function (name, cls) { return img(name, 'pix ' + (cls || '')); };
-  GQ.art3d = { img: img, uri: uri, avatar: avatar, unmasked: unmasked, photo: photo };
+  GQ.art3d = { img: img, uri: uri, avatar: avatar, unmasked: unmasked, photo: photo, silhouette: SILHOUETTE };
 
   /* ------------------------------------------------------------------ */
   /* Guirlande lumineuse et skyline du pied de page                      */

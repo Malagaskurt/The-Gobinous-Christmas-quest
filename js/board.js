@@ -138,7 +138,11 @@
     var P = GQ.cfg.textes.plateau;
     var s = GQ.state;
     var cur = Math.min(5, Math.max(1, s.quest || 1));
-    var here = spot(cur - 1);
+    // opts.from : l'ascenseur part de cette étape et monte jusqu'à l'étape
+    // en cours (animation lancée par GQ.board.animate).
+    var from = opts.from != null ? Math.max(0, Math.min(4, opts.from - 1)) : cur - 1;
+    var here = spot(from);
+    var to = spot(cur - 1);
     var stars = '';
     for (var i = 0; i < 26; i++) {
       stars += '<circle cx="' + ((i * 67) % W) + '" cy="' + ((i * 41) % 200 + 6) + '" r="' + (i % 4 ? 0.9 : 1.6) + '" class="m-star" style="animation-delay:' + ((i * 0.31) % 3).toFixed(2) + 's"/>';
@@ -168,14 +172,26 @@
       '<path d="' + route() + '" class="m-route-glow"/>' +
       '<path d="' + route() + '" class="m-route" pathLength="100"/>' +
       [0, 1, 2, 3, 4].map(marker).join('') +
-      '<g class="m-team" style="transform:translate(' + here.x + 'px,' + (here.y - 12) + 'px)"><image href="' + GQ.knit.src('pin') + '" x="-11" y="-26" width="22" height="26"/></g>' +
+      '<rect class="m-cabin" data-cabin x="' + (TOWER.x + 6) + '" y="' + (here.y - 8) + '" width="' + (TOWER.w - 12) + '" height="16" rx="3" style="--to:' + (to.y - here.y) + 'px"/>' +
+      '<g class="m-team" data-team style="transform:translate(' + here.x + 'px,' + (here.y - 12) + 'px)" data-to="translate(' + to.x + 'px,' + (to.y - 12) + 'px)"><image href="' + GQ.knit.src('pin') + '" x="-11" y="-26" width="22" height="26"/></g>' +
       '</svg></div>'
     );
   }
 
   GQ.board = {
     html: html,
-    animate: function () { /* animations en CSS */ },
+    /* Ascenseur : la cabine et le repère de l'équipe glissent jusqu'à
+     * l'étape en cours. */
+    animate: function () {
+      var root = document.querySelector('[data-board]');
+      if (!root) return;
+      var team = root.querySelector('[data-team]');
+      var cabin = root.querySelector('[data-cabin]');
+      setTimeout(function () {
+        if (team) team.style.transform = team.getAttribute('data-to');
+        if (cabin) cabin.classList.add('is-moving');
+      }, 500);
+    },
   };
 
   /* La map pendant le jeu : bouton de progression en haut de l'écran. */

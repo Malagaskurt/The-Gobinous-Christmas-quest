@@ -6,7 +6,7 @@
 import { createRequire } from 'node:module';
 import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -608,7 +608,7 @@ await step('Appel de Barnabé puis écran de fin, conservé au rechargement', as
   await page.click('[data-action="paquet-validate"]');
   await settle();
   assert(await has('Mission presque accomplie'), 'écran de fin absent');
-  assert(await has('Les Testeurs') && await has('Rendez-vous à La Verrière avec le colis choisi'), 'consigne de fin absente');
+  assert(await has('Les Testeurs') && await has('Retour à La Verrière (4ᵉ étage) avec le colis choisi'), 'consigne de fin absente');
   assert((await page.locator('.dance-elf .dance-face.barnabe:not(.is-masked)').count()) === 1, 'Barnabé démasqué ne danse pas');
   const fete = await fetch(BASE + 'assets/audio/musique-fete.mp3');
   assert(fete.ok, 'musique de fin absente');
@@ -691,7 +691,8 @@ await step('Party : code 2020 obligatoire, nom, 20 défis avec appareil photo, v
   assert((await page.locator('.defi').count()) === 20, 'les 20 défis ne sont pas affichés');
   assert(await has('Treats & Chill') || await has('Treats &amp; Chill'), 'titre de la liste absent');
   await page.click('[data-action="defi-open"][data-n="12"]');
-  assert((await page.locator('.modal [data-action="defi-camera"][data-mode="video"]').count()) === 1, 'caméra vidéo non proposée');
+  // Vidéo : caméra du téléphone ouverte directement en mode vidéo.
+  assert((await page.locator('.modal input[type=file][accept="video/*"][capture="environment"]').count()) === 1, 'caméra vidéo non proposée');
   assert((await page.locator('.modal [data-action="defi-camera"][data-mode="photo"]').count()) === 1, 'appareil photo non proposé');
   assert((await page.locator('.modal input[type=file][accept="image/*,video/*"]').count()) === 1, 'galerie non proposée');
   await page.click('[data-modal-cancel]');
@@ -709,17 +710,22 @@ await step('Party : défi validé par photo → Gobz comptés par le serveur, cl
   const r = await (await fetch(BASE + 'api/party/classement')).json();
   const me = r.joueurs.find((x) => x.nom === 'Les Givrés');
   assert(me && me.points === pts, `points serveur inattendus : ${me && me.points}`);
-  // Vidéo filmée dans l'appareil du jeu (onglet Vidéo, avec le son).
+  // Vidéo filmée avec la caméra du téléphone (capture native).
   await page.click('[data-action="defi-open"][data-n="12"]');
-  await page.click('.modal [data-action="defi-camera"][data-mode="video"]');
-  await page.waitForFunction(() => { const v = document.querySelector('.cam video'); return v && v.videoWidth > 0; });
-  assert(await page.locator('.cam.is-video').count() === 1, 'mode vidéo non actif');
-  await page.click('.cam-shutter');
-  await page.waitForTimeout(1300);
-  await page.click('.cam-shutter');
+  await page.locator('.modal input[type=file][accept="video/*"][capture="environment"]').setInputFiles({
+    name: 'video-defi.webm', mimeType: 'video/webm', buffer: readFileSync(join(root, 'assets/video/barnabe.webm')),
+  });
   await page.waitForSelector('.proof video');
   await page.click('[data-action="defi-send"]');
   await page.waitForFunction(() => document.querySelectorAll('.defi.is-done').length === 2);
+  // Caméra refusée par le navigateur : repli sur l'appareil du téléphone.
+  await page.evaluate(() => { window.__gum = navigator.mediaDevices.getUserMedia; navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('occupée', 'NotReadableError')); });
+  await page.click('[data-action="defi-open"][data-n="1"]');
+  await page.click('.modal [data-action="defi-camera"]');
+  await page.waitForSelector('.cam-msg .cam-native input[type=file][capture="environment"]', { state: 'attached', timeout: 6000 });
+  assert(!(await has('Aucun appareil photo')), 'message « aucun appareil photo » encore affiché');
+  await page.click('.cam-close');
+  await page.evaluate(() => { navigator.mediaDevices.getUserMedia = window.__gum; });
   // Galerie : une vidéo envoyée depuis un fichier.
   await page.click('[data-action="defi-open"][data-n="8"]');
   await page.setInputFiles('.modal input[accept="image/*,video/*"]', { name: 'declaration.webm', mimeType: 'video/webm', buffer: Buffer.from('1a45dfa3', 'hex') });

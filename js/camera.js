@@ -43,12 +43,49 @@
     if (r) r(result || null);
   }
 
+  /* Message dans le viseur, avec une solution de repli : l'appareil photo
+   * natif du téléphone (champ fichier avec « capture »), qui fonctionne
+   * même quand le navigateur refuse le flux caméra. */
   function message(title, text) {
     var box = overlay && overlay.querySelector('.cam-msg');
     if (!box) return;
-    box.innerHTML = '<p class="cam-msg-title">' + esc(title) + '</p><p>' + esc(text) + '</p>';
+    var accept = mode === 'video' ? 'video/*' : 'image/*';
+    box.innerHTML = '<p class="cam-msg-title">' + esc(title) + '</p><p>' + esc(text) + '</p>' +
+      '<label class="btn btn-red btn-file cam-native">' + icon(mode === 'video' ? 'video' : 'photo') +
+      (mode === 'video' ? 'Filmer avec la caméra du téléphone' : 'Ouvrir l\'appareil photo du téléphone') +
+      '<input type="file" accept="' + accept + '" capture="environment"></label>';
     box.hidden = false;
     overlay.querySelector('.cam-shutter').disabled = true;
+    box.querySelector('input').addEventListener('change', function (e) {
+      var f = e.target.files && e.target.files[0];
+      if (f) close(f);
+    });
+  }
+
+  /* Demande du flux caméra, avec des contraintes de plus en plus souples
+   * (certains téléphones refusent une résolution ou le micro). */
+  function getStream() {
+    var md = navigator.mediaDevices;
+    var size = mode === 'video' ? { width: { ideal: 1280 }, height: { ideal: 720 } } : { width: { ideal: 1920 }, height: { ideal: 1440 } };
+    var tries = [
+      { audio: mode === 'video', video: Object.assign({ facingMode: { ideal: facing } }, size) },
+      { audio: false, video: { facingMode: { ideal: facing } } },
+      { audio: false, video: true },
+    ];
+    var i = 0;
+    var last = null;
+    function next() {
+      if (i >= tries.length) return Promise.reject(last);
+      var c = tries[i++];
+      return md.getUserMedia(c).catch(function (e) {
+        last = e;
+        // Autorisation refusée : inutile d'insister.
+        if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError') && !c.audio) throw e;
+        // Caméra encore occupée (changement de mode) : petite pause.
+        return new Promise(function (ok) { setTimeout(ok, 250); }).then(next);
+      });
+    }
+    return next();
   }
 
   function start() {
@@ -58,10 +95,7 @@
     overlay.querySelector('.cam-shutter').disabled = false;
     overlay.classList.toggle('is-front', facing === 'user');
     overlay.classList.toggle('is-video', mode === 'video');
-    return navigator.mediaDevices.getUserMedia({
-      audio: mode === 'video',
-      video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1440 } },
-    }).then(function (s) {
+    return getStream().then(function (s) {
       if (!overlay) { s.getTracks().forEach(function (tr) { tr.stop(); }); return; }
       stream = s;
       video.srcObject = s;
@@ -78,10 +112,10 @@
     }).catch(function (e) {
       var denied = e && (e.name === 'NotAllowedError' || e.name === 'SecurityError');
       message(
-        denied ? 'Appareil photo bloqué' : 'Appareil photo introuvable',
+        denied ? 'Accès à la caméra refusé' : 'Caméra indisponible ici',
         denied
-          ? 'Autorisez l\'accès à l\'appareil photo pour ce site (icône à gauche de l\'adresse, ou Réglages du téléphone → navigateur → Appareil photo), puis réessayez.'
-          : 'Aucun appareil photo n\'a été détecté sur cet appareil.'
+          ? 'Autorisez la caméra pour ce site (icône à gauche de l\'adresse), ou passez par l\'appareil du téléphone :'
+          : 'Pas de souci : passez par l\'appareil du téléphone.'
       );
     });
   }
@@ -116,8 +150,10 @@
     try {
       recorder = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
     } catch (e) {
-      message('Vidéo indisponible', 'Ce navigateur ne sait pas filmer ici. Utilisez « Galerie » pour envoyer une vidéo filmée avec l\'appareil du téléphone.');
-      return;
+      try { recorder = new MediaRecorder(stream); type = ''; } catch (e2) {
+        message('Vidéo indisponible ici', 'Filmez avec la caméra du téléphone :');
+        return;
+      }
     }
     chunks = [];
     recorder.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
@@ -127,7 +163,11 @@
       var blob = new Blob(chunks, { type: t.split(';')[0] });
       close(blob.size ? blob : null);
     };
-    recorder.start(500);
+    try { recorder.start(1000); } catch (e) {
+      recorder = null;
+      message('Vidéo indisponible ici', 'Filmez avec la caméra du téléphone :');
+      return;
+    }
     overlay.classList.add('is-recording');
     var t0 = Date.now();
     var draw = function () {

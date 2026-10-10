@@ -156,7 +156,9 @@
         '<div class="vlog-actions">' +
         '<label class="btn btn-red btn-file">' + icon('galerie') + esc(V.boutonGalerie) +
         '<input type="file" accept="image/*,video/*" multiple data-vlog-files></label>' +
-        '<button type="button" class="btn btn-secondary" data-action="vlog-camera">' + icon('video') + esc(V.boutonCamera) + '</button>' +
+        '<button type="button" class="btn btn-secondary" data-action="vlog-camera">' + icon('photo') + esc(V.boutonCamera) + '</button>' +
+        '<label class="btn btn-secondary btn-file">' + icon('video') + esc(V.boutonVideo || 'Filmer') +
+        '<input type="file" accept="video/*" capture="environment" data-vlog-files></label>' +
         '</div>' +
         (queue.length ? '<p class="small muted center">' + t(V.garderOuvert) + '</p><ul class="vlog-queue">' + queue.map(itemHtml).join('') + '</ul>' : '') +
         '<section data-mine>' + mineHtml() + '</section>' +
@@ -180,7 +182,7 @@
   };
 
   GQ.actions['vlog-camera'] = function () {
-    GQ.camera.open({ titre: V.titre, video: true }).then(function (blob) {
+    GQ.camera.open({ titre: V.titre }).then(function (blob) {
       if (!blob) return;
       var ext = /^video\//.test(blob.type) ? (blob.type === 'video/mp4' ? 'mp4' : 'webm') : 'jpg';
       var f;
