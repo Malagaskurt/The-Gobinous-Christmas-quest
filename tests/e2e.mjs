@@ -160,17 +160,25 @@ await step('Battle : page d\'information ; ancienne page Gift → Wrap-Up', asyn
   await go(BASE + '#/programme');
 });
 
-await step('Christmas Quest : accueil du jeu et bouton « Lancer la partie »', async () => {
+await step('Christmas Quest : le jeu s\'ouvre avec le code secret (SAPIN), rien avant', async () => {
   await page.click('.prog-quest');
   await settle();
   assert((await hash()) === '#/quest', 'accueil du jeu non affiché');
   assert(await has('CHRISTMAS QUEST'), 'titre absent');
-  assert(await has('Lancer la partie'), 'bouton absent');
+  assert(await has('Code secret du jeu') && !(await has('Lancer la partie')), 'le jeu doit commencer par le code');
   await noHorizontalScroll();
+  for (const h of ['#/equipe', '#/regles', '#/quete/1']) {
+    await go(BASE + h);
+    await page.waitForTimeout(200);
+    assert((await hash()) === '#/quest', `${h} accessible sans le code`);
+  }
+  await answer('NOEL');
+  assert(await has("Ce n'est pas le bon code"), 'mauvais code accepté');
+  await answer('  sapin ');
+  assert((await hash()) === '#/equipe', 'pas redirigé vers le nom d\'équipe');
 });
 
 await step('Nom d\'équipe vide refusé, puis accepté', async () => {
-  await clickText('Lancer la partie');
   await answer('   ');
   assert(await has("Indiquez un nom d'équipe"), 'message d\'erreur absent');
   await answer('Les Testeurs');
@@ -222,11 +230,8 @@ await step('Carte « Comment jouer ? » et règles plein écran dans la DA du je
   assert((await hash()) === '#/quete/1' && (await state()).clockStart, 'pas sur la quête 1');
 });
 
-await step('Mot secret du hall : refusé s\'il est faux, accepté sans tenir compte de la casse', async () => {
-  assert(await has('Mot secret de l\'étage'), 'écran du mot secret absent');
-  await answer('NOEL');
-  assert(await has("Ce n'est pas le mot secret"), 'mauvais mot accepté');
-  await answer('  sapin ');
+await step('Quête 1 ouverte directement (le code a été saisi à l\'entrée)', async () => {
+  assert(!(await has('Mot secret de l\'étage')), 'mot secret redemandé');
   assert(await has('Quiz Givré') && await has('Choisir un thème'), 'quête 1 non débloquée');
 });
 
@@ -584,7 +589,9 @@ await step('Tableau de bord : code, avancement, galerie photos, réinitialisatio
   const p2 = await other.newPage();
   await p2.goto(BASE + '#/quest');
   await p2.waitForSelector('#loader', { state: 'detached' });
-  await p2.getByText('Lancer la partie').first().click();
+  await p2.fill('.answer-form .field', 'SAPIN');
+  await p2.click('.answer-form button[type=submit]');
+  await p2.waitForTimeout(200);
   await p2.fill('.answer-form .field', 'Équipe B');
   await p2.click('.answer-form button[type=submit]');
   await p2.waitForTimeout(200);

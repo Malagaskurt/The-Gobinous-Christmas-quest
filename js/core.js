@@ -283,6 +283,12 @@
     return true;
   };
 
+  /* Code d'entrée du jeu pas encore saisi (mot secret de la quête 1). */
+  GQ.gameLocked = function () {
+    var s = GQ.state;
+    return s.quest === 1 && s.phase[1] === 'access';
+  };
+
   /* Quête n terminée : on passe à la saisie du mot secret de la suivante. */
   GQ.completeQuest = function (n) {
     var s = GQ.state;

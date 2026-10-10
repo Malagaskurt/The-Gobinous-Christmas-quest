@@ -40,6 +40,17 @@ window.GAME_CONFIG.textes = {
     noteDroite: "",
   },
 
+  /* Code d'entrée du jeu : demandé dès l'ouverture du Christmas Quest,
+   * avant le nom d'équipe. Le code attendu est le mot secret de la quête 1
+   * (config/etapes.js, « SAPIN »), donné par les organisateurs au top
+   * départ : personne ne peut lancer la partie en avance. */
+  entree: {
+    bulle: "Pas si vite ! Le jeu s'ouvre avec un code secret. Les organisateurs vous le donneront au top départ.",
+    label: "Code secret du jeu",
+    bouton: "Entrer dans le jeu",
+    erreur: "Ce n'est pas le bon code. Attendez le top départ des organisateurs !",
+  },
+
   /* Répliques du lutin (bulles). Une liste [ ] = une réplique tirée au
    * hasard. Laissez "" pour qu'il reste silencieux. */
   lutin: {

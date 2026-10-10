@@ -15,6 +15,11 @@
  *   histoire   : récit affiché (effet machine à écrire) sur l'écran de
  *                saisie : il guide l'équipe jusqu'à l'étage
  *
+ * Étape 1 : son mot secret est le CODE D'ENTRÉE du jeu, demandé dès
+ * l'ouverture du Christmas Quest (avant le nom d'équipe) ; les
+ * organisateurs le donnent au top départ (textes : config/textes.js →
+ * entree).
+ *
  * Les affichettes à imprimer (une page A4 par mot secret) sont générées
  * par le mode test : #/organisateur → « Affichettes des mots secrets ».
  *
@@ -30,7 +35,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "SAPIN",
     titre: "Le point de départ",
     histoire:
-      "Barnabé, le lutin du Gobinous Christmas Club, a caché le Cadeau Officiel de Noël ! Sans lui, pas de fête.\n\nPremier mot secret : il est affiché ici, dans le hall.",
+      "Barnabé, le lutin du Gobinous Christmas Club, a caché le Cadeau Officiel de Noël ! Sans lui, pas de fête.\n\nLe code secret vous sera donné par les organisateurs au top départ.",
   },
 
   2: {

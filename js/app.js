@@ -73,13 +73,16 @@
       case 'vlog':
         return GQ.screens.vlog();
       case 'equipe':
+        if (GQ.gameLocked()) return redirectTo('quest');
         return GQ.screens.team(r.arg);
       case 'regles':
+        if (GQ.gameLocked()) return redirectTo('quest');
         if (!s.team) return redirectTo('equipe');
         if (!s.roles) return redirectTo('equipe/roles');
         return GQ.screens.rules();
       case 'quete':
       case 'jeu':
+        if (GQ.gameLocked()) return redirectTo('quest');
         if (!s.team) return redirectTo('equipe');
         if (!s.roles) return redirectTo('equipe/roles');
         if (!s.rulesOk) return redirectTo('regles');

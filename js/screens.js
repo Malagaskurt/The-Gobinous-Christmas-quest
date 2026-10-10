@@ -289,7 +289,13 @@
     var A = T.accueil;
     var s = GQ.state;
     var opt = function (v, html) { return String(v || '').trim() ? html : ''; };
-    var action = s.team
+    var EN = T.entree;
+    // Jeu verrouillé tant que le code d'entrée (mot secret de la quête 1)
+    // n'a pas été saisi : personne ne peut lancer la partie en avance.
+    var action = GQ.gameLocked()
+      ? elfTalk('<p>' + t(EN.bulle) + '</p>') +
+        textAnswer({ form: 'gate', label: EN.label, button: EN.bouton, caps: true, max: 40, fieldCls: 'field-code', expected: [GQ.stage(1).motSecret], btnCls: 'btn-red' })
+      : s.team
       ? '<p class="home-resume">' + t(A.partieEnCours, { equipe: s.team }) + '</p>' + btn(esc(A.boutonReprendre) + icon('fleche'), 'resume', '', 'btn-red')
       : btn(esc(A.bouton) + icon('fleche'), 'start', '', 'btn-red');
     return {
@@ -309,7 +315,7 @@
         GQ.knit.scene('home-scene') +
         opt(A.accroche, '<p class="home-lead">' + t(A.accroche) + '</p>') +
         '</div>' +
-        '<div class="home-cta">' + action + '</div>' +
+        '<div class="home-cta' + (GQ.gameLocked() ? ' home-gate' : '') + '">' + action + '</div>' +
         '</main>',
     };
   };
@@ -830,6 +836,14 @@
   /* ------------------------------------------------------------------ */
   /* Formulaires                                                         */
   /* ------------------------------------------------------------------ */
+
+  forms.gate = function (form, value) {
+    if (!value.trim()) return formError(value, T.general.reponseVide);
+    if (!GQ.unlockQuest(1, value)) return formError(value, T.entree.erreur);
+    GQ.audio.sfx('unlock');
+    GQ.uiReset();
+    GQ.go('equipe');
+  };
 
   forms.team = function (form, value) {
     if (!value.trim()) return formError(value, T.equipe.erreurVide);

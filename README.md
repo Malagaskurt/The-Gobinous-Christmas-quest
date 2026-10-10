@@ -117,7 +117,7 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 
 | Étape | Étage · mot secret | Ce que fait l'équipe |
 |---|---|---|
-| Départ | Hall · `SAPIN` | Accueil, nom d'équipe, puis un encadré « Attention : choisissez vos rôles avec soin ! » fait nommer le **Gobinous Capitaine** (leader) et le **Gobinous Reporter** (photos et vidéos de l'événement, déposées dans le Vlog des Gobinous). Règles, puis mot secret du hall. |
+| Départ | Hall · `SAPIN` | **Code d'entrée du jeu** : `SAPIN` est demandé dès l'ouverture du Christmas Quest, avant tout le reste (personne ne peut lancer la partie en avance ; les organisateurs le donnent au top départ). Puis nom d'équipe, puis un encadré « Attention : choisissez vos rôles avec soin ! » fait nommer le **Gobinous Capitaine** (leader) et le **Gobinous Reporter** (photos et vidéos de l'événement, déposées dans le Vlog des Gobinous). Règles, puis la quête 1 s'ouvre directement. |
 | **Quête 1 · Quiz Givré** | Hall | Choisit un thème parmi 4 (Noël, Histoire de Saint-Gobain, La Tour Saint-Gobain, **Thème mystère**) et répond aux 8 questions. |
 | Premier indice | — | Lit l'indice (effet machine à écrire) et devine l'étage : **5**. |
 | **Quête 2 · Code Cristal** | 5ᵉ étage, coin café · `LUTIN` | Déchiffre un message en alphabet Pigpen avec la grille de décodage : « LA CLÉ DU MYSTÈRE EST LE VERRE ». |
