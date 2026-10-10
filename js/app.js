@@ -107,6 +107,11 @@
 
     var changed = scr.key !== lastKey;
     lastKey = scr.key;
+    // Effets sonores : gel, réussite, erreur (une seule fois par message).
+    var msg = GQ.ui.msg;
+    if (changed && scr.frozen) GQ.audio.sfx('freeze');
+    else if (changed && scr.celebrate) GQ.audio.sfx(scr.celebrate === 'big' ? 'win' : 'ok');
+    else if (msg && msg.kind === 'error' && !msg.sounded) { msg.sounded = true; GQ.audio.sfx('error'); }
     if (changed) {
       document.getElementById('fx').innerHTML = '';
       window.scrollTo(0, 0);

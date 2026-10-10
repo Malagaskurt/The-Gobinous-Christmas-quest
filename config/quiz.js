@@ -29,7 +29,7 @@
 window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.quiz = {
-  titre: "Le grand quiz",
+  titre: "Quiz Givré",
   intro:
     "Pour retrouver la trace du lutin, prouvez que vous êtes une équipe d'experts ! Choisissez un thème et répondez aux 8 questions : il faut 8 bonnes réponses sur 8. Vous avez droit à deux thèmes.",
   boutonIntro: "Choisir un thème",
@@ -74,7 +74,7 @@ window.GAME_CONFIG.quiz = {
     reussiteTexte: "8 bonnes réponses sur 8 : le lutin n'en revient pas. Votre premier indice est débloqué !",
     reussiteApresGelTitre: "Le gel est levé !",
     reussiteApresGelTexte: "Le quiz est validé : votre premier indice est débloqué.",
-    boutonIndice: "Découvrir le premier indice",
+    boutonIndice: "Voir le 1er indice",
     revelationBouton: "C'est parti !",
   },
 

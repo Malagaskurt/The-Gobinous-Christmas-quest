@@ -34,7 +34,8 @@ Une seule direction artistique, de l'écran de chargement jusqu'à la fin :
 - **Quête 5** : transmission de caméra de surveillance, lutin démasqué, faux appel téléphonique.
 - **Règles** : bouton « Règles » bien visible en haut à droite, qui ouvre une page plein écran avec une carte tricotée par règle.
 - **Le lutin commente les gels** : une phrase rigolote pendant le gel, et une autre quand il vous laisse passer (« Le lutin a eu tellement pitié de vous… il est trop goat 🐐 »). Phrases dans `config/textes.js` (`lutin.gel` et `lutin.degel`).
-- **Musique** : instrumental de Noël discret pendant tout le parcours, musique japonaise sous la vidéo de Barnabé. Bouton « Son » en haut de l'écran pour la couper.
+- **Son** : deux instrumentaux de Noël rythmés à très bas volume, musique japonaise sous la vidéo de Barnabé, effets sonores (réussite, erreur, gel, déverrouillage). Bouton « Son » en haut de l'écran pour tout couper.
+- **Typographie** : chaque type de titre tricoté a une taille de lettres fixe, quelle que soit la longueur du texte, et tout est centré.
 - **Écran de fin** : une page à part, sans en-tête de jeu (ciel étoilé, scène tricotée, bilan de l'équipe, dernières consignes, « Joyeux Noël » et signature de Barnabé).
 - **Typographies** : Gotham (repli Montserrat), Arial, et VT323 pour les compteurs et les étiquettes.
 
@@ -67,12 +68,12 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 | Étape | Étage · mot secret | Ce que fait l'équipe |
 |---|---|---|
 | Départ | Hall · `SAPIN` | Accueil, nom d'équipe, règles, puis saisie du mot secret du hall. |
-| **Quête 1 · Le grand quiz** | Hall | Choisit un thème parmi 4 (Noël, Histoire de Saint-Gobain, La Tour Saint-Gobain, **Thème mystère**) et répond aux 8 questions. |
+| **Quête 1 · Quiz Givré** | Hall | Choisit un thème parmi 4 (Noël, Histoire de Saint-Gobain, La Tour Saint-Gobain, **Thème mystère**) et répond aux 8 questions. |
 | Premier indice | — | Lit l'indice (effet machine à écrire) et devine l'étage : **5**. |
-| **Quête 2 · Le message codé** | 5ᵉ étage, coin café · `LUTIN` | Déchiffre un message en alphabet Pigpen avec la grille de décodage : « LA CLÉ DU MYSTÈRE EST LE VERRE ». |
-| **Quête 3 · Le défi photo** | 23ᵉ étage, espace matériaux · `GUIRLANDE` | Reproduit 3 des 6 photos modèles avec l'appareil photo du téléphone. |
-| **Quête 4 · L'enquête du Support 44** | 20ᵉ étage, Support 44 · `ETOILE` | Résout 4 modules de sécurité pour reconstituer le badge du suspect : Barnabé SIX-SEVEN. |
-| **Quête 5 · La traque finale** | 33ᵉ étage · `CADEAU` | Regarde une vidéo à lecture unique, trouve le repaire (TOKYO), appelle Barnabé, puis redescend avec un paquet. |
+| **Quête 2 · Code Cristal** | 5ᵉ étage, coin café · `LUTIN` | Déchiffre un message en alphabet Pigpen avec la grille de décodage : « LA CLÉ DU MYSTÈRE EST LE VERRE ». |
+| **Quête 3 · Flash Lutin** | 23ᵉ étage, espace matériaux · `GUIRLANDE` | Reproduit 3 des 6 photos modèles avec l'appareil photo du téléphone. |
+| **Quête 4 · Dossier 44** | 20ᵉ étage, Support 44 · `ETOILE` | Résout 4 modules de sécurité pour reconstituer le badge du suspect : Barnabé SIX-SEVEN. |
+| **Quête 5 · Opération Hotte** | 33ᵉ étage · `CADEAU` | Regarde une vidéo à lecture unique, trouve le repaire (TOKYO), appelle Barnabé, puis redescend avec un paquet. |
 
 **Mots secrets** : insensibles à la casse, aux accents et aux espaces. Un mauvais mot affiche simplement un message, sans pénalité.
 
@@ -80,7 +81,7 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 
 **Joker** : un seul par équipe pour toute l'aventure. Le bouton « Utiliser mon joker » apparaît sur le message codé, chaque module de l'enquête et le code du repaire (`indiceJoker` dans `config/quetes.js`).
 
-### Quête 1 : le grand quiz
+### Quête 1 : Quiz Givré
 
 - 8 questions par thème, une à la fois. **Aucune correction pendant les questions** : l'équipe peut revenir en arrière et modifier ses choix.
 - Après les 8 réponses : le score s'affiche, puis **la correction complète** (« Voir la correction »). Un thème joué ne peut plus être rejoué.
@@ -89,13 +90,13 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 - **Thème mystère** : la carte affiche « Thème mystère » ; le vrai thème (« Culture générale ») n'est révélé qu'une fois choisi.
 - **Étage à deviner** : le premier indice s'écrit à l'écran, l'équipe saisit un chiffre. Bonne réponse (5) : validation immédiate. Mauvaise réponse : **givré 10 secondes**, puis un **indice bonus** apparaît (« 3 + 2 ») et l'équipe peut réessayer.
 
-### Quête 2 : le message codé
+### Quête 2 : Code Cristal (message codé)
 
 - Le message et les 4 grilles de décodage (A-I, J-R avec points, S-V, W-Z avec points) sont **dessinés en SVG** à partir du texte de `config/quetes.js` : modifier `lignes` suffit pour changer le message.
 - Réponse tolérante : casse, accents, espaces multiples, « clé » ou « clef ».
 - 1ʳᵉ erreur : « Phrase incorrecte. Il vous reste 1 essai ! ». 2ᵉ erreur : **gel de 50 secondes**, puis la solution s'affiche et l'équipe passe à la suite.
 
-### Quête 3 : le défi photo
+### Quête 3 : Flash Lutin (défi photo)
 
 - Avant le défi : avertissement du **lutin capricieux** et information sur la transmission des photos aux organisateurs.
 - 6 modèles ; l'équipe en choisit 3. Toucher un modèle **ouvre l'appareil photo intégré au jeu** (viseur plein écran, déclencheur, bascule avant/arrière), sur téléphone comme sur ordinateur. Aucune galerie ni explorateur de fichiers n'est proposé.
@@ -106,11 +107,11 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 
 > L'appareil photo demande l'autorisation du navigateur la première fois et ne fonctionne qu'avec une adresse **https://** (ou `localhost`). Si l'accès est refusé, le jeu explique comment l'autoriser.
 
-### Quête 4 : l'enquête du Support 44
+### Quête 4 : Dossier 44 (enquête du Support 44)
 
 4 modules successifs dans un terminal de sécurité : la photo du suspect (portrait C), le matricule (2575), le service (Division Bêtises & Emballage), le nom de famille par cryptogramme d'émojis (SIXSEVEN ou SIX-SEVEN). Chaque module laisse **2 essais** ; après la 2ᵉ erreur, **gel de 45 secondes**, puis le terminal valide le module automatiquement. À la fin : badge complet et géolocalisation au 33ᵉ étage.
 
-### Quête 5 : la traque finale
+### Quête 5 : Opération Hotte (traque finale)
 
 - **Vidéo à lecture unique** : elle est marquée vue dès son lancement ; recharger la page affiche « Transmission autodétruite ». Tant qu'aucun fichier vidéo n'est fourni, une **transmission simulée** la remplace : portrait de Barnabé, accessoires, sous-titres, **voix de Barnabé** (une réplique par séquence, `traque.sousTitres[].audio`) et **musique japonaise** en fond. Pour utiliser une vraie vidéo : déposez-la dans `assets/video/` et renseignez `traque.video`.
 - **Code du repaire** : un seul essai. Erreur : **gel de 45 secondes**, puis nouvel essai.
@@ -118,26 +119,34 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 - **TOKYO** : Barnabé démasqué (animation et bulle), puis gros bouton clignotant « Appeler Barnabé ».
 - **Faux appel** : sonnerie, puis message vocal de Barnabé (`traque.audio`), sous-titres à l'écran. « Raccrocher » affiche l'écran de fin et arrête le chrono.
 
-### Voix de Barnabé (ElevenLabs)
+### Voix de Barnabé
 
-Les répliques de Barnabé sont des fichiers MP3 dans `assets/audio/` : `barnabe-video-1.mp3` à `barnabe-video-4.mp3` (vidéo) et `barnabe-appel.mp3` (appel). **Tant qu'ils n'existent pas, le téléphone lit le texte avec sa voix de synthèse**, qui sonne « robot ».
+Les répliques de Barnabé sont des fichiers MP3 dans `assets/audio/` : `barnabe-video-1.mp3` à `barnabe-video-4.mp3` (vidéo) et `barnabe-appel.mp3` (appel). Le texte prononcé est le champ `voix` (et `messageVocalVoix`) de `config/quetes.js`, écrit pour être bien lu à voix haute (« Six Sévène », « quarante-quatre »…).
 
-Pour les créer avec [ElevenLabs](https://elevenlabs.io) :
+**Voix fournie** : générée hors ligne avec le moteur libre [Piper](https://github.com/rhasspy/piper) et la voix masculine française « gilles » (enregistrements CC0, moteur MIT : libre de droits). Débit volontairement posé, voix légèrement rajeunie, volume harmonisé. Pour la régénérer après une modification du texte :
 
-1. Dans ElevenLabs, ouvrez **Voices → Voice Design** et décrivez la voix, par exemple :
-   > *Voix de petit lutin de Noël malicieux, en français. Aiguë, pétillante et espiègle, avec un petit rire moqueur. Débit rapide mais très bien articulé, ton complice et taquin, jeune, à la façon d'un personnage de dessin animé. Pas de grosse voix, pas de voix d'enfant.*
-2. Enregistrez la voix qui vous plaît et copiez son **Voice ID**. Créez aussi une **clé API** (Profile → API Keys).
-3. Lancez :
-   ```bash
-   ELEVENLABS_API_KEY=votre_cle ELEVENLABS_VOICE_ID=id_de_la_voix node tools/generer-voix.mjs
-   ```
-   Le script lit les textes dans `config/quetes.js` (sous-titres de la vidéo et message vocal) et crée les 5 fichiers. Pour n'en refaire qu'un : `SEULEMENT=barnabe-appel.mp3`.
+```bash
+pip install piper-tts
+curl -L -o voix.tar.gz https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-fr-gilles-low.tar.gz && tar xzf voix.tar.gz
+python3 tools/generer-voix-piper.py fr-gilles-low.onnx
+```
 
-Sans ligne de commande : générez chaque réplique sur le site d'ElevenLabs (Text to Speech, avec la voix créée) et déposez les MP3 dans `assets/audio/` avec ces noms.
+**Voix plus expressive avec [ElevenLabs](https://elevenlabs.io)** (payant) : créez une voix dans **Voices → Voice Design**, par exemple :
+> *Voix de jeune homme français, drôle et malicieux, sourire dans la voix. Débit posé, articulation très claire, ton complice et taquin. Ni voix d'enfant, ni grosse voix.*
 
-### Musique
+Puis lancez `ELEVENLABS_API_KEY=… ELEVENLABS_VOICE_ID=… node tools/generer-voix.mjs` (mêmes fichiers, mêmes textes). Sans ligne de commande : générez chaque réplique sur le site d'ElevenLabs et déposez les MP3 dans `assets/audio/` avec ces noms.
 
-`assets/audio/musique-noel.mp3` (boucle d'environ 1 min 15 : « Jingle Bells », « We Wish You a Merry Christmas », « Douce nuit » à la boîte à musique et aux clochettes) et `assets/audio/musique-japon.mp3` (« Sakura Sakura » au koto) sont composées par `tools/generer-musique.py` à partir de mélodies du domaine public : aucun droit à payer. Pour une autre musique (Suno, banque sonore libre de droits…), remplacez simplement les fichiers. Volume et activation : `parametres.musique`.
+Si un fichier manque, le téléphone lit le texte avec sa propre voix de synthèse.
+
+### Musique et effets sonores
+
+- **Pendant le parcours** : deux instrumentaux de Noël rythmés qui s'enchaînent, `musique-noel-1.mp3` (« Jingle Bells » : batterie, basse, cuivres, grelots) et `musique-noel-2.mp3` (« Deck the Halls » et « We Wish You a Merry Christmas » en swing).
+- **Sous la vidéo de Barnabé** : `musique-japon.mp3` (« Sakura Sakura » au koto).
+- Mélodies du domaine public, arrangements originaux composés par `tools/generer-musique.py` : **libres de droits**.
+- **Volume très bas** par défaut (`parametres.musique.volume`), réglé par Web Audio pour être respecté aussi sur iPhone. La musique s'efface presque complètement quand Barnabé parle.
+- **Effets sonores** (synthétisés, sans fichier) : clochettes quand une réponse est validée, fanfare quand une quête est réussie, « bonk » quand c'est faux, cristaux de givre quand tout gèle, petit carillon quand un mot secret débloque une quête (`parametres.musique.effets`).
+- Le bouton **Son**, en haut de l'écran, coupe musique, effets et voix.
+- Pour d'autres musiques, remplacez les fichiers MP3 ou les chemins dans `parametres.musique.noel` (gardez des morceaux libres de droits).
 
 ### Pénalités (gel)
 
@@ -277,7 +286,7 @@ Après la mise en ligne :
   - quête 5, indice 2 : vérifier que le vitrage de la Tokyo Skytree est bien attribué à Saint-Gobain ;
   - quiz « La Tour Saint-Gobain » : année de livraison, commune, nombre de niveaux.
 - [ ] **Matricule (quête 4)** : la consigne D (« année qui précède l'année en cours ») donne 5 en 2026. Si l'événement a lieu une autre année, mettez à jour `reponses` du module 2 et `fiche.matricule`.
-- [ ] **Voix de Barnabé** générée avec ElevenLabs (voir § 3, « Voix de Barnabé »), sinon la voix de synthèse du téléphone est utilisée. Éventuellement une vraie vidéo (`traque.video`).
+- [ ] **Voix de Barnabé** : écouter les fichiers fournis (Piper) ; si elle ne convient pas, la remplacer par une voix ElevenLabs (voir § 3). Éventuellement une vraie vidéo (`traque.video`).
 - [ ] **Droits à l'image** des 6 photos modèles et des portraits.
 - [ ] **Codes** : mode test (`1225`) et suivi (`CODE_SUIVI`, `SUIVI2026` par défaut).
 - [ ] **Hébergement Node.js avec disque persistant** et HTTPS.
@@ -315,7 +324,7 @@ js/validate.js          vérification de la configuration
 assets/fonts/           Montserrat, VT323 (SIL OFL)
 assets/img/             favicon, logo, photos modèles, portraits des suspects
 assets/audio/           musiques de fond et voix de Barnabé (MP3)
-tools/                  serveur du jeu (site, suivi, photos), vérification, génération de la musique et des voix
+tools/                  serveur du jeu (site, suivi, photos), vérification, génération de la musique et des voix (Piper ou ElevenLabs)
 tests/                  test automatisé de bout en bout
 data/                   équipes suivies et photos (créé par le serveur, non versionné)
 ```

@@ -134,6 +134,7 @@
   function handle(res, value) {
     if (!res) return GQ.render();
     if (res.ok) {
+      if (!res.done) GQ.audio.sfx('ok');
       GQ.uiReset();
       if (!res.done) GQ.ui.notice = E.moduleValide;
       return GQ.render();

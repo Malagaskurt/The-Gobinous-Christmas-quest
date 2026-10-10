@@ -232,6 +232,7 @@
     if (!pv || pv.model !== el.dataset.model) return GQ.render();
     var res = GQ.photoValidate(pv.model, { thumb: pv.thumb, sent: false });
     if (res === 'rejet') {
+      GQ.audio.sfx('error');
       GQ.uiReset();
       GQ.render();
       GQ.modal({
@@ -242,6 +243,7 @@
       return;
     }
     if (res === 'ok') {
+      GQ.audio.sfx('ok');
       var s = GQ.state;
       var m = model(pv.model);
       send({ id: s.id, equipe: s.team, modele: pv.model, titre: m ? m.titre : pv.model, image: pv.full });

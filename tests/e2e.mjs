@@ -175,7 +175,7 @@ await step('Mot secret du hall : refusé s\'il est faux, accepté sans tenir com
   await answer('NOEL');
   assert(await has("Ce n'est pas le mot secret"), 'mauvais mot accepté');
   await answer('  sapin ');
-  assert(await has('Le grand quiz') && await has('Choisir un thème'), 'quête 1 non débloquée');
+  assert(await has('Quiz Givré') && await has('Choisir un thème'), 'quête 1 non débloquée');
 });
 
 await step('Bouton « Règles » explicite et bouton du son dans l\'en-tête, musiques disponibles', async () => {
@@ -186,7 +186,7 @@ await step('Bouton « Règles » explicite et bouton du son dans l\'en-tête, mu
   assert((await page.locator('.topbar .sound-btn').getAttribute('aria-pressed')) === 'false', 'le son ne se coupe pas');
   await page.locator('.topbar .sound-btn').click();
   await settle();
-  for (const f of ['musique-noel.mp3', 'musique-japon.mp3']) {
+  for (const f of ['musique-noel-1.mp3', 'musique-noel-2.mp3', 'musique-japon.mp3', 'barnabe-appel.mp3', 'barnabe-video-1.mp3']) {
     const r = await fetch(BASE + 'assets/audio/' + f);
     assert(r.ok && r.headers.get('content-type') === 'audio/mpeg', `musique absente : ${f}`);
   }
@@ -275,7 +275,7 @@ await step('Fin du gel du quiz → quiz validé d\'office, premier indice déblo
   assert(await has('Tout est gelé'), 'gel non affiché');
   await page.waitForTimeout(ms + 1200);
   assert(await has('Le gel est levé'), 'quiz non validé d\'office');
-  assert(await has('Découvrir le premier indice'), 'indice non proposé');
+  assert(await has('Voir le 1er indice'), 'indice non proposé');
 });
 
 await step('Quiz réussi à 8/8 (thème « La Tour »), correction consultable', async () => {
@@ -289,7 +289,7 @@ await step('Quiz réussi à 8/8 (thème « La Tour »), correction consultable',
 });
 
 await step('Étage à deviner : erreur → givré 10 s, puis indice bonus, puis 5 accepté', async () => {
-  await clickText('Découvrir le premier indice');
+  await clickText('Voir le 1er indice');
   assert(await has('mur végétal Saint-Gobain'), 'premier indice absent');
   await answer('3');
   assert(await frozen(), 'pas de gel après une mauvaise réponse');

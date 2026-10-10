@@ -783,6 +783,7 @@
     var n = Number(form.dataset.n);
     if (!value.trim()) return formError(value, T.general.reponseVide);
     if (!GQ.unlockQuest(n, value)) return formError(value, T.acces.erreur);
+    GQ.audio.sfx('unlock');
     GQ.uiReset();
     GQ.render();
   };

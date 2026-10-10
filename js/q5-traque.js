@@ -66,8 +66,8 @@
       u.lang = 'fr-FR';
       var v = frenchVoice();
       if (v) u.voice = v;
-      u.rate = 1.1;
-      u.pitch = 1.6;
+      u.rate = 0.95;
+      u.pitch = 1.05;
       var guard = setTimeout(resolve, 1500 + String(text).length * 90);
       u.onend = u.onerror = function () { clearTimeout(guard); resolve(); };
       speechSynthesis.speak(u);
@@ -319,7 +319,7 @@
         '<section class="finale-card"><h2>' + t(R.finConsignesTitre) + '</h2><ul>' +
         R.finConsignes.map(function (x) { return '<li><span class="finale-ico" aria-hidden="true">' + esc(x.icone) + '</span><span>' + t(x.texte) + '</span></li>'; }).join('') +
         '</ul></section>' +
-        '<p class="finale-voeux">' + GQ.knit.title(R.finVoeux, { alt: C.plain(R.finVoeux), color: '#E4323A', outline: true, cls: 'finale-voeux-img' }) + '</p>' +
+        '<p class="finale-voeux">' + GQ.knit.title(R.finVoeux, { alt: C.plain(R.finVoeux), max: 12, color: '#E4323A', outline: true, cls: 'finale-voeux-img' }) + '</p>' +
         '<p class="finale-sign">— ' + t(R.finSignature) + '</p>' +
         '<p class="finale-date">' + t(T.fin.termineeLe, {
           date: d.toLocaleDateString('fr-FR'),

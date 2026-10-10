@@ -48,20 +48,25 @@ window.GAME_CONFIG.parametres = {
     repaire: { essais: 1, gelSecondes: 45, apresGel: "reessayer" },
   },
 
-  /* ---- Musique de fond ------------------------------------------------
-   * Instrumental de Noël en boucle pendant le parcours, musique japonaise
-   * sous la vidéo de Barnabé (quête 5). Les joueurs peuvent couper le son
-   * avec le bouton « Son » en haut de l'écran.
-   * volume / volumeVideo : de 0 (muet) à 1 (maximum). Gardez la musique
-   * discrète pour ne pas déconcentrer les équipes.
-   * Pour utiliser d'autres musiques (Suno, banque sonore…), remplacez les
-   * fichiers MP3 ou changez les chemins. */
+  /* ---- Son : musique de fond et effets sonores ------------------------
+   * noel  : musiques de Noël qui s'enchaînent pendant tout le parcours
+   *         (liste de fichiers MP3, libres de droits) ;
+   * japon : musique sous la vidéo de Barnabé (quête 5).
+   * volume / volumeVideo : de 0 (muet) à 1 (maximum). La musique reste
+   * très discrète pour ne pas déconcentrer les équipes.
+   * effets / volumeEffets : petits sons quand une réponse est validée ou
+   * refusée, quand tout gèle, quand un mot secret débloque une quête.
+   * Les joueurs peuvent tout couper avec le bouton « Son » en haut de
+   * l'écran. Pour d'autres musiques, remplacez les fichiers MP3 ou les
+   * chemins (veillez à ce qu'elles soient libres de droits). */
   musique: {
     actif: true,
-    volume: 0.18,
-    volumeVideo: 0.3,
-    noel: "assets/audio/musique-noel.mp3",
+    volume: 0.07,
+    volumeVideo: 0.14,
+    noel: ["assets/audio/musique-noel-1.mp3", "assets/audio/musique-noel-2.mp3"],
     japon: "assets/audio/musique-japon.mp3",
+    effets: true,
+    volumeEffets: 0.45,
   },
 
   /* ---- Chrono global -------------------------------------------------

@@ -257,12 +257,17 @@
     text: function (text, opts) {
       opts = opts || {};
       var key = 'txt:' + text + ':' + (opts.color || 'w') + ':' + !!opts.outline;
-      var s = memo(key, function () {
+      var made = memo(key, function () {
         var g = textGrid(text, 'x');
         if (opts.outline) g = outline(g, 'o');
-        return src(svg(g, { wool: { x: opts.color || WOOL.w, o: '#071534' } }));
+        var cols = 0;
+        g.forEach(function (r) { cols = Math.max(cols, r.length); });
+        return { src: src(svg(g, { wool: { x: opts.color || WOOL.w, o: '#071534' } })), w: cols * KW };
       });
-      return '<img class="knit-img ' + (opts.cls || '') + '" src="' + s + '" alt="' + GQ.esc(opts.alt != null ? opts.alt : text.replace(/\n/g, ' ')) + '">';
+      // --kw : largeur naturelle. La taille à l'écran se règle en CSS par un
+      // coefficient (--k) commun à tous les textes d'un même rôle : les
+      // lettres gardent la même taille quelle que soit la longueur du texte.
+      return '<img class="knit-img knit-text ' + (opts.cls || '') + '" style="--kw:' + made.w + '" src="' + made.src + '" alt="' + GQ.esc(opts.alt != null ? opts.alt : text.replace(/\n/g, ' ')) + '">';
     },
     img: function (name, cls, alt) {
       var grids = { star: STAR, badge: badgeGrid(), gift: giftGrid(), flake: FLAKE };

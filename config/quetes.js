@@ -23,7 +23,7 @@ window.GAME_CONFIG.quetes = {
   /* des lignes ci-dessous.                                              */
   /* ------------------------------------------------------------------ */
   message: {
-    titre: "Le message codé",
+    titre: "Code Cristal",
     intro:
       "Au coin café, le lutin a griffonné un message sur une serviette en papier… dans un alphabet secret ! Heureusement, il a aussi oublié sa grille de décodage.",
     boutonIntro: "Découvrir le message",
@@ -51,7 +51,7 @@ window.GAME_CONFIG.quetes = {
   /* QUÊTE 3 — LE DÉFI PHOTO (23ᵉ étage)                                 */
   /* ------------------------------------------------------------------ */
   photos: {
-    titre: "Le défi photo",
+    titre: "Flash Lutin",
     avertissementTitre: "Attention !",
     avertissement:
       "Le lutin farceur est particulièrement capricieux aujourd'hui… Même si votre photo est parfaite, il se peut qu'il la refuse juste pour le plaisir de vous faire recommencer !",
@@ -98,7 +98,7 @@ window.GAME_CONFIG.quetes = {
   /* `reponses` = liste des réponses acceptées.                          */
   /* ------------------------------------------------------------------ */
   enquete: {
-    titre: "L'enquête du Support 44",
+    titre: "Dossier 44",
     terminalTitre: "Terminal de sécurité du Support 44",
     intro:
       "Bienvenue au 20ᵉ étage. C'est ici que le suspect a été aperçu pour la dernière fois. Le terminal de sécurité a verrouillé son dossier d'accès. Pour découvrir son identité complète et localiser le Cadeau Officiel, vous devez décoder un à un les 4 modules de sa fiche de sécurité.",
@@ -195,7 +195,7 @@ window.GAME_CONFIG.quetes = {
   /*   doit contenir les mots « salle » ou « porte ».                   */
   /* ------------------------------------------------------------------ */
   traque: {
-    titre: "La traque finale",
+    titre: "Opération Hotte",
     avertissementTitre: "Attention : transmission à usage unique !",
     avertissement:
       "L'une des caméras de surveillance a intercepté un message vidéo de Barnabé SIX-SEVEN. Regroupez votre équipe, montez le son : vous ne pourrez visionner cette vidéo QU'UNE SEULE FOIS ! Une fois lue, elle s'autodétruira.",
@@ -211,10 +211,10 @@ window.GAME_CONFIG.quetes = {
      * déposé à la main). Sans fichier, la voix du téléphone le remplace.
      * `voix` (facultatif) : texte prononcé s'il diffère du sous-titre. */
     sousTitres: [
-      { de: 0, a: 7, accessoire: "🎁", audio: "assets/audio/barnabe-video-1.mp3", texte: "Ha ha ha ! Coucou le Support 44 ! Vous cherchez ce gros sac ? Trop tard, le Cadeau Officiel est avec moi !" },
+      { de: 0, a: 7, accessoire: "🎁", audio: "assets/audio/barnabe-video-1.mp3", texte: "Ha ha ha ! Coucou le Support 44 ! Vous cherchez ce gros sac ? Trop tard, le Cadeau Officiel est avec moi !", voix: "Ha ha ha ! Coucou le Support quarante-quatre ! Vous cherchez ce gros sac ? Trop tard… le Cadeau Officiel est avec moi !" },
       { de: 7, a: 16, accessoire: "☕🌸 +7h", audio: "assets/audio/barnabe-video-2.mp3", texte: "Regardez mon mug : +7h, et ces jolies fleurs… Demain, mon petit-déjeuner, je le prends de l'autre côté du monde !", voix: "Regardez mon mug : plus sept heures, et ces jolies fleurs… Demain, mon petit-déjeuner, je le prends de l'autre côté du monde !" },
       { de: 16, a: 27, accessoire: "💻 634 m", audio: "assets/audio/barnabe-video-3.mp3", texte: "Et ça, sur mon écran ? Une tour de télécom de 634 mètres. Ces vitres panoramiques ? Du savoir-faire Saint-Gobain, évidemment !", voix: "Et ça, sur mon écran ? Une tour de télécom de six cent trente-quatre mètres. Ces vitres panoramiques ? Du savoir-faire Saint-Gobain, évidemment !" },
-      { de: 27, a: 35, accessoire: "👋", audio: "assets/audio/barnabe-video-4.mp3", texte: "Si vous inversez le temps et l'histoire, vous trouverez le code. Allez, K-Y-O tout le monde !", voix: "Si vous inversez le temps et l'histoire, vous trouverez le code. Allez, K… Y… O… tout le monde !" },
+      { de: 27, a: 35, accessoire: "👋", audio: "assets/audio/barnabe-video-4.mp3", texte: "Si vous inversez le temps et l'histoire, vous trouverez le code. Allez, K-Y-O tout le monde !", voix: "Si vous inversez le temps… et l'histoire… vous trouverez le code. Allez, K, Y, O, tout le monde !" },
     ],
     videoDetruite: "Transmission autodétruite.",
 
@@ -246,6 +246,9 @@ window.GAME_CONFIG.quetes = {
     appelNom: "Barnabé SIX-SEVEN",
     messageVocal:
       "MDR. Vous vous êtes arrêtés devant la porte en attendant que je « désactive la bombe » ?! Tellement naïfs, vous me régalez ! Bref, le speedrun est presque fini. Mais comme je suis un lutin de qualité, j'ai disséminé plein de paquets partout dans la pièce. Le problème ? Ils sont tous identiques. Seul un paquet est le VRAI Cadeau Officiel. Interdiction STRICTE de les déballer ici, sinon c'est la disqualification immédiate. Chopez-en un à l'aveugle, ne dites rien à personne et foncez au point de départ. On se capte en bas (ou pas) ! Ciao !",
+    /* Texte prononcé (orthographe phonétique pour la voix de synthèse). */
+    messageVocalVoix:
+      "Mort de rire. Vous vous êtes arrêtés devant la porte, en attendant que je désactive la bombe ? Tellement naïfs, vous me régalez ! Bref, la course est presque finie. Mais comme je suis un lutin de qualité, j'ai caché plein de paquets partout dans la pièce. Le problème ? Ils sont tous identiques. Un seul paquet est le vrai Cadeau Officiel. Interdiction stricte de les déballer ici, sinon, c'est la disqualification immédiate. Prenez-en un au hasard, ne dites rien à personne, et foncez au point de départ. On se retrouve en bas… ou pas ! Tchao !",
     boutonRaccrocher: "Raccrocher",
 
     /* Écran de fin. */

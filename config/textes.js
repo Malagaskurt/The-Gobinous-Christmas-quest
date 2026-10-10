@@ -101,7 +101,7 @@ window.GAME_CONFIG.textes = {
     description: "Carte du parcours : 5 quêtes, du départ jusqu'à la hotte.",
     depart: "DÉPART",
     /* Une étiquette courte par quête, affichée sur la carte. */
-    etapes: ["Le grand quiz", "Le message codé", "Le défi photo", "L'enquête", "La traque"],
+    etapes: ["Quiz Givré", "Code Cristal", "Flash Lutin", "Dossier 44", "Opération Hotte"],
     /* Légende de la carte : 3 règles clés seulement. */
     regles: [
       { icone: "pin", texte: "À chaque étage : trouvez le **mot secret** affiché sur place." },
@@ -126,7 +126,7 @@ window.GAME_CONFIG.textes = {
       {
         icone: "gift",
         titre: "5 quêtes, 5 étages",
-        texte: "Quiz, message codé, défi photo, enquête et traque finale : chaque quête vous rapproche du cadeau.",
+        texte: "Quiz Givré, Code Cristal, Flash Lutin, Dossier 44 et Opération Hotte : chaque quête vous rapproche du cadeau.",
       },
       {
         icone: "pin",

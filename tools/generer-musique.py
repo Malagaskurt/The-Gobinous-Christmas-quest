@@ -4,13 +4,17 @@
     python3 tools/generer-musique.py
 
 Produit :
-  assets/audio/musique-noel.mp3   boucle douce de Noël (boîte à musique,
-                                  clochettes, nappe), pendant tout le jeu
-  assets/audio/musique-japon.mp3  koto et nappe, sous la vidéo de Barnabé
+  assets/audio/musique-noel-1.mp3  « Jingle Bells », version rythmée (batterie,
+                                   basse, cuivres, grelots)
+  assets/audio/musique-noel-2.mp3  « Deck the Halls » / « We Wish You a Merry
+                                   Christmas », version swing
+  assets/audio/musique-japon.mp3   koto et nappe, sous la vidéo de Barnabé
 
-Les mélodies sont du domaine public (« Jingle Bells », « We Wish You a
-Merry Christmas », « Douce nuit », « Sakura Sakura »). Tout le son est
-synthétisé ici : aucun échantillon externe, aucun droit à payer.
+Les deux musiques de Noël s'enchaînent pendant tout le parcours.
+Les mélodies sont du domaine public (« Jingle Bells », « Deck the Halls »,
+« We Wish You a Merry Christmas », « Sakura Sakura ») et l'arrangement est
+original : tout le son est synthétisé ici, sans échantillon externe. Les
+fichiers produits sont donc libres de droits.
 Prérequis : Python 3 avec numpy, et ffmpeg pour l'encodage MP3.
 Pour utiliser une autre musique (Suno, banque sonore…), remplacez
 simplement les fichiers MP3.
@@ -289,36 +293,216 @@ def save_mp3(stereo_sig, name, kbps=112):
 
 
 # ---------------------------------------------------------------------------
-# Musique de Noël : Jingle Bells → We Wish You… → Douce nuit, en boucle
+# Instruments rythmés (versions dynamiques)
 # ---------------------------------------------------------------------------
 
-def noel():
-    tr = Track(170)
-    t = 0.5
-    # 1. Jingle Bells, boîte à musique, 112 bpm
-    beat = 60 / 112
-    chords(tr, JINGLE_CHORDS, t, beat, 4, 0.22)
-    for i in range(int(length(JINGLE))):  # grelots légers sur les temps 2 et 4
-        if i % 2 == 1:
-            tr.add(t + i * beat, lowpass(sleigh(vel=0.6), 9000), 0.018)
-    end = melody(tr, JINGLE, t, beat, music_box, 0.42)
-    melody(tr, JINGLE[:20], t + 16 * beat, beat, bell, 0.1, octave_shift=1)  # écho de clochettes
-    t = end + beat
-    # 2. We Wish You a Merry Christmas, 3/4, 132 bpm
-    beat = 60 / 132
-    chords(tr, WISH_CHORDS, t + beat, beat, 3, 0.2)
-    end = melody(tr, WISH, t, beat, bell, 0.34, octave_shift=1)
-    melody(tr, WISH, t, beat, music_box, 0.18)
-    t = end + 2 * beat
-    # 3. Douce nuit, 6/8 très doux (une croche = un temps)
-    beat = 60 / 150
-    chords(tr, SILENT_CHORDS, t, beat, 6, 0.24)
-    end = melody(tr, SILENT, t, beat, music_box, 0.4)
-    t = end + 2.0
-    sig = tr.buf[: int(SR * t)]
-    sig = reverb(sig, 2.6, 0.3)
-    sig = normalize(crossfade_loop(sig), 0.55)
-    save_mp3(stereo(sig), "musique-noel.mp3")
+def kick(vel=1.0):
+    n = int(SR * 0.32)
+    t = np.arange(n) / SR
+    f = 46 + 90 * np.exp(-t / 0.035)
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    return np.sin(ph) * env_exp(n, 0.11) * vel
+
+
+def snare(vel=1.0):
+    n = int(SR * 0.22)
+    noise = rng.standard_normal(n)
+    noise = np.concatenate([[0], np.diff(noise)]) * 0.6
+    tone = np.sin(2 * np.pi * 190 * np.arange(n) / SR) * env_exp(n, 0.05)
+    return (noise * env_exp(n, 0.07) + tone * 0.6) * vel
+
+
+def hat(vel=1.0, open_=False):
+    n = int(SR * (0.22 if open_ else 0.045))
+    noise = rng.standard_normal(n)
+    hp = np.concatenate([[0], np.diff(np.concatenate([[0], np.diff(noise)]))])
+    return hp * env_exp(n, 0.08 if open_ else 0.012) * vel * 0.35
+
+
+def brass(f, dur, vel=1.0):
+    """Cuivres synthétiques : dents de scie filtrées, attaque douce."""
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    sig = np.zeros(n)
+    vib = 1 + 0.004 * np.sin(2 * np.pi * 5.5 * t) * np.clip((t - 0.12) * 4, 0, 1)
+    for h in range(1, 9):
+        amp = (1 / h) * np.exp(-h * 0.28)
+        sig += amp * np.sin(2 * np.pi * f * h * t * vib)
+    a = min(n, int(SR * 0.03))
+    r = min(n, int(SR * 0.06))
+    e = np.ones(n)
+    e[:a] = np.linspace(0, 1, a)
+    e[-r:] *= np.linspace(1, 0, r)
+    return sig * e * vel
+
+
+def pluck_bass(f, dur, vel=1.0):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    sig = np.sin(2 * np.pi * f * t) + 0.35 * np.sin(4 * np.pi * f * t) + 0.12 * np.sin(6 * np.pi * f * t)
+    e = env_exp(n, 0.22)
+    r = min(n, int(SR * 0.02))
+    e[-r:] *= np.linspace(1, 0, r)
+    return attack(sig * e * vel, 3)
+
+
+def stab(freqs, dur=0.28, vel=1.0):
+    """Accord « piano » bref, joué à contretemps."""
+    n = int(SR * (dur + 0.4))
+    out = np.zeros(n)
+    for f in freqs:
+        out += music_box(f, dur + 0.4, vel)[:n] * 0.6
+        b = brass(f, dur, vel) * 0.25
+        out[: len(b)] += b
+    return out / max(1, len(freqs))
+
+
+def root_of(ch):
+    return ch[0][:-1] + "2" if ch[0][-1] in "34" else ch[0]
+
+
+def band(tr, start, beat, bars, chords_per_bar, swing=0.0, fill_every=8):
+    """Batterie, basse, contretemps et grelots sur une grille de 4 temps."""
+    t = start
+    for b in range(bars):
+        ch = chords_per_bar[b % len(chords_per_bar)]
+        r = freq(root_of(ch))
+        fifth = r * 1.5
+        for k in range(4):
+            on = t + k * beat
+            off = on + beat * (0.5 + swing)
+            if k in (0, 2):
+                tr.add(on, kick(), 0.55)
+            if k in (1, 3):
+                tr.add(on, snare(), 0.32)
+            tr.add(on, hat(), 0.22)
+            tr.add(off, hat(), 0.14)
+            tr.add(on, pluck_bass(r if k % 2 == 0 else fifth, beat * 0.9), 0.38)
+            tr.add(off, stab([freq(n) for n in ch], beat * 0.4), 0.22)
+            for q in range(4):  # grelots en doubles croches, très discrets
+                tr.add(on + q * beat / 4, lowpass(sleigh(vel=0.5), 7000), 0.004 if q % 2 else 0.007)
+        if fill_every and (b + 1) % fill_every == 0:
+            for q in range(4):
+                tr.add(t + 3 * beat + q * beat / 4, snare(vel=0.7), 0.22)
+            tr.add(t + 4 * beat, hat(open_=True), 0.2)
+        t += 4 * beat
+    return t
+
+
+def lead(tr, notes, start, beat, gain, octave=0):
+    t = start
+    for name, length in notes:
+        if name:
+            f = freq(name) * (2 ** octave)
+            tr.add(t, brass(f, length * beat * 0.92), gain)
+            tr.add(t, bell(f * 2, dur=1.2), gain * 0.18)
+        t += length * beat
+    return t
+
+
+# Couplet de Jingle Bells (domaine public)
+JINGLE_VERSE = [
+    ("G4", 1), ("E5", 1), ("D5", 1), ("C5", 1), ("G4", 3), ("G4", 0.5), ("G4", 0.5),
+    ("G4", 1), ("E5", 1), ("D5", 1), ("C5", 1), ("A4", 4),
+    ("A4", 1), ("F5", 1), ("E5", 1), ("D5", 1), ("B4", 4),
+    ("G5", 1), ("G5", 1), ("F5", 1), ("D5", 1), ("E5", 4),
+    ("G4", 1), ("E5", 1), ("D5", 1), ("C5", 1), ("G4", 4),
+    ("G4", 1), ("E5", 1), ("D5", 1), ("C5", 1), ("A4", 3), ("A4", 1),
+    ("A4", 1), ("F5", 1), ("E5", 1), ("D5", 1), ("G5", 1), ("G5", 1), ("G5", 1), ("G5", 1),
+    ("A5", 1), ("G5", 1), ("F5", 1), ("D5", 1), ("C5", 2), ("G5", 2),
+]
+JINGLE_VERSE_CHORDS = [
+    ["C3", "E3", "G3"], ["C3", "E3", "G3"], ["C3", "E3", "G3"], ["F3", "A3", "C4"],
+    ["F3", "A3", "D4"], ["G3", "B3", "D4"], ["G3", "B3", "F4"], ["C3", "E3", "G3"],
+    ["C3", "E3", "G3"], ["C3", "E3", "G3"], ["C3", "E3", "G3"], ["F3", "A3", "C4"],
+    ["F3", "A3", "D4"], ["G3", "B3", "D4"], ["G3", "B3", "F4"], ["C3", "E3", "G3"],
+]
+
+# Deck the Halls (domaine public), en do majeur
+DECK = [
+    ("G4", 1.5), ("F4", 0.5), ("E4", 1), ("D4", 1), ("C4", 1), ("D4", 1), ("E4", 1), ("C4", 1),
+    ("D4", 0.5), ("E4", 0.5), ("F4", 0.5), ("D4", 0.5), ("E4", 1.5), ("D4", 0.5), ("C4", 1), ("B3", 1), ("C4", 2),
+    ("G4", 1.5), ("F4", 0.5), ("E4", 1), ("D4", 1), ("C4", 1), ("D4", 1), ("E4", 1), ("C4", 1),
+    ("D4", 0.5), ("E4", 0.5), ("F4", 0.5), ("D4", 0.5), ("E4", 1.5), ("D4", 0.5), ("C4", 1), ("B3", 1), ("C4", 2),
+    ("D4", 1.5), ("E4", 0.5), ("F4", 1), ("D4", 1), ("E4", 1.5), ("F4", 0.5), ("G4", 1), ("D4", 1),
+    ("E4", 0.5), ("F#4", 0.5), ("G4", 1), ("A4", 0.5), ("B4", 0.5), ("C5", 1), ("B4", 1), ("A4", 1), ("G4", 2),
+    ("G4", 1.5), ("F4", 0.5), ("E4", 1), ("D4", 1), ("C4", 1), ("D4", 1), ("E4", 1), ("C4", 1),
+    ("A4", 0.5), ("A4", 0.5), ("A4", 0.5), ("A4", 0.5), ("G4", 1.5), ("F4", 0.5), ("E4", 1), ("D4", 1), ("C4", 2),
+]
+DECK_CHORDS = [
+    ["C3", "E3", "G3"], ["C3", "E3", "G3"], ["G3", "B3", "D4"], ["C3", "E3", "G3"],
+    ["C3", "E3", "G3"], ["C3", "E3", "G3"], ["G3", "B3", "D4"], ["C3", "E3", "G3"],
+    ["G3", "B3", "D4"], ["G3", "B3", "D4"], ["D3", "F#3", "A3"], ["G3", "B3", "D4"],
+    ["C3", "E3", "G3"], ["C3", "E3", "G3"], ["F3", "A3", "C4"], ["C3", "E3", "G3"],
+]
+WISH_UP = [  # We Wish You…, ramené en 4/4 pour enchaîner
+    ("D4", 1), ("G4", 1), ("G4", 0.5), ("A4", 0.5), ("G4", 0.5), ("F#4", 0.5), ("E4", 1), ("E4", 1),
+    ("E4", 1), ("A4", 1), ("A4", 0.5), ("B4", 0.5), ("A4", 0.5), ("G4", 0.5), ("F#4", 1), ("D4", 1),
+    ("D4", 1), ("B4", 1), ("B4", 0.5), ("C5", 0.5), ("B4", 0.5), ("A4", 0.5), ("G4", 1), ("E4", 1),
+    ("D4", 0.5), ("D4", 0.5), ("E4", 1), ("A4", 1), ("F#4", 1), ("G4", 4),
+]
+WISH_UP_CHORDS = [
+    ["G3", "B3", "D4"], ["C3", "E3", "G3"], ["A3", "C#4", "E4"], ["D3", "F#3", "A3"],
+    ["B3", "D#4", "F#4"], ["E3", "G3", "B3"], ["C3", "E3", "G3"], ["G3", "B3", "D4"],
+]
+
+
+def lowpass_fast(sig, cutoff):
+    """Passe-bas dans le domaine fréquentiel (pente douce)."""
+    spec = np.fft.rfft(sig)
+    f = np.fft.rfftfreq(len(sig), 1 / SR)
+    spec *= 1 / np.sqrt(1 + (f / cutoff) ** 4)
+    return np.fft.irfft(spec, len(sig))
+
+
+def master(sig, name):
+    sig = reverb(sig, 1.6, 0.18)
+    sig = lowpass_fast(sig, 8500)  # aigus adoucis : pas de souffle agressif
+    # léger compresseur : volume régulier, rien qui « saute » aux oreilles
+    peak = np.max(np.abs(sig)) or 1
+    sig = np.tanh(sig / peak * 1.15) / np.tanh(1.15)
+    sig = normalize(crossfade_loop(sig, 1.2), 0.55)
+    save_mp3(stereo(sig), name)
+
+
+def noel1():
+    """Jingle Bells, 156 bpm : intro, refrain, couplet, refrain ×2."""
+    beat = 60 / 156
+    tr = Track(110)
+    t = 0.3
+    t = band(tr, t, beat, 2, [["C3", "E3", "G3"]], fill_every=2)              # intro
+    band(tr, t, beat, 16, JINGLE_CHORDS)
+    end = lead(tr, JINGLE, t, beat, 0.30)
+    lead(tr, JINGLE, t, beat, 0.10, octave=-1)
+    t = end
+    band(tr, t, beat, 16, JINGLE_VERSE_CHORDS)
+    end = lead(tr, JINGLE_VERSE, t, beat, 0.26)
+    t = end
+    band(tr, t, beat, 16, JINGLE_CHORDS)
+    end = lead(tr, JINGLE, t, beat, 0.30)
+    melody(tr, JINGLE, t, beat, bell, 0.12, octave_shift=1)
+    t = band(tr, end, beat, 2, [["C3", "E3", "G3"]], fill_every=0)
+    master(tr.buf[: int(SR * (t + 1.0))], "musique-noel-1.mp3")
+
+
+def noel2():
+    """Deck the Halls puis We Wish You, 140 bpm, léger swing."""
+    beat = 60 / 140
+    tr = Track(110)
+    t = 0.3
+    t = band(tr, t, beat, 2, [["C3", "E3", "G3"]], swing=0.08, fill_every=2)
+    band(tr, t, beat, 16, DECK_CHORDS, swing=0.08)
+    end = lead(tr, DECK, t, beat, 0.30, octave=1)
+    melody(tr, DECK, t, beat, bell, 0.08, octave_shift=2)
+    t = end
+    band(tr, t, beat, 8, WISH_UP_CHORDS, swing=0.08)
+    end = lead(tr, WISH_UP, t, beat, 0.30, octave=1)
+    t = end
+    band(tr, t, beat, 16, DECK_CHORDS, swing=0.08)
+    end = lead(tr, DECK, t, beat, 0.30, octave=1)
+    melody(tr, DECK, t, beat, music_box, 0.12, octave_shift=1)
+    t = band(tr, end, beat, 2, [["C3", "E3", "G3"]], swing=0.08, fill_every=0)
+    master(tr.buf[: int(SR * (t + 1.0))], "musique-noel-2.mp3")
 
 
 # ---------------------------------------------------------------------------
@@ -348,5 +532,6 @@ def japon():
 
 
 if __name__ == "__main__":
-    noel()
+    noel1()
+    noel2()
     japon()
