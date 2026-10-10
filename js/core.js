@@ -19,8 +19,8 @@
   }
 
   /* Texte de configuration → HTML sûr.
-   * Gère \n, **gras**, les variables {nom} et les espaces insécables
-   * avant ? ! : ; (typographie française). */
+   * Gère \n, **gras**, les variables {nom}, les pictogrammes [[nom]] et
+   * les espaces insécables avant ? ! : ; (typographie française). */
   function t(tpl, vars) {
     var html = esc(tpl == null ? '' : tpl);
     if (vars) {
@@ -33,7 +33,9 @@
       .replace(/Saint-Gobain/g, '<span class="nowrap">Saint-Gobain</span>')
       .replace(/ ([?!:;»])/g, ' $1')
       .replace(/« /g, '« ')
-      .replace(/\n/g, '<br>');
+      .replace(/\n/g, '<br>')
+      // [[nom]] → pictogramme pixel du jeu (cloche, sapin, cadeau…).
+      .replace(/\[\[(\w+)\]\]/g, function (m, k) { return GQ.pix ? GQ.pix(k, 'pix-inline') : m; });
   }
 
   function letterIndex(l) {
@@ -157,6 +159,7 @@
       v: 2,
       id: newId(),
       team: null,
+      roles: null, // { chef, reporter } : Chef Lutin et Lutin Reporter
       startedAt: null,
       rulesOk: false,
       clockStart: null, // départ du chrono global (au « C'est parti ! »)
@@ -233,6 +236,11 @@
     var s = GQ.state;
     s.team = String(name).trim().slice(0, 40);
     if (!s.startedAt) s.startedAt = Date.now();
+    GQ.save();
+  };
+
+  GQ.setRoles = function (chef, reporter) {
+    GQ.state.roles = { chef: String(chef).trim().slice(0, 40), reporter: String(reporter).trim().slice(0, 40) };
     GQ.save();
   };
 

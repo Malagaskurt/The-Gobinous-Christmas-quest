@@ -289,6 +289,7 @@
   var KNIT_PAL = {
     r: '#E4323A', R: '#A3141F', w: '#F6EFE2', W: '#FFFFFF', s: '#F3C7A1', S: '#D9967A',
     b: '#3B78D4', B: '#2A5DB0', c: '#00ADE1', C: '#9EE0F5', k: '#0A1F45', n: '#17428C', m: '#1B4A99', p: '#E2D7C3', d: '#0E2A5E',
+    y: '#F2C14E', g: '#2E9E6E',
   };
 
   function wrapWords(text, max) {
@@ -340,20 +341,23 @@
     '.....www.........ccc....',
   ];
 
-  /* Sol enneigé avec petits sapins (bas de chaque écran), raccordable. */
+  /* Sol enneigé : sapins, tour de verre et immeuble aux fenêtres allumées
+   * (bas de chaque écran), raccordable. Des voitures y passent (CSS). */
   var GROUND = [
-    '..C.................C...........',
-    '.......C.....b...........C......',
-    '............bbb.................',
-    '....c......bbbbb..........b.....',
-    '...ccc......bbb..........bbb....',
-    '..ccccc....bbwbb........bbbbb...',
-    '...ccc....bbbbbbb........bbb....',
-    '..ccwcc..bbbbbbbbb......bbbwb...',
-    '.ccccccc....RRR........bbbbbbb..',
-    '....R.......RRR...........R.....',
-    'CCwwwwwwwwwwwwwwwwCCwwwwwwwwwwww',
-    'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
+    '...C...C.......BB.............C...................',
+    '..............BcCB........C..................C....',
+    '.....b........BCcB................................',
+    '....bbb.......BcCB..C...........................C.',
+    '...bbwbb.....BCcCcB............BBBBBBBBBB.........',
+    '....bbb......BcCcCB............ByByyBByyB....c....',
+    '...bbbbb.....BCcCcB......b.....BBBBBBBBBB...ccc...',
+    '..bbbbbwb....BcCcCB.....bbb....ByyBByyByB..ccwcc..',
+    '...bbbbb.....BCcCcB....bbwbb...BBBBBBBBBB...ccc...',
+    '..bbbbbbbb...BcCcCB.....bbb....ByByyByByB..ccccc..',
+    '.bbbwbbbbb...BCcCcB....bbbbb...BBBBBBBBBB.ccccwcc.',
+    '.....R......BBBBBBBB.....R.....BBBkkkBBBB....R....',
+    'CwwwwwwwwwwwwwwwwCwwwwwwwwwwwwwwwwCwwwwwwwwwwwwwww',
+    'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
   ];
 
   Object.assign(GQ.knit, {
@@ -387,6 +391,16 @@
   /* Arrière-plans partagés, exposés en variables CSS. */
   document.documentElement.style.setProperty('--knit-garland', css(svg(GARLAND, { wool: KNIT_PAL })));
   document.documentElement.style.setProperty('--knit-ground', css(svg(GROUND, { wool: KNIT_PAL })));
+  // Ampoules de la guirlande (calque qui clignote par-dessus).
+  var LIGHTS = GARLAND.map(function (row, y) {
+    return row.split('').map(function (c, x) {
+      if (y === 3 && (x === 6 || x === 17)) return 'y';
+      if (y === 2 && (x === 3 || x === 20)) return 'r';
+      if (y === 1 && (x === 10 || x === 13)) return 'y';
+      return '.';
+    }).join('');
+  });
+  document.documentElement.style.setProperty('--knit-lights', css(svg(LIGHTS, { wool: KNIT_PAL })));
 
   var root = document.documentElement.style;
   root.setProperty('--knit-plain', css(svg(PLAIN, { tile: true, bg: GAP })));

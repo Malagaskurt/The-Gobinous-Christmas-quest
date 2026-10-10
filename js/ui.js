@@ -113,6 +113,40 @@
     );
   };
 
+  /* Pied de page de chaque écran : lien « Un souci ? » puis sol enneigé
+   * animé (sapins, tours de verre, voitures qui passent). */
+  GQ.footer = function () {
+    var A = T.aide || {};
+    var help = A.contacts && A.contacts.length
+      ? '<div class="help-row"><button type="button" class="help-link" data-action="help">' + GQ.icon('tel') + esc(A.titre) + '</button></div>'
+      : '';
+    return help +
+      '<div class="ground" aria-hidden="true">' +
+      '<span class="ground-car car-a">' + GQ.knit.icon('car', 'car-img') + '</span>' +
+      '<span class="ground-car car-b">' + GQ.knit.icon('van', 'car-img') + '</span>' +
+      '</div>';
+  };
+
+  function telHref(num) {
+    var n = String(num).replace(/[^\d+]/g, '');
+    if (/^0\d{9}$/.test(n)) n = '+33' + n.slice(1);
+    return 'tel:' + n;
+  }
+
+  GQ.actions = GQ.actions || {};
+  GQ.actions.help = function () {
+    var A = T.aide;
+    GQ.modal({
+      title: A.titre,
+      icon: 'tel',
+      html: '<p>' + t(A.texte) + '</p><div class="help-calls">' +
+        A.contacts.map(function (c) {
+          return '<a class="btn btn-red" href="' + esc(telHref(c.tel)) + '">' + GQ.icon('tel') + esc(c.nom) + '</a>';
+        }).join('') + '</div>',
+      cancel: A.fermer,
+    });
+  };
+
   var toastTimer;
   GQ.toast = function (msg, kind) {
     var el = document.getElementById('toast');

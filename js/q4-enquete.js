@@ -69,7 +69,7 @@
     var top = m.consignes
       ? '<ul class="terminal-list">' + m.consignes.map(function (x) { return '<li>' + t(x) + '</li>'; }).join('') + '</ul>'
       : (m.intro ? '<p class="terminal-text">' + t(m.intro) + '</p>' : '') +
-        '<ol class="equations">' + m.equations.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol>';
+        '<ol class="equations">' + m.equations.map(function (x) { return '<li>' + t(x) + '</li>'; }).join('') + '</ol>';
     return top + GQ.jokerBlock('q4-' + step, m.indiceJoker) +
       C.textAnswer({ form: 'module', label: m.label, button: T.general.validerReponse, caps: !m.chiffres, numeric: !!m.chiffres, max: m.chiffres || 30, fieldCls: 'field-code', expected: expected, btnCls: 'btn-red' });
   }

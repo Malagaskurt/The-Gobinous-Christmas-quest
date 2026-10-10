@@ -25,9 +25,9 @@ window.GAME_CONFIG.quetes = {
   message: {
     titre: "Code Cristal",
     intro:
-      "Au coin café, le lutin a griffonné un message sur une serviette en papier… dans un alphabet secret ! Heureusement, il a aussi oublié sa grille de décodage.",
+      "Le lutin a griffonné un message dans un alphabet secret… et oublié sa grille de décodage. Oups !",
     boutonIntro: "Découvrir le message",
-    consigne: "Déchiffrez le message mystère à l'aide de la grille de décodage.",
+    consigne: "",
     /* Message chiffré, ligne par ligne (lettres A à Z et espaces). */
     lignes: ["LA CLE", "DU MYSTERE", "EST LE VERRE"],
     grilleTitre: "Grille de décodage",
@@ -39,8 +39,7 @@ window.GAME_CONFIG.quetes = {
       "Chaque symbole reprend la forme des traits qui entourent la lettre dans la grille. Un point dans le symbole ? La lettre est dans une grille à points.",
 
     reussiteTitre: "Message déchiffré !",
-    reussiteTexte:
-      "« La clé du mystère est le verre » : le lutin ne pensait pas que vous sauriez lire son alphabet secret !",
+    reussiteTexte: "« La clé du mystère est le verre ». Le lutin est bluffé !",
     reussiteApresGelTitre: "Le gel est levé !",
     reussiteApresGelTexte: "La solution était : « LA CLÉ DU MYSTÈRE EST LE VERRE ».",
     gelSuite: "Ensuite, le lutin vous soufflera la solution.",
@@ -53,12 +52,11 @@ window.GAME_CONFIG.quetes = {
   photos: {
     titre: "Flash Lutin",
     avertissementTitre: "Attention !",
-    avertissement:
-      "Le lutin farceur est particulièrement capricieux aujourd'hui… Même si votre photo est parfaite, il se peut qu'il la refuse juste pour le plaisir de vous faire recommencer !",
+    avertissement: "Le lutin est capricieux : il peut refuser une photo parfaite, juste pour rire !",
     intro:
-      "Bienvenue au 23ᵉ étage ! Le lutin adore les photos de groupe. Choisissez 3 modèles parmi les 6, puis reproduisez-les avec toute votre équipe.",
+      "Choisissez **3 modèles sur 6** et reproduisez-les en photo, avec toute l'équipe.",
     consentement:
-      "En validant vos photos, vous acceptez qu'elles soient transmises aux organisateurs du Gobinous Christmas Club.",
+      "Les photos validées sont envoyées aux organisateurs.",
     boutonIntro: "Relever le défi",
 
     /* Nombre de photos à réaliser. */
@@ -72,7 +70,7 @@ window.GAME_CONFIG.quetes = {
       { id: "porte", titre: "Le porté", image: "assets/img/photos/modele-6.jpg" },
     ],
     choixTitre: "Choisissez vos 3 modèles",
-    choixAide: "Touchez un modèle : l'appareil photo s'ouvre, à vous de reproduire la pose !",
+    choixAide: "Touchez un modèle pour ouvrir l'appareil photo.",
     choixCompteur: "{n} / {max} photos validées",
     boutonPhoto: "Prendre la photo",
     boutonRetenter: "Retenter",
@@ -83,12 +81,12 @@ window.GAME_CONFIG.quetes = {
     envoiAttente: "Sera envoyée dès que le réseau le permet",
     rejetTitre: "Refusé !",
     rejetTexte:
-      "Le lutin est d'humeur capricieuse et exige que vous repreniez cette photo avec encore plus de passion !",
+      "Le lutin exige que vous la repreniez… avec plus de passion !",
     rejetBouton: "On la refait !",
     boutonQuete: "Valider la Quête 3",
 
     reussiteTitre: "Défi photo réussi !",
-    reussiteTexte: "Quelle équipe de comédiens ! Vos 3 photos sont dans la boîte.",
+    reussiteTexte: "Quelle équipe de comédiens ! Les 3 photos sont dans la boîte.",
     bouton: "Découvrir la suite",
   },
 
@@ -101,7 +99,7 @@ window.GAME_CONFIG.quetes = {
     titre: "Dossier 44",
     terminalTitre: "Terminal de sécurité du Support 44",
     intro:
-      "Bienvenue au 20ᵉ étage. C'est ici que le suspect a été aperçu pour la dernière fois. Le terminal de sécurité a verrouillé son dossier d'accès. Pour découvrir son identité complète et localiser le Cadeau Officiel, vous devez décoder un à un les 4 modules de sa fiche de sécurité.",
+      "Le suspect a été vu ici pour la dernière fois. Décodez les **4 modules** de sa fiche de sécurité pour révéler son identité.",
     boutonIntro: "Lancer l'investigation",
     erreur: "Données incorrectes. Il vous reste {n} essai !",
     moduleValide: "Module validé",
@@ -161,14 +159,14 @@ window.GAME_CONFIG.quetes = {
         sousTitre: "Cryptogramme de sécurité",
         intro: "Le nom du suspect est caché dans ces 8 équations :",
         equations: [
-          "🎄 + 🎄 = 38",
-          "⭐ + 🎄 = 28",
-          "🎁 − ⭐ = 15",
-          "🎄 = 19",
-          "🔔 + ⭐ = 14",
-          "❄️ − 🔔 = 17",
-          "🔔 = 5",
-          "🧦 + 🔔 = 19",
+          "[[tree]] + [[tree]] = 38",
+          "[[star]] + [[tree]] = 28",
+          "[[gift]] − [[star]] = 15",
+          "[[tree]] = 19",
+          "[[bell]] + [[star]] = 14",
+          "[[flake]] − [[bell]] = 17",
+          "[[bell]] = 5",
+          "[[sock]] + [[bell]] = 19",
         ],
         label: "Nom de famille du suspect",
         reponses: ["sixseven", "six seven"],
@@ -196,72 +194,73 @@ window.GAME_CONFIG.quetes = {
   /* ------------------------------------------------------------------ */
   traque: {
     titre: "Opération Hotte",
-    avertissementTitre: "Attention : transmission à usage unique !",
+    avertissementTitre: "Vidéo à usage unique",
     avertissement:
-      "L'une des caméras de surveillance a intercepté un message vidéo de Barnabé SIX-SEVEN. Regroupez votre équipe, montez le son : vous ne pourrez visionner cette vidéo QU'UNE SEULE FOIS ! Une fois lue, elle s'autodétruira.",
-    boutonVideo: "Lancer la vidéo (lecture unique)",
+      "Une caméra a intercepté un message de Barnabé SIX-SEVEN. Regroupez-vous et montez le son : vous ne pourrez la voir **qu'une seule fois** !",
+    boutonVideo: "Lancer la vidéo",
 
-    /* Fichier vidéo (MP4), par exemple "assets/video/barnabe.mp4".
-     * Laissez "" : une transmission simulée de 35 secondes (sous-titres
-     * ci-dessous) la remplace. */
-    video: "",
+    /* Vidéo animée de Barnabé (MP4, voix et musique incluses), générée
+     * avec tools/generer-video.py. Laissez "" pour une transmission
+     * simulée (image fixe, sous-titres et voix ci-dessous). */
+    video: "assets/video/barnabe.mp4",
     camera: "CAM 33-07 · TRANSMISSION INTERCEPTÉE",
-    /* Séquences de la transmission simulée : sous-titre, accessoire et
-     * voix de Barnabé (fichier MP3, généré avec tools/generer-voix.mjs ou
-     * déposé à la main). Sans fichier, la voix du téléphone le remplace.
-     * `voix` (facultatif) : texte prononcé s'il diffère du sous-titre. */
+    /* Répliques de la vidéo : sous-titre affiché de `de` à `a` secondes
+     * (minutage donné par tools/generer-video.py), voix de Barnabé
+     * (fichier MP3, généré avec tools/generer-voix-piper.py) et `voix` :
+     * texte prononcé s'il diffère du sous-titre. */
     sousTitres: [
-      { de: 0, a: 7, accessoire: "🎁", audio: "assets/audio/barnabe-video-1.mp3", texte: "Ha ha ha ! Coucou le Support 44 ! Vous cherchez ce gros sac ? Trop tard, le Cadeau Officiel est avec moi !", voix: "Ha ha ha ! Coucou le Support quarante-quatre ! Vous cherchez ce gros sac ? Trop tard… le Cadeau Officiel est avec moi !" },
-      { de: 7, a: 16, accessoire: "☕🌸 +7h", audio: "assets/audio/barnabe-video-2.mp3", texte: "Regardez mon mug : +7h, et ces jolies fleurs… Demain, mon petit-déjeuner, je le prends de l'autre côté du monde !", voix: "Regardez mon mug : plus sept heures, et ces jolies fleurs… Demain, mon petit-déjeuner, je le prends de l'autre côté du monde !" },
-      { de: 16, a: 27, accessoire: "💻 634 m", audio: "assets/audio/barnabe-video-3.mp3", texte: "Et ça, sur mon écran ? Une tour de télécom de 634 mètres. Ces vitres panoramiques ? Du savoir-faire Saint-Gobain, évidemment !", voix: "Et ça, sur mon écran ? Une tour de télécom de six cent trente-quatre mètres. Ces vitres panoramiques ? Du savoir-faire Saint-Gobain, évidemment !" },
-      { de: 27, a: 35, accessoire: "👋", audio: "assets/audio/barnabe-video-4.mp3", texte: "Si vous inversez le temps et l'histoire, vous trouverez le code. Allez, K-Y-O tout le monde !", voix: "Si vous inversez le temps… et l'histoire… vous trouverez le code. Allez, K, Y, O, tout le monde !" },
+      { de: 0.8, a: 9.8, audio: "assets/audio/barnabe-video-1.mp3", texte: "Ha ha ha ! Coucou le Support 44 ! Vous cherchez ce gros sac ? Trop tard, le Cadeau Officiel est avec moi !", voix: "Ha ha ha ! Coucou le Support quarante-quatre ! Vous cherchez ce gros sac ? Trop tard… le Cadeau Officiel est avec moi !" },
+      { de: 10.3, a: 18.4, audio: "assets/audio/barnabe-video-2.mp3", texte: "Regardez mon mug : +8 h. Et ces jolies fleurs… Demain, mon petit-déjeuner, je le prends de l'autre côté du monde !", voix: "Regardez mon mug : plus huit heures. Et ces jolies fleurs… Demain, mon petit-déjeuner, je le prends de l'autre côté du monde !" },
+      { de: 18.9, a: 32.7, audio: "assets/audio/barnabe-video-3.mp3", texte: "Et ça, sur mon écran ? Une tour de télécom de 634 mètres. Ces vitres panoramiques ? Du savoir-faire Saint-Gobain, évidemment !", voix: "Et ça, sur mon écran ? Une tour de télécom de six cent trente-quatre mètres. Ces vitres panoramiques ? Du savoir-faire Saint-Gobain, évidemment !" },
+      { de: 33.2, a: 40.4, audio: "assets/audio/barnabe-video-4.mp3", texte: "Si vous inversez le temps et l'histoire, vous trouverez le code. Allez, K-Y-O tout le monde !", voix: "Si vous inversez le temps… et l'histoire… vous trouverez le code. Allez, K, Y, O, tout le monde !" },
     ],
     videoDetruite: "Transmission autodétruite.",
+    boutonApresVideo: "Voir le rapport",
+    videoBloquee: "La vidéo ne démarre pas ?",
+    videoToucher: "Touchez pour lancer la vidéo",
 
-    rapportTitre: "Rapport d'analyse de la transmission (repaire secret)",
-    rapport:
-      "Le signal vidéo s'est coupé. Les analystes ont retranscrit les indices : Barnabé se cache à cet étage, dans une pièce dont le nom est une destination emblématique.",
+    rapportTitre: "Rapport d'analyse",
+    rapport: "Barnabé se cache à cet étage, dans une pièce baptisée du nom d'une destination emblématique.",
     indices: [
-      "Son terminal vit à l'heure du fuseau UTC+9 (+7h par rapport à Paris).",
-      "Sa base est dans une mégapole abritant la tour de télécom de 634 m vitrée par Saint-Gobain.",
-      "Son nom (5 lettres) est l'anagramme et l'inverse des syllabes de l'ancienne capitale historique (K Y O - T O).",
+      "Son mug affiche +8 h : le fuseau UTC+9, en décembre.",
+      "Sa ville abrite une tour de télécom de 634 m, vitrée par Saint-Gobain.",
+      "Le nom (5 lettres) inverse les syllabes de l'ancienne capitale : KYO-TO.",
     ],
-    conclusion: "Recoupez ces indices pour trouver le nom de son QG.",
-    label: "Entrez le code du repaire de Barnabé (5 lettres) :",
+    conclusion: "",
+    label: "Code du repaire (5 lettres)",
     bouton: "Valider le code",
     reponses: ["tokyo"],
-    unEssai: "Un seul essai ! En cas d'erreur, tout est gelé pendant {duree}.",
-    gelSuite: "Code erroné ! Ensuite, vous pourrez retenter votre chance.",
+    unEssai: "Un seul essai ! En cas d'erreur, tout gèle pendant {duree}.",
+    gelSuite: "Ensuite, vous pourrez retenter votre chance.",
     indiceJoker: "La tour de 634 m s'appelle la Skytree. Dans quelle ville se trouve-t-elle ?",
 
     /* Après TOKYO : le lutin démasqué, puis le faux appel. */
     trouve:
-      "What the fuck ? Vous m'avez retrouvé si vite ?! Bon, j'avoue, vous êtes des goats ! GG la team, je m'avoue vaincu. Mon QG secret est bien la SALLE TOKYO au 33ᵉ étage ! 🛑 ATTENTION : NE PAS OUVRIR LA PORTE TOUT DE SUITE ! J'ai piégé la pièce, j'ai installé un système de désamorceur… Il faut impérativement m'appeler avant d'entrer !",
-    boutonAppel: "📞 Appeler Barnabé",
+      "Quoi ?! Vous m'avez retrouvé si vite ? OK, vous êtes des goats. Mon QG, c'est bien la SALLE TOKYO, au 33ᵉ étage. MAIS N'OUVREZ PAS LA PORTE ! Elle est piégée. Appelez-moi d'abord !",
+    boutonAppel: "Appeler Barnabé",
 
-    /* Message vocal de Barnabé (MP3, généré avec tools/generer-voix.mjs ou
-     * déposé à la main). Sans fichier, la voix du téléphone le remplace. */
+    /* Message vocal de Barnabé (MP3, généré avec tools/generer-voix-piper.py). */
     audio: "assets/audio/barnabe-appel.mp3",
     appelEnCours: "Appel en cours…",
     appelNom: "Barnabé SIX-SEVEN",
     messageVocal:
-      "MDR. Vous vous êtes arrêtés devant la porte en attendant que je « désactive la bombe » ?! Tellement naïfs, vous me régalez ! Bref, le speedrun est presque fini. Mais comme je suis un lutin de qualité, j'ai disséminé plein de paquets partout dans la pièce. Le problème ? Ils sont tous identiques. Seul un paquet est le VRAI Cadeau Officiel. Interdiction STRICTE de les déballer ici, sinon c'est la disqualification immédiate. Chopez-en un à l'aveugle, ne dites rien à personne et foncez au point de départ. On se capte en bas (ou pas) ! Ciao !",
+      "MDR ! Vous attendiez vraiment que je « désactive la bombe » ? Trop naïfs, vous me régalez ! Bon, la course est presque finie. Dans la pièce, plein de paquets identiques… mais un seul est le VRAI Cadeau Officiel. Interdit de les ouvrir ici ! Prenez-en un au hasard, ne dites rien à personne et foncez au point de départ. Tchao !",
     /* Texte prononcé (orthographe phonétique pour la voix de synthèse). */
     messageVocalVoix:
-      "Mort de rire. Vous vous êtes arrêtés devant la porte, en attendant que je désactive la bombe ? Tellement naïfs, vous me régalez ! Bref, la course est presque finie. Mais comme je suis un lutin de qualité, j'ai caché plein de paquets partout dans la pièce. Le problème ? Ils sont tous identiques. Un seul paquet est le vrai Cadeau Officiel. Interdiction stricte de les déballer ici, sinon, c'est la disqualification immédiate. Prenez-en un au hasard, ne dites rien à personne, et foncez au point de départ. On se retrouve en bas… ou pas ! Tchao !",
+      "Èm dé èr ! Vous attendiez vraiment que je désactive la bombe ? Trop naïfs, vous me régalez ! Bon, la course est presque finie. Dans la pièce, il y a plein de paquets identiques… mais un seul est le vrai Cadeau Officiel. Interdit de les ouvrir ici ! Prenez-en un au hasard, ne dites rien à personne, et foncez au point de départ. Tchao !",
     boutonRaccrocher: "Raccrocher",
 
-    /* Écran de fin. */
+    /* Écran de fin. Icônes des consignes : gift, lock, elfWalk1, star, pin… */
     finTitre: "Mission accomplie",
     finSousTitre: "(ou presque…)",
-    finTexte: "Bravo **{equipe}** ! Vous avez démasqué Barnabé SIX-SEVEN et retrouvé sa cachette.",
+    finTexte: "Bravo **{equipe}** ! Barnabé est démasqué.",
     finConsignesTitre: "Dernière ligne droite",
     finConsignes: [
-      { icone: "🎁", texte: "Prenez **un seul paquet**, au hasard." },
-      { icone: "🤫", texte: "Ne l'ouvrez surtout pas." },
-      { icone: "🏃", texte: "Foncez au **point de départ** !" },
+      { icone: "gift", texte: "Prenez **un seul paquet**, au hasard." },
+      { icone: "lock", texte: "Ne l'ouvrez surtout pas." },
+      { icone: "elfWalk1", texte: "Foncez au **point de départ** !" },
     ],
-    finSignature: "Barnabé SIX-SEVEN, lutin officiel (et un peu farceur) du Gobinous Christmas Club",
+    finSignature: "Barnabé SIX-SEVEN, lutin (un peu farceur) du Gobinous Christmas Club",
     finVoeux: "Joyeux Noël",
   },
 };

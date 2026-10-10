@@ -103,7 +103,7 @@
     var html =
       C.questHead(2) +
       (gel ? C.freezeView({ suite: M.gelSuite }) : '') +
-      '<p class="muted center">' + t(M.consigne) + '</p>' +
+      (M.consigne ? '<p class="muted center">' + t(M.consigne) + '</p>' : '') +
       '<div class="pig-card' + (gel ? ' is-frosted' : '') + '">' + cipher(M.lignes) + '</div>' +
       '<p class="card-label center-label">' + icon('loupe') + esc(M.grilleTitre) + '</p>' +
       '<div class="pig-card pig-card-key">' + decoder() + '</div>';

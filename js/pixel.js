@@ -17,6 +17,9 @@
     c: '#00ADE1', // bleu clair
     C: '#8FDCF5', // bleu très clair
     k: '#0A1F45', // contours, yeux
+    y: '#F2C14E', // or (cloches, phares)
+    g: '#2E9E6E', // vert (bonnet de Barnabé)
+    n: '#6B4A2E', // bois
   };
 
   function svg(grid, opts) {
@@ -235,6 +238,85 @@
     ],
   };
 
+  Object.assign(ICONS, {
+    /* Pictogrammes « emoji » du jeu (remplacent les émojis du téléphone). */
+    crown: [
+      'y...y...y',
+      'yy.yyy.yy',
+      'yyyyyyyyy',
+      'yryyyyyry',
+      'yyyyyyyyy',
+    ],
+    bell: [
+      '....yy....',
+      '...yyyy...',
+      '..yyyyyy..',
+      '..yyywyy..',
+      '..yyywyy..',
+      '.yyyyyyyy.',
+      'yyyyyyyyyy',
+      '....rr....',
+    ],
+    sock: [
+      '.wwwww..',
+      '.wwwww..',
+      '.rrrrr..',
+      '.rwrwr..',
+      '.rrrrr..',
+      '.rrrrrr.',
+      '.rrrrrrr',
+      '..rrrrrr',
+    ],
+    play: [
+      'ww.....',
+      'wwww...',
+      'wwwwww.',
+      'wwwwwww',
+      'wwwwww.',
+      'wwww...',
+      'ww.....',
+    ],
+    drop: [
+      '..c..',
+      '.ccc.',
+      'cCccc',
+      'cCccc',
+      '.ccc.',
+    ],
+    car: [
+      '...rrrrrr.....',
+      '..rCCrCCCr....',
+      '.rrrrrrrrrrrr.',
+      'yrrrrrrrrrrrrr',
+      'rrrrrrrrrrrrrR',
+      '.kkk.....kkk..',
+      '..k.......k...',
+    ],
+    van: [
+      'bbbbbbbbb.....',
+      'bwwwwwwwbCC...',
+      'bwwwwwwwbCCC..',
+      'bbbbbbbbbbbbb.',
+      'bbbbbbbbbbbbby',
+      '.kkk.....kkk..',
+      '..k.......k...',
+    ],
+    building: [
+      '....BBBB....',
+      '...BcCcCB...',
+      '..BCcCcCcB..',
+      '..BcCcCcCB..',
+      '..BCcCcCcB..',
+      '..BcCcCcCB..',
+      '..BCcCcCcB..',
+      '..BcCcCcCB..',
+      '..BCcCcCcB..',
+      '..BcCcCcCB..',
+      '..BCcCcCcB..',
+      '..BBBBBBBB..',
+    ],
+  });
+
   /* ------------------------------------------------------------------ */
   /* Le lutin (16 × 20 pixels, tourné vers la droite)                    */
   /* ------------------------------------------------------------------ */
@@ -321,6 +403,12 @@
     img: function (name, cls, alt) {
       return '<img class="pixel ' + (cls || '') + '" src="' + get(name) + '" alt="' + GQ.esc(alt || '') + '"' + (alt ? '' : ' aria-hidden="true"') + '>';
     },
+  };
+
+  /* Pictogramme pixel net (petit format, dans le texte ou un bouton). */
+  GQ.pix = function (name, cls) {
+    if (!ICONS[name] && !SPRITES[name]) name = 'star';
+    return '<img class="pix ' + (cls || '') + '" src="' + get(name) + '" alt="" aria-hidden="true">';
   };
 
   /* Illustrations utilisées par les écrans : rendues en tricot. */

@@ -34,7 +34,9 @@ Une seule direction artistique, de l'écran de chargement jusqu'à la fin :
 - **Quête 5** : transmission de caméra de surveillance, lutin démasqué, faux appel téléphonique.
 - **Règles** : bouton « Règles » bien visible en haut à droite, qui ouvre une page plein écran avec une carte tricotée par règle.
 - **Le lutin commente les gels** : une phrase rigolote pendant le gel, et une autre quand il vous laisse passer (« Le lutin a eu tellement pitié de vous… il est trop goat 🐐 »). Phrases dans `config/textes.js` (`lutin.gel` et `lutin.degel`).
-- **Son** : deux instrumentaux de Noël rythmés à très bas volume, musique japonaise sous la vidéo de Barnabé, effets sonores (réussite, erreur, gel, déverrouillage). Bouton « Son » en haut de l'écran pour tout couper.
+- **Son** : petit fond de Noël presque inaudible (boîte à musique), réactions parlées du lutin (« GG la team ! », « MDR, raté ! »…), effets sonores (réussite, erreur, gel, déverrouillage). Bouton « Son » en haut de l'écran pour tout couper.
+- **Décor animé** : guirlande qui clignote, sol enneigé avec sapins, tour de verre, immeubles et voitures qui passent. Fond bleu Saint-Gobain, ponctué de rouge de Noël sur les moments forts (réussites, rôles, lutin démasqué).
+- **Pictogrammes pixel maison** (cloche, chaussette, sapin, cadeau…) à la place des émojis du téléphone : écrire `[[bell]]`, `[[sock]]`, `[[tree]]`… dans un texte de configuration.
 - **Typographie** : chaque type de titre tricoté a une taille de lettres fixe, quelle que soit la longueur du texte, et tout est centré.
 - **Écran de fin** : une page à part, sans en-tête de jeu (ciel étoilé, scène tricotée, bilan de l'équipe, dernières consignes, « Joyeux Noël » et signature de Barnabé).
 - **Typographies** : Gotham (repli Montserrat), Arial, et VT323 pour les compteurs et les étiquettes.
@@ -67,7 +69,7 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 
 | Étape | Étage · mot secret | Ce que fait l'équipe |
 |---|---|---|
-| Départ | Hall · `SAPIN` | Accueil, nom d'équipe, règles, puis saisie du mot secret du hall. |
+| Départ | Hall · `SAPIN` | Accueil, nom d'équipe, puis le lutin demande de nommer un **Chef Lutin** (capitaine) et un **Lutin Reporter** (photos et vidéos des temps forts avec un autre téléphone, à envoyer aux organisateurs via un QR code à la fin). Règles, puis mot secret du hall. |
 | **Quête 1 · Quiz Givré** | Hall | Choisit un thème parmi 4 (Noël, Histoire de Saint-Gobain, La Tour Saint-Gobain, **Thème mystère**) et répond aux 8 questions. |
 | Premier indice | — | Lit l'indice (effet machine à écrire) et devine l'étage : **5**. |
 | **Quête 2 · Code Cristal** | 5ᵉ étage, coin café · `LUTIN` | Déchiffre un message en alphabet Pigpen avec la grille de décodage : « LA CLÉ DU MYSTÈRE EST LE VERRE ». |
@@ -113,7 +115,7 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 
 ### Quête 5 : Opération Hotte (traque finale)
 
-- **Vidéo à lecture unique** : elle est marquée vue dès son lancement ; recharger la page affiche « Transmission autodétruite ». Tant qu'aucun fichier vidéo n'est fourni, une **transmission simulée** la remplace : portrait de Barnabé, accessoires, sous-titres, **voix de Barnabé** (une réplique par séquence, `traque.sousTitres[].audio`) et **musique japonaise** en fond. Pour utiliser une vraie vidéo : déposez-la dans `assets/video/` et renseignez `traque.video`.
+- **Vidéo à lecture unique** : un petit film animé en pixel art (`assets/video/barnabe.mp4`, et `.webm` en secours), filmé par une « caméra de surveillance » : Barnabé ricane près du sac, montre son mug « +8H » et un cerisier en fleurs, désigne la tour de 634 m sur son écran, salue et s'enfuit. Voix et musique japonaise sont incluses dans la vidéo, les sous-titres s'affichent en dessous (`traque.sousTitres`, minutage `de`/`a`). La vidéo est marquée vue dès son lancement ; recharger la page affiche « Transmission autodétruite ». À la fin, le rapport s'affiche tout seul ; si la lecture coince, un bouton « Voir le rapport » apparaît : le jeu ne peut plus rester bloqué. Pour la refaire après un changement de texte : `python3 tools/generer-voix-piper.py …` puis `python3 tools/generer-video.py` (qui affiche le nouveau minutage des sous-titres).
 - **Code du repaire** : un seul essai. Erreur : **gel de 45 secondes**, puis nouvel essai.
 - **Règle d'or** : aucun texte affiché avant TOKYO ne contient « salle » ni « porte ». `npm run check` le vérifie.
 - **TOKYO** : Barnabé démasqué (animation et bulle), puis gros bouton clignotant « Appeler Barnabé ».
@@ -121,7 +123,7 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 
 ### Voix de Barnabé
 
-Les répliques de Barnabé sont des fichiers MP3 dans `assets/audio/` : `barnabe-video-1.mp3` à `barnabe-video-4.mp3` (vidéo) et `barnabe-appel.mp3` (appel). Le texte prononcé est le champ `voix` (et `messageVocalVoix`) de `config/quetes.js`, écrit pour être bien lu à voix haute (« Six Sévène », « quarante-quatre »…).
+Les répliques de Barnabé sont des fichiers MP3 dans `assets/audio/` : `barnabe-video-1.mp3` à `barnabe-video-4.mp3` (vidéo) et `barnabe-appel.mp3` (appel), plus les **réactions du lutin** `lutin-*.mp3` (`textes.lutin.voix` : réussite, erreur, gel, nom d'équipe), jouées à chaque quête réussie ou réponse fausse avec sa bulle. Les voix passent par Web Audio : une fois le son débloqué par un premier appui, elles fonctionnent aussi sur iPhone (même en mode silencieux sur iOS récent). Le texte prononcé est le champ `voix` (et `messageVocalVoix`) de `config/quetes.js`, écrit pour être bien lu à voix haute (« Six Sévène », « quarante-quatre »…).
 
 **Voix fournie** : générée hors ligne avec le moteur libre [Piper](https://github.com/rhasspy/piper) et la voix masculine française « gilles » (enregistrements CC0, moteur MIT : libre de droits). Débit volontairement posé, voix légèrement rajeunie, volume harmonisé. Pour la régénérer après une modification du texte :
 
@@ -140,10 +142,10 @@ Si un fichier manque, le téléphone lit le texte avec sa propre voix de synthè
 
 ### Musique et effets sonores
 
-- **Pendant le parcours** : deux instrumentaux de Noël rythmés qui s'enchaînent, `musique-noel-1.mp3` (« Jingle Bells » : batterie, basse, cuivres, grelots) et `musique-noel-2.mp3` (« Deck the Halls » et « We Wish You a Merry Christmas » en swing).
-- **Sous la vidéo de Barnabé** : `musique-japon.mp3` (« Sakura Sakura » au koto).
+- **Pendant le parcours** : un tout petit fond sonore, deux airs à la boîte à musique qui s'enchaînent, `musique-noel-1.mp3` (« Douce nuit ») et `musique-noel-2.mp3` (« Deck the Halls »), avec des accords simples écrits mesure par mesure (aucune dissonance).
+- **Dans la vidéo de Barnabé** : `musique-japon.mp3` (« Sakura Sakura » au koto).
 - Mélodies du domaine public, arrangements originaux composés par `tools/generer-musique.py` : **libres de droits**.
-- **Volume très bas** par défaut (`parametres.musique.volume`), réglé par Web Audio pour être respecté aussi sur iPhone. La musique s'efface presque complètement quand Barnabé parle.
+- **Volume quasi nul** par défaut (`parametres.musique.volume: 0.05`) : même téléphone à fond, ce n'est qu'un fond. Réglé par Web Audio pour être respecté aussi sur iPhone ; la musique s'efface quand le lutin parle.
 - **Effets sonores** (synthétisés, sans fichier) : clochettes quand une réponse est validée, fanfare quand une quête est réussie, « bonk » quand c'est faux, cristaux de givre quand tout gèle, petit carillon quand un mot secret débloque une quête (`parametres.musique.effets`).
 - Le bouton **Son**, en haut de l'écran, coupe musique, effets et voix.
 - Pour d'autres musiques, remplacez les fichiers MP3 ou les chemins dans `parametres.musique.noel` (gardez des morceaux libres de droits).
@@ -255,7 +257,7 @@ npx playwright install chromium
 npm test
 ```
 
-Les 33 vérifications couvrent notamment : bouton Règles et bouton du son ; mots secrets des 5 étages ; thème mystère ; absence de correction pendant les questions puis correction après les 8 réponses ; gel de 45 s du quiz (persistant, règles accessibles) et validation d'office ; étage à deviner (givre 10 s, indice bonus) ; message codé (symboles, tolérance de saisie, essais) ; joker ; défi photo (appareil photo intégré sans sélecteur de fichiers, refus capricieux unique, envoi au serveur, export ZIP protégé) ; modules de l'enquête (essais, gel, validation d'office, badge) ; traque (vidéo à lecture unique, absence de « salle »/« porte » avant TOKYO, code à un essai, appel, fin) ; tableau de bord (code, avancement, galerie, réinitialisation à distance) ; mode test (sauts, affichettes, remise à zéro) ; absence de défilement horizontal et d'erreur JavaScript.
+Les 35 vérifications couvrent notamment : rôles Chef Lutin et Lutin Reporter ; bouton « Un souci ? » (lien d'appel) et voix du lutin ; bouton Règles et bouton du son ; mots secrets des 5 étages ; thème mystère ; absence de correction pendant les questions puis correction après les 8 réponses ; gel de 45 s du quiz (persistant, règles accessibles) et validation d'office ; étage à deviner (givre 10 s, indice bonus) ; message codé (symboles, tolérance de saisie, essais) ; joker ; défi photo (appareil photo intégré sans sélecteur de fichiers, refus capricieux unique, envoi au serveur, export ZIP protégé) ; modules de l'enquête (essais, gel, validation d'office, badge) ; traque (vidéo réellement lue avec sous-titres et passage automatique au rapport, lecture unique, absence de « salle »/« porte » avant TOKYO, code à un essai, appel, fin) ; tableau de bord (code, avancement, galerie, réinitialisation à distance) ; mode test (sauts, affichettes, remise à zéro) ; absence de défilement horizontal et d'erreur JavaScript.
 
 ---
 
@@ -282,11 +284,13 @@ Après la mise en ligne :
 ## 10. À valider avant l'événement
 
 - [ ] **Faits du quiz** et des indices de la quête 5, en particulier :
-  - quête 5, indice 1 : en décembre, Tokyo a **8 heures** d'avance sur Paris (7 h seulement en été) ; le texte actuel indique « +7h » ;
+  - quête 5, indice 1 : corrigé en « +8 h » (Tokyo a 8 heures d'avance sur Paris en décembre) ;
   - quête 5, indice 2 : vérifier que le vitrage de la Tokyo Skytree est bien attribué à Saint-Gobain ;
   - quiz « La Tour Saint-Gobain » : année de livraison, commune, nombre de niveaux.
 - [ ] **Matricule (quête 4)** : la consigne D (« année qui précède l'année en cours ») donne 5 en 2026. Si l'événement a lieu une autre année, mettez à jour `reponses` du module 2 et `fiche.matricule`.
-- [ ] **Voix de Barnabé** : écouter les fichiers fournis (Piper) ; si elle ne convient pas, la remplacer par une voix ElevenLabs (voir § 3). Éventuellement une vraie vidéo (`traque.video`).
+- [ ] **Voix de Barnabé et du lutin** : écouter les fichiers fournis (Piper) ; si elle ne convient pas, la remplacer par une voix ElevenLabs (voir § 3), puis relancer `tools/generer-video.py`.
+- [ ] **Bouton « Un souci ? »** : numéro(s) à appeler dans `textes.aide.contacts` (ajoutez la collègue si besoin).
+- [ ] **QR code de dépôt** des photos et vidéos du Lutin Reporter : à préparer et à remettre aux équipes à la fin.
 - [ ] **Droits à l'image** des 6 photos modèles et des portraits.
 - [ ] **Codes** : mode test (`1225`) et suivi (`CODE_SUIVI`, `SUIVI2026` par défaut).
 - [ ] **Hébergement Node.js avec disque persistant** et HTTPS.
@@ -323,8 +327,9 @@ js/app.js               navigation et événements
 js/validate.js          vérification de la configuration
 assets/fonts/           Montserrat, VT323 (SIL OFL)
 assets/img/             favicon, logo, photos modèles, portraits des suspects
-assets/audio/           musiques de fond et voix de Barnabé (MP3)
-tools/                  serveur du jeu (site, suivi, photos), vérification, génération de la musique et des voix (Piper ou ElevenLabs)
+assets/audio/           fond musical, voix de Barnabé et réactions du lutin (MP3)
+assets/video/           vidéo animée de Barnabé (MP4 + WebM)
+tools/                  serveur du jeu (site, suivi, photos), vérification, génération de la musique, des voix (Piper ou ElevenLabs) et de la vidéo
 tests/                  test automatisé de bout en bout
 data/                   équipes suivies et photos (créé par le serveur, non versionné)
 ```

@@ -89,6 +89,7 @@
       '<article class="team-card' + (t.termine ? ' is-done' : '') + '">' +
       '<div class="team-head"><h3 class="team-name">' + esc(t.equipe || 'Sans nom') + '</h3>' +
       '<span class="team-quest">' + (t.termine ? '5/5' : 'Quête ' + t.quete + '/5') + '</span></div>' +
+      (t.chef || t.reporter ? '<p class="team-roles">' + (t.chef ? 'Chef Lutin : <b>' + esc(t.chef) + '</b>' : '') + (t.chef && t.reporter ? ' · ' : '') + (t.reporter ? 'Reporter : <b>' + esc(t.reporter) + '</b>' : '') + '</p>' : '') +
       '<div class="pips" aria-hidden="true">' + pips + '</div>' +
       '<p class="team-step">' + esc(t.etape) + '</p>' +
       (badges ? '<p class="tags">' + badges + '</p>' : '') +

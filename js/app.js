@@ -55,13 +55,15 @@
       case '':
         return GQ.screens.home();
       case 'equipe':
-        return GQ.screens.team();
+        return GQ.screens.team(r.arg);
       case 'regles':
         if (!s.team) return redirectTo('equipe');
+        if (!s.roles) return redirectTo('equipe/roles');
         return GQ.screens.rules();
       case 'quete':
       case 'jeu':
         if (!s.team) return redirectTo('equipe');
+        if (!s.roles) return redirectTo('equipe/roles');
         if (!s.rulesOk) return redirectTo('regles');
         return GQ.screens.quest(Number(r.arg) || s.quest);
       case 'organisateur':
@@ -93,7 +95,7 @@
       html += '<div class="storage-warning" role="alert">' + GQ.t(T.general.stockageIndisponible) + '</div>';
     }
     html += scr.bare ? scr.html : GQ.header(GQ.state.quest) + '<main class="screen screen-quest">' + scr.html + '</main>';
-    if (scr.key !== 'redirect') html += '<div class="ground" aria-hidden="true"></div>';
+    html += GQ.footer();
     if (GQ.test.isActive() && parseRoute().name !== 'organisateur') {
       html += '<a class="test-bar" href="#/organisateur">Mode test</a>';
     }
@@ -101,17 +103,22 @@
     document.body.classList.toggle('is-testing', GQ.test.isActive());
     document.body.classList.toggle('is-wide', !!scr.wide);
     document.body.classList.toggle('is-frozen', !!scr.frozen);
+    // Fond rouge de temps en temps (réussites, moments forts) ; bleu sinon.
+    document.body.classList.toggle('tone-red', !scr.frozen && (scr.tone === 'red' || (!!scr.celebrate && scr.tone !== 'blue')));
     // Musique : Noël par défaut, rien sur les écrans des organisateurs.
     var route = parseRoute().name;
     GQ.audio.scene(scr.music !== undefined ? scr.music : route === 'organisateur' || route === 'suivi' ? null : 'noel');
 
     var changed = scr.key !== lastKey;
     lastKey = scr.key;
-    // Effets sonores : gel, réussite, erreur (une seule fois par message).
+    // Effets sonores et réaction parlée du lutin : gel, réussite, erreur
+    // (une seule fois par écran ou par message d'erreur).
     var msg = GQ.ui.msg;
-    if (changed && scr.frozen) GQ.audio.sfx('freeze');
-    else if (changed && scr.celebrate) GQ.audio.sfx(scr.celebrate === 'big' ? 'win' : 'ok');
-    else if (msg && msg.kind === 'error' && !msg.sounded) { msg.sounded = true; GQ.audio.sfx('error'); }
+    var voice = null;
+    if (changed && scr.frozen) { GQ.audio.sfx('freeze'); voice = 'gel'; }
+    else if (changed && scr.celebrate) { GQ.audio.sfx(scr.celebrate === 'big' ? 'win' : 'ok'); voice = scr.voice === undefined ? 'reussite' : scr.voice; }
+    else if (changed && scr.voice) voice = scr.voice;
+    else if (msg && msg.kind === 'error' && !msg.sounded) { msg.sounded = true; GQ.audio.sfx('error'); voice = 'echec'; }
     if (changed) {
       document.getElementById('fx').innerHTML = '';
       window.scrollTo(0, 0);
@@ -124,9 +131,16 @@
     }
     GQ.updateClocks();
     if (scr.after) scr.after();
-    if (changed) {
-      GQ.elf.hide();
-      if (scr.elf) GQ.elf.react(scr.elf);
+    if (changed) GQ.elf.hide();
+    if (voice) {
+      clearTimeout(GQ._voiceTimer);
+      GQ._voiceTimer = setTimeout(function () {
+        var l = GQ.audio.line(voice);
+        if (l) GQ.elf.peek(l.texte, 3200);
+        else if (changed && scr.elf) GQ.elf.react(scr.elf);
+      }, 450);
+    } else if (changed && scr.elf) {
+      GQ.elf.react(scr.elf);
     }
     if (scr.celebrate && !celebrated[scr.key]) {
       celebrated[scr.key] = true;

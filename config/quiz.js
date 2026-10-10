@@ -31,13 +31,12 @@ window.GAME_CONFIG = window.GAME_CONFIG || {};
 window.GAME_CONFIG.quiz = {
   titre: "Quiz Givré",
   intro:
-    "Pour retrouver la trace du lutin, prouvez que vous êtes une équipe d'experts ! Choisissez un thème et répondez aux 8 questions : il faut 8 bonnes réponses sur 8. Vous avez droit à deux thèmes.",
+    "Choisissez un thème et répondez aux 8 questions. Objectif : **8 sur 8**. Vous avez droit à **deux thèmes**.",
   boutonIntro: "Choisir un thème",
 
   textes: {
     choixTitre: "Choisissez votre thème",
-    choixAide:
-      "Répondez aux 8 questions : le score et la correction ne s'affichent qu'à la fin. Il faut 8 bonnes réponses sur 8. Vous avez droit à deux thèmes.",
+    choixAide: "Score et correction à la fin des 8 questions.",
     tentatives: "Thèmes ratés : {n} sur {max}. Dernière chance !",
     themeEchoue: "Fermé",
     themeJoue: "Joué",
@@ -49,29 +48,29 @@ window.GAME_CONFIG.quiz = {
     questionSuivante: "Question suivante",
     validerTout: "Valider mes 8 réponses",
     confirmTitre: "Valider vos réponses ?",
-    confirmTexte: "Vous ne pourrez plus les modifier ni rejouer ce thème. Il faut 8 bonnes réponses sur 8 pour réussir.",
+    confirmTexte: "Plus de retour en arrière possible sur ce thème.",
     confirmOui: "Oui, voir notre score",
     confirmNon: "Relire mes réponses",
     changerTheme: "Abandonner ce thème",
     abandonTitre: "Abandonner ce thème ?",
-    abandonTexte: "Ce thème sera compté comme une tentative échouée et ne pourra plus être rejoué.",
+    abandonTexte: "Il comptera comme un thème raté.",
     abandonTexteBlocage:
-      "Ce thème sera compté comme une tentative échouée. Attention : tout sera alors gelé pendant {minutes}, puis vous passerez à la suite.",
+      "Il comptera comme un thème raté : tout gèlera pendant {minutes}, puis vous passerez à la suite.",
     abandonConfirmer: "Abandonner le thème",
     abandonAnnuler: "Continuer ce thème",
     resultatScore: "{score} bonne(s) réponse(s) sur {total}",
     echecTitre: "Raté, de peu !", // 6 ou 7 bonnes réponses
     echecTitreLoin: "Pas cette fois !", // 5 bonnes réponses ou moins
-    echecTexte: "Il fallait 8 bonnes réponses sur 8. Ce thème est fermé, mais vous avez droit à une deuxième chance : choisissez un autre thème.",
-    echecAvertissement: "Attention : si ce deuxième thème est raté, tout sera gelé pendant {minutes}.",
-    echecBlocage: "C'est votre deuxième échec : tout est gelé pendant {minutes}. Ensuite, le lutin vous laissera passer à la suite.",
+    echecTexte: "Ce thème est fermé. Deuxième chance : choisissez-en un autre !",
+    echecAvertissement: "Si le prochain est raté, tout gèle pendant {minutes}.",
+    echecBlocage: "Deuxième thème raté : tout gèle pendant {minutes}, puis le lutin vous laisse passer.",
     boutonAutreTheme: "Choisir un autre thème",
     boutonMinuteur: "Voir le minuteur",
     bloqueTitre: "Tout est gelé !",
-    bloqueSuite: "À la fin du compte à rebours, le quiz sera validé d'office.",
+    bloqueSuite: "Ensuite, le quiz sera validé d'office.",
     bloqueCompteur: "Suite de l'aventure dans",
     reussiteTitre: "Quiz réussi !",
-    reussiteTexte: "8 bonnes réponses sur 8 : le lutin n'en revient pas. Votre premier indice est débloqué !",
+    reussiteTexte: "Le lutin n'en revient pas. Votre premier indice est débloqué !",
     reussiteApresGelTitre: "Le gel est levé !",
     reussiteApresGelTexte: "Le quiz est validé : votre premier indice est débloqué.",
     boutonIndice: "Voir le 1er indice",
@@ -84,16 +83,16 @@ window.GAME_CONFIG.quiz = {
   etage: {
     titre: "Le premier indice",
     indice:
-      "Votre prochaine destination se situe à l'étage qui rassemble le mur végétal Saint-Gobain, la pause café avec vue sur la Tour Eiffel et l'équipe Recrutement. Retrouvez le prochain indice au niveau du coin café !",
-    question: "Avez-vous deviné à quel étage vous devez vous rendre ?",
+      "Votre prochaine destination : l'étage du mur végétal Saint-Gobain, de la pause café avec vue sur la Tour Eiffel et de l'équipe Recrutement.",
+    question: "Quel est cet étage ?",
     label: "Numéro de l'étage",
     bouton: "Valider l'étage",
     reponses: ["5", "5e", "5eme", "5ieme", "cinq", "cinquieme"],
     erreur: "Mauvaise réponse !",
     gelTitre: "Givré !",
-    gelSuite: "Mauvaise réponse ! Un indice bonus arrive juste après le dégel…",
+    gelSuite: "Un indice bonus arrive juste après le dégel…",
     bonusTitre: "Indice bonus",
-    bonus: "Un doute ? Indice mathématique : rendez-vous à l'étage égal à 3 + 2 !",
+    bonus: "Rendez-vous à l'étage 3 + 2 !",
   },
 
   themes: [
@@ -270,7 +269,7 @@ window.GAME_CONFIG.quiz = {
       titreMystere: "Thème mystère",
       sousTitreMystere: "Saurez-vous deviner de quoi il s'agit ?",
       revelation: "Surprise ! Le thème mystère est…",
-      revelationTexte: "8 questions de culture générale : société, sciences, histoire, cinéma, mode… Tout le monde peut briller !",
+      revelationTexte: "Société, sciences, histoire, cinéma, mode… Tout le monde peut briller !",
       questions: [
         {
           question:

@@ -92,6 +92,8 @@ const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 function clean(b) {
   return {
     equipe: str(b.equipe, 40),
+    chef: str(b.chef, 40),
+    reporter: str(b.reporter, 40),
     quete: Math.min(5, Math.max(1, Math.round(num(b.quete)) || 1)),
     etape: str(b.etape, 120),
     termine: !!b.termine,
@@ -322,11 +324,30 @@ createServer(async (req, res) => {
     const file = normalize(join(root, path));
     const parts = relative(root, file).split(sep);
     if (!file.startsWith(root) || parts.includes('.git') || parts[0] === 'data') throw new Error('forbidden');
-    if (!(await stat(file)).isFile()) throw new Error('not a file');
-    res.writeHead(200, {
+    const info = await stat(file);
+    if (!info.isFile()) throw new Error('not a file');
+    const head = {
       'Content-Type': types[extname(file).toLowerCase()] || 'application/octet-stream',
       'Cache-Control': 'no-cache',
-    });
+      'Accept-Ranges': 'bytes',
+    };
+    // Lecture par morceaux (Range) : indispensable aux vidéos sur iPhone.
+    const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
+    if (range && (range[1] || range[2])) {
+      const size = info.size;
+      let start = range[1] ? Number(range[1]) : size - Number(range[2]);
+      let end = range[1] && range[2] ? Number(range[2]) : size - 1;
+      start = Math.max(0, start);
+      end = Math.min(end, size - 1);
+      if (start > end) {
+        res.writeHead(416, { 'Content-Range': `bytes */${size}` });
+        return res.end();
+      }
+      const data = await readFile(file);
+      res.writeHead(206, { ...head, 'Content-Range': `bytes ${start}-${end}/${size}`, 'Content-Length': end - start + 1 });
+      return res.end(data.subarray(start, end + 1));
+    }
+    res.writeHead(200, head);
     res.end(await readFile(file));
   } catch {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });

@@ -1,7 +1,7 @@
-/* Son du jeu : musique de fond (deux musiques de Noël qui s'enchaînent
- * pendant le parcours, musique japonaise sous la vidéo de Barnabé), voix de
- * Barnabé, effets sonores (réussite, erreur, gel, déverrouillage) et bouton
- * pour couper le son.
+/* Son du jeu : petit fond musical de Noël (deux morceaux très doux qui
+ * s'enchaînent), voix de Barnabé et réactions parlées du lutin, effets
+ * sonores (réussite, erreur, gel, déverrouillage) et bouton pour couper le
+ * son.
  * Les navigateurs n'autorisent le son qu'après un geste de l'utilisateur :
  * la musique démarre au premier appui sur l'écran.
  * Le volume de la musique passe par Web Audio : c'est la seule façon de le
@@ -32,9 +32,12 @@
   }
   function level(name) {
     var v = name === 'japon' ? M.volumeVideo : M.volume;
-    v = Math.max(0, Math.min(1, Number(v) || 0.08));
-    return v * (ducked ? 0.12 : 1);
+    v = Math.max(0, Math.min(1, Number(v) || 0.05));
+    return v * (ducked ? 0.15 : 1);
   }
+
+  /* iPhone : le son du jeu ne doit pas dépendre du bouton silencieux. */
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { /* non pris en charge */ }
 
   function audioCtx() {
     if (!ctx) {
@@ -104,7 +107,8 @@
   }
 
   function unlock() {
-    audioCtx();
+    var c = audioCtx();
+    if (c && !unlock.primed) { unlock.primed = true; primeCtx(); }
     if (unlocked) return;
     unlocked = true;
     apply();
@@ -184,16 +188,117 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Voix de Barnabé                                                     */
+  /* Voix (Barnabé et réactions du lutin)                                */
+  /* Les fichiers sont décodés puis joués par Web Audio : une fois le    */
+  /* son débloqué par un premier appui, toutes les répliques passent,    */
+  /* y compris sur iPhone. Chaque lecture a un minuteur de sécurité : la */
+  /* promesse se résout toujours, le jeu ne peut pas rester bloqué.      */
   /* ------------------------------------------------------------------ */
 
-  var voice = null;
-  function voiceEl() {
-    if (!voice) {
-      voice = new Audio();
-      voice.preload = 'auto';
+  var buffers = {}; // url → promesse d'AudioBuffer
+  var speaking = null; // { src, done }
+
+  function load(url) {
+    if (!buffers[url]) {
+      var c = audioCtx();
+      buffers[url] = !c || !window.fetch
+        ? Promise.reject(new Error('web audio'))
+        : fetch(url).then(function (r) {
+          if (!r.ok) throw new Error('http ' + r.status);
+          return r.arrayBuffer();
+        }).then(function (data) {
+          // Safari ancien : decodeAudioData sans promesse.
+          return new Promise(function (resolve, reject) { c.decodeAudioData(data, resolve, reject); });
+        });
+      buffers[url].catch(function () { delete buffers[url]; });
     }
-    return voice;
+    return buffers[url];
+  }
+
+  function stopVoice() {
+    if (speaking) {
+      var s = speaking;
+      speaking = null;
+      try { s.src.stop(); } catch (e) { /* déjà arrêtée */ }
+      s.done();
+    }
+    if (window.speechSynthesis) speechSynthesis.cancel();
+  }
+
+  /* Lit un fichier de voix. Résolue à la fin (ou au plus tard à la durée
+   * du fichier + 1,5 s) ; rejetée si le fichier est illisible ou si le son
+   * n'est pas disponible. Son coupé : résolue tout de suite. */
+  function playVoice(url) {
+    if (!String(url || '').trim()) return Promise.reject(new Error('aucun fichier'));
+    if (!enabled) return Promise.resolve();
+    return load(url).then(function (buf) {
+      var c = audioCtx();
+      if (!c) throw new Error('son indisponible');
+      if (c.state === 'running') return buf;
+      // Contexte en cours de réveil : on lui laisse un instant.
+      return Promise.race([c.resume(), new Promise(function (r) { setTimeout(r, 600); })]).then(function () {
+        if (c.state !== 'running') throw new Error('son bloqué');
+        return buf;
+      });
+    }).then(function (buf) {
+      var c = audioCtx();
+      stopVoice();
+      return new Promise(function (resolve) {
+        var src = c.createBufferSource();
+        var g = c.createGain();
+        g.gain.value = Math.max(0, Math.min(2, Number(M.volumeVoix) || 1));
+        src.buffer = buf;
+        src.connect(g);
+        g.connect(c.destination);
+        var guard;
+        var me = {
+          src: src,
+          done: function () {
+            clearTimeout(guard);
+            if (speaking === me) speaking = null;
+            ducked = !!speaking;
+            apply();
+            resolve();
+          },
+        };
+        src.onended = function () { if (speaking === me) me.done(); };
+        guard = setTimeout(function () { if (speaking === me) { try { src.stop(); } catch (e) { /* fin */ } me.done(); } }, buf.duration * 1000 + 1500);
+        speaking = me;
+        ducked = true;
+        apply();
+        src.start(0);
+      });
+    });
+  }
+
+  /* Débloque le son sur iPhone : un son vide joué pendant un appui. */
+  function primeCtx() {
+    var c = audioCtx();
+    if (!c) return;
+    try {
+      var b = c.createBuffer(1, 1, 22050);
+      var s = c.createBufferSource();
+      s.buffer = b;
+      s.connect(c.destination);
+      s.start(0);
+    } catch (e) { /* rien à débloquer */ }
+  }
+
+  /* Réplique du lutin tirée au hasard dans config/textes.js → lutin.voix
+   * (réussite, échec, gel…). Pas deux fois de suite la même. */
+  var lastLine = {};
+  var lineBusyUntil = 0;
+  function line(kind) {
+    var V = (GQ.cfg.textes.lutin || {}).voix || {};
+    var list = (V[kind] || []).filter(function (l) { return l && l.audio; });
+    if (!list.length || speaking || Date.now() < lineBusyUntil) return null;
+    var i = Math.floor(Math.random() * list.length);
+    if (list.length > 1 && i === lastLine[kind]) i = (i + 1) % list.length;
+    lastLine[kind] = i;
+    lineBusyUntil = Date.now() + 1200;
+    var l = list[i];
+    playVoice(l.audio).catch(function () { /* pas de voix : la bulle suffit */ });
+    return l;
   }
 
   GQ.audio = {
@@ -209,46 +314,26 @@
       enabled = !enabled;
       setPref(enabled);
       unlocked = true;
+      if (!enabled) stopVoice();
       apply();
       return enabled;
     },
     sfx: sfx,
-    /* Baisse fortement la musique pendant que Barnabé parle. */
+    /* Baisse fortement la musique (pendant une voix ou une vidéo). */
     duck: function (on) {
-      ducked = !!on;
+      ducked = !!on || !!speaking;
       apply();
     },
-    /* À appeler pendant un appui (bouton) : autorise ensuite la lecture
-     * des voix sur iPhone, qui exige un geste pour chaque lecteur audio.
-     * Un seul lecteur sert donc pour toutes les répliques. */
+    /* À appeler pendant un appui : débloque le son et précharge le fichier. */
     prime: function (url) {
-      var a = voiceEl();
-      if (!String(url || '').trim()) return;
-      a.src = url;
-      a.muted = true;
-      var p = a.play();
-      if (p && p.then) p.then(function () { a.pause(); a.muted = false; }, function () { a.muted = false; });
-      else { a.pause(); a.muted = false; }
+      unlock();
+      primeCtx();
+      if (String(url || '').trim()) load(url).catch(function () { /* préchargement facultatif */ });
     },
-    /* Lit un fichier de voix. Retour : promesse résolue à la fin de la
-     * lecture, rejetée si le fichier est absent ou illisible. */
-    voice: function (url) {
-      return new Promise(function (resolve, reject) {
-        if (!String(url || '').trim()) return reject(new Error('aucun fichier'));
-        var a = voiceEl();
-        a.onended = function () { resolve(a); };
-        a.onerror = function () { reject(new Error('fichier illisible')); };
-        if (a.getAttribute('src') !== url) a.src = url;
-        a.muted = false;
-        a.currentTime = 0;
-        var p = a.play();
-        if (p && p.catch) p.catch(reject);
-      });
-    },
-    stopVoice: function () {
-      if (voice) { voice.onended = voice.onerror = null; voice.pause(); }
-      if (window.speechSynthesis) speechSynthesis.cancel();
-    },
+    preload: function (url) { if (String(url || '').trim()) load(url).catch(function () { /* facultatif */ }); },
+    voice: playVoice,
+    line: line,
+    stopVoice: stopVoice,
   };
 
   /* Bouton son (en-tête et accueil). */

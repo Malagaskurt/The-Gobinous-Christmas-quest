@@ -121,7 +121,9 @@
 
   /* Le lutin passe la tête sur le bord droit avec une bulle. */
   function peek(text, ms) {
-    if (!enabled() || busy()) return;
+    // Seulement sur les écrans de jeu (sous l'en-tête) : jamais par-dessus
+    // un titre.
+    if (!enabled() || busy() || !document.querySelector('.topbar')) return;
     ensure();
     hide();
     var col = column();

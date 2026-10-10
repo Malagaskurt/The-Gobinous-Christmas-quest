@@ -56,6 +56,8 @@
     return {
       id: s.id,
       equipe: s.team,
+      chef: (s.roles && s.roles.chef) || '',
+      reporter: (s.roles && s.roles.reporter) || '',
       quete: s.quest,
       etape: stepLabel(s),
       termine: !!s.finished,

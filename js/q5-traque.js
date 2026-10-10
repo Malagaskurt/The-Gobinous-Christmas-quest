@@ -31,8 +31,8 @@
       html:
         C.questHead(5) +
         '<div class="alert-card" role="alert">' + GQ.knit.icon('lock', 'alert-ico') +
-        '<p class="alert-title">⚠️ ' + t(R.avertissementTitre) + '</p><p>' + t(R.avertissement) + '</p></div>' +
-        C.cta(C.btn('▶ ' + esc(R.boutonVideo), 'video-start', '', 'btn-red btn-blink')),
+        '<p class="alert-title">' + t(R.avertissementTitre) + '</p><p>' + t(R.avertissement) + '</p></div>' +
+        C.cta(C.btn(GQ.pix('play', 'btn-pix') + esc(R.boutonVideo), 'video-start', '', 'btn-red btn-blink')),
     };
   }
 
@@ -41,9 +41,8 @@
   function simulated() {
     return (
       '<div class="cctv" aria-live="polite">' +
-      '<p class="cctv-top"><span class="rec">● REC</span><span>' + esc(R.camera) + '</span></p>' +
-      '<div class="cctv-scene"><img class="cctv-elf" src="' + esc(E.fiche.photo) + '" alt="Barnabé SIX-SEVEN">' +
-      '<span class="cctv-prop" data-prop></span></div>' +
+      '<p class="cctv-top"><span class="rec"><i></i>REC</span><span>' + esc(R.camera) + '</span></p>' +
+      '<div class="cctv-scene"><img class="cctv-elf" src="' + esc(E.fiche.photo) + '" alt="Barnabé SIX-SEVEN"></div>' +
       '<p class="cctv-sub" data-sub></p>' +
       '<div class="cctv-bar"><i data-bar></i></div>' +
       '</div>'
@@ -88,9 +87,7 @@
     });
     function show(seg) {
       var sub = document.querySelector('[data-sub]');
-      var prop = document.querySelector('[data-prop]');
       if (sub) sub.textContent = seg.texte;
-      if (prop) { prop.textContent = seg.accessoire || ''; prop.classList.remove('pop'); void prop.offsetWidth; prop.classList.add('pop'); }
     }
     (function next(i) {
       if (id !== runId || GQ.state.phase[5] !== 'video') return;
@@ -103,24 +100,70 @@
     })(0);
   }
 
+  /* Vraie vidéo (MP4 avec voix et musique) : sous-titres synchronisés,
+   * passage automatique au rapport à la fin. Si la lecture coince (réseau,
+   * lecture refusée…), un bouton permet toujours de continuer. */
   function realVideo() {
-    return '<div class="cctv"><p class="cctv-top"><span class="rec">● REC</span><span>' + esc(R.camera) + '</span></p>' +
-      '<video class="cctv-video" src="' + esc(R.video) + '" playsinline autoplay disablepictureinpicture controlslist="nodownload noplaybackrate nofullscreen"></video>' +
-      '<div class="cctv-bar"><i data-bar></i></div></div>';
+    return '<div class="cctv cctv-real">' +
+      '<div class="cctv-frame"><video class="cctv-video" playsinline webkit-playsinline preload="auto" disablepictureinpicture controlslist="nodownload noplaybackrate nofullscreen">' +
+      '<source src="' + esc(R.video) + '" type="video/mp4">' +
+      (/\.mp4$/i.test(R.video) ? '<source src="' + esc(R.video.replace(/\.mp4$/i, '.webm')) + '" type="video/webm">' : '') +
+      '</video>' +
+      '<button type="button" class="cctv-tap" data-action="video-tap" hidden>' + GQ.pix('play', 'tap-pix') + '<span>' + esc(R.videoToucher) + '</span></button></div>' +
+      '<p class="cctv-sub" data-sub aria-live="polite"></p>' +
+      '<div class="cctv-bar"><i data-bar></i></div></div>' +
+      '<div class="video-rescue" data-rescue hidden><p class="muted small center">' + esc(R.videoBloquee) + '</p>' +
+      C.btn(esc(R.boutonApresVideo) + icon('fleche'), 'video-skip', '', 'btn-red') + '</div>';
+  }
+
+  function showRescue() {
+    var r = document.querySelector('[data-rescue]');
+    if (r) r.hidden = false;
   }
 
   function runVideo() {
     var v = document.querySelector('.cctv-video');
     if (!v) return;
-    v.addEventListener('ended', videoEnded);
-    v.addEventListener('error', function () { R.video = ''; GQ.render(); });
+    var subs = R.sousTitres || [];
+    var lastT = -1;
+    var still = 0;
+    v.addEventListener('ended', function () { setTimeout(videoEnded, 600); });
+    v.addEventListener('error', showRescue);
+    // Avec plusieurs sources, l'échec de la dernière est signalé sur <source>.
+    var last = v.querySelectorAll('source');
+    if (last.length) last[last.length - 1].addEventListener('error', showRescue);
     v.addEventListener('timeupdate', function () {
       var bar = document.querySelector('[data-bar]');
       if (bar && v.duration) bar.style.width = (v.currentTime / v.duration) * 100 + '%';
+      var seg = subs.filter(function (x) { return v.currentTime >= x.de && v.currentTime < x.a; })[0];
+      var el = document.querySelector('[data-sub]');
+      var txt = seg ? seg.texte : '';
+      if (el && el.textContent !== txt) el.textContent = txt;
     });
-    var p = v.play();
-    if (p && p.catch) p.catch(function () { /* lecture refusée : le bouton natif n'existe pas, on relance au toucher */ v.addEventListener('click', function () { v.play(); }, { once: true }); });
+    // Filet de sécurité : lecture figée plus de 6 s → bouton « continuer ».
+    GQ.every(1000, function () {
+      if (v.ended) return;
+      if (!v.paused && v.currentTime === lastT) still += 1; else still = 0;
+      if (v.paused && v.currentTime === 0) still += 1;
+      lastT = v.currentTime;
+      if (still >= 6) showRescue();
+    });
+    play(v);
   }
+
+  function play(v) {
+    var tap = document.querySelector('.cctv-tap');
+    var p;
+    try { p = v.play(); } catch (e) { p = null; }
+    if (p && p.then) {
+      p.then(function () { if (tap) tap.hidden = true; }, function () { if (tap) tap.hidden = false; });
+    }
+  }
+
+  GQ.actions['video-tap'] = function () {
+    var v = document.querySelector('.cctv-video');
+    if (v) play(v);
+  };
 
   function videoEnded() {
     if (GQ.state.phase[5] !== 'video') return;
@@ -147,7 +190,7 @@
     var real = !!String(R.video || '').trim();
     return {
       key: 'q5-video',
-      music: 'japon',
+      music: real ? null : 'japon',
       html:
         '<h1 class="sr-only" tabindex="-1">' + t(R.titre) + '</h1>' +
         (real ? realVideo() : simulated()) +
@@ -164,8 +207,8 @@
       '<section class="terminal">' +
       '<p class="terminal-title">' + t(R.rapportTitre) + '</p>' +
       '<p class="terminal-text">' + t(R.rapport) + '</p>' +
-      '<ol class="audit">' + R.indices.map(function (x, i) { return '<li><b>Indice ' + (i + 1) + ' :</b> ' + t(x) + '</li>'; }).join('') + '</ol>' +
-      '<p class="terminal-text"><b>' + t(R.conclusion) + '</b></p>' +
+      '<ol class="audit">' + R.indices.map(function (x, i) { return '<li>' + t(x) + '</li>'; }).join('') + '</ol>' +
+      (R.conclusion ? '<p class="terminal-text"><b>' + t(R.conclusion) + '</b></p>' : '') +
       '</section>';
     if (gel) {
       html += C.freezeView({ suite: R.gelSuite });
@@ -191,10 +234,10 @@
       html:
         '<h1 class="sr-only" tabindex="-1">' + t(R.titre) + '</h1>' +
         '<section class="busted">' +
-        '<div class="busted-elf"><img src="' + esc(E.fiche.photo) + '" alt="Barnabé SIX-SEVEN"><span class="busted-sweat" aria-hidden="true">💧</span></div>' +
+        '<div class="busted-elf"><img src="' + esc(E.fiche.photo) + '" alt="Barnabé SIX-SEVEN"><span class="busted-sweat" aria-hidden="true">' + GQ.pix('drop') + '</span></div>' +
         '<div class="busted-bubble">' + C.typewriter('q5-found', t(R.trouve), 'busted-text') + '</div>' +
         '</section>' +
-        C.cta(C.btn(esc(R.boutonAppel), 'call', '', 'btn-red btn-blink btn-call')),
+        C.cta(C.btn(icon('tel') + esc(R.boutonAppel), 'call', '', 'btn-red btn-blink btn-call')),
     };
   }
 
@@ -298,6 +341,7 @@
     return {
       key: 'q5-end',
       bare: true,
+      tone: 'blue',
       celebrate: 'big',
       music: 'noel',
       html:
@@ -317,7 +361,7 @@
         stat('Joker', s.joker.used ? 'utilisé' : 'intact') +
         '</dl>' +
         '<section class="finale-card"><h2>' + t(R.finConsignesTitre) + '</h2><ul>' +
-        R.finConsignes.map(function (x) { return '<li><span class="finale-ico" aria-hidden="true">' + esc(x.icone) + '</span><span>' + t(x.texte) + '</span></li>'; }).join('') +
+        R.finConsignes.map(function (x) { return '<li><span class="finale-ico" aria-hidden="true">' + GQ.pix(x.icone) + '</span><span>' + t(x.texte) + '</span></li>'; }).join('') +
         '</ul></section>' +
         '<p class="finale-voeux">' + GQ.knit.title(R.finVoeux, { alt: C.plain(R.finVoeux), max: 12, color: '#E4323A', outline: true, cls: 'finale-voeux-img' }) + '</p>' +
         '<p class="finale-sign">— ' + t(R.finSignature) + '</p>' +

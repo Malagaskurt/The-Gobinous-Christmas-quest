@@ -30,7 +30,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "SAPIN",
     titre: "Le point de départ",
     histoire:
-      "Le lutin officiel du Gobinous Christmas Club devait livrer l'ultime Cadeau Officiel de Noël dans la Tour Saint-Gobain… mais sur un coup de tête, il est allé le cacher ! Sans ce sésame, impossible de lancer la fête.\n\nRemontez sa piste, étage par étage. Pour commencer, trouvez le mot secret affiché au point de départ, dans le hall.",
+      "Barnabé, le lutin du Gobinous Christmas Club, a caché le Cadeau Officiel de Noël ! Sans lui, pas de fête.\n\nPremier mot secret : il est affiché ici, dans le hall.",
   },
 
   2: {
@@ -39,7 +39,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "LUTIN",
     titre: "Cap sur l'étage 5",
     histoire:
-      "Bien vu, c'est le 5ᵉ étage ! Prenez l'ascenseur et rendez-vous au coin café, près du mur végétal Saint-Gobain. Le mot secret de l'étage vous y attend.",
+      "Bien vu ! Direction le coin café du 5ᵉ étage, près du mur végétal. Le mot secret vous y attend.",
   },
 
   3: {
@@ -48,7 +48,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "GUIRLANDE",
     titre: "Cap sur l'étage 23",
     histoire:
-      "Le verre vous a livré son secret, mais l'aventure ne fait que commencer. Votre prochaine destination se situe au 23ᵉ étage : l'étage où la matière prend vie à travers les plus belles solutions Saint-Gobain.",
+      "Le verre a livré son secret ! Cap sur le 23ᵉ étage, là où la matière prend vie avec les plus belles solutions Saint-Gobain.",
   },
 
   4: {
@@ -57,7 +57,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "ETOILE",
     titre: "Cap sur l'étage 20",
     histoire:
-      "Le lutin farceur, épuisé par vos talents de comédiens, s'avoue vaincu et vous laisse enfin progresser ! Votre voyage dans la tour se poursuit. Prenez l'ascenseur et descendez au 20ᵉ étage, au cœur du Support 44, là où se façonnent les précieux sésames et badges de la tour.",
+      "Épuisé par vos talents de comédiens, le lutin vous laisse passer. Descendez au 20ᵉ étage, au Support 44 : là où naissent les badges de la tour.",
   },
 
   5: {
@@ -66,6 +66,6 @@ window.GAME_CONFIG.etapes = {
     motSecret: "CADEAU",
     titre: "Cap sur l'étage 33",
     histoire:
-      "BADGE LOCALISÉ ! Le badge de Barnabé SIX-SEVEN vient de biper au portique du 33ᵉ étage : il s'y est retranché avec le Cadeau Officiel du Gobinous Christmas Club. Montez immédiatement !",
+      "BADGE LOCALISÉ ! Celui de Barnabé SIX-SEVEN vient de biper au 33ᵉ étage. Il s'y cache avec le cadeau. Montez, vite !",
   },
 };

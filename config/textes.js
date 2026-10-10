@@ -40,39 +40,56 @@ window.GAME_CONFIG.textes = {
     noteDroite: "",
   },
 
-  /* Répliques du lutin qui a caché le cadeau. Une liste [ ] = une réplique
-   * tirée au hasard. Laissez "" pour qu'il reste silencieux. */
+  /* Répliques du lutin (bulles). Une liste [ ] = une réplique tirée au
+   * hasard. Laissez "" pour qu'il reste silencieux. */
   lutin: {
     accueil: "Psst… Le cadeau ? C'est moi qui l'ai caché. Hi hi !",
-    equipe: "Un nom qui claque, et que la chasse commence !",
-    reussite: [
-      "Pas mal… Mais vous ne m'attraperez pas si facilement !",
-      "Hé ! Vous chauffez…",
-      "Bien joué. J'avais pourtant bien caché cet indice !",
-    ],
-    echec: "Hé hé… Ce thème-là était piégé !",
-    blocage: "Brrr… Tout est gelé ! J'en profite pour faire une sieste.",
-    lieu: "Je vous attends là-bas… ou pas !",
-    finale: "Bon d'accord… Vous m'avez presque trouvé !",
-    fin: "Vous m'avez démasqué ! Bien joué, l'équipe !",
+    equipe: "Juste un nom d'équipe. Rien de perso, promis !",
+    reussite: ["GG la team !", "Vous êtes des goats !", "Validé, c'est carré !"],
+    echec: ["MDR, raté !", "Vous pouvez faire mieux, les gars !"],
+    blocage: "Brrr… Tout est gelé !",
+    lieu: "Je vous attends là-haut… ou pas !",
+    fin: "Vous m'avez démasqué ! Bien joué !",
     clic: ["Pas touche !", "Je ne dirai rien…", "Cherchez encore !", "Hi hi hi !", "Le cadeau ? Quel cadeau ?"],
     /* Phrases affichées pendant un gel (tirées au hasard). */
     gel: [
-      "Brrr… Le lutin a tout gelé. Même vos neurones sont en mode glaçon 🥶",
-      "Pause forcée : le lutin est parti se faire un chocolat chaud. Il revient (peut-être).",
-      "Le lutin a appuyé sur le bouton « freeze ». Respirez, ce n'est que du givre.",
-      "Oups, c'est gelé ! Le lutin trouve que vous allez un peu trop vite.",
-      "Le lutin vous a mis en mode glaçon. Ce n'est pas personnel… enfin, un peu.",
+      "Brrr… Même vos neurones sont en mode glaçon.",
+      "Pause forcée : le lutin est parti se faire un chocolat chaud.",
+      "Le lutin a appuyé sur « freeze ». Respirez, ce n'est que du givre.",
+      "Oups, gelé ! Le lutin trouve que vous allez trop vite.",
       "Tout est figé ! Le lutin en profite pour danser dans votre dos.",
     ],
     /* Phrases affichées quand le lutin vous laisse passer après un gel. */
     degel: [
-      "Le lutin a eu tellement pitié de vous qu'il a tout dégelé. Respect, il est trop goat 🐐",
-      "Bon… le lutin valide. Pas parce que vous avez trouvé, hein : juste parce qu'il est sympa.",
-      "Le lutin a fondu (de pitié). C'est cadeau, profitez !",
-      "Le lutin vous laisse passer. Il dit que c'est carré… mais il vous juge un peu.",
+      "Le lutin a eu pitié : il a tout dégelé. Respect, il est trop goat.",
+      "Le lutin valide. Pas parce que vous avez trouvé : juste parce qu'il est sympa.",
+      "Le lutin a fondu (de pitié). C'est cadeau !",
       "Dégel express ! Le lutin a mieux à faire que de vous regarder grelotter.",
     ],
+
+    /* Voix du lutin : réactions parlées, tirées au hasard.
+     *   texte : ce qu'il dit (affiché dans sa bulle)
+     *   voix  : orthographe phonétique pour la synthèse vocale (facultatif)
+     *   audio : fichier MP3 (généré avec tools/generer-voix-piper.py)
+     * Sans fichier, rien n'est dit (la bulle reste affichée). */
+    voix: {
+      reussite: [
+        { texte: "GG la team !", voix: "Djidji la tim !", audio: "assets/audio/lutin-reussite-1.mp3" },
+        { texte: "Vous êtes des goats !", voix: "Wouah ! Vous êtes des gôtes !", audio: "assets/audio/lutin-reussite-2.mp3" },
+        { texte: "Validé, c'est carré !", voix: "Validé ! C'est carré !", audio: "assets/audio/lutin-reussite-3.mp3" },
+      ],
+      echec: [
+        { texte: "MDR, raté !", voix: "Èm dé èr ! Raté !", audio: "assets/audio/lutin-echec-1.mp3" },
+        { texte: "Vous pouvez faire mieux, les gars !", voix: "Allez, vous pouvez faire mieux, les gars !", audio: "assets/audio/lutin-echec-2.mp3" },
+        { texte: "Oups… Même pas proche !", voix: "Oups ! Même pas proche !", audio: "assets/audio/lutin-echec-3.mp3" },
+      ],
+      gel: [
+        { texte: "Brrr… Tout est gelé !", voix: "Brrr ! Tout est gelé ! Pause chocolat chaud.", audio: "assets/audio/lutin-gel-1.mp3" },
+      ],
+      equipe: [
+        { texte: "Bête de nom ! J'adore.", voix: "Ouah, trop stylé, ce nom ! J'adore !", audio: "assets/audio/lutin-equipe-1.mp3" },
+      ],
+    },
   },
 
   /* Chrono global affiché en haut des écrans de jeu. */
@@ -82,20 +99,30 @@ window.GAME_CONFIG.textes = {
     tempsFinal: "Votre temps : **{temps}**",
   },
 
+  /* Création de l'équipe, en deux temps : le nom, puis les deux rôles. */
   equipe: {
     titreCourt: "Votre équipe",
-    titre: "Quel est le nom de votre équipe ?",
-    aide:
-      "Ce nom sert uniquement à identifier votre progression sur ce téléphone. Aucune donnée personnelle n'est demandée.",
     label: "Nom de l'équipe",
     placeholder: "Ex. : Les Lutins de verre",
     bouton: "Valider",
     erreurVide: "Indiquez un nom d'équipe pour continuer.",
+
+    /* Les rôles, présentés par le lutin. {equipe} = nom choisi. */
+    rolesTitre: "Vos rôles",
+    rolesBulle: "**{equipe}** ? Bête de nom, j'adore !",
+    rolesTexte:
+      "Pour rendre ça encore plus fun, nommez un **Lutin Reporter** : avec un autre téléphone, il filme et photographie tous vos temps forts. À la fin, on vous donne un QR code pour nous les envoyer. Montrez-nous que vous êtes la meilleure équipe !",
+    chefLabel: "Chef Lutin (capitaine)",
+    chefPlaceholder: "Prénom",
+    reporterLabel: "Lutin Reporter (photos et vidéos)",
+    reporterPlaceholder: "Prénom",
+    rolesBouton: "C'est noté !",
+    rolesErreur: "Indiquez le prénom du Chef Lutin et du Lutin Reporter.",
   },
 
-  /* Écran « Comment jouer ? » : plateau de jeu animé + 3 règles clés.
-   * Le texte complet des règles (ci-dessous, « regles ») reste accessible
-   * via le lien « règles détaillées » et le bouton Règles en cours de jeu. */
+  /* Écran « Comment jouer ? » : carte du parcours + 3 règles clés.
+   * Les règles complètes (ci-dessous, « regles ») restent accessibles via
+   * le bouton « Règles » en haut des écrans de jeu. */
   plateau: {
     titre: "Comment jouer ?",
     description: "Carte du parcours : 5 quêtes, du départ jusqu'à la hotte.",
@@ -104,61 +131,44 @@ window.GAME_CONFIG.textes = {
     etapes: ["Quiz Givré", "Code Cristal", "Flash Lutin", "Dossier 44", "Opération Hotte"],
     /* Légende de la carte : 3 règles clés seulement. */
     regles: [
-      { icone: "pin", texte: "À chaque étage : trouvez le **mot secret** affiché sur place." },
-      { icone: "star", texte: "**1 joker** = 1 indice bonus, une seule fois." },
-      { icone: "flake", texte: "Trop d'erreurs ? **Tout gèle** quelques secondes… puis on avance." },
+      { icone: "pin", texte: "À chaque étage, trouvez le **mot secret**." },
+      { icone: "star", texte: "**1 joker** = 1 indice, une seule fois." },
+      { icone: "flake", texte: "Trop d'erreurs ? **Tout gèle**, puis on avance." },
     ],
-    detail: "Lire les règles détaillées",
+    detail: "Toutes les règles",
   },
 
-  /* Règles du jeu, affichées en plein écran (bouton « Règles » en haut
-   * des écrans de jeu, et lien « Lire les règles » de la carte).
-   * Une règle = une icône tricotée + un titre court + une phrase ou deux.
+  /* Règles du jeu, en plein écran (bouton « Règles » en haut des écrans).
+   * Une règle = une icône + un titre court + une phrase.
    * Icônes : star, gift, check, flake, tree, dice, tower, qr, quiz, loupe,
-   * pin, clock, lock.
-   * {duree} et {chrono} sont remplacés par la durée du gel et celle du
-   * chrono (config/parametres.js). */
+   * pin, clock, lock, camera, badge.
+   * {chrono} est remplacé par la durée du chrono (config/parametres.js). */
   regles: {
     titre: "Les règles",
-    intro:
-      "Le lutin officiel du Gobinous Christmas Club a caché le Cadeau Officiel de Noël quelque part dans la Tour. Remontez sa piste, étage par étage !",
+    intro: "Barnabé, le lutin du Gobinous Christmas Club, a caché le Cadeau Officiel dans la Tour. Retrouvez-le !",
     liste: [
-      {
-        icone: "gift",
-        titre: "5 quêtes, 5 étages",
-        texte: "Quiz Givré, Code Cristal, Flash Lutin, Dossier 44 et Opération Hotte : chaque quête vous rapproche du cadeau.",
-      },
-      {
-        icone: "pin",
-        titre: "Le mot secret de l'étage",
-        texte: "Chaque quête vous indique l'étage suivant. Une fois sur place, trouvez le mot secret affiché et saisissez-le pour débloquer la quête.",
-      },
-      {
-        icone: "tree",
-        titre: "Jouez en équipe",
-        texte: "Un seul téléphone pour toute l'équipe : discutez, réfléchissez ensemble, avancez ensemble.",
-      },
-      {
-        icone: "star",
-        titre: "1 joker, 1 seule fois",
-        texte: "Il donne un indice bonus. Utilisez-le au bon moment : il ne revient pas !",
-      },
-      {
-        icone: "flake",
-        titre: "Attention au gel",
-        texte:
-          "Le nombre d'essais est limité. Trop d'erreurs, et le lutin gèle tout pendant quelques secondes. Ensuite, l'aventure reprend.",
-      },
-      {
-        icone: "clock",
-        titre: "{chrono} chrono",
-        texte: "Le chrono tourne dès le départ. S'il est dépassé, vous pouvez finir, mais votre temps compte !",
-      },
+      { icone: "gift", titre: "5 quêtes, 5 étages", texte: "Chaque quête vous indique l'étage suivant." },
+      { icone: "pin", titre: "Le mot secret", texte: "Sur place, trouvez-le et saisissez-le pour débloquer la quête." },
+      { icone: "tree", titre: "Un seul téléphone", texte: "On réfléchit ensemble, on avance ensemble." },
+      { icone: "star", titre: "1 joker", texte: "Un indice bonus, une seule fois dans toute l'aventure." },
+      { icone: "flake", titre: "Le gel", texte: "Trop d'erreurs et tout gèle quelques secondes. Ensuite, ça repart." },
+      { icone: "clock", titre: "{chrono} chrono", texte: "Il tourne dès le départ. Dépassé ? Finissez quand même !" },
     ],
-    objectif:
-      "Votre objectif : démasquer le lutin et retrouver le Cadeau Officiel du Gobinous Christmas Club.",
+    objectif: "",
     bouton: "C'est parti !",
     boutonFermer: "J'ai compris",
+  },
+
+  /* Bouton « Aide » (en haut de chaque écran) : appelle l'organisation.
+   * contacts : un bouton d'appel par personne (numéro au format libre). */
+  aide: {
+    bouton: "Aide",
+    titre: "Un souci ?",
+    texte: "Un bug, l'appli qui coince, une question ? Appelez l'organisation, on arrive !",
+    contacts: [
+      { nom: "Appeler l'organisation", tel: "06 68 21 35 87" },
+    ],
+    fermer: "Fermer",
   },
 
   general: {
@@ -173,8 +183,7 @@ window.GAME_CONFIG.textes = {
     terminer: "Terminer",
     bonneReponse: "Bonne réponse !",
     mauvaiseReponse: "Ce n'est pas la bonne réponse. Réessayez !",
-    mauvaiseReponseDernierEssai:
-      "Ce n'est pas la bonne réponse. Dernier essai : encore une erreur et tout sera gelé pendant {duree}.",
+    mauvaiseReponseDernierEssai: "Raté ! Dernier essai avant le gel ({duree}).",
     reponseVide: "Saisissez une réponse avant de valider.",
     choixVide: "Sélectionnez une réponse avant de valider.",
     votreReponse: "Votre réponse",
@@ -195,8 +204,7 @@ window.GAME_CONFIG.textes = {
   joker: {
     bouton: "Utiliser mon joker",
     confirmationTitre: "Utiliser votre joker ?",
-    confirmationTexte:
-      "Vous ne disposez que d'un seul joker pour toute l'aventure. Une fois utilisé, il ne sera plus disponible pour les quêtes suivantes.",
+    confirmationTexte: "Un seul joker pour toute l'aventure : il ne reviendra pas.",
     confirmer: "Oui, utiliser mon joker",
     annuler: "Non, je le garde",
     conserve: "Votre joker est conservé.",
@@ -209,7 +217,7 @@ window.GAME_CONFIG.textes = {
   /* Écran de saisie du mot secret d'un étage (début de chaque quête). */
   acces: {
     kicker: "Quête {n} / 5 · verrouillée",
-    consigne: "Une fois sur place, trouvez le mot secret de l'étage et saisissez-le ci-dessous.",
+    consigne: "",
     label: "Mot secret de l'étage",
     bouton: "Débloquer la quête",
     erreur: "Ce n'est pas le mot secret de cet étage. Cherchez bien autour de vous !",

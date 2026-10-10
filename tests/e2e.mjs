@@ -60,6 +60,7 @@ const browser = await chromium.launch({
 });
 const ctx = await browser.newContext({ viewport: { width: 375, height: 740 }, isMobile: true, hasTouch: true, permissions: ['camera'] });
 const page = await ctx.newPage();
+page.setDefaultTimeout(8000);
 const jsErrors = [];
 page.on('pageerror', (e) => jsErrors.push(e.message));
 
@@ -146,22 +147,38 @@ await step('Nom d\'équipe vide refusé, puis accepté', async () => {
   await answer('   ');
   assert(await has("Indiquez un nom d'équipe"), 'message d\'erreur absent');
   await answer('Les Testeurs');
+  assert((await hash()) === '#/equipe/roles', 'pas redirigé vers les rôles');
+});
+
+await step('Rôles : Chef Lutin et Lutin Reporter obligatoires, présentés par le lutin', async () => {
+  assert(await has('Bête de nom'), 'réaction du lutin absente');
+  assert(await has('Lutin Reporter'), 'rôle du reporter absent');
+  await page.click('.roles-form button[type=submit]');
+  await settle();
+  assert(await has('Indiquez le prénom'), 'rôles vides acceptés');
+  await page.fill('[name="chef"]', 'Camille');
+  await page.fill('[name="reporter"]', 'Yanis');
+  await page.click('.roles-form button[type=submit]');
+  await settle();
   assert((await hash()) === '#/regles', 'pas redirigé vers les règles');
+  const s = await state();
+  assert(s.roles.chef === 'Camille' && s.roles.reporter === 'Yanis', 'rôles non enregistrés');
 });
 
 await step('Suivi : la progression de l\'équipe est envoyée au serveur', async () => {
   await page.evaluate(() => window.GQ.sync.push());
   const t = (await apiTeams()).find((x) => x.equipe === 'Les Testeurs');
   assert(t && t.quete === 1, 'équipe absente du suivi');
+  assert(t.chef === 'Camille' && t.reporter === 'Yanis', 'rôles absents du suivi');
   const r = await fetch(BASE + 'api/equipes', { headers: { 'X-Code-Suivi': 'MAUVAIS' } });
   assert(r.status === 401, 'liste accessible sans le bon code');
 });
 
 await step('Carte « Comment jouer ? » et règles plein écran dans la DA du jeu', async () => {
   assert((await page.locator('.board-svg').count()) === 1, 'plateau absent');
-  await clickText('Lire les règles détaillées');
+  await clickText('Toutes les règles');
   const modal = norm(await page.locator('.modal').innerText());
-  for (const s of ['Les règles', 'Le mot secret de l\'étage', '1 joker, 1 seule fois', 'Attention au gel', '30 minutes chrono', 'Votre objectif']) {
+  for (const s of ['Les règles', 'Le mot secret', '1 joker', 'Le gel', '30 minutes chrono']) {
     assert(modal.includes(norm(s)), `texte manquant dans les règles : ${s}`);
   }
   assert((await page.locator('.modal-sheet .rule').count()) === 6, 'règles illustrées absentes');
@@ -189,6 +206,18 @@ await step('Bouton « Règles » explicite et bouton du son dans l\'en-tête, mu
   for (const f of ['musique-noel-1.mp3', 'musique-noel-2.mp3', 'musique-japon.mp3', 'barnabe-appel.mp3', 'barnabe-video-1.mp3']) {
     const r = await fetch(BASE + 'assets/audio/' + f);
     assert(r.ok && r.headers.get('content-type') === 'audio/mpeg', `musique absente : ${f}`);
+  }
+});
+
+await step('« Un souci ? » sur chaque écran : appel direct de l\'organisation, voix du lutin disponibles', async () => {
+  await page.click('[data-action="help"]');
+  const href = await page.locator('.help-calls a').first().getAttribute('href');
+  assert(href === 'tel:+33668213587', `lien d'appel incorrect : ${href}`);
+  await page.click('[data-modal-cancel]');
+  const lines = Object.values(CFG.textes.lutin.voix).flat();
+  for (const l of lines) {
+    const r = await fetch(BASE + l.audio);
+    assert(r.ok, `voix du lutin absente : ${l.audio}`);
   }
 });
 
@@ -226,7 +255,7 @@ await step('Thème raté → score, correction affichée après les 8 réponses,
   await clickText('Voir la correction');
   assert(await has('Bonne réponse :'), 'correction absente');
   assert((await page.locator('.correction-list li').count()) === 8, 'correction incomplète');
-  assert(await has('si ce deuxième thème est raté'), 'avertissement absent');
+  assert(await has('Si le prochain est raté'), 'avertissement absent');
   await clickText('Choisir un autre thème');
   assert(await page.locator('[data-id="noel"]').isDisabled(), 'thème raté encore disponible');
   assert(await has('Thèmes ratés : 1 sur 2'), 'compteur de tentatives absent');
@@ -238,7 +267,7 @@ await step('Thème mystère : révélation, 2e thème raté → tout gelé 45 s 
   assert(await has('Culture générale'), 'révélation absente');
   await clickText("C'est parti");
   await finishTheme(theme('mystere'), (q) => wrongOf(q));
-  assert(await has('tout est gelé'), 'annonce du gel absente');
+  assert(await has('tout gèle'), 'annonce du gel absente');
   await clickText('Voir le minuteur');
   const ms = (await state()).quiz.lockUntil - Date.now();
   assert(ms > 40000 && ms <= 45000, `durée du gel inattendue : ${ms} ms`);
@@ -340,7 +369,7 @@ await step('Mot secret GUIRLANDE → avertissement du lutin capricieux et 6 mod�
   await clickText('Découvrir la suite');
   assert(await has('23ᵉ étage'), 'destination absente');
   await answer('Guirlande');
-  assert(await has('particulièrement capricieux'), 'avertissement absent');
+  assert(await has('capricieux'), 'avertissement absent');
   await clickText('Relever le défi');
   assert((await page.locator('.model-card').count()) === 6, 'modèles absents');
   assert((await page.locator('input[type=file]').count()) === 0, 'un sélecteur de fichiers est proposé');
@@ -446,10 +475,21 @@ await step('Mot secret CADEAU → transmission à usage unique, jamais « salle 
   assert(await has('usage unique'), 'avertissement absent');
   assert(!(await forbidden()), '« salle » ou « porte » affiché trop tôt');
   await clickText('Lancer la vidéo');
-  assert((await page.locator('.cctv').count()) === 1, 'vidéo absente');
-  await page.waitForTimeout(1500);
+  const src = await page.locator('.cctv-video source').first().getAttribute('src');
+  assert(src && src.endsWith('.mp4'), 'vidéo animée absente');
+  const r = await fetch(BASE + src);
+  assert(r.ok && (r.headers.get('content-type') || '').includes('video/mp4'), 'fichier vidéo non servi');
+  // Lecture réelle (version WebM dans le navigateur de test) : sous-titres
+  // synchronisés et pas de blocage.
+  await page.waitForFunction(() => { const v = document.querySelector('.cctv-video'); return v && v.currentTime > 2; }, null, { timeout: 15000 });
   assert((await page.locator('.cctv-sub').innerText()).length > 10, 'sous-titres absents');
-  await reload();
+  // Fin de la vidéo → passage automatique au rapport.
+  await page.evaluate(() => { const v = document.querySelector('.cctv-video'); v.currentTime = v.duration - 0.5; });
+  await page.waitForFunction(() => window.GQ.state.phase[5] === 'report', null, { timeout: 8000 });
+  await settle();
+  assert(await has('UTC+9'), 'rapport absent après la vidéo');
+  // Vidéo interrompue (rechargement pendant la lecture) : autodétruite.
+  await page.evaluate(() => { window.GQ.setPhase(5, 'video'); window.GQ.render(); });
   assert(await has('autodétruite'), 'la vidéo peut être revue');
   await clickText('Continuer');
   assert(await has('UTC+9'), 'rapport absent');
@@ -470,7 +510,7 @@ await step('Code du repaire : 1 seul essai, gel, puis nouvel essai → TOKYO', a
 await step('Appel de Barnabé puis écran de fin, conservé au rechargement', async () => {
   await page.click('[data-action="call"]');
   await page.waitForTimeout(600);
-  assert(await has('Barnabé SIX-SEVEN') && await has('speedrun'), 'message vocal absent');
+  assert(await has('Barnabé SIX-SEVEN') && await has('Tchao'), 'message vocal absent');
   await page.click('[data-action="hang-up"]');
   await settle();
   assert(await has('Mission accomplie') && await has('Votre temps'), 'écran de fin absent');

@@ -146,7 +146,7 @@
       '<section class="success">' +
       (o.art === '' ? '' : '<div class="success-art">' + (o.art || GQ.knit.icon('star', 'success-ico')) + '</div>') +
       (o.score ? '<p class="score"><span class="sr-only">' + esc(o.score) + '</span>' + GQ.knit.text(o.score, { alt: '', color: o.scoreKind === 'red' ? '#E4323A' : '#00ADE1', outline: true, cls: 'score-img' }) + '</p>' : '') +
-      (String(script).trim() ? '<p class="success-script">' + GQ.knit.title(plain(script).replace(/\s*!$/, '!'), { alt: plain(script), color: '#E4323A', outline: true, cls: 'script-img' }) + '</p>' : '') +
+      (String(script).trim() ? '<p class="success-script">' + GQ.knit.title(plain(script).replace(/\s*!$/, '!'), { alt: plain(script), color: '#F6EFE2', outline: true, cls: 'script-img' }) + '</p>' : '') +
       '<h2 class="success-title" tabindex="-1">' + t(o.title) + '</h2>' +
       (o.html ? frame(o.html, 'frame-center') : '') + '</section>' +
       (o.after || '') +
@@ -320,23 +320,59 @@
   }
   GQ.miniHeader = miniHeader;
 
-  screens.team = function () {
+  /* Le lutin qui parle (bulle fixe dans la page). */
+  function elfTalk(html, pose) {
+    return '<div class="elf-talk">' + GQ.knit.icon(pose || 'elfWave', 'elf-talk-img') +
+      '<div class="elf-talk-bubble">' + html + '</div></div>';
+  }
+  GQ.elfTalk = elfTalk;
+
+  /* Équipe, étape 1 : le nom. Étape 2 (#/equipe/roles) : Chef Lutin et
+   * Lutin Reporter. */
+  screens.team = function (step) {
     var E = T.equipe;
-    if (GQ.ui.value == null && GQ.state.team) GQ.ui.value = GQ.state.team;
+    var s = GQ.state;
+    if (step === 'roles' && s.team) {
+      var roles = s.roles || {};
+      return {
+        key: 'team-roles',
+        bare: true,
+        tone: 'red',
+        voice: 'equipe',
+        html:
+          miniHeader() +
+          '<main class="screen screen-plain">' +
+          '<div class="center-head">' + knitTitle(E.rolesTitre) + '</div>' +
+          elfTalk('<p class="elf-talk-big">' + t(E.rolesBulle, { equipe: s.team }) + '</p><p>' + t(E.rolesTexte) + '</p>') +
+          '<form class="answer-form roles-form" data-form="roles" novalidate autocomplete="off">' +
+          roleField('chef', E.chefLabel, E.chefPlaceholder, roles.chef, 'crown') +
+          roleField('reporter', E.reporterLabel, E.reporterPlaceholder, roles.reporter, 'camera') +
+          feedbackSlot() +
+          '<button class="btn btn-cream" type="submit">' + esc(E.rolesBouton) + icon('fleche') + '</button>' +
+          '</form>' +
+          '</main>',
+      };
+    }
+    if (GQ.ui.value == null && s.team) GQ.ui.value = s.team;
     return {
       key: 'team',
       bare: true,
-      elf: { say: 'equipe' },
       html:
         miniHeader() +
         '<main class="screen screen-plain">' +
         '<a class="back-link" href="#/">' + icon('retour') + 'Accueil</a>' +
-        '<div class="center-head">' + GQ.knit.icon('gift', 'head-ico') + knitTitle(E.titreCourt || E.titre) + '</div>' +
-        frame('<p class="frame-lead">' + t(E.titre) + '</p><p class="muted small">' + t(E.aide) + '</p>' +
-          textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder, btnCls: 'btn-red' })) +
+        '<div class="center-head">' + knitTitle(E.titreCourt) + '</div>' +
+        elfTalk('<p>' + t(T.lutin.equipe) + '</p>') +
+        textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder, btnCls: 'btn-red' }) +
         '</main>',
     };
   };
+
+  function roleField(name, label, placeholder, value, pix) {
+    return '<label class="role-field"><span class="field-label">' + GQ.pix(pix, 'role-pix') + t(label) + '</span>' +
+      '<input class="field" name="' + name + '" type="text" maxlength="40" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="next"' +
+      ' placeholder="' + esc(placeholder) + '" value="' + esc((GQ.ui.roles && GQ.ui.roles[name]) || value || '') + '"></label>';
+  }
 
   screens.rules = function () {
     var PL = T.plateau;
@@ -377,7 +413,7 @@
         '</div>' +
         '<p class="floor-tag">' + icon('pin') + '<span>' + t(st.etage) + (st.lieu ? ' · ' + t(st.lieu) : '') + '</span></p>' +
         frame(typewriter('access-' + n, t(st.histoire), 'story')) +
-        '<p class="muted center small">' + t(A.consigne) + '</p>' +
+        (A.consigne ? '<p class="muted center small">' + t(A.consigne) + '</p>' : '') +
         textAnswer({ form: 'access', label: A.label, button: A.bouton, caps: true, max: 40, fieldCls: 'field-code', expected: [st.motSecret], attrs: ' data-n="' + n + '"', btnCls: 'btn-red' }),
     };
   }
@@ -621,6 +657,7 @@
   actions.resume = function () {
     var s = GQ.state;
     if (!s.team) return GQ.go('equipe');
+    if (!s.roles) return GQ.go('equipe/roles');
     if (!s.rulesOk) return GQ.go('regles');
     goQuest();
   };
@@ -776,6 +813,18 @@
   forms.team = function (form, value) {
     if (!value.trim()) return formError(value, T.equipe.erreurVide);
     GQ.setTeam(value);
+    GQ.go('equipe/roles');
+  };
+
+  forms.roles = function (form) {
+    var chef = form.querySelector('[name="chef"]').value;
+    var reporter = form.querySelector('[name="reporter"]').value;
+    if (!chef.trim() || !reporter.trim()) {
+      GQ.ui.roles = { chef: chef, reporter: reporter };
+      GQ.ui.msg = { kind: 'error', text: T.equipe.rolesErreur, shake: true };
+      return GQ.render();
+    }
+    GQ.setRoles(chef, reporter);
     GQ.go(GQ.state.rulesOk ? 'quete/' + GQ.state.quest : 'regles');
   };
 
