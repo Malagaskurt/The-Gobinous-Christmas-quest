@@ -13,9 +13,10 @@
   /* ------------------------------------------------------------------ */
   /* Navigation                                                          */
   /*   #/                accueil du Gobinous Christmas Club              */
-  /*   #/programme       programme de la soirée                          */
+  /*   #/programme       programme de l'événement                         */
   /*   #/quest           accueil du jeu (Christmas Quest)                */
-  /*   #/party, #/battle, #/gift, #/wrapup : autres temps forts        */
+  /*   #/party, #/battle, #/wrapup : autres temps forts               */
+  /*   #/vlog            Vlog des Gobinous (photos et vidéos)            */
   /*   #/equipe          nom de l'équipe                                 */
   /*   #/regles          règles                                          */
   /*   #/quete/N         quête N (redirige si elle n'est pas débloquée)  */
@@ -69,6 +70,8 @@
         return GQ.screens.gift();
       case 'wrapup':
         return GQ.screens.wrapup();
+      case 'vlog':
+        return GQ.screens.vlog();
       case 'equipe':
         return GQ.screens.team(r.arg);
       case 'regles':

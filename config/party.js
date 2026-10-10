@@ -23,20 +23,20 @@ window.GAME_CONFIG.party = {
   texte:
     "On se pose, on grignote et on décore ensemble le **sapin Gobinous** : polaroïds, kit déco et petits mots sont à votre disposition.",
   defiTexte:
-    "Et pour les plus motivés : **20 défis** à relever, en solo ou en équipe. Chaque défi rapporte des **Gobz**. Le plus riche à la fin de la soirée gagne une surprise !",
+    "Et pour les plus motivés : **20 défis** à relever, en solo ou en équipe. Chaque défi rapporte des **Gobz**. Le plus riche à la fin de l'événement gagne une surprise !",
 
   nomLabel: "Votre prénom ou nom d'équipe",
   nomPlaceholder: "Ex. : Camille, ou Les Givrés",
   nomBouton: "Je participe",
   nomErreur: "Indiquez un prénom ou un nom d'équipe.",
 
-  /* La monnaie de la soirée. */
+  /* La monnaie de l'événement. */
   monnaie: "Gobz",
   listeTitre: "Treats & Chill",
   listeSousTitre: "La bucket list · 20 défis",
   classementTitre: "Classement",
   classementVide: "Personne n'a encore de Gobz. À vous de jouer !",
-  classementHorsLigne: "Classement disponible quand le serveur de la soirée est en ligne.",
+  classementHorsLigne: "Classement disponible quand le serveur de l'événement est en ligne.",
 
   /* Fenêtre d'un défi. */
   boutonPhoto: "Prendre une photo",
@@ -46,13 +46,13 @@ window.GAME_CONFIG.party = {
   boutonReprendre: "Changer",
   envoiEnCours: "Envoi en cours… {pct} %",
   envoiErreur: "L'envoi a échoué (réseau ?). Réessayez.",
-  tropLourd: "Fichier trop lourd (80 Mo maximum). Filmez plus court !",
+  tropLourd: "Fichier trop lourd (8 Go maximum).",
   defiValide: "Défi validé !",
   dejaValide: "Validé",
 
   /* Les 20 défis. video: true → la vidéo est proposée en premier. */
   defis: [
-    { titre: "Ambiance de folie", texte: "Prends une photo stylée de l'ambiance de la soirée.", points: 5 },
+    { titre: "Ambiance de folie", texte: "Prends une photo stylée de l'ambiance de l'événement.", points: 5 },
     { titre: "Miroir, mon beau miroir", texte: "Fais un selfie de groupe dans un miroir avec un accessoire de Noël.", points: 5 },
     { titre: "Main dans le goûter", texte: "Prends en photo ton équipe en train de piocher dans le goûter.", points: 10 },
     { titre: "Nouveau pote", texte: "Fais un selfie avec quelqu'un que tu ne connaissais pas en arrivant.", points: 10 },

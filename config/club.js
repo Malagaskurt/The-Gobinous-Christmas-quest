@@ -1,8 +1,8 @@
 /* =====================================================================
- * THE GOBINOUS CHRISTMAS CLUB — ACCUEIL ET PROGRAMME DE LA SOIRÉE
+ * THE GOBINOUS CHRISTMAS CLUB — ACCUEIL ET PROGRAMME DE L'ÉVÉNEMENT
  * ---------------------------------------------------------------------
  * Page d'accueil du site (#/), programme des temps forts (#/programme)
- * et pages d'information de la Battle et du Gift.
+ * et page d'information de la Battle.
  * La Party est dans config/party.js, le questionnaire dans
  * config/wrapup.js, le jeu (Christmas Quest) dans les autres fichiers.
  *
@@ -21,20 +21,20 @@ window.GAME_CONFIG.club = {
     appel: "Touchez l'écran pour découvrir le programme",
   },
 
-  /* Programme : un bloc par temps fort, dans l'ordre de la soirée.
+  /* Programme : un bloc par temps fort, dans l'ordre de l'événement.
    *   id     : quest, party, battle, gift ou wrapup (ne pas modifier)
    *   icone  : pictogramme tricoté (tree, gift, star, quiz, camera, bell…)
    *   badge  : petite étiquette (« Code secret », « Sans téléphone »…)
    *   bouton : libellé du bouton (vide = pas de bouton) */
   programme: {
     titre: "Le programme",
-    intro: "Quatre temps forts… et le mot de la fin.",
+    intro: "4 temps forts pour un événement 100 % Gobinous.",
     temps: [
       {
         id: "quest",
         icone: "tower",
         nom: "Christmas Quest",
-        texte: "Le grand jeu : 5 quêtes dans la Tour pour retrouver le cadeau caché par Barnabé.",
+        texte: "Le jeu d'infiltration : l'énigme des portraits de Barnabé, la course à travers la Tour et le code d'accès final.",
         badge: "En équipe · 30 min",
         bouton: "Jouer",
       },
@@ -42,7 +42,7 @@ window.GAME_CONFIG.club = {
         id: "party",
         icone: "tree",
         nom: "Christmas Party",
-        texte: "Goûter, déco du sapin… et 20 défis pour gagner des Gobz.",
+        texte: "Le goûter, l'atelier sapin collaboratif et les 20 défis du lutin, en autonomie.",
         badge: "Code secret",
         bouton: "Entrer",
       },
@@ -50,48 +50,37 @@ window.GAME_CONFIG.club = {
         id: "battle",
         icone: "star",
         nom: "Christmas Battle",
-        texte: "Des jeux entre nous, en live. Ici, rangez les téléphones !",
-        badge: "Sans téléphone",
-        bouton: "Découvrir",
-      },
-      {
-        id: "gift",
-        icone: "gift",
-        nom: "Christmas Gift",
-        texte: "Le Secret Santa : un numéro, un cadeau, une surprise.",
-        badge: "Secret Santa",
+        texte: "Le grand jeu collectif final, en équipes : quiz interactif et classement en temps réel.",
+        badge: "En équipes",
         bouton: "Découvrir",
       },
       {
         id: "wrapup",
-        icone: "check",
+        icone: "gift",
         nom: "Christmas Wrap-Up",
-        texte: "5 questions, 1 minute : votre avis sur la soirée.",
-        badge: "100 % anonyme",
-        bouton: "Mon avis",
+        texte: "Le tirage au sort du Secret Santa et votre avis en 1 minute.",
+        badge: "Secret Santa",
+        bouton: "Y aller",
       },
     ],
+  },
+
+  /* Rubrique indépendante du programme : les photos et vidéos. */
+  vlog: {
+    nom: "Le Vlog des Gobinous",
+    texte: "Photos et vidéos de l'événement : déposez tout ici, même les vidéos longues.",
+    bouton: "Déposer",
   },
 
   /* Pages d'information (pas de jeu sur le téléphone). */
   battle: {
     titre: "Christmas Battle",
-    bulle: "Rangez les téléphones : place au live !",
-    texte: "Des jeux entre nous, en équipes, animés par les organisateurs. Pas besoin de l'appli : juste vos réflexes, votre voix… et un peu de mauvaise foi.",
+    bulle: "Le grand jeu final, c'est maintenant !",
+    texte: "Un quiz interactif en équipes, animé par les organisateurs, avec le classement en temps réel. Que la meilleure équipe gagne !",
     points: [
-      { icone: "bell", texte: "Écoutez bien les organisateurs : ils annoncent chaque manche." },
-      { icone: "star", texte: "Rapidité, culture, rires : chaque manche rapporte des points à votre équipe." },
-      { icone: "crown", texte: "L'équipe gagnante repart avec la gloire éternelle (et peut-être plus)." },
-    ],
-  },
-  gift: {
-    titre: "Christmas Gift",
-    bulle: "Le Secret Santa, c'est maintenant !",
-    texte: "Tous les cadeaux apportés ont été numérotés. Chacun reçoit un numéro… et repart avec le cadeau qui porte le même.",
-    points: [
-      { icone: "sock", texte: "Récupérez votre numéro auprès des organisateurs." },
-      { icone: "gift", texte: "Trouvez le cadeau qui porte votre numéro." },
-      { icone: "star", texte: "Ouvrez-le devant tout le monde : effet garanti !" },
+      { icone: "bell", texte: "Écoutez bien les organisateurs : ils lancent chaque manche du quiz." },
+      { icone: "star", texte: "Chaque bonne réponse fait grimper votre équipe au classement, en direct." },
+      { icone: "crown", texte: "L'équipe en tête à la fin remporte la Christmas Battle !" },
     ],
   },
 };

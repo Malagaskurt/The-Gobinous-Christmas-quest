@@ -137,6 +137,12 @@
       warn('Le mode test est actif (parametres.modeTest.actif). Désactivez-le ou changez son code avant l\'événement.');
     }
 
+    // Vocabulaire : on parle d'« événement », jamais de « soirée ».
+    (function scan(v, where) {
+      if (typeof v === 'string') { if (/soir[ée]e/i.test(v)) err(where + ' : remplacez « soirée » par « événement ».'); return; }
+      if (v && typeof v === 'object') Object.keys(v).forEach(function (k) { scan(v[k], where + '.' + k); });
+    })(cfg, 'config');
+
     // Christmas Party
     var PA = cfg.party;
     if (PA) {

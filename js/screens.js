@@ -327,8 +327,8 @@
   }
   GQ.elfTalk = elfTalk;
 
-  /* Équipe, étape 1 : le nom. Étape 2 (#/equipe/roles) : Chef Lutin et
-   * Lutin Reporter. */
+  /* Équipe, étape 1 : le nom. Étape 2 (#/equipe/roles) : Gobinous Capitaine
+   * et Gobinous Reporter. */
   screens.team = function (step) {
     var E = T.equipe;
     var s = GQ.state;
@@ -342,13 +342,21 @@
           miniHeader() +
           '<main class="screen screen-plain">' +
           '<div class="center-head">' + knitTitle(E.rolesTitre) + '</div>' +
-          elfTalk('<p class="elf-talk-big">' + t(E.rolesBulle, { equipe: s.team }) + '</p><p>' + t(E.rolesTexte) + '</p>') +
+          elfTalk('<p class="elf-talk-big">' + t(E.rolesBulle, { equipe: s.team }) + '</p>') +
+          '<section class="roles-box">' +
+          '<p class="roles-box-title">' + GQ.pix('bell', 'roles-box-pix') + t(E.rolesAlerteTitre) + '</p>' +
+          '<p class="roles-box-lead">' + t(E.rolesAlerte) + '</p>' +
+          E.roles.map(function (r) {
+            return '<div class="role-card"><span class="role-card-ico">' + GQ.pix(r.icone) + '</span><div><p class="role-card-name">' + t(r.nom) + '</p><p>' + t(r.texte) + '</p></div></div>';
+          }).join('') +
+          '</section>' +
           '<form class="answer-form roles-form" data-form="roles" novalidate autocomplete="off">' +
           roleField('chef', E.chefLabel, E.chefPlaceholder, roles.chef, 'crown') +
           roleField('reporter', E.reporterLabel, E.reporterPlaceholder, roles.reporter, 'camera') +
           feedbackSlot() +
           '<button class="btn btn-cream" type="submit">' + esc(E.rolesBouton) + icon('fleche') + '</button>' +
           '</form>' +
+          (E.rolesNote ? '<p class="roles-note">' + t(E.rolesNote) + '</p>' : '') +
           '</main>',
       };
     }

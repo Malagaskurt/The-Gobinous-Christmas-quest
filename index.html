@@ -32,12 +32,13 @@
   <script src="config/club.js"></script>
   <script src="config/party.js"></script>
   <script src="config/wrapup.js"></script>
+  <script src="config/vlog.js"></script>
   <script>
     /* Si un fichier de configuration contient une erreur de syntaxe, on
      * l'indique clairement plutôt que d'afficher une page blanche. */
     (function () {
       var c = window.GAME_CONFIG || {};
-      var missing = ['parametres', 'textes', 'quiz', 'quetes', 'etapes', 'club', 'party', 'wrapup'].filter(function (k) { return !c[k]; });
+      var missing = ['parametres', 'textes', 'quiz', 'quetes', 'etapes', 'club', 'party', 'wrapup', 'vlog'].filter(function (k) { return !c[k]; });
       if (!missing.length) return;
       window.GQ_STOP = true;
       document.getElementById('app').innerHTML =
@@ -65,6 +66,7 @@
   <script src="js/club.js"></script>
   <script src="js/party.js"></script>
   <script src="js/wrapup.js"></script>
+  <script src="js/vlog.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/sync.js"></script>
   <script src="js/suivi.js"></script>

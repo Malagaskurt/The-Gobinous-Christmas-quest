@@ -4,16 +4,29 @@
 
 | Adresse | Temps fort | Sur le téléphone |
 |---|---|---|
-| `#/` | **The Gobinous Christmas Club** | Page d'accueil animée ; un appui (ou glisser vers le haut) ouvre le programme. |
-| `#/programme` | **Le programme** | Les 5 temps forts, chacun avec son bouton. |
-| `#/quest` | **Gobinous Christmas Quest** | Le grand jeu en équipe (ci-dessous). |
-| `#/party` | **Gobinous Christmas Party** | Goûter, déco du sapin et bucket list « Treats & Chill » : 20 défis photo/vidéo qui rapportent des **Gobz**, classement en direct. **Code secret : `2020`** (`config/party.js`). |
-| `#/battle` | **Gobinous Christmas Battle** | Simple page d'info : jeux en live, sans téléphone. |
-| `#/gift` | **Gobinous Christmas Gift** | Simple page d'info : le Secret Santa (cadeaux numérotés). |
-| `#/wrapup` | **Gobinous Christmas Wrap-Up** | Questionnaire de satisfaction anonyme, 5 questions, sans code. |
-| `#/suivi` | Organisateurs | Tableau de bord en 3 onglets : équipes de la Quest, défis de la Party, avis du Wrap-Up (indicateurs et export CSV). |
+| `#/` | **The Gobinous Christmas Club** | Page d'accueil animée ; un appui (ou glisser vers le haut) ouvre le programme. Raccourci vers le Vlog. |
+| `#/programme` | **Le programme** | Les 4 temps forts, plus la rubrique Vlog. |
+| `#/quest` | **1 · Christmas Quest** | Le jeu d'infiltration en équipe (ci-dessous). |
+| `#/party` | **2 · Christmas Party** | Goûter, atelier sapin et bucket list « Treats & Chill » : 20 défis photo/vidéo qui rapportent des **Gobz**, classement en direct. **Code secret : `2020`** (`config/party.js`). |
+| `#/battle` | **3 · Christmas Battle** | Page d'info : le grand jeu collectif final (quiz interactif animé par les organisateurs, classement en temps réel). |
+| `#/wrapup` | **4 · Christmas Wrap-Up** | Tirage au sort numérique du **Secret Santa** (un numéro unique par téléphone) puis questionnaire anonyme (5 questions). |
+| `#/vlog` | **Le Vlog des Gobinous** | Rubrique indépendante : photos et vidéos de l'événement, **tous formats, vidéos longues comprises**. |
+| `#/suivi` | Organisateurs | Tableau de bord en 4 onglets : équipes de la Quest, défis de la Party, Secret Santa et avis du Wrap-Up (indicateurs, export CSV), Vlog (fichiers, archive ZIP). |
 
-Textes : `config/club.js` (accueil, programme, Battle, Gift), `config/party.js` (code, défis, points), `config/wrapup.js` (questions).
+**Vocabulaire** : on parle toujours d'« événement », jamais de « soirée » (`npm run check` le signale).
+
+Textes : `config/club.js` (accueil, programme, Battle), `config/party.js` (code, défis, points), `config/wrapup.js` (Secret Santa, questions), `config/vlog.js` (Vlog).
+
+### Le Vlog des Gobinous
+
+- Le Gobinous Reporter (et tous les membres) y déposent leurs photos et vidéos : plusieurs fichiers d'un coup depuis la galerie, ou l'appareil photo intégré (photo ou vidéo avec le son).
+- **Tous les formats** de photos et de vidéos (JPEG, HEIC, PNG, RAW…, MP4, MOV, MKV, AVI, 3GP…) ; **vidéos longues** acceptées (jusqu'à 8 Go par fichier). Les fichiers sont envoyés tels quels, écrits sur le disque au fil de l'eau, avec une barre de progression ; l'écran reste allumé pendant l'envoi quand le téléphone le permet.
+- Côté organisateurs (`#/suivi/vlog`) : fichiers classés par nom, aperçu, suppression, **archive ZIP** de tout (générée au fil de l'eau, même au-delà de 4 Go).
+
+### Secret Santa (Wrap-Up)
+
+- « Tirer mon numéro » : le serveur attribue au hasard un numéro **unique** entre 1 et `santa.total` (40 par défaut, `config/wrapup.js`) ; un téléphone garde toujours le même numéro.
+- Côté organisateurs (`#/suivi/avis`) : numéros déjà tirés, remise à zéro après une répétition.
 
 ### Christmas Party
 
@@ -29,7 +42,7 @@ Textes : `config/club.js` (accueil, programme, Battle, Gift), `config/party.js` 
 - Une réponse par téléphone, modifiable après envoi.
 - Côté organisateurs (`#/suivi/avis`) : nombre de réponses, note moyenne, répartitions en barres, verbatims, **export CSV** (s'ouvre dans Excel).
 
-> **La Party et le Wrap-Up ont besoin du serveur du jeu** (`npm start`, ou hébergement Node.js : voir § 9) pour compter les Gobz, tenir le classement et collecter les avis. Sur un hébergement statique (Netlify Drop…), les défis sont validés sur le téléphone seulement (à montrer aux organisateurs), le classement est masqué et le questionnaire ne peut pas être envoyé.
+> **La Party, le Vlog et le Wrap-Up ont besoin du serveur du jeu** (`npm start`, ou hébergement Node.js : voir § 9) pour compter les Gobz, tenir le classement et collecter les avis. Sur un hébergement statique (Netlify Drop…), les défis sont validés sur le téléphone seulement (à montrer aux organisateurs), le classement est masqué et le questionnaire ne peut pas être envoyé.
 
 ---
 
@@ -104,7 +117,7 @@ Pour essayer sur un vrai téléphone, connectez-le au même réseau Wi-Fi que l'
 
 | Étape | Étage · mot secret | Ce que fait l'équipe |
 |---|---|---|
-| Départ | Hall · `SAPIN` | Accueil, nom d'équipe, puis le lutin demande de nommer un **Chef Lutin** (capitaine) et un **Lutin Reporter** (photos et vidéos des temps forts avec un autre téléphone, à envoyer aux organisateurs via un QR code à la fin). Règles, puis mot secret du hall. |
+| Départ | Hall · `SAPIN` | Accueil, nom d'équipe, puis un encadré « Attention : choisissez vos rôles avec soin ! » fait nommer le **Gobinous Capitaine** (leader) et le **Gobinous Reporter** (photos et vidéos de l'événement, déposées dans le Vlog des Gobinous). Règles, puis mot secret du hall. |
 | **Quête 1 · Quiz Givré** | Hall | Choisit un thème parmi 4 (Noël, Histoire de Saint-Gobain, La Tour Saint-Gobain, **Thème mystère**) et répond aux 8 questions. |
 | Premier indice | — | Lit l'indice (effet machine à écrire) et devine l'étage : **5**. |
 | **Quête 2 · Code Cristal** | 5ᵉ étage, coin café · `LUTIN` | Déchiffre un message en alphabet Pigpen avec la grille de décodage : « LA CLÉ DU MYSTÈRE EST LE VERRE ». |
@@ -300,7 +313,7 @@ npx playwright install chromium
 npm test
 ```
 
-Les 40 vérifications couvrent notamment : accueil du Club et programme ; pages Battle et Gift ; Party (code, 20 défis, photo, vidéo et galerie, Gobz comptés par le serveur, classement) ; Wrap-Up (questions obligatoires, réponses et indicateurs) ; photo avec le paquet en fin de quête ; rôles Chef Lutin et Lutin Reporter ; bouton « Un souci ? » (lien d'appel) ; bouton Règles et bouton du son ; mots secrets des 5 étages ; thème mystère ; absence de correction pendant les questions puis correction après les 8 réponses ; gel de 45 s du quiz (persistant, règles accessibles) et validation d'office ; étage à deviner (givre 10 s, indice bonus) ; message codé (symboles, tolérance de saisie, essais) ; joker ; défi photo (appareil photo intégré sans sélecteur de fichiers, refus capricieux unique, envoi au serveur, export ZIP protégé) ; modules de l'enquête (essais, gel, validation d'office, badge) ; traque (vidéo réellement lue avec sous-titres et passage automatique au rapport, lecture unique, absence de « salle »/« porte » avant TOKYO, code à un essai, appel, fin) ; tableau de bord (code, avancement, galerie, réinitialisation à distance) ; mode test (sauts, affichettes, remise à zéro) ; absence de défilement horizontal et d'erreur JavaScript.
+Les 42 vérifications couvrent notamment : accueil du Club et programme (4 temps forts, jamais « soirée ») ; page Battle ; Vlog (HEIC, MOV de 30 Mo sans type, MKV, refus d'un fichier texte, ZIP valide) ; tirage du Secret Santa (numéros uniques) ; Party (code, 20 défis, photo, vidéo et galerie, Gobz comptés par le serveur, classement) ; Wrap-Up (questions obligatoires, réponses et indicateurs) ; photo avec le paquet en fin de quête ; rôles Gobinous Capitaine et Gobinous Reporter ; bouton « Un souci ? » (lien d'appel) ; bouton Règles et bouton du son ; mots secrets des 5 étages ; thème mystère ; absence de correction pendant les questions puis correction après les 8 réponses ; gel de 45 s du quiz (persistant, règles accessibles) et validation d'office ; étage à deviner (givre 10 s, indice bonus) ; message codé (symboles, tolérance de saisie, essais) ; joker ; défi photo (appareil photo intégré sans sélecteur de fichiers, refus capricieux unique, envoi au serveur, export ZIP protégé) ; modules de l'enquête (essais, gel, validation d'office, badge) ; traque (vidéo réellement lue avec sous-titres et passage automatique au rapport, lecture unique, absence de « salle »/« porte » avant TOKYO, code à un essai, appel, fin) ; tableau de bord (code, avancement, galerie, réinitialisation à distance) ; mode test (sauts, affichettes, remise à zéro) ; absence de défilement horizontal et d'erreur JavaScript.
 
 ---
 
@@ -333,7 +346,7 @@ Après la mise en ligne :
 - [ ] **Matricule (quête 4)** : la consigne D (« année qui précède l'année en cours ») donne 5 en 2026. Si l'événement a lieu une autre année, mettez à jour `reponses` du module 2 et `fiche.matricule`.
 - [ ] **Voix de Barnabé et du lutin** : écouter les fichiers fournis (Piper) ; si elle ne convient pas, la remplacer par une voix ElevenLabs (voir § 3), puis relancer `tools/generer-video.py`.
 - [ ] **Bouton « Un souci ? »** : numéro(s) à appeler dans `textes.aide.contacts` (ajoutez la collègue si besoin).
-- [ ] **QR code de dépôt** des photos et vidéos du Lutin Reporter : à préparer et à remettre aux équipes à la fin.
+- [ ] **Vlog des Gobinous** : vérifier l'espace disque du serveur (vidéos lourdes).
 - [ ] **Droits à l'image** des 6 photos modèles et des portraits.
 - [ ] **Codes** : mode test (`1225`) et suivi (`CODE_SUIVI`, `SUIVI2026` par défaut).
 - [ ] **Hébergement Node.js avec disque persistant** et HTTPS.
@@ -358,7 +371,8 @@ js/camera.js            appareil photo intégré au jeu (viseur, déclencheur)
 js/audio.js             musique de fond, voix de Barnabé, bouton du son
 js/q4-enquete.js        quête 4 : terminal du Support 44
 js/q5-traque.js         quête 5 : vidéo, repaire, appel, photo avec le paquet, fin
-js/club.js              accueil du Club, programme, pages Battle et Gift
+js/club.js              accueil du Club, programme, page Battle
+js/vlog.js              Le Vlog des Gobinous : dépôt des photos et vidéos
 js/party.js             Christmas Party : code, défis, Gobz, classement
 js/wrapup.js            Christmas Wrap-Up : questionnaire anonyme
 js/knit.js              rendu tricot

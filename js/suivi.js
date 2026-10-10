@@ -89,7 +89,7 @@
       '<article class="team-card' + (t.termine ? ' is-done' : '') + '">' +
       '<div class="team-head"><h3 class="team-name">' + esc(t.equipe || 'Sans nom') + '</h3>' +
       '<span class="team-quest">' + (t.termine ? '5/5' : 'Quête ' + t.quete + '/5') + '</span></div>' +
-      (t.chef || t.reporter ? '<p class="team-roles">' + (t.chef ? 'Chef Lutin : <b>' + esc(t.chef) + '</b>' : '') + (t.chef && t.reporter ? ' · ' : '') + (t.reporter ? 'Reporter : <b>' + esc(t.reporter) + '</b>' : '') + '</p>' : '') +
+      (t.chef || t.reporter ? '<p class="team-roles">' + (t.chef ? 'Capitaine : <b>' + esc(t.chef) + '</b>' : '') + (t.chef && t.reporter ? ' · ' : '') + (t.reporter ? 'Reporter : <b>' + esc(t.reporter) + '</b>' : '') + '</p>' : '') +
       '<div class="pips" aria-hidden="true">' + pips + '</div>' +
       '<p class="team-step">' + esc(t.etape) + '</p>' +
       (badges ? '<p class="tags">' + badges + '</p>' : '') +
@@ -245,7 +245,9 @@
   /* ------------------------------------------------------------------ */
 
   var avisData = null;
+  var santaData = null;
   function loadAvis() {
+    request('GET', 'santa').then(function (d) { santaData = d; }, function () { /* sans tirage */ });
     return request('GET', 'avis').then(function (d) { avisData = d.avis; error = ''; }).catch(function (e) {
       if (e.code === 401) { setCode(''); error = 'Code incorrect.'; throw e; }
       error = 'Serveur injoignable. Les avis nécessitent le serveur du jeu (npm start, voir README).';
@@ -264,7 +266,10 @@
     if (!avisData) return '<p class="muted">Chargement…</p>';
     var W = GQ.cfg.wrapup;
     var all = avisData;
-    var out = '<p class="suivi-summary"><b>' + all.length + '</b> réponse(s) au questionnaire</p>' +
+    var santaBox = santaData ? '<section class="admin-card"><h2>Secret Santa : ' + santaData.tires.length + ' / ' + santaData.total + ' numéros tirés</h2>' +
+      '<p class="small muted">' + (santaData.tires.length ? 'Numéros tirés : ' + santaData.tires.join(', ') : 'Aucun numéro tiré pour l\'instant.') + '</p>' +
+      '<div class="btn-row"><button type="button" class="btn btn-small btn-secondary" data-action="santa-reset">Remettre le tirage à zéro</button></div></section>' : '';
+    var out = santaBox + '<p class="suivi-summary"><b>' + all.length + '</b> réponse(s) au questionnaire</p>' +
       (all.length ? '<div class="btn-row"><button type="button" class="btn btn-small btn-primary" data-action="avis-csv">Exporter en CSV (Excel)</button>' +
         '<button type="button" class="btn btn-small btn-secondary" data-action="avis-clear">Effacer toutes les réponses</button></div>' : '');
     out += '<div class="kpi-grid">' + W.questions.map(function (q) {
@@ -303,6 +308,13 @@
     link.remove();
   };
 
+  actions['santa-reset'] = function () {
+    GQ.modal({ title: 'Remettre le tirage à zéro ?', text: 'Tous les numéros redeviennent disponibles (utile après une répétition).', confirm: 'Remettre à zéro', cancel: 'Annuler', icon: 'croix' }).then(function (ok) {
+      if (!ok) return;
+      request('DELETE', 'santa').then(loadAvis).then(refreshTab, function () { GQ.toast('Impossible de joindre le serveur.', 'error'); });
+    });
+  };
+
   actions['avis-clear'] = function () {
     GQ.modal({ title: 'Effacer toutes les réponses ?', text: 'Utile après une répétition. Cette action est définitive.', confirm: 'Effacer', cancel: 'Annuler', icon: 'croix' }).then(function (ok) {
       if (!ok) return;
@@ -311,20 +323,66 @@
   };
 
   /* ------------------------------------------------------------------ */
-  /* Écran du tableau de bord, en trois onglets                          */
+  /* Onglet Vlog : photos et vidéos déposées                             */
+  /* ------------------------------------------------------------------ */
+
+  var vlogData = null;
+  function loadVlog() {
+    return request('GET', 'vlog').then(function (d) { vlogData = d; error = ''; }).catch(function (e) {
+      if (e.code === 401) { setCode(''); error = 'Code incorrect.'; throw e; }
+      error = 'Serveur injoignable. Le Vlog nécessite le serveur du jeu (npm start, voir README).';
+    });
+  }
+  function bytes(n) {
+    if (n < 1024 * 1024) return Math.max(1, Math.round(n / 1024)) + ' Ko';
+    if (n < 1024 * 1024 * 1024) return (n / 1048576).toFixed(1).replace('.', ',') + ' Mo';
+    return (n / 1073741824).toFixed(2).replace('.', ',') + ' Go';
+  }
+  function vlogHtml() {
+    if (error) return '<p class="notice notice-warn">' + icon('cadenas') + '<span>' + esc(error) + '</span></p>';
+    if (!vlogData) return '<p class="muted">Chargement…</p>';
+    var files = vlogData.fichiers;
+    var groups = {};
+    files.forEach(function (f) { (groups[f.nom] = groups[f.nom] || []).push(f); });
+    return '<p class="suivi-summary"><b>' + files.length + '</b> fichier(s) · <b>' + bytes(vlogData.total || 0) + '</b>' +
+      '<span class="small">Mis à jour à ' + new Date().toLocaleTimeString('fr-FR') + '</span></p>' +
+      (files.length ? '<div class="btn-row"><a class="btn btn-small btn-primary" href="' + esc(withCode('api/vlog.zip')) + '" download>' + icon('video') + 'Tout télécharger (ZIP)</a></div>' : '') +
+      (files.length ? Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, 'fr'); }).map(function (nom) {
+        return '<section class="admin-card"><h2>' + esc(nom) + ' · ' + groups[nom].length + ' fichier(s)</h2><ul class="thumbs">' +
+          groups[nom].map(function (f) {
+            var u = esc(withCode(f.url));
+            var media = /^image\/(jpeg|png|gif|webp|avif|svg)/.test(f.type)
+              ? '<a href="' + u + '" target="_blank" rel="noopener"><img src="' + u + '" alt="" loading="lazy"></a>'
+              : '<a class="thumb-video" href="' + u + '" target="_blank" rel="noopener">' + icon(/^video\//.test(f.type) ? 'video' : 'galerie') + '<span>' + esc((f.fichier.split('.').pop() || '').toUpperCase()) + '</span></a>';
+            return '<li>' + media + '<span>' + esc(f.fichier) + ' · ' + bytes(f.taille) + '</span>' +
+              '<button type="button" class="link-del" data-action="vlog-del" data-cle="' + esc(f.cle) + '">Supprimer</button></li>';
+          }).join('') + '</ul></section>';
+      }).join('') : '<p class="admin-card muted">Aucun fichier pour l\'instant. Ils arrivent ici dès qu\'un Gobinous Reporter dépose une photo ou une vidéo.</p>');
+  }
+  actions['vlog-del'] = function (el) {
+    GQ.modal({ title: 'Supprimer ce fichier ?', text: 'Il sera définitivement effacé du serveur.', confirm: 'Supprimer', cancel: 'Annuler', icon: 'croix' }).then(function (ok) {
+      if (!ok) return;
+      request('DELETE', 'vlog/' + encodeURIComponent(el.dataset.cle)).catch(function () { GQ.toast('Impossible de joindre le serveur.', 'error'); })
+        .then(loadVlog).then(refreshTab, function () { GQ.render(); });
+    });
+  };
+
+  /* ------------------------------------------------------------------ */
+  /* Écran du tableau de bord, en quatre onglets                         */
   /* ------------------------------------------------------------------ */
 
   var TABS = [
     { id: '', label: 'Christmas Quest', title: 'Suivi des équipes' },
     { id: 'party', label: 'Christmas Party', title: 'Défis de la Party' },
-    { id: 'avis', label: 'Wrap-Up', title: 'Avis des participants' },
+    { id: 'avis', label: 'Wrap-Up', title: 'Secret Santa et avis' },
+    { id: 'vlog', label: 'Vlog', title: 'Le Vlog des Gobinous' },
   ];
   var tab = '';
 
   function refreshTab() {
     if (tab === '') return refreshList();
     var el = document.getElementById('suivi-tab');
-    if (el) el.innerHTML = tab === 'party' ? partyHtml() : avisHtml();
+    if (el) el.innerHTML = tab === 'party' ? partyHtml() : tab === 'vlog' ? vlogHtml() : avisHtml();
   }
 
   screens.suivi = function (arg) {
@@ -333,14 +391,14 @@
       return { key: 'redirect', html: '' };
     }
     if (!getCode()) return login();
-    tab = arg === 'party' || arg === 'avis' ? arg : '';
+    tab = arg === 'party' || arg === 'avis' || arg === 'vlog' ? arg : '';
     var cur = TABS.filter(function (x) { return x.id === tab; })[0];
     var content = tab === ''
       ? '<p class="small muted">Actualisation automatique toutes les ' + REFRESH_MS / 1000 + ' secondes. ' +
         '« Réinitialiser » efface la partie sur le téléphone de l\'équipe à sa prochaine connexion (quelques secondes) : elle repart de l\'accueil.</p>' +
         '<div id="suivi-list">' + listHtml() + '</div>' +
         '<div id="suivi-gallery">' + (lastGallery = galleryHtml()) + '</div>'
-      : '<div id="suivi-tab">' + (tab === 'party' ? partyHtml() : avisHtml()) + '</div>';
+      : '<div id="suivi-tab">' + (tab === 'party' ? partyHtml() : tab === 'vlog' ? vlogHtml() : avisHtml()) + '</div>';
     return {
       key: 'suivi-' + tab,
       bare: true,
@@ -358,7 +416,7 @@
         '<button type="button" class="btn btn-small btn-secondary" data-action="suivi-logout">Se déconnecter</button></div>' +
         '</main>',
       after: function () {
-        var fn = tab === '' ? load : tab === 'party' ? loadParty : loadAvis;
+        var fn = tab === '' ? load : tab === 'party' ? loadParty : tab === 'vlog' ? loadVlog : loadAvis;
         var tick = function () { fn().then(tab === '' ? refreshList : refreshTab, function () { GQ.render(); }); };
         tick();
         GQ.every(tab === 'avis' ? 15000 : REFRESH_MS, tick);

@@ -4,9 +4,9 @@
 // Lancement :
 //   npm test
 import { createRequire } from 'node:module';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -142,18 +142,21 @@ await step('Accueil « The Gobinous Christmas Club » → programme des 5 temps 
   await page.click('.club-tap');
   await settle();
   assert((await hash()) === '#/programme', 'programme non affiché');
-  for (const n of ['Christmas Quest', 'Christmas Party', 'Christmas Battle', 'Christmas Gift', 'Christmas Wrap-Up']) {
+  for (const n of ['Christmas Quest', 'Christmas Party', 'Christmas Battle', 'Christmas Wrap-Up', 'Le Vlog des Gobinous']) {
     assert(await has(n), `temps fort absent : ${n}`);
   }
+  assert((await page.locator('.prog-card').count()) === 4, '4 temps forts attendus');
+  assert(!(await has('Christmas Gift')), 'le Gift doit être dans le Wrap-Up');
+  assert(!/soir[ée]e/i.test(await text()), 'le mot « soirée » est affiché');
   await noHorizontalScroll();
 });
 
-await step('Battle et Gift : pages d\'information, sans jeu', async () => {
+await step('Battle : page d\'information ; ancienne page Gift → Wrap-Up', async () => {
   await page.click('.prog-battle');
   await settle();
-  assert(await has('Rangez les téléphones'), 'page Battle absente');
+  assert(await has('quiz interactif') && await has('classement'), 'page Battle absente');
   await go(BASE + '#/gift');
-  assert(await has('Secret Santa') && await has('numéro'), 'page Gift absente');
+  assert((await hash()) === '#/wrapup', 'le Gift doit mener au Wrap-Up');
   await go(BASE + '#/programme');
 });
 
@@ -174,9 +177,9 @@ await step('Nom d\'équipe vide refusé, puis accepté', async () => {
   assert((await hash()) === '#/equipe/roles', 'pas redirigé vers les rôles');
 });
 
-await step('Rôles : Chef Lutin et Lutin Reporter obligatoires, présentés par le lutin', async () => {
+await step('Rôles : encadré « choisissez vos rôles avec soin », Capitaine et Reporter obligatoires', async () => {
   assert(await has('Bête de nom'), 'réaction du lutin absente');
-  assert(await has('Lutin Reporter'), 'rôle du reporter absent');
+  assert(await has('Le Gobinous Reporter') && await has('Le Gobinous Capitaine') && await has('choisissez vos rôles avec soin'), 'encadré des rôles absent');
   await page.click('.roles-form button[type=submit]');
   await settle();
   assert(await has('Indiquez le prénom'), 'rôles vides acceptés');
@@ -710,6 +713,53 @@ await step('Wrap-Up : anonyme, questions obligatoires, réponses et indicateurs 
   await go(BASE + '#/suivi/party');
   await page.waitForSelector('.party-card');
   assert(await has('Les Givrés'), 'joueur absent de l\'onglet Party');
+});
+
+await step('Vlog : tous formats, vidéo lourde, plusieurs fichiers, archive ZIP pour les organisateurs', async () => {
+  await go(BASE + '#/vlog');
+  await answer('Les Givrés');
+  const big = Buffer.alloc(30 * 1024 * 1024, 7); // 30 Mo, format .mov sans type déclaré
+  await page.setInputFiles('[data-vlog-files]', [
+    { name: 'souvenir.heic', mimeType: 'image/heic', buffer: Buffer.from('heicdata') },
+    { name: 'video-longue.mov', mimeType: 'application/octet-stream', buffer: big },
+    { name: 'clip.mkv', mimeType: 'video/x-matroska', buffer: Buffer.from('mkvdata') },
+  ], { timeout: 60000 });
+  await page.waitForFunction(() => document.querySelectorAll('.vlog-item.is-ok').length === 3, null, { timeout: 30000 });
+  await page.waitForFunction(() => document.querySelectorAll('.vlog-mine li').length === 3, null, { timeout: 8000 });
+  const d = await api('vlog');
+  assert(d.fichiers.length === 3 && d.fichiers.some((f) => f.fichier === 'video-longue.mov' && f.taille === big.length && /^video\//.test(f.type)), 'fichiers absents du serveur');
+  const r = await fetch(BASE + 'api/vlog?id=abcdefgh12345678&fichier=notes.txt', { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: 'x' });
+  assert(r.status === 415, 'un fichier qui n\'est pas une photo ou une vidéo est accepté');
+  const zipRes = await fetch(BASE + 'api/vlog.zip', { headers: { 'X-Code-Suivi': SUIVI_CODE } });
+  const zipBuf = Buffer.from(await zipRes.arrayBuffer());
+  assert(zipRes.ok && zipBuf.readUInt32LE(0) === 0x04034b50 && zipBuf.length > big.length, 'archive ZIP invalide');
+  const zp = join(mkdtempSync(join(tmpdir(), 'gq-')), 'vlog.zip');
+  writeFileSync(zp, zipBuf);
+  const test = spawnSync('python3', ['-c', 'import sys,zipfile; z=zipfile.ZipFile(sys.argv[1]); assert z.testzip() is None; print(len(z.namelist()))', zp], { encoding: 'utf8' });
+  assert(test.status === 0 && test.stdout.trim() === '3', `ZIP illisible : ${test.stderr}`);
+  await go(BASE + '#/suivi/vlog');
+  await page.waitForSelector('[data-action="vlog-del"]');
+  assert(await has('video-longue.mov'), 'fichier absent de l\'onglet Vlog');
+});
+
+await step('Wrap-Up : tirage du Secret Santa, un numéro unique par téléphone', async () => {
+  await go(BASE + '#/wrapup');
+  await page.click('[data-action="santa-draw"]');
+  await page.waitForSelector('.santa-help', { timeout: 8000 });
+  const mine = await page.evaluate(() => window.GQ.wrapup.state().santa);
+  assert(mine >= 1 && mine <= CFG.wrapup.santa.total, `numéro inattendu : ${mine}`);
+  await reload();
+  assert((await page.evaluate(() => window.GQ.wrapup.state().santa)) === mine && await has('Allez chercher le cadeau'), 'numéro perdu au rechargement');
+  const again = await (await fetch(BASE + 'api/santa/tirage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: await page.evaluate(() => window.GQ.wrapup.state().id) }) })).json();
+  assert(again.numero === mine, 'un téléphone a tiré deux numéros');
+  const seen = new Set([mine]);
+  for (let i = 0; i < 5; i++) {
+    const o = await (await fetch(BASE + 'api/santa/tirage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: 'autretelephone' + i + 'x' }) })).json();
+    assert(!seen.has(o.numero), 'numéro tiré deux fois');
+    seen.add(o.numero);
+  }
+  const sa = await api('santa');
+  assert(sa.tires.length === 6, 'tirages non enregistrés');
 });
 
 await step('Affichage ordinateur (1280 px) sans débordement', async () => {

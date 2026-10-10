@@ -1,5 +1,5 @@
 /* The Gobinous Christmas Club : page d'accueil du site (#/), programme
- * de la soirée (#/programme) et pages d'information de la Battle et du
+ * de l'événement (#/programme) et pages d'information de la Battle et du
  * Gift (#/battle, #/gift). Textes : config/club.js. */
 (function () {
   'use strict';
@@ -53,6 +53,7 @@
         (A.edition ? '<p class="club-edition">' + GQ.pix('star') + t(A.edition) + GQ.pix('star') + '</p>' : '') +
         '<div class="club-scene">' + GQ.knit.scene('club-scene-img') + '</div>' +
         '</div>' +
+        '<button type="button" class="club-vlog" data-action="go-vlog">' + icon('video') + t(K.vlog ? K.vlog.nom : 'Le Vlog') + '</button>' +
         '<button type="button" class="club-tap" data-action="to-programme">' +
         '<span>' + t(A.appel) + '</span><span class="club-chevron" aria-hidden="true">' + icon('fleche') + '</span></button>' +
         '</main>',
@@ -72,9 +73,10 @@
   };
 
   actions['to-programme'] = function () { GQ.go('programme'); };
+  actions['go-vlog'] = function () { GQ.go('vlog'); };
 
   /* ------------------------------------------------------------------ */
-  /* Programme : les temps forts de la soirée                            */
+  /* Programme : les temps forts de l'événement                          */
   /* ------------------------------------------------------------------ */
 
   screens.programme = function () {
@@ -101,6 +103,9 @@
         '<div class="center-head">' + C.knitTitle(P.titre) +
         (P.intro ? '<p class="prog-intro">' + t(P.intro) + '</p>' : '') + '</div>' +
         '<ol class="prog">' + cards + '</ol>' +
+        (K.vlog ? '<a class="vlog-card" href="#/vlog">' + GQ.knit.icon('camera', 'vlog-card-ico') +
+          '<span class="vlog-card-body"><span class="vlog-card-name">' + t(K.vlog.nom) + '</span><span class="vlog-card-text">' + t(K.vlog.texte) + '</span></span>' +
+          '<span class="prog-go">' + t(K.vlog.bouton) + icon('fleche') + '</span></a>' : '') +
         '</main>',
     };
   };
@@ -130,5 +135,6 @@
     };
   }
   screens.battle = function () { return info('battle'); };
-  screens.gift = function () { return info('gift'); };
+  // Le Secret Santa fait désormais partie du Wrap-Up.
+  screens.gift = function () { GQ.redirect('wrapup'); return { key: 'redirect', html: '' }; };
 })();

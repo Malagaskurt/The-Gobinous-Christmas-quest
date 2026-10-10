@@ -58,17 +58,76 @@
     return '<div class="wq" role="group" aria-labelledby="wq-' + q.id + '">' + head + body + '</div>';
   }
 
+  /* Secret Santa : tirage au sort d'un numéro unique (fait par le serveur). */
+  var S = W.santa || null;
+  var drawing = false;
+  function santaHtml() {
+    if (!S) return '';
+    var n = me.santa;
+    return '<section class="santa">' +
+      '<p class="santa-title">' + GQ.pix('gift', 'santa-pix') + t(S.titre) + '</p>' +
+      (n
+        ? '<p class="santa-label">' + t(S.resultat) + '</p>' +
+          '<div class="santa-num">' + GQ.knit.text(String(n), { alt: '', color: '#E4323A', outline: true, cls: 'santa-img' }) + '</div>' +
+          '<p class="santa-help">' + t(S.aide, { n: n }) + '</p>'
+        : '<p class="santa-text">' + t(S.texte) + '</p>' +
+          '<div class="santa-num santa-roll" data-santa-roll hidden></div>' +
+          (GQ.ui.santaErr ? '<p class="feedback feedback-error shake">' + icon('croix') + '<span>' + t(GQ.ui.santaErr) + '</span></p>' : '') +
+          '<button type="button" class="btn btn-red" data-action="santa-draw"' + (drawing ? ' disabled' : '') + '>' + GQ.pix('star', 'btn-pix') + esc(S.bouton) + '</button>') +
+      '</section>';
+  }
+
+  actions['santa-draw'] = function (el) {
+    if (drawing || me.santa) return;
+    drawing = true;
+    el.disabled = true;
+    var roll = document.querySelector('[data-santa-roll]');
+    var tick = 0;
+    var timer = setInterval(function () {
+      if (!roll) return;
+      roll.hidden = false;
+      roll.innerHTML = GQ.knit.text(String(1 + Math.floor(Math.random() * (S.total || 40))), { alt: '', color: '#00ADE1', outline: true, cls: 'santa-img' });
+      if (++tick % 3 === 0) GQ.audio.sfx('unlock');
+    }, 90);
+    var started = Date.now();
+    fetch(GQ.apiUrl('santa/tirage'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: me.id }),
+    }).then(function (r) {
+      return r.json().then(function (d) { if (!r.ok) throw new Error(d.erreur || 'http'); return d; });
+    }).then(function (d) {
+      // Le suspense dure au moins 1,6 s.
+      return new Promise(function (ok) { setTimeout(function () { ok(d); }, Math.max(0, 1600 - (Date.now() - started))); });
+    }).then(function (d) {
+      clearInterval(timer);
+      me.santa = d.numero;
+      save();
+      drawing = false;
+      GQ.render();
+      GQ.audio.sfx('win');
+      GQ.celebrate(true);
+    }, function (e) {
+      clearInterval(timer);
+      drawing = false;
+      GQ.ui.santaErr = e.message === 'complet' ? S.complet : S.erreur;
+      GQ.audio.sfx('error');
+      GQ.render();
+    });
+  };
+
   screens.wrapup = function () {
     var head = GQ.clubHeader({ href: 'programme', label: 'Programme' }) +
       '<main class="screen screen-plain screen-wrapup">' +
-      '<div class="center-head">' + GQ.knit.icon('check', 'head-ico') + '<p class="kicker">Gobinous</p>' + C.knitTitle(W.titre.replace(/^Christmas\s+/i, '')) + '</div>';
+      '<div class="center-head">' + GQ.knit.icon('gift', 'head-ico') + '<p class="kicker">Gobinous</p>' + C.knitTitle(W.titre.replace(/^Christmas\s+/i, '')) + '</div>';
     if (me.envoye && !GQ.ui.edit) {
       return {
         key: 'wrapup-merci',
         bare: true,
         celebrate: true,
         html: head +
-          '<section class="success"><div class="success-art">' + GQ.knit.icon('gift', 'success-ico') + '</div>' +
+          santaHtml() +
+          '<section class="success"><div class="success-art">' + GQ.knit.icon('check', 'success-ico') + '</div>' +
           '<h2 class="success-title" tabindex="-1">' + t(W.merciTitre) + '</h2>' +
           C.frame('<p>' + t(W.merciTexte) + '</p>', 'frame-center') + '</section>' +
           '<p class="center"><button type="button" class="btn btn-ghost" data-action="wq-edit">' + esc(W.modifier) + '</button></p>' +
@@ -80,6 +139,8 @@
       key: 'wrapup',
       bare: true,
       html: head +
+        santaHtml() +
+        '<h2 class="section-title wq-head">' + t(W.avisTitre || 'Votre avis') + '</h2>' +
         GQ.elfTalk('<p class="elf-talk-big">' + t(W.bulle) + '</p><p>' + t(W.intro) + '</p>') +
         '<form class="wq-form" data-form="wrapup" novalidate>' +
         W.questions.map(field).join('') +

@@ -81,11 +81,11 @@
   }
 
   /* Envoi d'une preuve avec progression. Résolue { ok, offline } . */
-  function upload(n, blob, onProgress) {
+  function upload(n, blob, onProgress, name) {
     return new Promise(function (resolve, reject) {
       if (!canServe() || online === false) return resolve({ offline: true });
       var xhr = new XMLHttpRequest();
-      var url = GQ.apiUrl('party/preuve') + '?id=' + encodeURIComponent(me.id) + '&defi=' + n + '&nom=' + encodeURIComponent(me.nom);
+      var url = GQ.apiUrl('party/preuve') + '?id=' + encodeURIComponent(me.id) + '&defi=' + n + '&nom=' + encodeURIComponent(me.nom) + '&fichier=' + encodeURIComponent(name || blob.name || '');
       xhr.open('POST', url);
       xhr.setRequestHeader('Content-Type', blob.type || 'application/octet-stream');
       xhr.upload.onprogress = function (e) { if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100)); };
@@ -103,8 +103,8 @@
   /* Préparation du fichier                                              */
   /* ------------------------------------------------------------------ */
 
-  var MAX = 80 * 1024 * 1024;
-  function isVideo(f) { return /^video\//.test(f.type) || /\.(mp4|mov|webm|3gp)$/i.test(f.name || ''); }
+  var MAX = 8 * 1024 * 1024 * 1024; // 8 Go : vidéos longues acceptées
+  function isVideo(f) { return /^video\//.test(f.type) || /\.(mp4|mov|m4v|webm|mkv|avi|3gp|3g2|mts|m2ts|wmv|flv|mpe?g|hevc)$/i.test(f.name || ''); }
   function videoType(f) {
     if (f.type) return f.type;
     return /\.mov$/i.test(f.name) ? 'video/quicktime' : /\.webm$/i.test(f.name) ? 'video/webm' : 'video/mp4';
@@ -115,12 +115,17 @@
     if (isVideo(file)) {
       if (file.size > MAX) return Promise.reject(new Error('lourd'));
       var v = file.type ? file : new Blob([file], { type: videoType(file) });
-      return Promise.resolve({ blob: v, video: true, preview: URL.createObjectURL(v) });
+      return Promise.resolve({ blob: v, video: true, preview: URL.createObjectURL(v), name: file.name || 'video' });
     }
+    if (file.size > MAX) return Promise.reject(new Error('lourd'));
     return GQ.photoTools.process(file).then(function (img) {
       return fetch(img.full).then(function (r) { return r.blob(); }).then(function (b) {
-        return { blob: b, video: false, preview: img.full, thumb: img.thumb };
+        return { blob: b, video: false, preview: img.full, thumb: img.thumb, name: 'photo.jpg' };
       });
+    }, function () {
+      // Format que le navigateur ne sait pas afficher (HEIC, RAW…) : la photo
+      // est envoyée telle quelle, sans aperçu.
+      return { blob: file, video: false, preview: '', name: file.name || 'photo' };
     });
   }
 
@@ -213,7 +218,7 @@
     var d = defi(pv.n);
     var media = pv.video
       ? '<video src="' + esc(pv.preview) + '" controls playsinline muted></video>'
-      : '<img src="' + esc(pv.preview) + '" alt="Votre photo">';
+      : pv.preview ? '<img src="' + esc(pv.preview) + '" alt="Votre photo">' : '<p class="proof-noprev">' + icon('galerie') + ' Photo prête à l\'envoi</p>';
     return '<section class="proof" data-proof>' +
       '<p class="proof-title">' + GQ.pix('star') + ' Défi ' + pv.n + ' · ' + t(d.titre) + '</p>' +
       '<div class="proof-media">' + media + '</div>' +
@@ -365,7 +370,7 @@
       bar.querySelector('span').textContent = PC.envoiEnCours.replace('{pct}', pct);
     };
     setPct(0);
-    upload(pv.n, pv.blob, setPct).then(function (r) {
+    upload(pv.n, pv.blob, setPct, pv.name).then(function (r) {
       me.done[pv.n] = { at: Date.now(), thumb: pv.thumb || null, video: pv.video, local: !!r.offline };
       save();
       var d = defi(pv.n);

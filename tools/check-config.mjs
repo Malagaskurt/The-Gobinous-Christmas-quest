@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const files = ['parametres', 'textes', 'quiz', 'quetes', 'etapes', 'club', 'party', 'wrapup'].map((f) => `config/${f}.js`);
+const files = ['parametres', 'textes', 'quiz', 'quetes', 'etapes', 'club', 'party', 'wrapup', 'vlog'].map((f) => `config/${f}.js`);
 const context = { window: {} };
 context.globalThis = context;
 vm.createContext(context);

@@ -159,7 +159,7 @@
       v: 2,
       id: newId(),
       team: null,
-      roles: null, // { chef, reporter } : Chef Lutin et Lutin Reporter
+      roles: null, // { chef, reporter } : Gobinous Capitaine et Gobinous Reporter
       startedAt: null,
       rulesOk: false,
       clockStart: null, // départ du chrono global (au « C'est parti ! »)

@@ -20,7 +20,7 @@
 // Christmas Wrap-Up : réponses anonymes au questionnaire (data/avis.json).
 import { createServer } from 'node:http';
 import { readFile, stat, writeFile, mkdir, rename } from 'node:fs/promises';
-import { readFileSync, createWriteStream } from 'node:fs';
+import { readFileSync, createWriteStream, createReadStream } from 'node:fs';
 import { unlink, rm } from 'node:fs/promises';
 import { dirname, extname, join, normalize, relative, sep } from 'node:path';
 import { networkInterfaces } from 'node:os';
@@ -37,11 +37,30 @@ const MAX_PHOTO = 6 * 1024 * 1024;
 const PARTY_DIR = join(dirname(FILE), 'party');
 const PARTY_FILE = join(PARTY_DIR, 'joueurs.json');
 const AVIS_FILE = join(dirname(FILE), 'avis.json');
-const MAX_MEDIA = 80 * 1024 * 1024;
-const MEDIA = {
-  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/heic': 'heic', 'image/heif': 'heic',
-  'video/mp4': 'mp4', 'video/quicktime': 'mov', 'video/webm': 'webm', 'video/3gpp': '3gp',
+// Photos et vidéos (défis de la Party, Vlog) : tous les formats d'image et
+// de vidéo sont acceptés, fichiers lourds compris (écrits au fil de l'eau).
+const MAX_MEDIA = 8 * 1024 * 1024 * 1024; // 8 Go par fichier
+const VLOG_DIR = join(dirname(FILE), 'vlog');
+const VLOG_INDEX = join(VLOG_DIR, 'index.json');
+const MEDIA_EXT = {
+  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/heic': 'heic', 'image/heif': 'heif', 'image/gif': 'gif',
+  'image/avif': 'avif', 'image/tiff': 'tiff', 'image/bmp': 'bmp', 'image/svg+xml': 'svg',
+  'video/mp4': 'mp4', 'video/quicktime': 'mov', 'video/webm': 'webm', 'video/3gpp': '3gp', 'video/3gpp2': '3g2',
+  'video/x-msvideo': 'avi', 'video/x-matroska': 'mkv', 'video/mpeg': 'mpg', 'video/x-m4v': 'm4v', 'video/ogg': 'ogv',
 };
+const EXT_TYPE = Object.fromEntries(Object.entries(MEDIA_EXT).map(([t, e]) => [e, t]));
+Object.assign(EXT_TYPE, { jpeg: 'image/jpeg', jpe: 'image/jpeg', tif: 'image/tiff', dng: 'image/x-adobe-dng', raw: 'image/x-raw', cr2: 'image/x-canon-cr2', nef: 'image/x-nikon-nef', arw: 'image/x-sony-arw', mts: 'video/mp2t', m2ts: 'video/mp2t', ts: 'video/mp2t', wmv: 'video/x-ms-wmv', flv: 'video/x-flv', mpeg: 'video/mpeg', hevc: 'video/mp4' });
+
+/* Type et extension d'un fichier reçu : d'après l'en-tête, sinon d'après
+ * le nom d'origine. Refusé seulement si ce n'est ni une image ni une vidéo. */
+function mediaKind(contentType, name) {
+  const type = String(contentType || '').split(';')[0].trim().toLowerCase();
+  const ext = (String(name || '').match(/\.([a-z0-9]{2,5})$/i) || [])[1];
+  const e = ext ? ext.toLowerCase() : '';
+  if (/^(image|video)\/[a-z0-9.+-]+$/.test(type)) return { type, ext: MEDIA_EXT[type] || (EXT_TYPE[e] ? e : type.split('/')[1].replace(/[^a-z0-9]/g, '').slice(0, 5) || 'bin') };
+  if (EXT_TYPE[e]) return { type: EXT_TYPE[e], ext: e };
+  return null;
+}
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -107,15 +126,31 @@ async function persistAvis() {
 
 /* Défis et points : lus dans config/party.js (fichier du site), à chaque
  * fois pour tenir compte d'une modification sans redémarrer. */
-async function partyConfig() {
+async function siteConfig(name) {
   try {
-    const src = await readFile(join(root, 'config', 'party.js'), 'utf8');
+    const src = await readFile(join(root, 'config', name + '.js'), 'utf8');
     const win = {};
     new Function('window', src)(win);
-    return (win.GAME_CONFIG && win.GAME_CONFIG.party) || { defis: [] };
+    return (win.GAME_CONFIG && win.GAME_CONFIG[name]) || null;
   } catch {
-    return { defis: [] };
+    return null;
   }
+}
+async function partyConfig() {
+  return (await siteConfig('party')) || { defis: [] };
+}
+
+/* Secret Santa : un numéro unique par téléphone, tiré au hasard parmi ceux
+ * qui restent (total : config/wrapup.js → santa.total). */
+const SANTA_FILE = join(dirname(FILE), 'santa.json');
+let santa = {};
+try {
+  santa = JSON.parse(readFileSync(SANTA_FILE, 'utf8')) || {};
+} catch { /* aucun tirage */ }
+async function persistSanta() {
+  await mkdir(dirname(SANTA_FILE), { recursive: true });
+  await writeFile(SANTA_FILE + '.tmp', JSON.stringify(santa));
+  await rename(SANTA_FILE + '.tmp', SANTA_FILE);
 }
 
 function partyPoints(p) {
@@ -128,21 +163,132 @@ function classement() {
     .sort((a, b) => b.points - a.points || a.dernier - b.dernier || String(a.nom).localeCompare(String(b.nom), 'fr'));
 }
 
-/* Réception d'un fichier (photo ou vidéo) directement sur le disque. */
+/* Réception d'un fichier (photo ou vidéo) directement sur le disque, avec
+ * calcul de l'empreinte CRC32 au passage (utile pour l'archive ZIP).
+ * Résolue { size, crc }. */
 function receive(req, file, max) {
   return new Promise((resolve, reject) => {
     let size = 0;
+    let c = -1;
     const out = createWriteStream(file);
-    req.on('data', (c) => {
-      size += c.length;
+    req.on('data', (chunk) => {
+      size += chunk.length;
+      for (let i = 0; i < chunk.length; i++) c = CRC[(c ^ chunk[i]) & 0xff] ^ (c >>> 8);
       if (size > max) { req.destroy(); out.destroy(); reject(Object.assign(new Error('trop gros'), { code: 413 })); }
     });
+    req.on('aborted', () => reject(new Error('interrompu')));
     req.on('error', reject);
     out.on('error', reject);
-    out.on('finish', () => resolve(size));
+    out.on('finish', () => resolve({ size, crc: (c ^ -1) >>> 0 }));
     req.pipe(out);
   });
 }
+
+/* Envoi d'un gros fichier (lecture par morceaux, vidéos sur iPhone). */
+async function streamFile(req, res, file, type, name) {
+  const info = await stat(file);
+  const head = { 'Content-Type': type, 'Accept-Ranges': 'bytes', 'Cache-Control': 'private, max-age=60' };
+  if (name) head['Content-Disposition'] = `inline; filename*=UTF-8''${encodeURIComponent(name)}`;
+  const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
+  if (range && (range[1] || range[2])) {
+    let start = range[1] ? Number(range[1]) : info.size - Number(range[2]);
+    let end = range[1] && range[2] ? Number(range[2]) : info.size - 1;
+    start = Math.max(0, start);
+    end = Math.min(end, info.size - 1);
+    if (start > end) { res.writeHead(416, { 'Content-Range': `bytes */${info.size}` }); return res.end(); }
+    res.writeHead(206, { ...head, 'Content-Range': `bytes ${start}-${end}/${info.size}`, 'Content-Length': end - start + 1 });
+    return createReadStream(file, { start, end }).pipe(res);
+  }
+  res.writeHead(200, { ...head, 'Content-Length': info.size });
+  return createReadStream(file).pipe(res);
+}
+
+/* Archive ZIP écrite au fil de l'eau (fichiers stockés sans compression,
+ * format ZIP64 au-delà de 4 Go). files : [{ name, path, size, crc }]. */
+async function streamZip(res, files, filename) {
+  res.writeHead(200, {
+    'Content-Type': 'application/zip',
+    'Content-Disposition': `attachment; filename="${filename}"`,
+    'Cache-Control': 'no-store',
+  });
+  const write = (buf) => new Promise((ok) => { if (res.write(buf)) ok(); else res.once('drain', ok); });
+  const big = 0xffffffff;
+  const central = [];
+  let offset = 0;
+  for (const f of files) {
+    const name = Buffer.from(f.name, 'utf8');
+    const z64 = f.size >= big || offset >= big;
+    const extra = z64 ? Buffer.alloc(20) : Buffer.alloc(0);
+    if (z64) { extra.writeUInt16LE(1, 0); extra.writeUInt16LE(16, 2); extra.writeBigUInt64LE(BigInt(f.size), 4); extra.writeBigUInt64LE(BigInt(f.size), 12); }
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(z64 ? 45 : 20, 4);
+    local.writeUInt16LE(0x0800, 6);
+    local.writeUInt32LE(f.crc >>> 0, 14);
+    local.writeUInt32LE(z64 ? big : f.size, 18);
+    local.writeUInt32LE(z64 ? big : f.size, 22);
+    local.writeUInt16LE(name.length, 26);
+    local.writeUInt16LE(extra.length, 28);
+    await write(Buffer.concat([local, name, extra]));
+    await new Promise((ok, ko) => {
+      const rs = createReadStream(f.path);
+      rs.on('data', (chunk) => { if (!res.write(chunk)) { rs.pause(); res.once('drain', () => rs.resume()); } });
+      rs.on('end', ok);
+      rs.on('error', ko);
+    });
+    const cz64 = f.size >= big || offset >= big;
+    const cextra = cz64 ? Buffer.alloc(28) : Buffer.alloc(0);
+    if (cz64) {
+      cextra.writeUInt16LE(1, 0); cextra.writeUInt16LE(24, 2);
+      cextra.writeBigUInt64LE(BigInt(f.size), 4); cextra.writeBigUInt64LE(BigInt(f.size), 12); cextra.writeBigUInt64LE(BigInt(offset), 20);
+    }
+    const cen = Buffer.alloc(46);
+    cen.writeUInt32LE(0x02014b50, 0);
+    cen.writeUInt16LE(cz64 ? 45 : 20, 4);
+    cen.writeUInt16LE(cz64 ? 45 : 20, 6);
+    cen.writeUInt16LE(0x0800, 8);
+    cen.writeUInt32LE(f.crc >>> 0, 16);
+    cen.writeUInt32LE(cz64 ? big : f.size, 20);
+    cen.writeUInt32LE(cz64 ? big : f.size, 24);
+    cen.writeUInt16LE(name.length, 28);
+    cen.writeUInt16LE(cextra.length, 30);
+    cen.writeUInt32LE(cz64 ? big : offset, 42);
+    central.push(cen, name, cextra);
+    offset += 30 + name.length + extra.length + f.size;
+  }
+  const cd = Buffer.concat(central);
+  const tail = [];
+  const needs64 = offset >= big || files.length >= 0xffff;
+  if (needs64) {
+    const z = Buffer.alloc(56);
+    z.writeUInt32LE(0x06064b50, 0); z.writeBigUInt64LE(44n, 4); z.writeUInt16LE(45, 12); z.writeUInt16LE(45, 14);
+    z.writeBigUInt64LE(BigInt(files.length), 24); z.writeBigUInt64LE(BigInt(files.length), 32);
+    z.writeBigUInt64LE(BigInt(cd.length), 40); z.writeBigUInt64LE(BigInt(offset), 48);
+    const loc = Buffer.alloc(20);
+    loc.writeUInt32LE(0x07064b50, 0); loc.writeBigUInt64LE(BigInt(offset + cd.length), 8); loc.writeUInt32LE(1, 16);
+    tail.push(z, loc);
+  }
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0);
+  end.writeUInt16LE(Math.min(files.length, 0xffff), 8);
+  end.writeUInt16LE(Math.min(files.length, 0xffff), 10);
+  end.writeUInt32LE(cd.length, 12);
+  end.writeUInt32LE(needs64 ? big : offset, 16);
+  await write(Buffer.concat([cd, ...tail, end]));
+  res.end();
+}
+
+/* Vlog des Gobinous : photos et vidéos de l'événement. */
+let vlog = {};
+try {
+  vlog = JSON.parse(readFileSync(VLOG_INDEX, 'utf8')) || {};
+} catch { /* aucun envoi */ }
+async function persistVlog() {
+  await mkdir(VLOG_DIR, { recursive: true });
+  await writeFile(VLOG_INDEX + '.tmp', JSON.stringify(vlog));
+  await rename(VLOG_INDEX + '.tmp', VLOG_INDEX);
+}
+const newKey = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
 
 let saveTimer = null;
 function persist() {
@@ -338,19 +484,21 @@ async function api(req, res, path) {
     const q = new URL(req.url, 'http://x').searchParams;
     const id = q.get('id');
     const n = Number(q.get('defi'));
-    const type = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
+    const kind = mediaKind(req.headers['content-type'], q.get('fichier'));
     const cfg = await partyConfig();
     const defi = cfg.defis[n - 1];
     if (!validId(id) || !defi || !Number.isInteger(n)) return send(res, 400, { erreur: 'défi invalide' });
-    if (!MEDIA[type]) return send(res, 415, { erreur: 'format non pris en charge' });
+    if (!kind) return send(res, 415, { erreur: 'ce fichier n\'est ni une photo ni une vidéo' });
+    const type = kind.type;
     const p = party[id] || { defis: {}, debut: now };
     p.nom = str(q.get('nom'), 40).trim() || p.nom || 'Sans nom';
     const dir = join(PARTY_DIR, id);
     await mkdir(dir, { recursive: true });
-    const name = `defi-${String(n).padStart(2, '0')}.${MEDIA[type]}`;
+    const name = `defi-${String(n).padStart(2, '0')}.${kind.ext}`;
     const tmp = join(dir, name + '.part');
+    let got;
     try {
-      await receive(req, tmp, MAX_MEDIA);
+      got = await receive(req, tmp, MAX_MEDIA);
     } catch (e) {
       await unlink(tmp).catch(() => {});
       return send(res, e.code === 413 ? 413 : 400, { erreur: e.code === 413 ? 'fichier trop lourd' : 'envoi interrompu' });
@@ -359,11 +507,64 @@ async function api(req, res, path) {
     const old = p.defis[n];
     if (old && old.fichier && old.fichier !== name) await unlink(join(dir, old.fichier)).catch(() => {});
     await rename(tmp, join(dir, name));
-    p.defis[n] = { at: now, points: Number(defi.points) || 0, fichier: name, type, titre: str(defi.titre, 60) };
+    p.defis[n] = { at: now, points: Number(defi.points) || 0, fichier: name, type, titre: str(defi.titre, 60), taille: got.size, crc: got.crc };
     p.dernier = now;
     party[id] = p;
     await persistParty();
     return send(res, 200, { ok: true, points: partyPoints(p), defis: Object.keys(p.defis) });
+  }
+
+  // Vlog : dépôt d'une photo ou d'une vidéo (corps brut, tous formats).
+  if (path === '/api/vlog' && req.method === 'POST') {
+    const q = new URL(req.url, 'http://x').searchParams;
+    const id = q.get('id');
+    const original = str(q.get('fichier'), 120).replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '-');
+    const kind = mediaKind(req.headers['content-type'], original);
+    if (!validId(id)) return send(res, 400, { erreur: 'envoi invalide' });
+    if (!kind) return send(res, 415, { erreur: 'ce fichier n\'est ni une photo ni une vidéo' });
+    if (Object.keys(vlog).length >= 20000) return send(res, 503, { erreur: 'trop de fichiers' });
+    await mkdir(VLOG_DIR, { recursive: true });
+    const key = newKey();
+    const stored = `${key}.${kind.ext}`;
+    const tmp = join(VLOG_DIR, stored + '.part');
+    let got;
+    try {
+      got = await receive(req, tmp, MAX_MEDIA);
+    } catch (e) {
+      await unlink(tmp).catch(() => {});
+      return send(res, e.code === 413 ? 413 : 400, { erreur: e.code === 413 ? 'fichier trop lourd' : 'envoi interrompu' });
+    }
+    if (!got.size) { await unlink(tmp).catch(() => {}); return send(res, 400, { erreur: 'fichier vide' }); }
+    await rename(tmp, join(VLOG_DIR, stored));
+    vlog[key] = { id, nom: str(q.get('nom'), 40).trim() || 'Sans nom', fichier: original || stored, stockage: stored, type: kind.type, taille: got.size, crc: got.crc, at: now };
+    await persistVlog();
+    return send(res, 200, { ok: true, cle: key });
+  }
+
+  // Vlog : ce que ce téléphone a déjà envoyé (identifiant secret du téléphone).
+  if (path === '/api/vlog/mes' && req.method === 'GET') {
+    const id = new URL(req.url, 'http://x').searchParams.get('id');
+    if (!validId(id)) return send(res, 400, { erreur: 'identifiant invalide' });
+    const list = Object.entries(vlog).filter(([, v]) => v.id === id)
+      .map(([cle, v]) => ({ cle, fichier: v.fichier, type: v.type, taille: v.taille, at: v.at })).sort((a, b) => b.at - a.at);
+    return send(res, 200, { envois: list });
+  }
+
+  // Secret Santa : tirage (ou rappel) du numéro de ce téléphone.
+  if (path === '/api/santa/tirage' && req.method === 'POST') {
+    const b = await body(req);
+    if (!validId(b.id)) return send(res, 400, { erreur: 'identifiant invalide' });
+    if (santa[b.id]) return send(res, 200, { numero: santa[b.id].numero });
+    const cfg = (await siteConfig('wrapup')) || {};
+    const total = Math.max(1, Math.min(9999, Math.round(num((cfg.santa || {}).total)) || 0));
+    const taken = new Set(Object.values(santa).map((x) => x.numero));
+    const free = [];
+    for (let n = 1; n <= total; n++) if (!taken.has(n)) free.push(n);
+    if (!free.length) return send(res, 409, { erreur: 'complet' });
+    const numero = free[Math.floor(Math.random() * free.length)];
+    santa[b.id] = { numero, at: now };
+    await persistSanta();
+    return send(res, 200, { numero });
   }
 
   // Christmas Party : classement public (noms et points seulement).
@@ -387,7 +588,7 @@ async function api(req, res, path) {
   }
 
   // Tableau de bord : routes protégées par le code de suivi.
-  if (!/^\/api\/(equipes|photos|party|avis)/.test(path)) return send(res, 404, { erreur: 'introuvable' });
+  if (!/^\/api\/(equipes|photos|party|avis|vlog|santa)/.test(path)) return send(res, 404, { erreur: 'introuvable' });
   if (!authorized(req)) return send(res, 401, { erreur: 'code incorrect' });
 
   if (path === '/api/photos' && req.method === 'GET') {
@@ -446,26 +647,24 @@ async function api(req, res, path) {
     for (const c of classement()) {
       const folder = safeName(c.nom) + ' (' + c.id.slice(0, 4) + ')';
       for (const d of Object.values(party[c.id].defis || {})) {
-        try { files.push({ name: `${folder}/${d.fichier}`, data: await readFile(join(PARTY_DIR, c.id, d.fichier)) }); } catch { /* manquant */ }
+        const fp = join(PARTY_DIR, c.id, d.fichier);
+        let size = d.taille;
+        let crc = d.crc;
+        if (size == null || crc == null) {
+          try { const data = await readFile(fp); size = data.length; crc = crc32(data); } catch { continue; }
+        }
+        files.push({ name: `${folder}/${d.fichier}`, path: fp, size, crc });
       }
     }
-    res.writeHead(200, {
-      'Content-Type': 'application/zip',
-      'Content-Disposition': 'attachment; filename="defis-gobinous-christmas-party.zip"',
-      'Cache-Control': 'no-store',
-    });
-    return res.end(zip(files));
+    return streamZip(res, files, 'defis-gobinous-christmas-party.zip');
   }
-  const fm = path.match(/^\/api\/party\/([a-z0-9]+)\/(defi-\d{2}\.[a-z0-9]{2,5})$/);
+  const fm = path.match(/^\/api\/party\/([a-z0-9]+)\/(defi-\d{2}\.[a-z0-9]{1,5})$/);
   if (fm && req.method === 'GET') {
     if (!validId(fm[1])) return send(res, 404, { erreur: 'introuvable' });
     const d = Object.values((party[fm[1]] || {}).defis || {}).find((x) => x.fichier === fm[2]);
     if (!d) return send(res, 404, { erreur: 'introuvable' });
     try {
-      const file = join(PARTY_DIR, fm[1], fm[2]);
-      const data = await readFile(file);
-      res.writeHead(200, { 'Content-Type': d.type, 'Cache-Control': 'private, max-age=60', 'Content-Length': data.length });
-      return res.end(data);
+      return await streamFile(req, res, join(PARTY_DIR, fm[1], fm[2]), d.type);
     } catch {
       return send(res, 404, { erreur: 'introuvable' });
     }
@@ -481,6 +680,42 @@ async function api(req, res, path) {
       delete party[dm[1]];
     }
     await persistParty();
+    return send(res, 200, { ok: true });
+  }
+
+  // Vlog (organisateurs) : liste, fichiers, suppression, archive.
+  if (path === '/api/vlog' && req.method === 'GET') {
+    const list = Object.entries(vlog).map(([cle, v]) => ({ cle, nom: v.nom, fichier: v.fichier, type: v.type, taille: v.taille, at: v.at, url: `api/vlog/${cle}` }))
+      .sort((a, b) => b.at - a.at);
+    return send(res, 200, { now, fichiers: list, total: list.reduce((n, f) => n + (f.taille || 0), 0) });
+  }
+  if (path === '/api/vlog.zip' && req.method === 'GET') {
+    const files = Object.values(vlog).sort((a, b) => a.at - b.at).map((v, i) => ({
+      name: `${safeName(v.nom)}/${String(i + 1).padStart(3, '0')}-${safeName(v.fichier || v.stockage)}`,
+      path: join(VLOG_DIR, v.stockage), size: v.taille, crc: v.crc,
+    }));
+    return streamZip(res, files, 'vlog-gobinous-christmas-club.zip');
+  }
+  const vm = path.match(/^\/api\/vlog\/([a-z0-9]{6,40})$/);
+  if (vm && vlog[vm[1]]) {
+    const v = vlog[vm[1]];
+    if (req.method === 'GET') return streamFile(req, res, join(VLOG_DIR, v.stockage), v.type, v.fichier);
+    if (req.method === 'DELETE') {
+      await unlink(join(VLOG_DIR, v.stockage)).catch(() => {});
+      delete vlog[vm[1]];
+      await persistVlog();
+      return send(res, 200, { ok: true });
+    }
+  }
+
+  // Secret Santa (organisateurs) : numéros tirés, remise à zéro.
+  if (path === '/api/santa' && req.method === 'GET') {
+    const cfg = (await siteConfig('wrapup')) || {};
+    return send(res, 200, { total: Math.round(num((cfg.santa || {}).total)) || 0, tires: Object.values(santa).map((x) => x.numero).sort((a, b) => a - b) });
+  }
+  if (path === '/api/santa' && req.method === 'DELETE') {
+    santa = {};
+    await persistSanta();
     return send(res, 200, { ok: true });
   }
 
@@ -508,7 +743,7 @@ async function api(req, res, path) {
   return send(res, 405, { erreur: 'méthode non autorisée' });
 }
 
-createServer(async (req, res) => {
+const server = createServer(async (req, res) => {
   let path;
   try {
     path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
@@ -558,7 +793,11 @@ createServer(async (req, res) => {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('Introuvable');
   }
-}).listen(port, '0.0.0.0', () => {
+});
+// Envois longs (grosses vidéos sur un réseau lent) : pas de délai maximal.
+server.requestTimeout = 0;
+server.timeout = 0;
+server.listen(port, '0.0.0.0', () => {
   console.log(`Gobinous Christmas Quest\n  Local  : http://localhost:${port}/`);
   for (const list of Object.values(networkInterfaces())) {
     for (const a of list || []) {

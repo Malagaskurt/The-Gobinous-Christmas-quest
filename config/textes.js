@@ -84,17 +84,31 @@ window.GAME_CONFIG.textes = {
     bouton: "Valider",
     erreurVide: "Indiquez un nom d'équipe pour continuer.",
 
-    /* Les rôles, présentés par le lutin. {equipe} = nom choisi. */
+    /* Les rôles : réaction du lutin, puis l'encadré d'avertissement. */
     rolesTitre: "Vos rôles",
     rolesBulle: "**{equipe}** ? Bête de nom, j'adore !",
-    rolesTexte:
-      "Pour rendre ça encore plus fun, nommez un **Lutin Reporter** : avec un autre téléphone, il filme et photographie tous vos temps forts. À la fin, on vous donne un QR code pour nous les envoyer. Montrez-nous que vous êtes la meilleure équipe !",
-    chefLabel: "Chef Lutin (capitaine)",
+    rolesAlerteTitre: "Attention : choisissez vos rôles avec soin !",
+    rolesAlerte:
+      "Pour mener votre équipe vers la victoire, chaque membre doit assumer son rôle à fond. Êtes-vous prêts à relever le défi ?",
+    roles: [
+      {
+        icone: "crown",
+        nom: "Le Gobinous Capitaine",
+        texte: "C'est le leader incontesté de la team. C'est lui qui motive ses troupes, coordonne la stratégie et guide son équipe du début à la fin de l'événement.",
+      },
+      {
+        icone: "camera",
+        nom: "Le Gobinous Reporter",
+        texte: "C'est le vidéaste de choc ! Son objectif : capturer un max de photos et de vidéos de l'événement en mode « vlogger YouTube » pour prouver que votre équipe est la meilleure.",
+      },
+    ],
+    rolesNote: "Photos et vidéos se déposent dans **Le Vlog des Gobinous**, accessible depuis l'accueil.",
+    chefLabel: "Gobinous Capitaine",
     chefPlaceholder: "Prénom",
-    reporterLabel: "Lutin Reporter (photos et vidéos)",
+    reporterLabel: "Gobinous Reporter",
     reporterPlaceholder: "Prénom",
     rolesBouton: "C'est noté !",
-    rolesErreur: "Indiquez le prénom du Chef Lutin et du Lutin Reporter.",
+    rolesErreur: "Indiquez le prénom du Gobinous Capitaine et du Gobinous Reporter.",
   },
 
   /* Écran « Comment jouer ? » : carte du parcours + 3 règles clés.
