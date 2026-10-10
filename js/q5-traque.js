@@ -115,8 +115,9 @@
       '<source src="' + esc(R.video) + '" type="video/mp4">' +
       (/\.mp4$/i.test(R.video) ? '<source src="' + esc(R.video.replace(/\.mp4$/i, '.webm')) + '" type="video/webm">' : '') +
       '</video>' +
+      // Sous-titres incrustés en bas de l'image, comme à la télé.
+      '<p class="cctv-sub cctv-sub-over" data-sub aria-live="polite"></p>' +
       '<button type="button" class="cctv-tap" data-action="video-tap" hidden>' + GQ.pix('play', 'tap-pix') + '<span>' + esc(R.videoToucher) + '</span></button></div>' +
-      '<p class="cctv-sub" data-sub aria-live="polite"></p>' +
       '<div class="cctv-bar"><i data-bar></i></div></div>' +
       '<div class="video-rescue" data-rescue hidden><p class="muted small center">' + esc(R.videoBloquee) + '</p>' +
       C.btn(esc(R.boutonApresVideo) + icon('fleche'), 'video-skip', '', 'btn-red') + '</div>';

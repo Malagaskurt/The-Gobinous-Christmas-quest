@@ -68,8 +68,9 @@
       '<path class="key-line" d="M40 4V116M80 4V116M4 40H116M4 80H116"/>';
     for (var i = 0; i < 9; i++) {
       var x = (i % 3) * 40 + 20, y = Math.floor(i / 3) * 40 + 20;
-      s += '<text x="' + (dot ? x - 5 : x) + '" y="' + (y + 7) + '">' + letters[i] + '</text>';
-      if (dot) s += '<circle cx="' + (x + 11) + '" cy="' + (y + 1) + '" r="3"/>';
+      // Point centré sous la lettre, à l'intérieur de sa case.
+      s += '<text x="' + x + '" y="' + (dot ? y + 3 : y + 7) + '">' + letters[i] + '</text>';
+      if (dot) s += '<circle cx="' + x + '" cy="' + (y + 12) + '" r="3"/>';
     }
     return s + '</svg>';
   }

@@ -139,7 +139,7 @@ console.log('\nDépart');
 await step('Accueil « The Gobinous Christmas Club » → programme des 5 temps forts', async () => {
   assert(await has('Christmas Club') && await has('découvrir le programme'), 'accueil du Club absent');
   await noHorizontalScroll();
-  await page.click('.club-tap');
+  await page.click('.club-cta [data-action="to-programme"]');
   await settle();
   assert((await hash()) === '#/programme', 'programme non affiché');
   for (const n of ['Christmas Quest', 'Christmas Party', 'Christmas Battle', 'Christmas Wrap-Up', 'Le Vlog des Gobinous']) {

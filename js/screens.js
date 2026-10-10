@@ -347,7 +347,8 @@
           '<p class="roles-box-title">' + GQ.pix('bell', 'roles-box-pix') + t(E.rolesAlerteTitre) + '</p>' +
           '<p class="roles-box-lead">' + t(E.rolesAlerte) + '</p>' +
           E.roles.map(function (r) {
-            return '<div class="role-card"><span class="role-card-ico">' + GQ.pix(r.icone) + '</span><div><p class="role-card-name">' + t(r.nom) + '</p><p>' + t(r.texte) + '</p></div></div>';
+            return '<div class="role-card"><span class="role-card-ico">' + GQ.pix(r.icone) + '</span><div><p class="role-card-name">' + t(r.nom) + '</p><p>' + t(r.texte) + '</p>' +
+              (r.ou ? '<p class="role-card-where">' + icon('pin') + '<span>' + t(r.ou) + '</span></p>' : '') + '</div></div>';
           }).join('') +
           '</section>' +
           '<form class="answer-form roles-form" data-form="roles" novalidate autocomplete="off">' +

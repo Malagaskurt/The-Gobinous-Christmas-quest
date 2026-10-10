@@ -18,7 +18,7 @@ window.GAME_CONFIG.club = {
     titre: "Gobinous",
     sousTitre: "Christmas Club",
     edition: "Noël 2026",
-    appel: "Touchez l'écran pour découvrir le programme",
+    appel: "Découvrir le programme",
   },
 
   /* Programme : un bloc par temps fort, dans l'ordre de l'événement.
@@ -68,7 +68,7 @@ window.GAME_CONFIG.club = {
   /* Rubrique indépendante du programme : les photos et vidéos. */
   vlog: {
     nom: "Le Vlog des Gobinous",
-    texte: "Photos et vidéos de l'événement : déposez tout ici, même les vidéos longues.",
+    texte: "Reporters ou pas, déposez ici toutes vos photos et vidéos de l'événement, même les longues.",
     bouton: "Déposer",
   },
 

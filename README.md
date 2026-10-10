@@ -4,7 +4,7 @@
 
 | Adresse | Temps fort | Sur le téléphone |
 |---|---|---|
-| `#/` | **The Gobinous Christmas Club** | Page d'accueil animée ; un appui (ou glisser vers le haut) ouvre le programme. Raccourci vers le Vlog. |
+| `#/` | **The Gobinous Christmas Club** | Page d'accueil animée ; le bouton « Découvrir le programme » ouvre le programme. |
 | `#/programme` | **Le programme** | Les 4 temps forts, plus la rubrique Vlog. |
 | `#/quest` | **1 · Christmas Quest** | Le jeu d'infiltration en équipe (ci-dessous). |
 | `#/party` | **2 · Christmas Party** | Goûter, atelier sapin et bucket list « Treats & Chill » : 20 défis photo/vidéo qui rapportent des **Gobz**, classement en direct. **Code secret : `2020`** (`config/party.js`). |

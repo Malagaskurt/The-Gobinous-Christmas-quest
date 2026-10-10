@@ -228,7 +228,7 @@
           '</li>';
       }).join('') +
       '</ol>' +
-      '<div class="rules-goal">' + GQ.knit.icon('gift', 'rules-goal-ico') + '<p>' + t(R.objectif, v) + '</p></div>'
+      (String(R.objectif || '').trim() ? '<div class="rules-goal">' + GQ.knit.icon('gift', 'rules-goal-ico') + '<p>' + t(R.objectif, v) + '</p></div>' : '')
     );
   };
 

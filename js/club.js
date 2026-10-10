@@ -40,7 +40,7 @@
       key: 'club',
       bare: true,
       html:
-        '<main class="club" data-action="to-programme">' +
+        '<main class="club">' +
         '<div class="garland" aria-hidden="true"></div>' +
         stars(30) +
         '<div class="club-top">' + GQ.soundButton() + '</div>' +
@@ -53,22 +53,8 @@
         (A.edition ? '<p class="club-edition">' + GQ.pix('star') + t(A.edition) + GQ.pix('star') + '</p>' : '') +
         '<div class="club-scene">' + GQ.knit.scene('club-scene-img') + '</div>' +
         '</div>' +
-        '<button type="button" class="club-vlog" data-action="go-vlog">' + icon('video') + t(K.vlog ? K.vlog.nom : 'Le Vlog') + '</button>' +
-        '<button type="button" class="club-tap" data-action="to-programme">' +
-        '<span>' + t(A.appel) + '</span><span class="club-chevron" aria-hidden="true">' + icon('fleche') + '</span></button>' +
+        '<div class="club-cta">' + C.btn(esc(A.appel) + icon('fleche'), 'to-programme', '', 'btn-red') + '</div>' +
         '</main>',
-      after: function () {
-        // Glisser vers le haut (ou molette) : on passe au programme.
-        var startY = null;
-        var el = document.querySelector('.club');
-        if (!el) return;
-        el.addEventListener('touchstart', function (e) { startY = e.touches[0].clientY; }, { passive: true });
-        el.addEventListener('touchend', function (e) {
-          if (startY != null && startY - e.changedTouches[0].clientY > 60) GQ.go('programme');
-          startY = null;
-        });
-        el.addEventListener('wheel', function (e) { if (e.deltaY > 30) GQ.go('programme'); }, { passive: true });
-      },
     };
   };
 
