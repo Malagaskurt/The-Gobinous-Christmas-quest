@@ -188,6 +188,12 @@
       tone(c, out, 880, t, 0.05, 'square', 0.05, 1320);
       tone(c, out, 1760, t + 0.035, 0.05, 'triangle', 0.06);
     },
+    // Notification (joker, Support 44, message) : double « ding » cristallin.
+    notif: function (c, out, t) {
+      tone(c, out, 1318, t, 0.16, 'sine', 0.22);
+      tone(c, out, 1976, t + 0.11, 0.32, 'sine', 0.2);
+      tone(c, out, 3952, t + 0.11, 0.12, 'sine', 0.04);
+    },
     // Raccrochage : le « clac » du combiné, puis la tonalité de fin de
     // ligne (« tu-tu-tu »), bien nette.
     hangup: function (c, out, t) {

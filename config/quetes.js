@@ -25,7 +25,7 @@ window.GAME_CONFIG.quetes = {
   message: {
     titre: "Cheat Code",
     intro:
-      "Barnabé a oublié un message codé sur le comptoir… avec sa grille. Déchiffrez-le pour prendre de l'avance.",
+      "Le Père Noël vous a caché un message codé sur le comptoir, avec sa grille. Barnabé ne sait pas la lire : déchiffrez-le pour prendre de l'avance.",
     boutonIntro: "Découvrir le message",
     consigne: "",
     /* Message chiffré, ligne par ligne (lettres A à Z et espaces). */
@@ -39,13 +39,13 @@ window.GAME_CONFIG.quetes = {
       "Chaque symbole reprend la forme des traits qui entourent la lettre dans la grille. Un point dans le symbole ? La lettre est dans une grille à points.",
 
     reussiteTitre: "Cheat code activé !",
-    reussiteTexte: "« Barnabé a perdu le contrôle » : vous avez une longueur d'avance sur lui.",
+    reussiteTexte: "Le message secret du Père Noël : « Barnabé a perdu le contrôle ». Vous avez une longueur d'avance sur lui.",
     /* Bulle de Barnabé qui panique, après le cheat code. */
     paniqueBulle: "Quoi ?! Qui vous a filé ce code ?! Pas de panique… PAS. DE. PANIQUE.",
     paniqueTexte: "Ho ho ho ! Le troll panique : accélérez !",
     reussiteApresGelTitre: "Le gel est levé !",
     reussiteApresGelTexte: "La phrase secrète était : « BARNABÉ A PERDU LE CONTRÔLE ».",
-    gelSuite: "Ensuite, Barnabé vous soufflera la solution.",
+    gelSuite: "Ensuite, le Père Noël vous soufflera la solution.",
     bouton2: "Foncer",
   },
 
@@ -184,13 +184,14 @@ window.GAME_CONFIG.quetes = {
       nom: "Barnabé SIX-SEVEN",
       matricule: "2575",
       service: "Division Bêtises & Emballage",
-      /* Passages du badge dans la Tour (le dernier = l'étage de l'étape 5). */
+      /* Passages du badge dans la Tour, tous le matin (le jeu a lieu
+       * l'après-midi et il s'est enfui depuis). Le dernier = l'étage de l'étape 5. */
       passagesTitre: "Passages du badge aujourd'hui",
       passages: [
-        { heure: "08:12", lieu: "La Verrière" },
-        { heure: "11:47", lieu: "5ᵉ étage" },
-        { heure: "14:30", lieu: "23ᵉ étage" },
-        { heure: "16:58", lieu: "33ᵉ étage" },
+        { heure: "08:34", lieu: "La Verrière" },
+        { heure: "09:18", lieu: "5ᵉ étage" },
+        { heure: "10:05", lieu: "23ᵉ étage" },
+        { heure: "11:22", lieu: "33ᵉ étage" },
       ],
       dernierBip: "Dernier bip",
     },
@@ -224,23 +225,20 @@ window.GAME_CONFIG.quetes = {
     /* Présentation insérée juste après « Salut les gars ! » (à `apres`
      * secondes de la voix), pendant que Barnabé fait le geste « six seven ».
      * Fichier facultatif : sans lui, Barnabé fait seulement le geste. */
-    videoIntro: { audio: "assets/audio/barnabe-video-intro.mp3", texte: "C'est Barnabé Six Seven !", apres: 1.07 },
+    videoIntro: null,
     camera: "CAM 33-07 · TRANSMISSION INTERCEPTÉE",
     /* Sous-titres de la vidéo : affichés de `de` à `a` secondes (temps de
-     * la vidéo). `scene` : décor de la vidéo pendant la réplique (1 :
-     * Barnabé de nuit, 2 : l'horloge +7 h, 3 : l'écran et la tour,
-     * 4 : au revoir). */
+     * la vidéo, voix de Barnabé calée à 0,6 s après la neige d'allumage).
+     * Le minutage exact est aussi dans assets/video/barnabe-sous-titres.json. */
     sousTitres: [
-      { de: 0.6, a: 1.7, scene: 1, texte: "Salut les gars !" },
-      { de: 1.7, a: 2.9, scene: 1, texte: "Bon…" },
-      { de: 2.9, a: 7.7, scene: 1, texte: "Je dois l'avouer, vous avez géré : vous avez déjoué mon premier plan. GG à vous." },
-      { de: 7.7, a: 12.4, scene: 1, texte: "Mais ne criez pas victoire trop vite : vous êtes encore loin d'avoir gagné." },
-      { de: 12.4, a: 15.9, scene: 2, texte: "Pendant que vous courez partout là-bas, regardez l'heure qu'il est chez moi…" },
-      { de: 15.9, a: 25.2, scene: 2, texte: "Avec mes sept heures d'avance, je me prépare déjà à aller me coucher après une longue journée, de l'autre côté du globe !" },
-      { de: 25.2, a: 30.6, scene: 3, texte: "Regardez bien l'ordinateur derrière moi et zoomez sur cette immense tour de plus de 600 mètres." },
-      { de: 30.6, a: 34.1, scene: 3, texte: "Vous voyez ce panorama de gratte-ciels de nuit, à perte de vue ?" },
-      { de: 34.1, a: 41.2, scene: 4, texte: "Bref, je n'ai pas votre temps. Si vous connectez le décalage horaire, la hauteur de cette tour et l'histoire locale, vous trouverez le code." },
-      { de: 41.2, a: 44, scene: 4, texte: "Allez, comme on dit ici : matané !" },
+      { de: 0.6, a: 2.95, texte: "Franchement, vous vous fatiguez pour rien." },
+      { de: 3.25, a: 7.0, texte: "Vous croyez vraiment réussir à me coincer dans cette immense tour ?" },
+      { de: 7.35, a: 9.1, texte: "Laissez tomber, c'est peine perdue." },
+      { de: 9.4, a: 11.5, texte: "Et puis de toute façon, je ne suis même pas là." },
+      { de: 11.75, a: 15.05, texte: "Je suis parti souffler un coup, avec un décalage horaire de 7 heures." },
+      { de: 15.25, a: 20.4, texte: "Tellement violent que j'ai presque l'impression de contempler les hauteurs de cette immense tour." },
+      { de: 20.8, a: 22.8, texte: "Bref, matané, comme on dit chez moi !" },
+      { de: 23.0, a: 26.6, texte: "Inutile de chercher, vous n'avez aucune chance !" },
     ],
     videoDetruite: "Transmission autodétruite.",
     boutonApresVideo: "Voir le rapport",
@@ -251,11 +249,13 @@ window.GAME_CONFIG.quetes = {
      * analyser (recto : ce qu'on a vu ou entendu ; verso : la piste). */
     rapportTitre: "Rapport d'analyse",
     rapport: "Barnabé se cache à cet étage, dans une pièce qui a le nom de sa ville. Touchez chaque indice pour l'analyser.",
+    /* Anti-triche : rien n'est dévoilé avant le bon code. */
+    regleEtage: "Restez groupés près de l'ascenseur : interdit d'explorer l'étage tant que le code n'est pas validé.",
     indices: [
-      { titre: "Le décalage horaire", recto: "« Sept heures d'avance » : chez lui, il fait déjà nuit.", verso: "Quand vous êtes en plein après-midi, lui va se coucher. Il vit loin, très loin…" },
-      { titre: "La tour géante", recto: "Une tour de plus de 600 m, au milieu d'un océan de gratte-ciels.", verso: "Des tours aussi hautes, il n'en existe qu'une poignée dans le monde." },
-      { titre: "Le mot de la fin", recto: "« Matané ! »", verso: "Ce n'est pas du français… Il l'a dit « comme on dit ici »." },
-      { titre: "L'histoire locale", recto: "« …et l'histoire locale. »", verso: "Sa ville n'a pas toujours porté son nom actuel." },
+      { titre: "Le décalage horaire", recto: "« Un décalage horaire de 7 heures. »", verso: "Chez lui, il est 7 heures de plus qu'ici : direction l'Est, très loin." },
+      { titre: "La tour géante", recto: "Derrière lui, une tour immense et très fine domine la ville.", verso: "Plus de 600 mètres : une des plus hautes tours du monde. Zoomez sur sa silhouette." },
+      { titre: "Le mot de la fin", recto: "« Matané, comme on dit chez moi ! »", verso: "Ce n'est pas du français… C'est « à plus ! » dans sa langue." },
+      { titre: "Le pyjama", recto: "Barnabé est déjà en pyjama.", verso: "Ici c'est l'après-midi ; chez lui, c'est déjà l'heure d'aller dormir." },
     ],
     conclusion: "Croisez les indices : le nom de sa ville est le code.",
     label: "Code du repaire (5 lettres)",
@@ -272,31 +272,43 @@ window.GAME_CONFIG.quetes = {
     indiceSecoursTitre: "Indice de secours",
     indiceSecours: "La tour géante, c'est la Skytree (634 m). « Matané ! » veut dire « à plus ! » en japonais. Et sa ville s'appelait autrefois Edo…",
     reponseApres: 4,
-    reponseSecoursTitre: "Le lutin a pitié de vous",
+    reponseSecoursTitre: "Le Père Noël vous aide",
     reponseSecours: "Le code du repaire est **TOKYO**. Saisissez-le pour le démasquer !",
 
-    /* Après TOKYO : le lutin démasqué, puis le faux appel. */
-    trouve:
-      "Bon OK, vous m'avez trouvé. Mais j'ai vraiment pas envie de finir à Pôle Emploi si le Père Noël le découvre, donc on fait alliance. Par contre, avant d'entrer dans la salle Tokyo, appelez-moi absolument : y a un système explosif à désamorcer, si vous entrez sans mon coup de fil, ça saute !",
-    boutonAppel: "Appeler Barnabé",
+    /* Après TOKYO : le Père Noël écrit à l'équipe (bulles de messagerie,
+     * avec « … » de frappe entre deux messages), puis l'appel. */
+    santaChat: [
+      "Bien joué l'équipe ! Je suis en train d'écrire la lettre de licenciement de Barnabé sur-le-champ. Il va finir à Pôle emploi !",
+      "Bon, vous avez trouvé la bonne salle. Rendez-vous à la salle Tokyo, mais attention, n'ouvrez surtout pas la porte, on ne sait jamais. Appelez-moi avant d'entrer.",
+    ],
+    santaNom: "Le Père Noël",
+    santaStatut: "en ligne",
+    boutonAppel: "Appeler",
 
-    /* Message vocal de Barnabé (MP3 fourni, voix ElevenLabs) et ses
-     * sous-titres, affichés de `de` à `a` secondes du message. */
-    audio: "assets/audio/barnabe-appel.mp3",
+    /* Appel du Père Noël (MP3 fourni, voix ElevenLabs) et ses sous-titres,
+     * affichés de `de` à `a` secondes du message. */
+    audio: "assets/audio/pere-noel-appel.mp3",
     appelEnCours: "Appel en cours…",
-    appelNom: "Barnabé SIX-SEVEN",
+    appelNom: "Le Père Noël",
     appelTermine: "Appel terminé",
     messageVocalSousTitres: [
-      { de: 0, a: 4.6, texte: "MDR ! Vous attendiez vraiment que je « désactive la bombe » ?" },
-      { de: 4.6, a: 9.3, texte: "Trop naïfs, vous me régalez ! Bon, la course est presque finie." },
-      { de: 9.3, a: 11.9, texte: "Dans la pièce, plein de paquets identiques…" },
-      { de: 11.9, a: 14.4, texte: "…mais un seul est le VRAI Cadeau Officiel." },
-      { de: 14.4, a: 16.1, texte: "Interdit de les ouvrir ici !" },
-      { de: 16.1, a: 23, texte: "Prenez-en un au hasard, ne dites rien à personne et foncez au point de départ. Tchao !" },
+      { de: 0, a: 1.8, texte: "(Toc toc toc)" },
+      { de: 1.9, a: 4.1, texte: "C'est bon… vous pouvez entrer." },
+      { de: 4.1, a: 7.4, texte: "Mais restez sur le fil avec moi…" },
+      { de: 7.4, a: 9.3, texte: "Ah… merde." },
+      { de: 9.3, a: 12.9, texte: "En fait… je viens de me rendre compte que Barnabé a été vicieux." },
+      { de: 12.9, a: 16.7, texte: "Il a dissimulé le colis parmi plusieurs paquets !" },
+      { de: 16.7, a: 19.2, texte: "Ne bougez surtout pas." },
+      { de: 19.2, a: 22.4, texte: "Bon, écoutez : vous choisissez un paquet au hasard." },
+      { de: 22.4, a: 25.6, texte: "Interdiction absolue de les tâter ou de tricher." },
+      { de: 25.6, a: 31.0, texte: "Vous le prenez, vous redescendez en vitesse à La Verrière, et on découvrira ce qu'il y a dedans…" },
+      { de: 31.0, a: 32.5, texte: "Pourvu que ce soit le bon !" },
+      { de: 32.5, a: 36.0, texte: "Et interdiction formelle de l'ouvrir avant d'être revenus à La Verrière." },
+      { de: 36.0, a: 40, texte: "Bon, je vous laisse, j'ai un rencard amoureux. Hop hop hop !" },
     ],
     /* Texte complet (affiché si le son est coupé). */
     messageVocal:
-      "MDR ! Vous attendiez vraiment que je « désactive la bombe » ? Trop naïfs, vous me régalez ! Bon, la course est presque finie. Dans la pièce, plein de paquets identiques… mais un seul est le VRAI Cadeau Officiel. Interdit de les ouvrir ici ! Prenez-en un au hasard, ne dites rien à personne et foncez au point de départ. Tchao !",
+      "C'est bon… vous pouvez entrer. Mais restez sur le fil avec moi… Ah… merde. En fait… je viens de me rendre compte que Barnabé a été vicieux. Il a dissimulé le colis parmi plusieurs paquets ! Ne bougez surtout pas. Bon, écoutez : vous choisissez un paquet au hasard. Interdiction absolue de les tâter ou de tricher. Vous le prenez, vous redescendez en vitesse à La Verrière, et on découvrira ce qu'il y a dedans… Pourvu que ce soit le bon ! Et interdiction formelle de l'ouvrir avant d'être revenus à La Verrière. Bon, je vous laisse, j'ai un rencard amoureux. Hop hop hop !",
     boutonRaccrocher: "Raccrocher",
 
     /* Dans la salle : chaque équipe choisit UN paquet puis se photographie
@@ -311,15 +323,15 @@ window.GAME_CONFIG.quetes = {
 
     boutonAccueil: "Retour à l'accueil",
 
-    /* Écran de fin : grand titre, lutin qui danse, consigne en petit. */
-    finTitre: "Mission presque accomplie",
+    /* Écran de fin : grand titre, Père Noël en 3D, consigne en petit. */
+    finTitre: "Mission presque accomplie, descendez à La Verrière !",
     /* Bulles du spectacle de fin (Père Noël et lutins). */
     finBulles: [
-      { qui: "Un lutin", texte: "MERCI L'ÉQUIPE ! Colis sauvé, prime de vacances validée !" },
+      { qui: "Les lutins", texte: "MERCI L'ÉQUIPE ! Colis sauvé, prime de vacances validée !" },
       { qui: "Le Père Noël", texte: "Et pour Barnabé... c'est direction Pôle Emploi sur le champ !" },
     ],
     finTexte: "",
     finBravo: "Bravo {equipe} !",
-    finConsigne: "Rendez-vous avec votre paquet à La Verrière le plus vite possible !",
+    finConsigne: "Avec votre paquet, le plus vite possible. Interdiction de l'ouvrir avant !",
   },
 };

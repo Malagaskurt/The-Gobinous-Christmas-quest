@@ -28,6 +28,12 @@
   function intro() {
     return {
       key: 'q5-intro',
+      // L'alerte du Support 44 arrive aussi en notification, du haut de l'écran.
+      after: function () {
+        if (!R.notif || GQ.ui.q5Notif) return;
+        GQ.ui.q5Notif = true;
+        setTimeout(function () { GQ.notify({ app: R.notifApp, time: R.notifHeure, icon: 'bell', text: R.notif }); }, 500);
+      },
       html:
         C.questHead(5) +
         (R.notif ? '<div class="push" role="alert"><span class="push-app">' + GQ.knit.icon('bell', 'push-ico') + esc(R.notifApp) + '<span class="push-time">' + esc(R.notifHeure) + '</span></span><p>' + t(R.notif) + '</p></div>' : '') +
@@ -141,7 +147,10 @@
     }
     var lastT = -1;
     var still = 0;
-    v.addEventListener('ended', function () { setTimeout(videoEnded, 600); });
+    // Télé qui s'allume au début, coupure de signal nette à la fin.
+    var frame = v.parentNode;
+    v.addEventListener('playing', function () { frame.classList.add('tv-on'); });
+    v.addEventListener('ended', function () { frame.classList.add('tv-off'); setTimeout(videoEnded, 700); });
     v.addEventListener('error', showRescue);
     // Avec plusieurs sources, l'échec de la dernière est signalé sur <source>.
     var last = v.querySelectorAll('source');
@@ -221,6 +230,7 @@
       '<section class="terminal">' +
       '<p class="terminal-title">' + t(R.rapportTitre) + '</p>' +
       '<p class="terminal-text">' + t(R.rapport) + '</p>' +
+      (R.regleEtage ? '<p class="terminal-rule">' + icon('cadenas') + '<span>' + t(R.regleEtage) + '</span></p>' : '') +
       '<ul class="clues">' + R.indices.map(function (x, i) {
         if (typeof x === 'string') return '<li class="clue is-open"><span class="clue-front">' + t(x) + '</span></li>';
         var open = GQ.ui.clues && GQ.ui.clues[i];
@@ -254,19 +264,54 @@
     };
   }
 
+  /* Après TOKYO : le Père Noël écrit à l'équipe, façon messagerie (« … »
+   * de frappe, puis chaque bulle), et propose de l'appeler. */
   function found() {
+    var santa = (GQ.art3d && GQ.art3d.santa) || '';
     return {
       key: 'q5-found',
       celebrate: 'big',
-      after: C.runTypewriters,
+      after: runChat,
       html:
         '<h1 class="sr-only" tabindex="-1">' + t(R.titre) + '</h1>' +
-        '<section class="busted">' +
-        '<div class="busted-elf"><img src="' + esc(E.fiche.photo) + '" alt="Barnabé SIX-SEVEN"><span class="busted-sweat" aria-hidden="true">' + GQ.pix('drop') + '</span></div>' +
-        '<div class="busted-bubble">' + C.typewriter('q5-found', t(R.trouve), 'busted-text') + '</div>' +
+        '<section class="chat-app">' +
+        '<header class="chat-head"><span class="chat-ava"><img src="' + esc(santa) + '" alt=""></span>' +
+        '<span class="chat-who"><b>' + t(R.santaNom) + '</b><small><i></i>' + t(R.santaStatut) + '</small></span></header>' +
+        '<div class="chat-list" data-chat aria-live="polite"></div>' +
         '</section>' +
-        C.cta(C.btn(icon('tel') + esc(R.boutonAppel), 'call', '', 'btn-red btn-blink btn-call')),
+        '<div class="chat-cta" data-chat-cta hidden>' + C.cta(C.btn(icon('tel') + esc(R.boutonAppel), 'call', '', 'btn-red btn-blink btn-call')) + '</div>',
     };
+  }
+
+  function runChat() {
+    var list = document.querySelector('[data-chat]');
+    if (!list) return;
+    var msgs = R.santaChat || [];
+    var cta = document.querySelector('[data-chat-cta]');
+    function bubble(txt) {
+      var b = document.createElement('p');
+      b.className = 'chat-msg';
+      b.innerHTML = t(txt);
+      list.appendChild(b);
+    }
+    function done() { if (cta) cta.hidden = false; GQ.ui.chatDone = true; }
+    if (GQ.ui.chatDone || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { msgs.forEach(bubble); return done(); }
+    var n = 0;
+    (function next() {
+      if (!list.isConnected) return;
+      if (n >= msgs.length) return done();
+      var dots = document.createElement('p');
+      dots.className = 'chat-typing';
+      dots.innerHTML = '<i></i><i></i><i></i>';
+      list.appendChild(dots);
+      setTimeout(function () {
+        if (!list.isConnected) return;
+        dots.remove();
+        bubble(msgs[n++]);
+        GQ.audio.sfx('notif');
+        setTimeout(next, 900);
+      }, n ? 2200 : 1400);
+    })();
   }
 
   /* ------------------------------------------------------------------ */
@@ -359,7 +404,7 @@
       html:
         '<h1 class="sr-only" tabindex="-1">' + t(R.appelNom) + '</h1>' +
         '<section class="phone">' +
-        '<div class="phone-avatar"><img src="' + esc(E.fiche.photo) + '" alt=""><span class="phone-wave"></span></div>' +
+        '<div class="phone-avatar"><img src="' + esc((GQ.art3d && GQ.art3d.santa) || E.fiche.photo) + '" alt=""><span class="phone-wave"></span></div>' +
         '<p class="phone-name">' + t(R.appelNom) + '</p>' +
         '<p class="phone-status" data-call-status>' + t(R.appelEnCours) + '</p>' +
         '<div class="call-sub"><p class="call-text" data-call-line aria-live="polite"></p></div>' +
@@ -389,36 +434,35 @@
     };
   }
 
-  /* Écran de fin : léger et festif. Un grand titre, le lutin qui danse
-   * sur une musique pop-électro, et la consigne finale en petit. */
+  /* Écran de fin : scène 3D immersive (js/fin.js). En haut le titre et
+   * la consigne, au centre le Père Noël 3D dans sa carte de verre, en bas
+   * le temps et le retour à l'accueil. */
   function end() {
     var s = GQ.state;
     var c = GQ.clock();
-    var stars = '';
-    for (var i = 0; i < 22; i++) {
-      stars += '<i style="left:' + ((i * 37) % 100) + '%;top:' + ((i * 53) % 70) + '%;animation-delay:' + ((i % 7) * 0.45).toFixed(2) + 's"></i>';
-    }
     return {
       key: 'q5-end',
       bare: true,
       tone: 'blue',
       celebrate: 'big',
       music: 'fete',
+      noFooter: true,
+      after: GQ.finTilt,
       html:
-        '<main class="finale finale-light">' +
+        '<main class="finale finale-3d">' +
         '<div class="garland" aria-hidden="true"></div>' +
-        '<div class="finale-sky" aria-hidden="true">' + stars + '</div>' +
-        '<div class="finale-inner">' +
+        '<header class="f3-top">' +
         GQ.logo('clair', 'finale-logo') +
         C.knitTitle(String(R.finBravo || 'Bravo {equipe} !').replace('{equipe}', s.team || ''), { cls: 'fin-bravo' }) +
         '<p class="fin-mission">' + t(R.finTitre) + '</p>' +
-        '<p class="fin-consigne">' + t(R.finConsigne) + '</p>' +
-        // Le Père Noël en trottinette et ses lutins, puis la fête, dans la
-        // ville de Noël de l'accueil.
+        (R.finConsigne ? '<p class="fin-consigne">' + t(R.finConsigne) + '</p>' : '') +
+        '</header>' +
         GQ.finShow() +
-        (c ? '<p class="finale-team">Temps : <span class="nowrap">' + GQ.mmss(c.elapsed) + '</span></p>' : '') +
-        '<p class="finale-home"><a class="btn btn-ghost" href="#/">' + icon('retour') + esc(R.boutonAccueil || 'Retour à l\'accueil') + '</a></p>' +
-        '</div></main>',
+        '<footer class="f3-bottom">' +
+        (c ? '<p class="f3-time">' + icon('chrono') + '<span>Temps : <b class="nowrap">' + GQ.mmss(c.elapsed) + '</b></span></p>' : '') +
+        '<a class="btn btn-ghost f3-home" href="#/">' + icon('retour') + esc(R.boutonAccueil || 'Retour à l\'accueil') + '</a>' +
+        '</footer>' +
+        '</main>',
     };
   }
 
@@ -479,7 +523,8 @@
   GQ.actions['hang-up'] = function () {
     stopAudio();
     GQ.audio.sfx('hangup');
-    GQ.setPhase(5, 'paquet');
+    // Fin de l'appel : directement l'écran « Mission presque accomplie ».
+    GQ.finish('fin');
     GQ.uiReset();
     GQ.render();
   };

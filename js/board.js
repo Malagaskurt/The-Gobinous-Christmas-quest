@@ -143,6 +143,7 @@
     var from = opts.from != null ? Math.max(0, Math.min(4, opts.from - 1)) : cur - 1;
     var here = spot(from);
     var to = spot(cur - 1);
+    var a0 = spot(0);
     var stars = '';
     for (var i = 0; i < 26; i++) {
       stars += '<circle cx="' + ((i * 67) % W) + '" cy="' + ((i * 41) % 200 + 6) + '" r="' + (i % 4 ? 0.9 : 1.6) + '" class="m-star" style="animation-delay:' + ((i * 0.31) % 3).toFixed(2) + 's"/>';
@@ -172,14 +173,17 @@
       '<path d="' + route() + '" class="m-route-glow"/>' +
       '<path d="' + route() + '" class="m-route" pathLength="100"/>' +
       [0, 1, 2, 3, 4].map(marker).join('') +
-      // L'équipe (trois petits personnages) dans la cabine d'ascenseur.
+      // Traînée lumineuse : de La Verrière jusqu'à l'étape atteinte.
+      '<rect class="m-trail" data-trail x="' + (a0.x - 2.5) + '" y="' + to.y + '" width="5" height="' + Math.max(0.1, a0.y - to.y) + '" rx="2.5"' +
+      ' style="transform:scaleY(' + (a0.y - to.y > 0 ? ((a0.y - here.y) / (a0.y - to.y)).toFixed(3) : 1) + ')"/>' +
+      // La cabine d'ascenseur : capsule de verre lumineuse.
       '<g class="m-team" data-team style="transform:translate(' + here.x + 'px,' + here.y + 'px)" data-to="translate(' + to.x + 'px,' + to.y + 'px)">' +
-      '<rect class="m-cabin" x="-21" y="-12" width="42" height="24" rx="4"/>' +
-      '<g class="m-crew">' +
-      '<circle cx="-11" cy="-3" r="3.4" fill="#e4323a"/><rect x="-15" y="1.5" width="8" height="8.5" rx="3" fill="#e4323a"/>' +
-      '<circle cx="0" cy="-4" r="3.6" fill="#17428c"/><rect x="-4.2" y="0.8" width="8.4" height="9.2" rx="3" fill="#17428c"/>' +
-      '<circle cx="11" cy="-3" r="3.4" fill="#0094c9"/><rect x="7" y="1.5" width="8" height="8.5" rx="3" fill="#0094c9"/>' +
-      '</g></g>' +
+      '<circle r="22" class="m-lift-halo"/>' +
+      '<rect class="m-cabin" x="-14" y="-17" width="28" height="34" rx="9"/>' +
+      '<rect class="m-lift-glass" x="-9.5" y="-12.5" width="19" height="25" rx="6"/>' +
+      '<path class="m-lift-star" d="M0 -6.5l1.9 4 4.4.5-3.3 3 .9 4.3L0 3.1l-3.9 2.2.9-4.3-3.3-3 4.4-.5z"/>' +
+      '<path class="m-lift-cable" d="M0 -17V-40"/>' +
+      '</g>' +
       '</svg></div>'
     );
   }
@@ -192,16 +196,65 @@
       var root = document.querySelector('[data-board]');
       if (!root) return;
       var team = root.querySelector('[data-team]');
+      var trail = root.querySelector('[data-trail]');
       setTimeout(function () {
         if (team) team.style.transform = team.getAttribute('data-to');
-      }, 500);
+        if (trail) trail.style.transform = 'scaleY(1)';
+      }, 600);
     },
+  };
+
+  /* Map plein écran (immersive). opts.from : l'ascenseur monte de cette
+   * étape jusqu'à l'étape en cours ; le bouton apparaît à l'arrivée. */
+  GQ.board.full = function (opts) {
+    opts = opts || {};
+    var P = GQ.cfg.textes.plateau;
+    var s = GQ.state;
+    var n = Math.min(5, Math.max(1, s.quest || 1));
+    var old = document.getElementById('map-full');
+    if (old) old.remove();
+    var el = document.createElement('div');
+    el.id = 'map-full';
+    el.className = 'map-full';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.setAttribute('aria-label', P.titre || 'La map');
+    el.innerHTML =
+      '<header class="map-full-head"><p class="map-full-kicker">' + esc(opts.kicker || P.titre || '') + '</p>' +
+      '<p class="map-full-title">' + esc(opts.title || '') + '</p></header>' +
+      html({ from: opts.from }) +
+      '<div class="map-full-cta"><button type="button" class="btn btn-red" data-map-close>' + esc(opts.button || GQ.cfg.textes.regles.boutonFermer || 'Fermer') + GQ.icon('fleche') + '</button></div>';
+    document.body.appendChild(el);
+    document.body.classList.add('has-map-full');
+    requestAnimationFrame(function () { el.classList.add('is-in'); });
+    var btn = el.querySelector('[data-map-close]');
+    function close() {
+      el.classList.remove('is-in');
+      document.body.classList.remove('has-map-full');
+      setTimeout(function () { el.remove(); }, 400);
+    }
+    btn.addEventListener('click', close);
+    if (opts.from != null && opts.from !== n) {
+      el.classList.add('is-moving');
+      var root = el.querySelector('[data-board]');
+      var team = root.querySelector('[data-team]');
+      var trail = root.querySelector('[data-trail]');
+      setTimeout(function () {
+        if (team) team.style.transform = team.getAttribute('data-to');
+        if (trail) trail.style.transform = 'scaleY(1)';
+        if (GQ.audio) GQ.audio.sfx('unlock');
+      }, 700);
+      setTimeout(function () { el.classList.remove('is-moving'); btn.focus(); }, 3300);
+    } else {
+      btn.focus();
+    }
   };
 
   /* La map pendant le jeu : bouton de progression en haut de l'écran. */
   GQ.actions = GQ.actions || {};
   GQ.actions['show-map'] = function () {
     var P = GQ.cfg.textes.plateau;
-    GQ.modal({ sheet: true, title: P.titre, html: html({ compact: true }), cancel: GQ.cfg.textes.regles.boutonFermer || 'Fermer' });
+    var n = Math.min(5, Math.max(1, GQ.state.quest || 1));
+    GQ.board.full({ kicker: P.titre, title: GQ.t(P.etapeKicker || 'Étape {n} / 5', { n: n }) + ' · ' + (P.etapes[n - 1] || '') });
   };
 })();

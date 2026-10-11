@@ -293,7 +293,7 @@
     // Jeu verrouillé tant que le code d'entrée (mot secret de la quête 1)
     // n'a pas été saisi : personne ne peut lancer la partie en avance.
     var action = GQ.gameLocked()
-      ? (EN.contexte ? '<section class="briefing"><p class="briefing-title">' + GQ.pix('gift', 'briefing-pix') + t(EN.contexteTitre || '') + '</p><p>' + t(EN.contexte) + '</p></section>' : '') +
+      ? (EN.contexte ? notebook(EN.contexteTitre, EN.contexte) : '') +
         textAnswer({ form: 'gate', label: EN.label, button: EN.bouton, caps: true, max: 40, fieldCls: 'field-code', expected: [GQ.stage(1).motSecret], btnCls: 'btn-red' }) +
         '<p class="gate-hint">' + t(EN.bulle) + '</p>'
       : s.team
@@ -421,13 +421,23 @@
     return {
       key: 'q' + n + '-access',
       elf: { say: 'lieu' },
-      after: function () { runTypewriters(); GQ.board.animate(); },
+      after: function () {
+        runTypewriters();
+        // Étape franchie : la map s'ouvre en plein écran et l'ascenseur
+        // monte jusqu'à la nouvelle étape (une seule fois par étape).
+        var s = GQ.state;
+        if (n > 1 && s.mapShown !== n) {
+          s.mapShown = n;
+          GQ.save();
+          var PL = T.plateau;
+          GQ.board.full({ from: n - 1, kicker: t(PL.etapeKicker, { n: n }), title: PL.etapes[n - 1] || '', button: PL.continuer });
+        }
+      },
       // Pas de titre « Cap sur l'étage » : l'ascenseur de la map monte
-      // jusqu'à la prochaine étape.
+      // jusqu'à la prochaine étape (map plein écran).
       html:
         '<h1 class="sr-only" tabindex="-1">' + t(st.titre || st.etage) + '</h1>' +
         '<p class="kicker access-kicker">' + t(A.kicker, { n: n }) + '</p>' +
-        GQ.board.html({ from: n - 1, compact: true }) +
         '<p class="floor-tag">' + icon('pin') + '<span>' + t(st.etage) + (st.lieu ? ' · ' + t(st.lieu) : '') + '</span></p>' +
         frame(typewriter('access-' + n, t(st.histoire), 'story')) +
         (A.consigne ? '<p class="muted center small">' + t(A.consigne) + '</p>' : '') +
@@ -435,6 +445,22 @@
           ? '<section class="rescue"><p>' + t(A.secours) + '</p></section>' : '') +
         textAnswer({ form: 'access', label: A.label, button: A.bouton, caps: true, max: 40, fieldCls: 'field-code', expected: [st.motSecret], attrs: ' data-n="' + n + '"', btnCls: 'btn-red' }),
     };
+  }
+
+  /* Briefing en carnet de notes : reliure à spirale, papier ligné, et
+   * les phrases qui s'inscrivent l'une après l'autre. */
+  function notebook(title, text) {
+    var lines = String(text).split(/(?<=[.!?…])\s+/);
+    var rings = '';
+    for (var i = 0; i < 9; i++) rings += '<i></i>';
+    return '<section class="briefing notebook">' +
+      '<div class="nb-rings" aria-hidden="true">' + rings + '</div>' +
+      '<div class="nb-page">' +
+      (title ? '<p class="nb-title">' + GQ.pix('gift', 'briefing-pix') + t(title) + '</p>' : '') +
+      '<p class="nb-text">' + lines.map(function (l, k) {
+        return '<span class="nb-line" style="animation-delay:' + (0.5 + k * 0.9).toFixed(1) + 's">' + t(l) + '</span>';
+      }).join(' ') + '</p>' +
+      '</div></section>';
   }
 
   /* ------------------------------------------------------------------ */
@@ -465,13 +491,23 @@
     } else if (q.failedSinceLock > 0) {
       html += '<p class="attempts">' + icon('cadenas') + t(X.tentatives, { n: q.failedSinceLock, max: maxFail }) + '</p>';
     }
-    html += (lock ? '' : '<p class="muted small center">' + t(X.choixAide) + '</p>') + '<ul class="themes">';
+    // Un thème déjà choisi (raté ou abandonné) n'est plus cliquable : on
+    // oriente l'équipe vers le premier thème encore disponible.
+    var anyPlayed = Object.keys(played).length > 0;
+    var suggest = null;
+    if (!lock && anyPlayed) {
+      QZ.themes.some(function (th) {
+        if (GQ.themeAvailable(th.id) && !played[th.id]) { suggest = th.id; return true; }
+        return false;
+      });
+    }
+    html += (lock ? '' : '<p class="muted small center">' + t(anyPlayed && X.choixAutre ? X.choixAutre : X.choixAide) + '</p>') + '<ul class="themes">';
     QZ.themes.forEach(function (th) {
       var available = GQ.themeAvailable(th.id) && !(played[th.id] && !failed[th.id]);
       var disabled = lock || !available;
       var hidden = th.mystere && !played[th.id];
       html +=
-        '<li><button type="button" class="theme-card' + (failed[th.id] ? ' is-failed' : '') + (hidden ? ' is-mystery' : '') + '" data-action="start-theme" data-id="' + esc(th.id) + '"' + (disabled ? ' disabled' : '') + '>' +
+        '<li><button type="button" class="theme-card' + (failed[th.id] ? ' is-failed' : '') + (hidden ? ' is-mystery' : '') + (suggest === th.id ? ' is-suggested' : '') + '" data-action="start-theme" data-id="' + esc(th.id) + '"' + (disabled ? ' disabled aria-disabled="true"' : '') + '>' +
         '<span class="theme-icon">' + themeIcon(th, hidden) + '</span>' +
         '<span class="theme-body"><span class="theme-title">' + t(hidden ? th.titreMystere : th.titre) + '</span>' +
         '<span class="theme-meta">' + (hidden && th.sousTitreMystere ? t(th.sousTitreMystere) : th.questions.length + ' questions') + '</span></span>' +
@@ -493,9 +529,8 @@
     var X = QZ.textes;
     return {
       key: 'q1-reveal-' + theme.id,
-      celebrate: true,
       html:
-        '<section class="success reveal">' +
+        '<section class="success theme-reveal">' +
         '<div class="success-art">' + themeIcon(theme, true) + '</div>' +
         '<p class="kicker">' + t(theme.revelation) + '</p>' +
         knitTitle(theme.titre, { color: '#E4323A' }) +
@@ -671,7 +706,7 @@
     if (s.quest >= 4 && !s.finished && !s.joker.used && !s.jokerRappel && T.joker.rappel) {
       s.jokerRappel = true;
       GQ.save();
-      setTimeout(function () { GQ.toast(T.joker.rappel, 'info'); }, 1400);
+      setTimeout(function () { GQ.notify({ app: T.joker.notifApp || 'Joker', icon: 'star', text: T.joker.rappel }); }, 1400);
     }
     if (s.phase[n] === 'access') return accessScreen(n);
     return GQ.questScreens[n]();
@@ -860,6 +895,7 @@
         return;
       }
       if (!GQ.useJoker(key)) GQ.toast(T.joker.dejaUtilise, 'error');
+      else if (T.joker.notifUtilise) GQ.notify({ app: T.joker.notifApp || 'Joker', icon: 'star', text: T.joker.notifUtilise });
       var keep = GQ.ui.value;
       GQ.render();
       GQ.ui.value = keep;

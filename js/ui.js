@@ -158,6 +158,36 @@
     toastTimer = setTimeout(function () { el.className = 'toast'; }, 4200);
   };
 
+  /* Notification façon smartphone : bannière en verre translucide qui
+   * glisse du haut de l'écran, avec un petit « ding ». Touchez-la (ou
+   * glissez vers le haut) pour la fermer. opts : { app, text, icon, time }. */
+  var notifTimer;
+  GQ.notify = function (opts) {
+    var el = document.getElementById('notif-banner');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'notif-banner';
+      el.className = 'notif-banner';
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-live', 'polite');
+      document.body.appendChild(el);
+      var y0 = null;
+      el.addEventListener('click', function () { el.classList.remove('is-visible'); });
+      el.addEventListener('touchstart', function (e) { y0 = e.touches[0].clientY; }, { passive: true });
+      el.addEventListener('touchmove', function (e) { if (y0 != null && e.touches[0].clientY - y0 < -20) el.classList.remove('is-visible'); }, { passive: true });
+    }
+    el.innerHTML =
+      '<span class="notif-app">' + GQ.knit.icon(opts.icon || 'bell', 'notif-ico') + '<b>' + esc(opts.app || '') + '</b>' +
+      '<span class="notif-time">' + esc(opts.time || 'maintenant') + '</span></span>' +
+      '<span class="notif-text">' + t(opts.text || '') + '</span>';
+    el.classList.remove('is-visible');
+    void el.offsetWidth;
+    el.classList.add('is-visible');
+    if (GQ.audio) GQ.audio.sfx('notif');
+    clearTimeout(notifTimer);
+    notifTimer = setTimeout(function () { el.classList.remove('is-visible'); }, opts.ms || 5200);
+  };
+
   /* ------------------------------------------------------------------ */
   /* Fenêtre de confirmation                                             */
   /* ------------------------------------------------------------------ */

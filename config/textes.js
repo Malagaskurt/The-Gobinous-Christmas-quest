@@ -142,6 +142,10 @@ window.GAME_CONFIG.textes = {
     depart: "BASE",
     /* Une étiquette courte par étape, affichée sur la map. */
     etapes: ["Check-in", "Cheat Code", "Fake Stream", "ID Check", "Ultimate Signal"],
+    /* Map plein écran à chaque étape franchie (l'ascenseur monte). */
+    etapeKicker: "Étape {n} / 5",
+    ascenseur: "L'ascenseur monte…",
+    continuer: "Continuer",
     /* Légende de la map : 3 repères. */
     regles: [
       { icone: "pin", texte: "Un **mot secret** par étage pour débloquer l'étape." },
@@ -230,6 +234,9 @@ window.GAME_CONFIG.textes = {
     statutDisponible: "Joker disponible",
     statutUtilise: "Joker utilisé",
     /* Rappel discret si le joker n'a pas servi après 3 étapes. */
+    /* Notifications (bannière en haut de l'écran). */
+    notifApp: "Joker",
+    notifUtilise: "Indice débloqué par le Père Noël : il s'affiche juste en dessous.",
     rappel: "Petit rappel : votre joker est toujours dispo. À garder pour un vrai blocage !",
   },
 

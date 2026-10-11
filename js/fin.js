@@ -1,96 +1,82 @@
-/* Écran de fin : spectacle 2D en boucle (12 s).
- *   1. Course : le Père Noël fait des allers-retours en trottinette, deux
- *      lutins accrochés derrière lui (jambes au vent).
- *   2. Fête : ils s'arrêtent et se lâchent (twerk et danse).
- * Le Père Noël porte des lunettes de soleil en étoile ; tout le monde est
- * habillé aux couleurs du site (rouge, blanc, bleus). Deux bulles de
- * dialogue s'affichent pendant la fête (config/quetes.js → traque.finBulles).
- * Animations : css/styles.css (section « Spectacle de fin »). */
+/* Écran de fin : scène 3D premium.
+ * Le Père Noël en 3D (assets/img/pere-noel-3d.webp) dans une grande carte
+ * en verre translucide bleu ciel, entouré de cadeaux en vraie 3D CSS qui
+ * tournent et flottent, d'une étoile et de neige. La carte s'incline
+ * doucement avec le doigt, la souris ou le téléphone (effet de profondeur).
+ * Deux bulles de messagerie (config/quetes.js → traque.finBulles)
+ * apparaissent l'une après l'autre.
+ * Styles : css/styles.css (section « Fin 3D »). */
 (function () {
   'use strict';
 
   var GQ = window.GQ;
   var esc = GQ.esc;
+  var SANTA = 'assets/img/pere-noel-3d.webp';
 
-  function star(cx, cy, R, r) {
-    var p = [];
-    for (var i = 0; i < 10; i++) {
-      var a = -Math.PI / 2 + (i * Math.PI) / 5;
-      var d = i % 2 ? r : R;
-      p.push((cx + d * Math.cos(a)).toFixed(1) + ',' + (cy + d * Math.sin(a)).toFixed(1));
-    }
-    return p.join(' ');
+  /* Un cadeau cubique : 6 faces positionnées en 3D, ruban en croix et
+   * nœud sur le dessus. `c` : couleur (rouge, bleu ou ciel). */
+  function gift(cls, c) {
+    var faces = ['f', 'b', 'l', 'r', 't', 'u'].map(function (f) {
+      return '<i class="g3-face g3x-' + f + '"></i>';
+    }).join('');
+    return '<span class="g3 ' + cls + ' g3-' + c + '" aria-hidden="true"><span class="g3-spin">' + faces +
+      '<span class="g3-bow"><i></i><i></i></span></span></span>';
   }
-
-  /* Un lutin, pieds en (0, 0), tourné vers la droite, mains tendues en
-   * (17, -46). */
-  var ELF =
-    '<rect x="-11" y="-5" width="10" height="5" rx="2.5" fill="#0b1d45"/><rect x="2" y="-5" width="10" height="5" rx="2.5" fill="#0b1d45"/>' +
-    '<rect x="-8" y="-24" width="6" height="20" fill="url(#f-stripes)"/><rect x="2" y="-24" width="6" height="20" fill="url(#f-stripes)"/>' +
-    '<path d="M-12 -22L-9 -45H9L12 -22Z" fill="#17428c"/><rect x="-11" y="-31" width="22" height="3" fill="#fff"/>' +
-    '<path d="M5 -41L17 -46" stroke="#17428c" stroke-width="5" stroke-linecap="round"/><circle cx="17.5" cy="-46" r="2.6" fill="#fff"/>' +
-    '<path d="M-9 -56l-7 -5 5 9zM9 -56l7 -5 -5 9z" fill="#dbe6f4"/>' +
-    '<circle cx="0" cy="-54" r="9" fill="#dbe6f4"/>' +
-    '<circle cx="-3" cy="-55" r="1.3" fill="#0b1d45"/><circle cx="3.5" cy="-55" r="1.3" fill="#0b1d45"/>' +
-    '<path d="M-3 -50.5Q0.5 -48 4 -50.5" stroke="#0b1d45" stroke-width="1.2" fill="none" stroke-linecap="round"/>' +
-    '<circle cx="-5" cy="-51.5" r="1.6" fill="#e4323a" opacity=".45"/><circle cx="6" cy="-51.5" r="1.6" fill="#e4323a" opacity=".45"/>' +
-    '<path d="M-10 -59Q-2 -84 17 -78L10 -61Z" fill="#00ade1"/><circle cx="17" cy="-78" r="3.2" fill="#e4323a"/>' +
-    '<rect x="-10.5" y="-62" width="21" height="4.5" rx="2.2" fill="#fff"/>';
-
-  /* Le Père Noël (pieds sur la trottinette, face à droite). */
-  var SANTA =
-    '<rect x="166" y="174" width="11" height="16" rx="3" fill="#0b1d45"/><rect x="182" y="174" width="11" height="16" rx="3" fill="#0b1d45"/>' +
-    '<rect x="167" y="160" width="9" height="16" fill="#e4323a"/><rect x="183" y="160" width="9" height="16" fill="#e4323a"/>' +
-    '<path d="M163 128Q150 138 156 150" stroke="#e4323a" stroke-width="10" stroke-linecap="round" fill="none"/>' +
-    '<rect x="158" y="114" width="42" height="52" rx="16" fill="#e4323a"/>' +
-    '<rect x="176" y="117" width="6" height="44" fill="#fff"/>' +
-    '<rect x="157" y="158" width="44" height="9" rx="4.5" fill="#fff"/>' +
-    '<rect x="158" y="142" width="42" height="7" fill="#0b1d45"/><rect x="174" y="140.5" width="10" height="10" rx="1.5" fill="none" stroke="#00ade1" stroke-width="2"/>' +
-    '<path d="M195 124Q210 121 217 127" stroke="#e4323a" stroke-width="10" stroke-linecap="round" fill="none"/><circle cx="218" cy="127" r="5" fill="#fff"/>' +
-    '<path d="M163 99Q163 131 179 133Q195 131 195 99Z" fill="#fff"/>' +
-    '<circle cx="179" cy="97" r="13" fill="#dbe6f4"/>' +
-    '<circle cx="171" cy="103" r="3" fill="#e4323a" opacity=".35"/><circle cx="188" cy="103" r="3" fill="#e4323a" opacity=".35"/>' +
-    '<path d="M168 107Q179 101 190 107Q184 112 179 108Q174 112 168 107Z" fill="#fff"/>' +
-    '<circle cx="179" cy="103" r="3.2" fill="#e4323a"/>' +
-    // Lunettes de soleil en étoile.
-    '<polygon points="' + star(172.5, 95, 6.5, 2.8) + '" fill="#0b1d45" stroke="#00ade1" stroke-width="1.2" stroke-linejoin="round"/>' +
-    '<polygon points="' + star(186, 95, 6.5, 2.8) + '" fill="#0b1d45" stroke="#00ade1" stroke-width="1.2" stroke-linejoin="round"/>' +
-    '<path d="M177 94.5H181.5" stroke="#00ade1" stroke-width="1.5"/>' +
-    '<path d="M164 88Q177 60 200 69Q206 73 205 81L194 88Z" fill="#e4323a"/>' +
-    '<rect x="162" y="84" width="35" height="8.5" rx="4.2" fill="#fff"/><circle cx="206" cy="80" r="5.5" fill="#fff"/>';
-
-  var SCOOTER =
-    '<rect x="138" y="189" width="86" height="6" rx="3" fill="#17428c"/>' +
-    '<path d="M218 189L223 126" stroke="#00ade1" stroke-width="5" stroke-linecap="round"/>' +
-    '<path d="M213 124H233" stroke="#00ade1" stroke-width="5" stroke-linecap="round"/>' +
-    '<circle cx="146" cy="200" r="8" fill="#0b1d45"/><circle cx="146" cy="200" r="3" fill="#fff"/>' +
-    '<circle cx="220" cy="200" r="8" fill="#0b1d45"/><circle cx="220" cy="200" r="3" fill="#fff"/>';
 
   GQ.finShow = function () {
     var B = (GQ.cfg.quetes.traque || {}).finBulles || [];
     var flakes = '';
-    for (var i = 0; i < 18; i++) {
-      flakes += '<circle cx="' + ((i * 47) % 360) + '" cy="' + ((i * 29) % 150) + '" r="' + (i % 3 ? 1.4 : 2.2) + '" fill="#fff" opacity=".7" class="f-flake" style="animation-delay:-' + (i * 0.7).toFixed(1) + 's"/>';
+    for (var i = 0; i < 26; i++) {
+      flakes += '<i style="left:' + ((i * 37) % 100) + '%;animation-delay:-' + ((i * 0.83) % 9).toFixed(2) + 's;animation-duration:' + (7 + (i % 5)) + 's;width:' + (i % 3 ? 4 : 7) + 'px;height:' + (i % 3 ? 4 : 7) + 'px"></i>';
     }
+    var bubbles = B.slice(0, 2).map(function (b, k) {
+      var who = /no[eë]l/i.test(b.qui || '') ? 'santa' : 'elves';
+      return '<p class="f3-bubble f3-bubble-' + (k + 1) + ' is-' + who + '"><b>' + esc(b.qui || '') + '</b>' + GQ.t(b.texte) + '</p>';
+    }).join('');
     return (
-      '<div class="fin-show" aria-hidden="true">' +
-      '<svg class="fin-svg" viewBox="25 40 310 190" preserveAspectRatio="xMidYMax meet">' +
-      '<defs><pattern id="f-stripes" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="3" fill="#e4323a"/><rect y="3" width="6" height="3" fill="#fff"/></pattern></defs>' +
-      // Décor : la même ville de Noël que la page d'accueil.
-      (GQ.cityInner ? '<g class="f-city" transform="translate(0 -19) scale(.9)">' + GQ.cityInner() + '</g>' : '<rect x="0" y="206" width="360" height="24" fill="#17428c"/>') +
-      // Projecteurs de la fête.
-      '<g class="f-lights"><path d="M40 0L-10 206H110Z" fill="#e4323a"/><path d="M320 0L250 206H370Z" fill="#00ade1"/><path d="M180 0L130 206H230Z" fill="#fff" opacity=".5"/></g>' +
-      flakes +
-      '<g class="f-rig">' +
-      SCOOTER +
-      '<g class="f-pos f-pos2"><g class="f-hang f-hang2"><g class="f-twerk f-twerk2"><g transform="translate(133 196) scale(.9)">' + ELF + '</g></g></g></g>' +
-      '<g class="f-pos f-pos1"><g class="f-hang f-hang1"><g class="f-twerk f-twerk1"><g transform="translate(141 174)">' + ELF + '</g></g></g></g>' +
-      '<g class="f-santa">' + SANTA + '</g>' +
-      '</g>' +
-      '</svg>' +
-      (B[0] ? '<p class="fin-bubble fin-bubble-1"><b>' + esc(B[0].qui || '') + '</b>' + GQ.t(B[0].texte) + '</p>' : '') +
-      (B[1] ? '<p class="fin-bubble fin-bubble-2"><b>' + esc(B[1].qui || '') + '</b>' + GQ.t(B[1].texte) + '</p>' : '') +
+      '<div class="f3" data-f3>' +
+      '<div class="f3-snow" aria-hidden="true">' + flakes + '</div>' +
+      '<div class="f3-stage" data-f3-stage>' +
+      '<div class="f3-card" aria-hidden="true">' +
+      '<span class="f3-halo"></span>' +
+      '<span class="f3-ring"></span>' +
+      '<span class="f3-floor"></span>' +
+      gift('g3-a', 'red') + gift('g3-b', 'sky') + gift('g3-c', 'blue') +
+      '<span class="f3-star"><svg viewBox="0 0 40 40"><path d="M20 2l5.3 11.6 12.7 1.4-9.5 8.6 2.7 12.4L20 29.7 8.8 36l2.7-12.4L2 15l12.7-1.4z"/></svg></span>' +
+      '<img class="f3-santa" src="' + SANTA + '" alt="" draggable="false">' +
+      '</div>' +
+      bubbles +
+      '</div>' +
       '</div>'
     );
+  };
+
+  /* Inclinaison 3D : suit le doigt, la souris ou l'orientation du
+   * téléphone. Sans mouvement réduit uniquement. */
+  GQ.finTilt = function () {
+    var root = document.querySelector('[data-f3-stage]');
+    if (!root || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    var tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
+    function set(x, y) { tx = Math.max(-1, Math.min(1, x)); ty = Math.max(-1, Math.min(1, y)); if (!raf) raf = requestAnimationFrame(step); }
+    function step() {
+      raf = 0;
+      if (!root.isConnected) return;
+      cx += (tx - cx) * 0.12; cy += (ty - cy) * 0.12;
+      root.style.setProperty('--rx', (-cy * 8).toFixed(2) + 'deg');
+      root.style.setProperty('--ry', (cx * 10).toFixed(2) + 'deg');
+      root.style.setProperty('--px', cx.toFixed(3));
+      root.style.setProperty('--py', cy.toFixed(3));
+      if (Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002) raf = requestAnimationFrame(step);
+    }
+    function pointer(e) {
+      var r = root.getBoundingClientRect();
+      set(((e.clientX - r.left) / r.width) * 2 - 1, ((e.clientY - r.top) / r.height) * 2 - 1);
+    }
+    root.addEventListener('pointermove', pointer);
+    root.addEventListener('pointerleave', function () { set(0, 0); });
+    window.addEventListener('deviceorientation', function (e) {
+      if (!root.isConnected || e.gamma == null) return;
+      set(e.gamma / 25, (e.beta - 45) / 25);
+    });
   };
 })();

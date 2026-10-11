@@ -70,7 +70,13 @@ const text = () => page.locator('#app').innerText();
 const has = async (s) => norm(await text()).includes(norm(s));
 const hash = () => page.evaluate(() => location.hash);
 const state = () => page.evaluate(() => window.GQ.state);
-const settle = () => page.waitForTimeout(150);
+// La map plein écran (étape franchie) se ferme pour continuer le parcours.
+let mapSeen = 0;
+const settle = async () => {
+  await page.waitForTimeout(150);
+  const close = await page.$('#map-full [data-map-close]');
+  if (close) { mapSeen += 1; await close.click({ force: true }).catch(() => {}); await page.waitForTimeout(450); }
+};
 // Chaque chargement de page affiche brièvement l'écran de chargement.
 async function go(url) {
   await page.goto(url);
@@ -259,7 +265,7 @@ await step('Bouton « Règles » explicite et bouton du son dans l\'en-tête, mu
   assert((await page.locator('.topbar .sound-btn').getAttribute('aria-pressed')) === 'false', 'le son ne se coupe pas');
   await page.locator('.topbar .sound-btn').click();
   await settle();
-  for (const f of ['musique-noel-1.mp3', 'musique-noel-2.mp3', 'musique-japon.mp3', 'musique-fin.mp3', 'barnabe-appel.mp3', 'barnabe-video.mp3']) {
+  for (const f of ['musique-noel-1.mp3', 'musique-noel-2.mp3', 'musique-japon.mp3', 'musique-fin.mp3', 'pere-noel-appel.mp3', 'barnabe-video.mp3', 'musique-fond.mp3']) {
     const r = await fetch(BASE + 'assets/audio/' + f);
     assert(r.ok && r.headers.get('content-type') === 'audio/mpeg', `musique absente : ${f}`);
   }
@@ -316,6 +322,8 @@ await step('Thème mystère : révélation, 2e thème raté → tout gelé 45 s 
   await page.click('[data-action="start-theme"][data-id="mystere"]');
   await settle();
   assert(await has('Culture générale'), 'révélation absente');
+  const op = await page.locator('.theme-reveal').evaluate((e) => getComputedStyle(e).opacity);
+  assert(op === '1', `révélation du thème mystère invisible (opacité ${op})`);
   await clickText("C'est parti");
   await finishTheme(theme('mystere'), (q) => wrongOf(q));
   assert(await has('tout gèle'), 'annonce du gel absente');
@@ -558,9 +566,10 @@ await step('Mot secret CADEAU → transmission à usage unique, jamais « salle 
   await clickText('Continuer');
   assert(await has('Rapport d\'analyse'), 'rapport absent');
   // Indices interactifs : un appui révèle l'analyse.
-  assert(!(await has('son nom actuel')), 'analyse affichée trop tôt');
+  assert(!(await has('aller dormir')), 'analyse affichée trop tôt');
   for (let i = 0; i < 4; i++) await page.click(`[data-action="clue"][data-i="${i}"]`);
-  assert(await has('son nom actuel') && await has('pas du français'), 'analyse des indices absente');
+  assert(await has('aller dormir') && await has('pas du français'), 'analyse des indices absente');
+  assert(await has('interdit d\'explorer l\'étage'), 'règle anti-triche absente');
   assert(!(await has('Soleil-Levant')) && !(await has('Japon')) && !(await has('634')), 'le rapport en dit trop');
   assert(!(await forbidden()), '« salle » ou « porte » affiché trop tôt');
 });
@@ -584,14 +593,19 @@ await step('Sortie de secours : au 4e mauvais code, la réponse est donnée', as
   assert(!(await frozen()), 'gel alors que la réponse doit être donnée');
   assert(await has('Le code du repaire est TOKYO'), 'réponse non donnée après 4 erreurs');
   await answer('Tokyo');
-  assert(await has('SALLE TOKYO') && await has('Appeler Barnabé'), 'lutin démasqué absent');
+  // Messagerie du Père Noël : les deux bulles, puis le bouton « Appeler ».
+  await page.waitForSelector('.chat-msg >> nth=1');
+  assert(await has('lettre de licenciement') && await has('Rendez-vous à la salle Tokyo') && await has('Appelez-moi avant d\'entrer'), 'messages du Père Noël absents');
+  assert(await page.locator('[data-action="call"]').isVisible() && norm(await page.locator('[data-action="call"]').innerText()).includes('appeler'), 'bouton Appeler absent');
+  const bg = await page.locator('[data-action="call"]').evaluate((b) => getComputedStyle(b).backgroundColor);
+  assert(bg !== 'rgb(255, 255, 255)', 'bouton Appeler blanc');
 });
 
-await step('Appel de Barnabé puis écran de fin, conservé au rechargement', async () => {
+await step('Appel du Père Noël puis écran de fin 3D, conservé au rechargement', async () => {
   await page.click('[data-action="call"]');
   // Sous-titres synchronisés sur la voix (fichier fourni) après la sonnerie.
-  await page.waitForFunction(() => { const el = document.querySelector('[data-call-line]'); return el && el.textContent.length > 10; }, null, { timeout: 10000 });
-  assert(await has('Barnabé SIX-SEVEN') && await has('MDR'), 'message vocal absent');
+  await page.waitForFunction(() => { const el = document.querySelector('[data-call-line]'); return el && /entrer/.test(el.textContent); }, null, { timeout: 15000 });
+  assert(await has('Le Père Noël') && await has('vous pouvez entrer'), 'appel du Père Noël absent');
   await page.evaluate(() => {
     window.__sfx = [];
     const f = window.GQ.audio.sfx;
@@ -600,26 +614,19 @@ await step('Appel de Barnabé puis écran de fin, conservé au rechargement', as
   await page.click('[data-action="hang-up"]');
   await settle();
   assert((await page.evaluate(() => window.__sfx)).includes('hangup'), 'pas de son de fin d\'appel');
-  // Dans la salle : photo de groupe avec le paquet choisi.
-  assert(await has('Le colis mystère') && await has('un seul colis'), 'étape du paquet absente');
-  await page.click('[data-action="paquet-take"]');
-  await page.waitForSelector('.cam video');
-  await page.waitForFunction(() => { const v = document.querySelector('.cam video'); return v && v.videoWidth > 0; });
-  await page.click('.cam-shutter');
-  await page.waitForSelector('[data-action="paquet-validate"]');
-  await page.click('[data-action="paquet-validate"]');
-  await settle();
+  // Fin de l'appel : directement l'écran de fin.
   assert(await has('Mission presque accomplie'), 'écran de fin absent');
-  assert(await has('Les Testeurs') && await has('Bravo Les Testeurs') && await has('Mission presque accomplie') && await has('Rendez-vous avec votre paquet à La Verrière le plus vite possible'), 'consigne de fin absente');
-  assert((await page.locator('.fin-show .f-santa').count()) === 1 && (await page.locator('.fin-show .f-twerk').count()) === 2, 'Père Noël et lutins absents');
+  assert(await has('Les Testeurs') && await has('Bravo Les Testeurs') && await has('Mission presque accomplie, descendez à La Verrière') && await has('Interdiction de l\'ouvrir avant'), 'consigne de fin absente');
+  assert((await page.locator('.f3 .f3-santa').count()) === 1 && (await page.locator('.f3 .g3').count()) === 3, 'Père Noël 3D et cadeaux absents');
   assert(await has('Colis sauvé, prime de vacances validée') && await has('direction Pôle Emploi'), 'bulles de fin absentes');
   const fete = await fetch(BASE + 'assets/audio/musique-fete.mp3');
   assert(fete.ok, 'musique de fin absente');
   assert((await page.locator('.topbar').count()) === 0, 'l\'écran de fin garde l\'en-tête du jeu');
   assert((await state()).finished, 'fin non enregistrée');
+  assert(mapSeen >= 4, `map plein écran non affichée à chaque étape franchie (${mapSeen})`);
   await reload();
   assert(await has('Mission presque accomplie'), 'fin perdue après rechargement');
-  assert((await page.locator('.finale-home a[href="#/"]').count()) === 1, 'pas de retour à l\'accueil du site');
+  assert((await page.locator('.f3-home[href="#/"]').count()) === 1, 'pas de retour à l\'accueil du site');
   await noHorizontalScroll();
 });
 
@@ -647,8 +654,7 @@ await step('Tableau de bord : code, avancement, galerie photos, réinitialisatio
   await page.waitForSelector('.thumbs img');
   const a = norm(await page.locator('.team-card', { hasText: 'Les Testeurs' }).innerText());
   assert(a.includes('terminée') && a.includes('3/3'), 'avancement incomplet');
-  assert((await page.locator('.thumbs img').count()) === 4, 'galerie photos incomplète (3 défis + paquet)');
-  assert(await has('Le colis choisi'), 'photo avec le paquet absente');
+  assert((await page.locator('.thumbs img').count()) === 3, 'galerie photos incomplète (3 défis)');
   assert(await has('Télécharger toutes les photos'), 'export ZIP absent');
   await noHorizontalScroll();
 
@@ -861,7 +867,7 @@ await step('Hors ligne : le site, le jeu, la vidéo et les musiques restent disp
   await p3.waitForSelector('[data-form="gate"]', { timeout: 15000 });
   const r = await p3.evaluate(async () => {
     const out = {};
-    for (const f of ['assets/video/barnabe.mp4', 'assets/audio/barnabe-appel.mp3', 'assets/audio/musique-noel-1.mp3']) {
+    for (const f of ['assets/video/barnabe.mp4', 'assets/audio/pere-noel-appel.mp3', 'assets/audio/musique-noel-1.mp3']) {
       const res = await fetch(f, { headers: { Range: 'bytes=0-99' } });
       out[f] = res.status + ':' + (await res.arrayBuffer()).byteLength;
     }

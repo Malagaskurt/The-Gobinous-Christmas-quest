@@ -1,6 +1,6 @@
 /* Généré par tools/generer-hors-ligne.mjs : ne pas modifier à la main. */
 self.HORS_LIGNE = {
- "version": "97e29436433b",
+ "version": "1feb5bef120d",
  "fichiers": [
   "index.html",
   "css/fonts.css",
@@ -38,13 +38,14 @@ self.HORS_LIGNE = {
   "config/textes.js",
   "config/vlog.js",
   "config/wrapup.js",
-  "assets/audio/barnabe-appel.mp3",
   "assets/audio/barnabe-video.mp3",
   "assets/audio/musique-fete.mp3",
   "assets/audio/musique-fin.mp3",
+  "assets/audio/musique-fond.mp3",
   "assets/audio/musique-japon.mp3",
   "assets/audio/musique-noel-1.mp3",
   "assets/audio/musique-noel-2.mp3",
+  "assets/audio/pere-noel-appel.mp3",
   "assets/fonts/montserrat-latin-400-normal.woff2",
   "assets/fonts/montserrat-latin-600-normal.woff2",
   "assets/fonts/montserrat-latin-700-normal.woff2",
@@ -53,6 +54,7 @@ self.HORS_LIGNE = {
   "assets/img/favicon.svg",
   "assets/img/logo-saint-gobain-blanc.png",
   "assets/img/logo-saint-gobain-bleu.png",
+  "assets/img/pere-noel-3d.webp",
   "assets/img/pere-noel-entier.jpg",
   "assets/img/pere-noel.jpg",
   "assets/img/photos/modele-1.jpg",

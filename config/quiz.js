@@ -37,6 +37,8 @@ window.GAME_CONFIG.quiz = {
   textes: {
     choixTitre: "Choisissez votre thème",
     choixAide: "Score et correction à la fin des 8 questions.",
+    /* Après un thème raté ou abandonné : il est fermé, on en choisit un autre. */
+    choixAutre: "Thème fermé : le Père Noël vous en propose un autre.",
     tentatives: "Thèmes ratés : {n} sur {max}. Dernière chance !",
     themeEchoue: "Fermé",
     themeJoue: "Joué",
@@ -63,7 +65,7 @@ window.GAME_CONFIG.quiz = {
     echecTitreLoin: "Pas cette fois !", // 5 bonnes réponses ou moins
     echecTexte: "Ce thème est fermé. Deuxième chance : choisissez-en un autre !",
     echecAvertissement: "Si le prochain est raté, tout gèle pendant {minutes}.",
-    echecBlocage: "Deuxième thème raté : tout gèle pendant {minutes}, puis le lutin vous laisse passer.",
+    echecBlocage: "Deuxième thème raté : tout gèle pendant {minutes}, puis le Père Noël vous ouvre le passage.",
     boutonAutreTheme: "Choisir un autre thème",
     boutonMinuteur: "Voir le minuteur",
     bloqueTitre: "Tout est gelé !",
@@ -78,7 +80,7 @@ window.GAME_CONFIG.quiz = {
     scanNiveauValeur: "Gobinous · Niveau 1",
     scanStatut: "Identité validée · Accès autorisé",
     reussiteApresGelTitre: "Le gel est levé !",
-    reussiteApresGelTexte: "Barnabé vous laisse passer : accès autorisé, le premier signal vous attend.",
+    reussiteApresGelTexte: "Le Père Noël a forcé l'accès : le premier signal vous attend.",
     boutonIndice: "Voir le premier signal",
     revelationBouton: "C'est parti !",
   },
@@ -96,8 +98,8 @@ window.GAME_CONFIG.quiz = {
     reponses: ["5", "5e", "5eme", "5ieme", "cinq", "cinquieme"],
     erreur: "Mauvaise réponse !",
     gelTitre: "Givré !",
-    gelSuite: "Ensuite, le lutin vous donnera l'étage.",
-    gelPasse: "Le lutin a eu pitié : c'était le **5ᵉ étage** !",
+    gelSuite: "Ensuite, le Père Noël vous donnera l'étage.",
+    gelPasse: "Le Père Noël vous aide : c'était le **5ᵉ étage** !",
     bonusTitre: "Indice bonus",
     bonus: "Rendez-vous à l'étage 3 + 2 !",
   },
