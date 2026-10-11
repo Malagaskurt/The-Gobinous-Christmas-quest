@@ -12,10 +12,10 @@
     n: '#17428C', // bleu Saint-Gobain (fond du pull)
     m: '#1B4A99', // variation de fond
     d: '#0E2A5E', // bleu profond
-    w: '#F6EFE2', // laine écrue
+    w: '#ffffff', // laine écrue
     c: '#00ADE1', // bleu clair
     r: '#C8102E', // rouge de Noël
-    p: '#E2D7C3', // écru ombré (maille « vide » sur papier)
+    p: '#dbe6f4', // écru ombré (maille « vide » sur papier)
   };
   var GAP = '#0A1F45';
 
@@ -288,8 +288,8 @@
 
   /* Couleurs des pixels (pixel.js) une fois tricotées sur fond bleu nuit. */
   var KNIT_PAL = {
-    r: '#E4323A', R: '#A3141F', w: '#F6EFE2', W: '#FFFFFF', s: '#F3C7A1', S: '#D9967A',
-    b: '#3B78D4', B: '#2A5DB0', c: '#00ADE1', C: '#9EE0F5', k: '#0A1F45', n: '#17428C', m: '#1B4A99', p: '#E2D7C3', d: '#0E2A5E',
+    r: '#E4323A', R: '#A3141F', w: '#ffffff', W: '#FFFFFF', s: '#F3C7A1', S: '#D9967A',
+    b: '#3B78D4', B: '#2A5DB0', c: '#00ADE1', C: '#9EE0F5', k: '#0A1F45', n: '#17428C', m: '#1B4A99', p: '#dbe6f4', d: '#0E2A5E',
     y: '#9EE0F5', g: '#00ADE1',
   };
 

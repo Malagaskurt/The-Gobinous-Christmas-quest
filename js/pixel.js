@@ -8,7 +8,7 @@
   var PAL = {
     r: '#C8102E', // rouge de Noël
     R: '#8E0A20', // rouge foncé
-    w: '#F6EFE2', // écru
+    w: '#ffffff', // écru
     W: '#FFFFFF',
     s: '#F3C7A1', // peau
     S: '#D9967A', // peau ombrée

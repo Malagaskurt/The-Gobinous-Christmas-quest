@@ -21,7 +21,7 @@
     r2: ['#FF9599', '#EC4A51', '#B81B30'],
     s: ['#A6E9FF', '#2FC0EE', '#0085BA'],
     n: ['#6C9BEA', '#2A5DB0', '#123A80'],
-    c: ['#FFFFFF', '#F6EFE2', '#D8C9AE'],
+    c: ['#FFFFFF', '#ffffff', '#c4d6ee'],
     d: ['#3D5486', '#1C2D55', '#0C1834'],
   };
 
@@ -196,7 +196,7 @@
       "<path d='M6 48V40Q6 35 11 34L19 33L26 25Q28 23 31 23H43Q46 23 48 26L53 33Q59 34 59 40V48Z' fill='url(#r)'/>" +
       "<path d='M23 33L29 27H36V33Z M39 27H44L48 33H39Z' fill='url(#s)'/>" +
       "<circle cx='18' cy='49' r='6.5' fill='#0C1834'/><circle cx='47' cy='49' r='6.5' fill='#0C1834'/>" +
-      "<circle cx='18' cy='49' r='2.5' fill='#D8C9AE'/><circle cx='47' cy='49' r='2.5' fill='#D8C9AE'/>" +
+      "<circle cx='18' cy='49' r='2.5' fill='#c4d6ee'/><circle cx='47' cy='49' r='2.5' fill='#c4d6ee'/>" +
       "<rect x='55' y='37' width='4' height='3' rx='1.5' fill='#fff'/>"],
     truck: [['r', 'c', 's', 'n'],
       "<rect x='3' y='18' width='38' height='30' rx='4' fill='url(#r)'/>" +
@@ -204,14 +204,14 @@
       "<path d='M22 18C17 9 9 11 13 16C15 18 19 18 22 18ZM22 18C27 9 35 11 31 16C29 18 25 18 22 18Z' fill='url(#c)'/>" +
       "<path d='M43 26H52Q55 26 57 29L61 36V48H43Z' fill='url(#n)'/><path d='M46 29H52L56 35H46Z' fill='url(#s)'/>" +
       "<circle cx='14' cy='49' r='6' fill='#0C1834'/><circle cx='51' cy='49' r='6' fill='#0C1834'/>" +
-      "<circle cx='14' cy='49' r='2.4' fill='#D8C9AE'/><circle cx='51' cy='49' r='2.4' fill='#D8C9AE'/>" +
+      "<circle cx='14' cy='49' r='2.4' fill='#c4d6ee'/><circle cx='51' cy='49' r='2.4' fill='#c4d6ee'/>" +
       "<rect x='58' y='40' width='4' height='3' rx='1.5' fill='#fff'/>"],
     van: [['n', 's'],
       "<ellipse cx='32' cy='56' rx='28' ry='3' fill='#000' opacity='.3'/>" +
       "<path d='M5 48V24Q5 19 10 19H42Q46 19 48 22L57 33Q59 35 59 38V48Z' fill='url(#n)'/>" +
       "<path d='M44 23L52 34H44Z' fill='url(#s)'/><rect x='10' y='24' width='28' height='9' rx='2.5' fill='url(#s)' opacity='.85'/>" +
       "<circle cx='17' cy='49' r='6.5' fill='#0C1834'/><circle cx='47' cy='49' r='6.5' fill='#0C1834'/>" +
-      "<circle cx='17' cy='49' r='2.5' fill='#D8C9AE'/><circle cx='47' cy='49' r='2.5' fill='#D8C9AE'/>" +
+      "<circle cx='17' cy='49' r='2.5' fill='#c4d6ee'/><circle cx='47' cy='49' r='2.5' fill='#c4d6ee'/>" +
       "<rect x='55' y='39' width='4' height='3' rx='1.5' fill='#fff'/>"],
   };
   var ALIAS = { sapin: 'tree', tour: 'tower', miroir: 'star', materiaux: 'dice', flocon: 'flake', etoile: 'star', cadeau: 'gift' };
@@ -263,7 +263,8 @@
     "<circle cx='27' cy='33' r='1.8' fill='#2FC0EE'/><circle cx='37' cy='33' r='1.8' fill='#2FC0EE'/></svg>");
   function avatar(cls) {
     var m = unmasked();
-    return '<span class="barnabe ' + (cls || '') + (m ? '' : ' is-masked') + '" aria-hidden="true"><img src="' + (m ? esc(photo()) : SILHOUETTE) + '" alt="" draggable="false"></span>';
+    // Masqué : son vrai visage, fortement flouté et teinté de bleu.
+    return '<span class="barnabe ' + (cls || '') + (m ? '' : ' is-masked') + '" aria-hidden="true"><img src="' + esc(photo()) + '" alt="" draggable="false"></span>';
   }
 
   /* ------------------------------------------------------------------ */
@@ -322,8 +323,8 @@
   function svgUri(body, w, h) {
     return 'url("data:image/svg+xml,' + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 " + w + ' ' + h + "' width='" + w + "' height='" + h + "'>" + body + '</svg>') + '")';
   }
-  var BULBS = [[15, 12, '#E4323A'], [45, 14, '#2FC0EE'], [75, 5, '#F6EFE2'], [105, 3, '#E4323A']];
-  var BULBS2 = [[15, 12, '#2FC0EE'], [45, 14, '#F6EFE2'], [75, 5, '#E4323A'], [105, 3, '#2FC0EE']];
+  var BULBS = [[15, 12, '#E4323A'], [45, 14, '#2FC0EE'], [75, 5, '#ffffff'], [105, 3, '#E4323A']];
+  var BULBS2 = [[15, 12, '#2FC0EE'], [45, 14, '#ffffff'], [75, 5, '#E4323A'], [105, 3, '#2FC0EE']];
   function bulbs(list, glow) {
     return list.map(function (b) {
       var x = b[0], y = b[1];
@@ -349,7 +350,7 @@
       out += "<rect x='" + x + "' y='" + top + "' width='" + bw + "' height='" + (h - top) + "' rx='3' fill='url(#b)'/>";
       for (var wy = top + 6; wy < h - 14; wy += 8) {
         for (var wx = x + 5; wx < x + bw - 5; wx += 8) {
-          if ((wx * 7 + wy * 3 + i) % 5 < 2) out += "<rect x='" + wx + "' y='" + wy + "' width='4' height='4' rx='1' fill='" + ((wx + wy) % 3 ? '#f6efe2' : '#8fe3ff') + "' opacity='.75'/>";
+          if ((wx * 7 + wy * 3 + i) % 5 < 2) out += "<rect x='" + wx + "' y='" + wy + "' width='4' height='4' rx='1' fill='" + ((wx + wy) % 3 ? '#ffffff' : '#8fe3ff') + "' opacity='.75'/>";
         }
       }
     });

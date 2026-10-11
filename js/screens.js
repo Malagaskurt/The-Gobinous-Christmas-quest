@@ -146,7 +146,7 @@
       '<section class="success">' +
       (o.art === '' ? '' : '<div class="success-art">' + (o.art || GQ.knit.icon('star', 'success-ico')) + '</div>') +
       (o.score ? '<p class="score"><span class="sr-only">' + esc(o.score) + '</span>' + GQ.knit.text(o.score, { alt: '', color: o.scoreKind === 'red' ? '#E4323A' : '#00ADE1', outline: true, cls: 'score-img' }) + '</p>' : '') +
-      (String(script).trim() ? '<p class="success-script">' + GQ.knit.title(plain(script).replace(/\s*!$/, '!'), { alt: plain(script), color: '#F6EFE2', outline: true, cls: 'script-img' }) + '</p>' : '') +
+      (String(script).trim() ? '<p class="success-script">' + GQ.knit.title(plain(script).replace(/\s*!$/, '!'), { alt: plain(script), color: '#ffffff', outline: true, cls: 'script-img' }) + '</p>' : '') +
       '<h2 class="success-title" tabindex="-1">' + t(o.title) + '</h2>' +
       (o.html ? frame(o.html, 'frame-center') : '') + '</section>' +
       (o.after || '') +

@@ -48,7 +48,7 @@
     var fills = ['url(#m-b0)', 'url(#m-b1)', 'url(#m-b2)', 'url(#m-b3)'];
     var x = b[0], top = b[1], w = b[2];
     return '<rect x="' + x + '" y="' + top + '" width="' + w + '" height="' + (GROUND - top + 2) + '" rx="3" fill="' + fills[b[3]] + '"/>' +
-      windows(x, top, w, x + layer, layer ? '#f6efe2' : '#8fe3ff');
+      windows(x, top, w, x + layer, layer ? '#ffffff' : '#8fe3ff');
   }
 
   /* La Grande Arche (au fond, à gauche). */
@@ -93,7 +93,7 @@
   function ground() {
     return '<path d="M0 ' + GROUND + 'H' + W + 'V' + H + 'H0Z" fill="url(#m-ground)"/>' +
       '<path d="M0 548H' + W + '" stroke="#2a5db0" stroke-width="14" opacity=".55"/>' +
-      '<path d="M0 548H' + W + '" stroke="#f6efe2" stroke-width="1" stroke-dasharray="8 10" opacity=".45"/>' +
+      '<path d="M0 548H' + W + '" stroke="#ffffff" stroke-width="1" stroke-dasharray="8 10" opacity=".45"/>' +
       '<g class="m-car m-car-a"><rect x="0" y="541" width="22" height="9" rx="4" fill="#e4323a"/><rect x="5" y="537" width="11" height="6" rx="2.5" fill="#8fe3ff"/><circle cx="21" cy="545" r="1.6" fill="#fff"/></g>' +
       '<g class="m-car m-car-b"><rect x="0" y="544" width="26" height="10" rx="4" fill="#2fc0ee"/><rect x="8" y="540" width="14" height="6" rx="2.5" fill="#e3f6fc"/><circle cx="24.5" cy="549" r="1.6" fill="#fff"/></g>';
   }

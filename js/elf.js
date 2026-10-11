@@ -41,7 +41,7 @@
   // Portrait de Barnabé (flouté tant qu'il n'est pas démasqué).
   function frame() {
     var m = GQ.art3d.unmasked();
-    sprite.src = m ? GQ.art3d.photo() : GQ.art3d.silhouette;
+    sprite.src = GQ.art3d.photo();
     root.classList.toggle('is-masked', !m);
   }
 
