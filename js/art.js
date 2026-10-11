@@ -198,6 +198,14 @@
       "<circle cx='18' cy='49' r='6.5' fill='#0C1834'/><circle cx='47' cy='49' r='6.5' fill='#0C1834'/>" +
       "<circle cx='18' cy='49' r='2.5' fill='#D8C9AE'/><circle cx='47' cy='49' r='2.5' fill='#D8C9AE'/>" +
       "<rect x='55' y='37' width='4' height='3' rx='1.5' fill='#fff'/>"],
+    truck: [['r', 'c', 's', 'n'],
+      "<rect x='3' y='18' width='38' height='30' rx='4' fill='url(#r)'/>" +
+      "<rect x='19' y='18' width='6' height='30' fill='url(#c)'/><rect x='3' y='30' width='38' height='6' fill='url(#c)'/>" +
+      "<path d='M22 18C17 9 9 11 13 16C15 18 19 18 22 18ZM22 18C27 9 35 11 31 16C29 18 25 18 22 18Z' fill='url(#c)'/>" +
+      "<path d='M43 26H52Q55 26 57 29L61 36V48H43Z' fill='url(#n)'/><path d='M46 29H52L56 35H46Z' fill='url(#s)'/>" +
+      "<circle cx='14' cy='49' r='6' fill='#0C1834'/><circle cx='51' cy='49' r='6' fill='#0C1834'/>" +
+      "<circle cx='14' cy='49' r='2.4' fill='#D8C9AE'/><circle cx='51' cy='49' r='2.4' fill='#D8C9AE'/>" +
+      "<rect x='58' y='40' width='4' height='3' rx='1.5' fill='#fff'/>"],
     van: [['n', 's'],
       "<ellipse cx='32' cy='56' rx='28' ry='3' fill='#000' opacity='.3'/>" +
       "<path d='M5 48V24Q5 19 10 19H42Q46 19 48 22L57 33Q59 35 59 38V48Z' fill='url(#n)'/>" +

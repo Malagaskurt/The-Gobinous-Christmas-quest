@@ -18,7 +18,7 @@ window.GAME_CONFIG.club = {
     titre: "Gobinous",
     sousTitre: "Christmas Club",
     edition: "Noël 2026",
-    appel: "Découvrir le programme",
+    appel: "Appuyer pour découvrir",
   },
 
   /* Programme : un bloc par temps fort, dans l'ordre de l'événement.

@@ -224,6 +224,8 @@ window.GAME_CONFIG.textes = {
     dejaUtilise: "Joker déjà utilisé",
     statutDisponible: "Joker disponible",
     statutUtilise: "Joker utilisé",
+    /* Rappel discret si le joker n'a pas servi après 3 étapes. */
+    rappel: "Petit rappel : votre joker est toujours dispo. À garder pour un vrai blocage !",
   },
 
   /* Écran de saisie du mot secret d'un étage (début de chaque quête). */

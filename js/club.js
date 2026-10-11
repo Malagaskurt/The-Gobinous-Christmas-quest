@@ -51,9 +51,15 @@
         GQ.knit.text(String(A.titre).toUpperCase(), { alt: '', color: '#E4323A', outline: true, cls: 'club-knit' }) +
         '<span class="club-sub" aria-hidden="true">' + t(A.sousTitre) + '</span></h1>' +
         (A.edition ? '<p class="club-edition">' + GQ.pix('star') + t(A.edition) + GQ.pix('star') + '</p>' : '') +
-        '<div class="club-scene">' + GQ.knit.scene('club-scene-img') + '</div>' +
         '</div>' +
-        '<div class="club-cta">' + C.btn(esc(A.appel) + icon('fleche'), 'to-programme', '', 'btn-red') + '</div>' +
+        // Ville de Noël : le camion de Barnabé livre ses colis.
+        '<div class="club-city" aria-hidden="true">' +
+        '<span class="club-city-skyline"></span>' +
+        '<span class="club-truck">' + GQ.knit.icon('truck', 'club-truck-img') + '</span>' +
+        '<span class="club-parcel p1">' + GQ.knit.icon('gift', 'club-parcel-img') + '</span>' +
+        '<span class="club-parcel p2">' + GQ.knit.icon('gift', 'club-parcel-img') + '</span>' +
+        '</div>' +
+        '<div class="club-cta"><button type="button" class="club-tap" data-action="to-programme">' + esc(A.appel) + icon('fleche') + '</button></div>' +
         '</main>',
     };
   };
@@ -68,16 +74,17 @@
   screens.programme = function () {
     var P = K.programme;
     var cards = P.temps.map(function (x, i) {
-      return '<li style="animation-delay:' + (0.08 * i).toFixed(2) + 's">' +
+      // Carte tuile colorée : « Gobi'Christmas » en surtitre, le nom en
+      // police gaming, le texte court, puis « Découvrir ».
+      var m = String(x.nom).match(/^(.*?Christmas)\s+(.*)$/i);
+      return '<li>' +
         '<a class="prog-card prog-' + esc(x.id) + '" href="#/' + esc(x.id) + '">' +
         '<span class="prog-num" aria-hidden="true">' + ('0' + (i + 1)).slice(-2) + '</span>' +
-        '<span class="prog-art">' + GQ.knit.icon(x.icone || 'star', 'prog-ico') + '</span>' +
-        '<span class="prog-body">' +
-        '<span class="prog-name">' + t(x.nom) + '</span>' +
+        '<span class="prog-kicker">' + t(m ? m[1] : '') + '</span>' +
+        '<span class="prog-name">' + t(m ? m[2] : x.nom) + '</span>' +
         '<span class="prog-text">' + t(x.texte) + '</span>' +
-        '</span>' +
-        '<span class="prog-foot">' + (x.badge ? '<span class="prog-badge">' + t(x.badge) + '</span>' : '<span></span>') +
-        (x.bouton ? '<span class="prog-go">' + t(x.bouton) + icon('fleche') + '</span>' : '') + '</span>' +
+        '<span class="prog-art">' + GQ.knit.icon(x.icone || 'star', 'prog-ico') + '</span>' +
+        (x.bouton ? '<span class="prog-go">' + t(x.bouton) + icon('fleche') + '</span>' : '') +
         '</a></li>';
     }).join('');
     return {

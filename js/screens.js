@@ -668,6 +668,12 @@
       GQ.redirect('quete/' + s.quest);
       return { key: 'redirect', html: '' };
     }
+    // Rappel du joker : une seule fois, quand 3 étapes sont passées.
+    if (s.quest >= 4 && !s.finished && !s.joker.used && !s.jokerRappel && T.joker.rappel) {
+      s.jokerRappel = true;
+      GQ.save();
+      setTimeout(function () { GQ.toast(T.joker.rappel, 'info'); }, 1400);
+    }
     if (s.phase[n] === 'access') return accessScreen(n);
     return GQ.questScreens[n]();
   };

@@ -170,10 +170,16 @@
       tone(c, out, 880, t, 0.8, 'triangle', 0.05, 440);
     },
     // Fin d'appel : « tu-tu-tu », comme sur un téléphone.
+    // Raccrochage : le « clac » du combiné, puis la tonalité de fin de
+    // ligne (« tu-tu-tu »), bien nette.
     hangup: function (c, out, t) {
-      for (var i = 0; i < 3; i++) {
-        tone(c, out, 425, t + i * 0.32, 0.18, 'sine', 0.3);
-        tone(c, out, 850, t + i * 0.32, 0.18, 'sine', 0.04);
+      tone(c, out, 220, t, 0.09, 'square', 0.55, 55);
+      tone(c, out, 1200, t, 0.03, 'triangle', 0.35, 300);
+      for (var i = 0; i < 4; i++) {
+        var s = t + 0.22 + i * 0.42;
+        tone(c, out, 425, s, 0.24, 'sine', 0.9);
+        tone(c, out, 850, s, 0.24, 'sine', 0.12);
+        tone(c, out, 425, s, 0.24, 'triangle', 0.2);
       }
     },
     // Déverrouillage : mot secret accepté.
@@ -190,6 +196,8 @@
     if (!c || c.state !== 'running') return;
     var out = c.createGain();
     out.gain.value = Math.max(0, Math.min(1, Number(M.volumeEffets) || 0.5));
+    // Le raccrochage doit s'entendre franchement.
+    if (name === 'hangup') out.gain.value = Math.max(out.gain.value, 0.9);
     out.connect(c.destination);
     SFX[name](c, out, c.currentTime + 0.01);
   }

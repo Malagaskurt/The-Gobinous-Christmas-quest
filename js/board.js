@@ -172,8 +172,14 @@
       '<path d="' + route() + '" class="m-route-glow"/>' +
       '<path d="' + route() + '" class="m-route" pathLength="100"/>' +
       [0, 1, 2, 3, 4].map(marker).join('') +
-      '<rect class="m-cabin" data-cabin x="' + (TOWER.x + 6) + '" y="' + (here.y - 8) + '" width="' + (TOWER.w - 12) + '" height="16" rx="3" style="--to:' + (to.y - here.y) + 'px"/>' +
-      '<g class="m-team" data-team style="transform:translate(' + here.x + 'px,' + (here.y - 12) + 'px)" data-to="translate(' + to.x + 'px,' + (to.y - 12) + 'px)"><image href="' + GQ.knit.src('pin') + '" x="-11" y="-26" width="22" height="26"/></g>' +
+      // L'équipe (trois petits personnages) dans la cabine d'ascenseur.
+      '<g class="m-team" data-team style="transform:translate(' + here.x + 'px,' + here.y + 'px)" data-to="translate(' + to.x + 'px,' + to.y + 'px)">' +
+      '<rect class="m-cabin" x="-21" y="-12" width="42" height="24" rx="4"/>' +
+      '<g class="m-crew">' +
+      '<circle cx="-11" cy="-3" r="3.4" fill="#e4323a"/><rect x="-15" y="1.5" width="8" height="8.5" rx="3" fill="#e4323a"/>' +
+      '<circle cx="0" cy="-4" r="3.6" fill="#17428c"/><rect x="-4.2" y="0.8" width="8.4" height="9.2" rx="3" fill="#17428c"/>' +
+      '<circle cx="11" cy="-3" r="3.4" fill="#0094c9"/><rect x="7" y="1.5" width="8" height="8.5" rx="3" fill="#0094c9"/>' +
+      '</g></g>' +
       '</svg></div>'
     );
   }
@@ -186,10 +192,8 @@
       var root = document.querySelector('[data-board]');
       if (!root) return;
       var team = root.querySelector('[data-team]');
-      var cabin = root.querySelector('[data-cabin]');
       setTimeout(function () {
         if (team) team.style.transform = team.getAttribute('data-to');
-        if (cabin) cabin.classList.add('is-moving');
       }, 500);
     },
   };

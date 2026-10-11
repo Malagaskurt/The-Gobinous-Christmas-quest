@@ -105,6 +105,26 @@
   /* Affichage                                                           */
   /* ------------------------------------------------------------------ */
 
+  /* Apparition douce des blocs au défilement. */
+  var REVEAL = '.prog > li, .vlog-card, .frame, .theme-card, .defi, .wq, .rule, .model-card, .briefing, .map, .roles-box, .idscan, .bips, .push';
+  var io = 'IntersectionObserver' in window && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    ? new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px' })
+    : null;
+  function reveal() {
+    if (!io) return;
+    var vh = window.innerHeight;
+    app.querySelectorAll(REVEAL).forEach(function (el) {
+      // Seuls les blocs encore hors de l'écran apparaissent au défilement.
+      if (el.getBoundingClientRect().top < vh * 0.92) return;
+      el.classList.add('reveal');
+      io.observe(el);
+    });
+  }
+
   GQ.render = function () {
     timers.forEach(clearInterval);
     timers = [];
@@ -143,7 +163,12 @@
     else if (msg && msg.kind === 'error' && !msg.sounded) { msg.sounded = true; GQ.audio.sfx('error'); voice = 'echec'; }
     if (changed) {
       document.getElementById('fx').innerHTML = '';
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      // Transition douce entre deux écrans (fondu + léger glissement).
+      app.classList.remove('page-enter');
+      void app.offsetWidth;
+      app.classList.add('page-enter');
+      reveal();
       var h = app.querySelector('h1[tabindex]');
       if (h) h.focus({ preventScroll: true });
     } else {

@@ -58,7 +58,7 @@ const browser = await chromium.launch({
   ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}),
   args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
 });
-const ctx = await browser.newContext({ viewport: { width: 375, height: 740 }, isMobile: true, hasTouch: true, permissions: ['camera'] });
+const ctx = await browser.newContext({ viewport: { width: 375, height: 740 }, isMobile: true, hasTouch: true, permissions: ['camera'], reducedMotion: 'reduce' });
 const page = await ctx.newPage();
 page.setDefaultTimeout(8000);
 const jsErrors = [];
@@ -137,12 +137,13 @@ const SHORT = CFG.parametres.modeTest.dureeBlocageCourtSecondes * 1000;
 console.log('\nDépart');
 
 await step('Accueil « The Gobinous Christmas Club » → programme des 5 temps forts', async () => {
-  assert(await has('Christmas Club') && await has('découvrir le programme'), 'accueil du Club absent');
+  assert(await has('Christmas Club') && await has('Appuyer pour découvrir'), 'accueil du Club absent');
+  assert((await page.locator('.club-truck').count()) === 1, 'camion de livraison absent');
   await noHorizontalScroll();
   await page.click('.club-cta [data-action="to-programme"]');
   await settle();
   assert((await hash()) === '#/programme', 'programme non affiché');
-  for (const n of ['Christmas Quest', 'Christmas Party', 'Christmas Battle', 'Christmas Wrap-Up', 'Le Vlog des Gobinous']) {
+  for (const n of ["Gobi'Christmas", 'Quest', 'Party', 'Battle', 'Wrap-Up', 'Le Vlog des Gobinous']) {
     assert(await has(n), `temps fort absent : ${n}`);
   }
   assert((await page.locator('.prog-card').count()) === 4, '4 temps forts attendus');

@@ -1618,7 +1618,6 @@ body.tone-red {
 .m-ping { fill: none; stroke: #e4323a; stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: m-ping 1.6s ease-out infinite; }
 @keyframes m-ping { from { transform: scale(1); opacity: 0.9; } to { transform: scale(2.6); opacity: 0; } }
 .m-team { transition: transform 1s cubic-bezier(0.3, 1.3, 0.5, 1); }
-.m-team image { animation: m-bob 1.6s ease-in-out infinite; }
 @keyframes m-bob { 50% { transform: translateY(-4px); } }
 .stepper[data-action] { cursor: pointer; padding: 4px 6px; margin: -4px -6px; border-radius: 999px; transition: background 0.2s; }
 .stepper[data-action]:active { background: rgba(255, 255, 255, 0.1); }
@@ -1784,8 +1783,8 @@ body::before, body::after { opacity: 0.45; }
 .access-kicker { margin: 4px 0 12px; }
 .map-compact { max-width: 340px; margin: 0 auto 18px; }
 .map-compact .map-svg { max-height: 46vh; width: auto; margin: 0 auto; }
-.m-cabin { fill: #e3f6fc; opacity: 0.85; transition: transform 1.8s cubic-bezier(0.65, 0, 0.35, 1); }
-.m-cabin.is-moving { transform: translateY(var(--to)); }
+.m-cabin { fill: #e3f6fc; stroke: #fff; stroke-width: 1.5; }
+.m-crew { animation: m-bob 1.4s ease-in-out infinite; }
 .m-team { transition: transform 1.8s cubic-bezier(0.65, 0, 0.35, 1); }
 
 /* =====================================================================
@@ -1832,3 +1831,87 @@ body::before, body::after { opacity: 0.45; }
 .m-name { font-size: 13px !important; letter-spacing: 1px; }
 .map-compact .map-svg { height: min(46vh, 420px); max-height: none; width: auto; max-width: 100%; }
 .map-compact { display: flex; justify-content: center; border: 0; }
+
+/* =====================================================================
+ * TRANSITIONS DOUCES
+ * ===================================================================== */
+html { scroll-behavior: smooth; }
+#app.page-enter > * { animation: page-in 0.5s cubic-bezier(0.22, 0.8, 0.3, 1) both; }
+#app.page-enter > *:nth-child(2) { animation-delay: 0.05s; }
+#app.page-enter > *:nth-child(3) { animation-delay: 0.1s; }
+@keyframes page-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 0.8, 0.3, 1); }
+.reveal.is-in { opacity: 1; transform: none; }
+.modal { animation: modal-soft 0.35s cubic-bezier(0.22, 0.8, 0.3, 1) both; }
+.modal.modal-sheet { animation: page-in 0.4s cubic-bezier(0.22, 0.8, 0.3, 1) both; }
+@keyframes modal-soft { from { opacity: 0; transform: translate(-50%, -46%) scale(0.98); } to { opacity: 1; transform: translate(-50%, -50%); } }
+.modal-backdrop { animation: fade 0.35s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  #app.page-enter > *, .modal, .modal.modal-sheet { animation: none; }
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* =====================================================================
+ * ACCUEIL : ville de Noël, camion de livraison, CTA textuel
+ * ===================================================================== */
+.club { background: none !important; }
+.club-city { position: relative; height: 130px; margin: 18px calc(-1 * var(--gutter)) 0; overflow: hidden; }
+.club-city-skyline { position: absolute; inset: auto 0 0; height: 110px; background: var(--knit-ground) repeat-x left bottom / auto 110px; }
+.club-truck { position: absolute; left: 0; bottom: 4px; width: 96px; animation: truck 9s linear infinite; }
+.club-truck-img { width: 100%; animation: truck-bump 0.5s ease-in-out infinite; }
+@keyframes truck { from { transform: translateX(-110px); } to { transform: translateX(calc(100vw + 20px)); } }
+@keyframes truck-bump { 50% { transform: translateY(-1.5px); } }
+.club-parcel { position: absolute; bottom: 10px; width: 26px; opacity: 0; }
+.club-parcel-img { width: 100%; }
+.club-parcel.p1 { left: 32%; animation: drop 9s linear infinite 2.9s; }
+.club-parcel.p2 { left: 68%; animation: drop 9s linear infinite 6.1s; }
+@keyframes drop { 0% { opacity: 0; transform: translateY(-22px); } 3% { opacity: 1; transform: none; } 30% { opacity: 1; } 38%, 100% { opacity: 0; } }
+.club-cta { margin: 20px auto 30px; }
+.club-tap {
+  display: inline-flex; align-items: center; gap: 10px; padding: 12px 6px; border: 0; background: none; cursor: pointer;
+  font: 400 1.9rem/1 var(--font-pixel); letter-spacing: 0.06em; text-transform: uppercase; color: #fff;
+  border-bottom: 2px solid #e4323a; animation: tap-float 3s ease-in-out infinite;
+}
+.club-tap .icon { width: 0.8em; height: 0.8em; color: #e4323a; stroke-width: 3; }
+.club-tap:active { transform: scale(0.97); }
+@keyframes tap-float { 50% { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .club-truck, .club-parcel, .club-tap { animation: none; } .club-truck { left: 30%; } }
+
+/* =====================================================================
+ * PROGRAMME : cartes tuiles colorées, 2 par ligne, légèrement inclinées
+ * ===================================================================== */
+.prog { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 14px !important; margin-top: 8px; }
+.prog > li { min-width: 0; }
+.prog .prog-card {
+  position: relative; display: flex !important; flex-direction: column; align-items: flex-start; gap: 6px;
+  min-height: 236px; height: 100%; padding: 16px 14px 14px !important; border-radius: 22px !important; overflow: hidden;
+  text-align: left; color: #fff; background: var(--pc, #e4323a) !important; box-shadow: none !important;
+  transform: rotate(var(--tilt, 0deg)); animation: float-card 5s ease-in-out infinite; animation-delay: var(--fd, 0s);
+  transition: transform 0.25s ease;
+}
+.prog .prog-card::before { display: none; }
+.prog .prog-card:active { transform: rotate(0deg) scale(0.97); }
+.prog > li:nth-child(1) .prog-card { --pc: #e4323a; --tilt: -2.5deg; --fd: 0s; }
+.prog > li:nth-child(2) .prog-card { --pc: #2fc0ee; --tilt: 2deg; --fd: -1.2s; color: #0b1d45; }
+.prog > li:nth-child(3) .prog-card { --pc: #2a5db0; --tilt: 1.8deg; --fd: -2.4s; }
+.prog > li:nth-child(4) .prog-card { --pc: #f6efe2; --tilt: -2deg; --fd: -3.6s; color: #0b1d45; }
+@keyframes float-card { 50% { translate: 0 -5px; } }
+.prog .prog-num { position: static; padding: 3px 9px; border-radius: 999px; background: rgba(255, 255, 255, 0.25); color: inherit; font: 400 1rem/1 var(--font-pixel); }
+.prog > li:nth-child(4) .prog-num { background: rgba(23, 66, 140, 0.12); }
+.prog .prog-kicker { margin-top: 6px; font: 700 0.62rem/1 var(--font-head); letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.85; }
+.prog .prog-name { font: 400 1.9rem/0.95 var(--font-pixel) !important; letter-spacing: 0.03em; text-transform: uppercase; color: inherit !important; overflow-wrap: anywhere; }
+.prog .prog-text { font-size: 0.8rem; line-height: 1.4; color: inherit !important; opacity: 0.92; }
+.prog .prog-art { position: absolute; right: -6px; bottom: 30px; width: 58px; height: 58px; background: none !important; opacity: 0.95; box-shadow: none !important; }
+.prog .prog-ico { width: 100%; }
+.prog .prog-go { margin-top: auto; margin-left: 0; font: 400 1.15rem/1 var(--font-pixel) !important; letter-spacing: 0.06em; color: inherit !important; }
+.prog .prog-go .icon { width: 0.9em; height: 0.9em; }
+.vlog-card { margin-top: 22px; border-radius: 22px; }
+.vlog-card .prog-go { font: 400 1.15rem/1 var(--font-pixel) !important; }
+@media (prefers-reduced-motion: reduce) { .prog .prog-card { animation: none; } }
+
+/* Boutons (CTA) : même police gaming que les titres. */
+.btn { font: 400 1.5rem/1 var(--font-pixel) !important; letter-spacing: 0.06em; text-transform: uppercase; }
+.btn-small, .btn-test { font-size: 1.2rem !important; }
+.btn .icon { width: 0.75em; height: 0.75em; }
+.club-tap { width: auto !important; white-space: nowrap; font-size: clamp(1.4rem, 6.4vw, 1.8rem); }
+.club-cta { display: flex; justify-content: center; }
