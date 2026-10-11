@@ -1,6 +1,6 @@
 /* Généré par tools/generer-hors-ligne.mjs : ne pas modifier à la main. */
 self.HORS_LIGNE = {
- "version": "75d024148027",
+ "version": "104d0a3856b0",
  "fichiers": [
   "index.html",
   "css/fonts.css",
@@ -15,7 +15,6 @@ self.HORS_LIGNE = {
   "js/core.js",
   "js/elf.js",
   "js/events.js",
-  "js/fin.js",
   "js/knit.js",
   "js/party.js",
   "js/pixel.js",
@@ -55,7 +54,6 @@ self.HORS_LIGNE = {
   "assets/img/favicon.svg",
   "assets/img/logo-saint-gobain-blanc.png",
   "assets/img/logo-saint-gobain-bleu.png",
-  "assets/img/pere-noel-3d.webp",
   "assets/img/pere-noel-entier.jpg",
   "assets/img/pere-noel.jpg",
   "assets/img/photos/modele-1.jpg",
@@ -69,7 +67,6 @@ self.HORS_LIGNE = {
   "assets/img/suspects/c.jpg",
   "assets/img/suspects/d.jpg",
   "assets/vendor/qrcode.js",
-  "assets/vendor/three.min.js",
   "assets/video/barnabe-sous-titres.json",
   "assets/video/barnabe.mp4",
   "assets/video/barnabe.webm"

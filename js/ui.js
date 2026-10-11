@@ -185,7 +185,10 @@
     el.classList.add('is-visible');
     if (GQ.audio) GQ.audio.sfx('notif');
     clearTimeout(notifTimer);
-    notifTimer = setTimeout(function () { el.classList.remove('is-visible'); }, opts.ms || 5200);
+    // Assez longtemps pour être lue confortablement : selon la longueur.
+    var len = String(opts.text || '').length;
+    var ms = opts.ms || Math.max(6000, Math.min(12000, 4000 + len * 55));
+    notifTimer = setTimeout(function () { el.classList.remove('is-visible'); }, ms);
   };
 
   /* ------------------------------------------------------------------ */

@@ -25,7 +25,7 @@ window.GAME_CONFIG.quetes = {
   message: {
     titre: "Cheat Code",
     intro:
-      "Le Père Noël vous a caché un message codé sur le comptoir, avec sa grille. Barnabé ne sait pas la lire : déchiffrez-le pour prendre de l'avance.",
+      "Le Père Noël veut absolument vous aider : son grand objectif, c'est d'envoyer Barnabé tout droit à Pôle Emploi ! Il vous a donc laissé exprès un **message codé** sur le comptoir, avec sa grille, formulé pour que Barnabé ne puisse pas le décoder. Déchiffrez-le vite pour comprendre la suite et avancer.",
     boutonIntro: "Découvrir le message",
     consigne: "",
     /* Message chiffré, ligne par ligne (lettres A à Z et espaces). */
@@ -46,7 +46,7 @@ window.GAME_CONFIG.quetes = {
     reussiteApresGelTitre: "Le gel est levé !",
     reussiteApresGelTexte: "La phrase secrète était : « BARNABÉ A PERDU LE CONTRÔLE ».",
     gelSuite: "Ensuite, le Père Noël vous soufflera la solution.",
-    bouton2: "Foncer",
+    bouton2: "Voir la progression",
   },
 
   /* ------------------------------------------------------------------ */
@@ -90,7 +90,7 @@ window.GAME_CONFIG.quetes = {
 
     reussiteTitre: "Diversion réussie !",
     reussiteTexte: "Barnabé est noyé sous vos photos. Une alerte tombe au Support 44…",
-    bouton: "Découvrir la suite",
+    bouton: "Voir la progression",
   },
 
   /* ------------------------------------------------------------------ */
@@ -197,7 +197,7 @@ window.GAME_CONFIG.quetes = {
     },
     reussiteTitre: "Badge analysé !",
     reussiteTexte: "Propriétaire identifié. Dernier étage où il a sévi : 33ᵉ étage.",
-    bouton: "Remonter la piste",
+    bouton: "Voir la progression",
   },
 
   /* ------------------------------------------------------------------ */
@@ -338,15 +338,9 @@ window.GAME_CONFIG.quetes = {
 
     boutonAccueil: "Retour à l'accueil",
 
-    /* Écran de fin : grand titre, Père Noël en 3D, consigne en petit. */
-    finTitre: "Mission presque accomplie, descendez à La Verrière !",
-    /* Bulles du spectacle de fin (Père Noël et lutins). */
-    finBulles: [
-      { qui: "Le Père Noël", texte: "Et pour Barnabé… c'est direction Pôle Emploi, sur-le-champ !" },
-      { qui: "Un lutin", texte: "Et pour nous, c'est la prime vacances qui nous attend !" },
-    ],
-    finTexte: "",
+    /* Écran de fin : épuré et centré sur la ville de Noël animée. */
+    finTitre: "Mission presque accomplie !",
     finBravo: "Bravo {equipe} !",
-    finConsigne: "Avec votre paquet, le plus vite possible. Interdiction de l'ouvrir avant !",
+    finConsigne: "Rendez-vous à La Verrière (4ᵉ étage) avec votre colis non encore déballé !",
   },
 };

@@ -39,7 +39,7 @@ window.GAME_CONFIG.parametres = {
   penalites: {
     /* Après le quiz : deviner l'étage (le gel fait apparaître l'indice
      * bonus). */
-    etage: { essais: 3, gelSecondes: 45, apresGel: "valider" },
+    etage: { essais: 2, gelSecondes: 45, apresGel: "reessayer" },
     /* Quête 2 : le message codé (la solution s'affiche après le gel). */
     message: { essais: 3, gelSecondes: 45, apresGel: "valider" },
     /* Quête 4 : chacun des 4 modules de l'enquête. */
@@ -51,11 +51,11 @@ window.GAME_CONFIG.parametres = {
   },
 
   /* ---- Le hack de Barnabé ----------------------------------------
-   * Une fois par équipe, Barnabé gèle l'écran du téléphone `secondes`
+   * Une fois par équipe, Barnabé gèle l'écran du téléphone `secondes` (30)
    * secondes, à un moment tiré au hasard entre `entrePourcent` du chrono
    * (ex. [10, 65] : entre 10 % et 65 % des 30 minutes). Toujours avant la
    * salle Tokyo : au plus tard en arrivant à la dernière étape. */
-  hack: { actif: true, secondes: 15, entrePourcent: [10, 65] },
+  hack: { actif: true, secondes: 30, entrePourcent: [10, 65] },
 
   /* ---- Son : fond musical, voix et effets sonores -------------------
    * noel  : deux petits airs de Noël (boîte à musique) qui s'enchaînent

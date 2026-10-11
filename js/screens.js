@@ -418,32 +418,31 @@
   function accessScreen(n) {
     var A = T.acces;
     var st = GQ.stage(n);
+    var s = GQ.state;
+    // L'ascenseur monte jusqu'à la nouvelle étape une seule fois.
+    var move = n > 1 && s.mapShown !== n;
     return {
       key: 'q' + n + '-access',
       elf: { say: 'lieu' },
       after: function () {
-        runTypewriters();
-        // Étape franchie : la map s'ouvre en plein écran et l'ascenseur
-        // monte jusqu'à la nouvelle étape (une seule fois par étape).
-        var s = GQ.state;
-        if (n > 1 && s.mapShown !== n) {
-          s.mapShown = n;
-          GQ.save();
-          var PL = T.plateau;
-          GQ.board.full({ from: n - 1, kicker: t(PL.etapeKicker, { n: n }), title: PL.etapes[n - 1] || '', button: PL.continuer });
-        }
+        if (!move) return;
+        s.mapShown = n;
+        GQ.save();
+        GQ.board.animate({ sound: true });
       },
-      // Pas de titre « Cap sur l'étage » : l'ascenseur de la map monte
-      // jusqu'à la prochaine étape (map plein écran).
+      // La map montre où aller ; dessous, un seul encadré pour débloquer.
       html:
         '<h1 class="sr-only" tabindex="-1">' + t(st.titre || st.etage) + '</h1>' +
         '<p class="kicker access-kicker">' + t(A.kicker, { n: n }) + '</p>' +
         '<p class="floor-tag">' + icon('pin') + '<span>' + t(st.etage) + (st.lieu ? ' · ' + t(st.lieu) : '') + '</span></p>' +
-        frame(typewriter('access-' + n, t(st.histoire), 'story')) +
-        (A.consigne ? '<p class="muted center small">' + t(A.consigne) + '</p>' : '') +
-        (A.secours && A.secoursApres && (GQ.state.gel.fails['acces-' + n] || 0) >= A.secoursApres
-          ? '<section class="rescue"><p>' + t(A.secours) + '</p></section>' : '') +
-        textAnswer({ form: 'access', label: A.label, button: A.bouton, caps: true, max: 40, fieldCls: 'field-code', expected: [st.motSecret], attrs: ' data-n="' + n + '"', btnCls: 'btn-red' }),
+        GQ.board.html({ from: move ? n - 1 : n, inline: true }) +
+        '<section class="arrive-box">' +
+        '<p class="arrive-title">' + t(A.arriveTitre) + '</p>' +
+        '<p class="arrive-text">' + t(A.arriveTexte) + '</p>' +
+        (A.secours && A.secoursApres && (s.gel.fails['acces-' + n] || 0) >= A.secoursApres
+          ? '<p class="arrive-help">' + t(A.secours) + '</p>' : '') +
+        textAnswer({ form: 'access', label: A.label, button: A.bouton, caps: true, max: 40, fieldCls: 'field-code', expected: [st.motSecret], attrs: ' data-n="' + n + '"', btnCls: 'btn-red' }) +
+        '</section>',
     };
   }
 
@@ -608,28 +607,78 @@
     };
   }
 
-  /* Après le quiz : le premier indice et l'étage à deviner. */
+  /* Messagerie animée (intrusion de Barnabé) : « … » de frappe, puis
+   * chaque bulle. Les bulles déjà lues (state.q1.chatVu) s'affichent
+   * directement ; seules les nouvelles sont animées. */
+  function chatBox(o) {
+    return '<section class="chat-app chat-intrusion">' +
+      '<header class="chat-head"><span class="chat-ava is-masked"><img src="' + esc(o.avatar) + '" alt=""></span>' +
+      '<span class="chat-who"><b>' + t(o.nom) + '</b><small class="is-alert"><i></i>' + t(o.statut) + '</small></span></header>' +
+      '<div class="chat-list" data-chat-list aria-live="polite"></div></section>';
+  }
+  function playChat(msgs, seen, done) {
+    var list = document.querySelector('[data-chat-list]');
+    if (!list) return;
+    var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function bubble(txt) {
+      var b = document.createElement('p');
+      b.className = 'chat-msg chat-msg-troll';
+      b.innerHTML = t(txt);
+      list.appendChild(b);
+    }
+    var n = still ? msgs.length : Math.min(seen || 0, msgs.length);
+    msgs.slice(0, n).forEach(bubble);
+    if (n >= msgs.length) return done(n);
+    (function next() {
+      if (!list.isConnected) return;
+      if (n >= msgs.length) return done(n);
+      var dots = document.createElement('p');
+      dots.className = 'chat-typing';
+      dots.innerHTML = '<i></i><i></i><i></i>';
+      list.appendChild(dots);
+      setTimeout(function () {
+        if (!list.isConnected) return;
+        dots.remove();
+        bubble(msgs[n++]);
+        GQ.audio.sfx('notif');
+        setTimeout(next, 900);
+      }, n ? 2400 : 1300);
+    })();
+  }
+
+  /* Après le quiz : Barnabé pirate l'écran et impose un calcul dont le
+   * résultat est l'étage de la quête 2. */
   function floorScreen() {
     var F = QZ.etage;
+    var s = GQ.state;
     var gel = GQ.freezeRemaining();
-    var bonus = GQ.state.q1.floorBonus && !gel;
+    var easy = !!s.q1.floorEasy && !gel;
+    var msgs = (F.bulles || []).concat(easy ? F.bullesFacile || [] : []);
     var html =
-      questHead(1, null, F.titre) +
-      frame('<p class="card-label">' + icon('loupe') + esc(T.general.indice) + '</p>' + typewriter('floor', t(F.indice), 'story'));
+      '<h1 class="sr-only" tabindex="-1">' + t(F.titre) + '</h1>' +
+      chatBox({ avatar: GQ.art3d.photo(), nom: F.chatNom, statut: F.chatStatut });
     if (gel) {
       html += freezeView({ titre: F.gelTitre, suite: F.gelSuite });
     } else {
-      if (bonus) {
-        html += '<div class="joker-hint bonus-hint" role="note"><p class="joker-hint-title">' + icon('etoile') + esc(F.bonusTitre) + '</p><p>' + t(F.bonus) + '</p></div>';
-      }
-      html += '<h2 class="section-title">' + t(F.question) + '</h2>' +
-        textAnswer({ form: 'floor', label: F.label, button: F.bouton, numeric: true, max: 12, fieldCls: 'field-code', expected: F.reponses });
+      html += '<div class="chat-answer" data-chat-answer hidden>' +
+        textAnswer({ form: 'floor', label: F.label, button: F.bouton, numeric: true, max: 12, fieldCls: 'field-code', expected: F.reponses, btnCls: 'btn-red' }) +
+        '</div>';
     }
     return {
-      key: 'q1-floor' + (gel ? '-gel' : bonus ? '-bonus' : ''),
+      key: 'q1-floor' + (gel ? '-gel' : easy ? '-easy' : ''),
       frozen: !!gel,
-      elf: gel ? { say: 'blocage' } : null,
-      after: function () { runTypewriters(); if (gel) freezeAfter(); },
+      voice: null,
+      after: function () {
+        playChat(msgs, s.q1.chatVu || 0, function (n) {
+          if (n > (s.q1.chatVu || 0)) { s.q1.chatVu = n; GQ.save(); }
+          var box = document.querySelector('[data-chat-answer]');
+          if (box) box.hidden = false;
+        });
+        if (gel) {
+          freezeAfter();
+          if (GQ.hack) GQ.hack.show(s.gel.until, { phrases: F.moqueries, titre: F.gelTitre });
+        }
+      },
       html: html,
     };
   }
@@ -953,7 +1002,7 @@
     var res = GQ.floorAnswer(value);
     if (!res) return GQ.render();
     if (res.ok) { GQ.uiReset(); return goQuest(); }
-    if (res.frozen) { GQ.uiReset(); GQ.toast(QZ.etage.erreur, 'error'); return GQ.render(); }
+    if (res.frozen) { GQ.uiReset(); return GQ.render(); }
     return formError(value, QZ.etage.erreur);
   };
 })();

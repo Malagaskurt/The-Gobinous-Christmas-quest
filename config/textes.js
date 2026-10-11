@@ -94,7 +94,7 @@ window.GAME_CONFIG.textes = {
     phrases: [
       "Oups… j'ai gelé votre téléphone. Pas de chance, hein ?",
       "Je pirate, vous patientez. Chacun son métier.",
-      "15 secondes de pause offertes par Barnabé. De rien !",
+      "30 secondes de pause offertes par Barnabé. De rien !",
       "Touchez pas à mon colis. Je gèle tout, voilà.",
     ],
     /* Quête 5 : après 2 mauvais codes d'affilée. */
@@ -279,9 +279,12 @@ window.GAME_CONFIG.textes = {
 
   /* Écran de saisie du mot secret d'un étage (début de chaque quête). */
   acces: {
-    kicker: "Étape {n} / 5 · verrouillée",
+    kicker: "Étape {n} / 5",
     consigne: "",
-    label: "Mot secret de l'étage",
+    /* Sous la map : l'encadré pour débloquer l'étape. */
+    arriveTitre: "Arrivé à l'étage ?",
+    arriveTexte: "Saisissez le code secret.",
+    label: "Code secret de l'étage",
     bouton: "Débloquer l'étape",
     erreur: "Ce n'est pas le mot secret de cet étage. Cherchez bien autour de vous !",
     /* Sortie de secours : affichée après `secoursApres` mauvais mots. */

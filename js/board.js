@@ -98,6 +98,43 @@
       '<g class="m-car m-car-b"><rect x="0" y="544" width="26" height="10" rx="4" fill="#2fc0ee"/><rect x="8" y="540" width="14" height="6" rx="2.5" fill="#e3f6fc"/><circle cx="24.5" cy="549" r="1.6" fill="#fff"/></g>';
   }
 
+  /* Décor de Noël : sapins enneigés, passants qui marchent, neige. */
+  function trees() {
+    return [[18, 506, 15], [48, 512, 11], [128, 508, 13], [158, 514, 9], [296, 510, 12], [338, 504, 16]].map(function (t) {
+      var x = t[0], y = t[1], h = t[2];
+      return '<g class="m-tree">' +
+        '<rect x="' + (x - 1.6) + '" y="' + (y - 2) + '" width="3.2" height="6" fill="#0b1d45"/>' +
+        '<path d="M' + x + ' ' + (y - h * 2.2) + 'L' + (x + h * 0.85) + ' ' + y + 'H' + (x - h * 0.85) + 'Z" fill="url(#m-tree)"/>' +
+        '<path d="M' + x + ' ' + (y - h * 2.2) + 'L' + (x + h * 0.42) + ' ' + (y - h * 1.1) + 'H' + (x - h * 0.42) + 'Z" fill="#e3f6fc" opacity=".85"/>' +
+        '<circle cx="' + (x - h * 0.3) + '" cy="' + (y - h * 0.6) + '" r="1.6" fill="#e4323a"/><circle cx="' + (x + h * 0.35) + '" cy="' + (y - h * 0.9) + '" r="1.4" fill="#fff"/>' +
+        '<path d="M' + x + ' ' + (y - h * 2.2 - 4) + 'l1.4 2.8 3 .4-2.2 2 .6 3-2.8-1.5-2.8 1.5.6-3-2.2-2 3-.4z" fill="#fff" class="m-tree-star"/>' +
+        '</g>';
+    }).join('');
+  }
+
+  function walker(color, hat, k) {
+    return '<g class="m-walk m-walk-' + k + '"><g class="m-step-bob">' +
+      '<rect x="-3.2" y="-9" width="6.4" height="8" rx="3" fill="' + color + '"/>' +
+      '<circle cx="0" cy="-12" r="3.1" fill="#f3c6a8"/>' +
+      '<path d="M-3.2 -13.2Q0 -19 3.2 -13.2Z" fill="' + hat + '"/>' +
+      '<rect x="-2.6" y="-1.5" width="2" height="4" rx="1" fill="#0b1d45" class="m-leg-a"/><rect x="0.6" y="-1.5" width="2" height="4" rx="1" fill="#0b1d45" class="m-leg-b"/>' +
+      '</g></g>';
+  }
+
+  function walkers() {
+    return '<g class="m-walkers">' +
+      walker('#e4323a', '#ffffff', 1) + walker('#2fc0ee', '#e4323a', 2) + walker('#ffffff', '#e4323a', 3) + walker('#17428c', '#2fc0ee', 4) +
+      '</g>';
+  }
+
+  function snow() {
+    var out = '<g class="m-snow">';
+    for (var i = 0; i < 36; i++) {
+      out += '<circle cx="' + ((i * 53) % W) + '" cy="-8" r="' + (i % 3 ? 1.3 : 2) + '" fill="#fff" opacity="' + (i % 4 ? 0.7 : 0.95) + '" style="animation-duration:' + (7 + (i % 6)) + 's;animation-delay:-' + ((i * 0.77) % 12).toFixed(2) + 's"/>';
+    }
+    return out + '</g>';
+  }
+
   function state(n) {
     var s = GQ.state;
     if (s.finished || n < s.quest || s.phase[n] === 'done') return 'done';
@@ -149,7 +186,7 @@
       stars += '<circle cx="' + ((i * 67) % W) + '" cy="' + ((i * 41) % 200 + 6) + '" r="' + (i % 4 ? 0.9 : 1.6) + '" class="m-star" style="animation-delay:' + ((i * 0.31) % 3).toFixed(2) + 's"/>';
     }
     return (
-      '<div class="map' + (opts.compact ? ' map-compact' : '') + '" data-board>' +
+      '<div class="map' + (opts.compact ? ' map-compact' : '') + (opts.inline ? ' map-inline' : '') + '" data-board>' +
       '<svg class="map-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(P.description) + '">' +
       '<defs>' +
       '<linearGradient id="m-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#081634"/><stop offset=".7" stop-color="#12306b"/><stop offset="1" stop-color="#1d4fa0"/></linearGradient>' +
@@ -160,15 +197,19 @@
       '<linearGradient id="m-b1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#23488f"/><stop offset="1" stop-color="#12306b"/></linearGradient>' +
       '<linearGradient id="m-b2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a5db0"/><stop offset="1" stop-color="#17428c"/></linearGradient>' +
       '<linearGradient id="m-b3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a74c9"/><stop offset="1" stop-color="#1b4a99"/></linearGradient>' +
+      '<linearGradient id="m-tree" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fe3ff"/><stop offset=".5" stop-color="#2fc0ee"/><stop offset="1" stop-color="#0b7fae"/></linearGradient>' +
       '<radialGradient id="m-moon" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e3f6fc" stop-opacity=".55"/><stop offset="1" stop-color="#e3f6fc" stop-opacity="0"/></radialGradient>' +
       '</defs>' +
       '<rect width="' + W + '" height="' + H + '" rx="22" fill="url(#m-sky)"/>' +
       '<circle cx="300" cy="70" r="46" fill="url(#m-moon)"/><circle cx="300" cy="70" r="13" fill="#e3f6fc" opacity=".9"/>' +
       stars +
+      snow() +
       '<g class="m-layer m-back">' + BACK.map(function (b) { return building(b, 0); }).join('') + arche() + '</g>' +
       tower() +
       '<g class="m-layer m-mid">' + MID.map(function (b) { return building(b, 1); }).join('') + '</g>' +
       ground() +
+      trees() +
+      walkers() +
       verriere() +
       '<path d="' + route() + '" class="m-route-glow"/>' +
       '<path d="' + route() + '" class="m-route" pathLength="100"/>' +
@@ -192,7 +233,7 @@
     html: html,
     /* Ascenseur : la cabine et le repère de l'équipe glissent jusqu'à
      * l'étape en cours. */
-    animate: function () {
+    animate: function (o) {
       var root = document.querySelector('[data-board]');
       if (!root) return;
       var team = root.querySelector('[data-team]');
@@ -200,6 +241,8 @@
       setTimeout(function () {
         if (team) team.style.transform = team.getAttribute('data-to');
         if (trail) trail.style.transform = 'scaleY(1)';
+        // Montée de l'ascenseur : souffle qui monte, puis « ding » d'arrivée.
+        if (o && o.sound && GQ.audio) GQ.audio.sfx('lift');
       }, 600);
     },
   };
@@ -242,7 +285,7 @@
       setTimeout(function () {
         if (team) team.style.transform = team.getAttribute('data-to');
         if (trail) trail.style.transform = 'scaleY(1)';
-        if (GQ.audio) GQ.audio.sfx('unlock');
+        if (GQ.audio) GQ.audio.sfx('lift');
       }, 700);
       setTimeout(function () { el.classList.remove('is-moving'); btn.focus(); }, 3300);
     } else {

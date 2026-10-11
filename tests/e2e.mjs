@@ -345,13 +345,13 @@ await step('Chrono global de 30 minutes affiché pendant le jeu', async () => {
   assert(/^(29|30):\d\d$/.test(txt), `chrono inattendu : ${txt}`);
 });
 
-await step('Hack surprise de Barnabé (15 s) puis alertes rouges 5 min et temps écoulé', async () => {
+await step('Hack surprise de Barnabé (30 s) puis alertes rouges 5 min et temps écoulé', async () => {
   const cs = await page.evaluate(() => GQ.state.clockStart);
   await page.evaluate(() => { GQ.state.hack = { plan: 0, until: 0, done: false }; GQ.save(); window.GQ_EVENTS_OFF = false; });
   await page.waitForSelector('#hack .hack-title', { timeout: 5000 });
   const h = (await state()).hack;
   const left = h.until - Date.now();
-  assert(h.done && left > 8000 && left <= 15000, `hack de 15 s non déclenché (${left} ms)`);
+  assert(h.done && left > 20000 && left <= 30000, `hack de 30 s non déclenché (${left} ms)`);
   assert(norm(await page.locator('#hack').innerText()).includes('barnab'), 'message de Barnabé absent');
   await page.evaluate(() => { GQ.state.hack.until = 0; GQ.save(); document.getElementById('hack').remove(); document.body.classList.remove('has-hack'); });
   await page.evaluate(() => { GQ.state.clockStart = Date.now() - 25.5 * 60000; GQ.state.alertes = {}; GQ.save(); });
@@ -388,7 +388,7 @@ await step('Fin du gel du quiz → quiz validé d\'office, premier indice déblo
   assert(await has('Tout est gelé'), 'gel non affiché');
   await page.waitForTimeout(ms + 1200);
   assert(await has('Le gel est levé'), 'quiz non validé d\'office');
-  assert(await has('Voir le premier signal'), 'indice non proposé');
+  assert((await page.locator('[data-action="to-floor"]').count()) === 1, 'suite non proposée');
 });
 
 await step('Quiz réussi à 8/8 (thème « La Tour »), correction consultable', async () => {
@@ -402,25 +402,27 @@ await step('Quiz réussi à 8/8 (thème « La Tour »), correction consultable',
   assert(await has('Voir la correction'), 'correction absente');
 });
 
-await step('Étage à deviner : 1re erreur → indice bonus, 3e erreur → gel, puis 5 accepté', async () => {
-  await clickText('Voir le premier signal');
-  assert(await has('mur végétal Saint-Gobain'), 'premier indice absent');
-  assert(!(await has('3 + 2')), 'indice bonus affiché trop tôt');
+await step('Intrusion de Barnabé : calcul, 2 erreurs → écran bloqué 45 s, puis calcul simple, 5 accepté', async () => {
+  await page.click('[data-action="to-floor"]');
+  await settle();
+  assert(await has('C\'est quoi ce délire') && await has('50 - 25 + 10 - 15 + 8 - 12 + 7 - 18'), 'messages de Barnabé absents');
   await answer('3');
   assert(!(await frozen()), 'gel dès la 1re erreur');
-  assert(await has('Indice bonus') && await has('3 + 2'), 'indice bonus absent');
+  assert(await has('Mauvais calcul'), 'erreur non signalée');
   await answer('4');
-  assert(!(await frozen()), 'gel dès la 2e erreur');
-  await answer('6');
-  assert(await frozen(), 'pas de gel après 3 erreurs');
+  assert(await frozen(), 'pas de blocage après 2 erreurs');
+  await page.waitForSelector('#hack .hack-title');
+  assert(norm(await page.locator('#hack').innerText()).includes('bloqué par barnab'), 'moquerie de Barnabé absente');
   const ms = await gelMs();
-  assert(ms > 0 && ms <= 45000, `gel inattendu : ${ms} ms`);
-  // Fin du gel simulée : l'équipe retente et trouve.
-  await page.evaluate(() => { const g = window.GQ.state.gel; g.until = 0; g.key = null; g.after = null; window.GQ.save(); window.GQ.render(); });
+  assert(ms > 0 && ms <= 45000, `blocage inattendu : ${ms} ms`);
+  // Fin du blocage simulée : un calcul beaucoup plus simple apparaît.
+  await page.evaluate(() => { const g = window.GQ.state.gel; g.until = 0; g.key = null; g.after = null; window.GQ.save(); const h = document.getElementById('hack'); if (h) h.remove(); document.body.classList.remove('has-hack'); window.GQ.render(); });
   await settle();
+  assert(await has('2 + 3'), 'calcul simplifié absent');
   await answer('5');
   assert((await state()).quest === 2 && (await hash()) === '#/quete/2', 'quête 2 non atteinte');
   assert(await has('5ᵉ étage'), 'destination absente');
+  assert((await page.locator('.map-inline').count()) === 1 && await has('Arrivé à l\'étage') && await has('Saisissez le code secret'), 'map et encadré d\'arrivée absents');
 });
 
 console.log('\nQuête 2 : le message codé');
@@ -458,7 +460,7 @@ await step('Erreur → essais restants, puis « Barnabé a perdu le contrôle »
 console.log('\nQuête 3 : le défi photo');
 
 await step('Mot secret GUIRLANDE → avertissement du lutin capricieux et 6 modèles', async () => {
-  await clickText('Foncer');
+  await clickText('Voir la progression');
   assert(await has('23ᵉ étage'), 'destination absente');
   await answer('Guirlande');
   assert(await has('flaire'), 'avertissement absent');
@@ -518,7 +520,7 @@ await step('Photos enregistrées sur le serveur pour les organisateurs', async (
 console.log('\nQuête 4 : l\'enquête du Support 44');
 
 await step('Mot secret ETOILE → terminal du Support 44', async () => {
-  await clickText('Découvrir la suite');
+  await clickText('Voir la progression');
   await answer('étoile');
   assert(await has('Support 44 · Analyse de badge'), 'terminal absent');
   await clickText("Analyser le badge");
@@ -558,8 +560,8 @@ await step('Modules 2 à 4 : matricule, service, nom → badge de Barnabé SIX-S
   await answer('six-seven');
   assert(await has('Badge analysé') && await has('Barnabé SIX-SEVEN') && await has('2575'), 'badge absent');
   assert(await has('Passages du badge') && await has('Dernier bip'), 'passages du badge absents');
-  await clickText('Remonter la piste');
-  assert(await has('Dernier bip') && await has('33ᵉ étage'), 'dernier étage absent');
+  await clickText('Voir la progression');
+  assert(await has('33ᵉ étage') && await has('Arrivé à l\'étage'), 'dernier étage absent');
 });
 
 console.log('\nQuête 5 : la traque finale');
@@ -652,17 +654,15 @@ await step('Appel du Père Noël puis écran de fin 3D, conservé au rechargemen
   assert((await page.evaluate(() => window.__sfx)).includes('hangup'), 'pas de son de fin d\'appel');
   // Fin de l'appel : directement l'écran de fin.
   assert(await has('Mission presque accomplie'), 'écran de fin absent');
-  assert(await has('Les Testeurs') && await has('Bravo Les Testeurs') && await has('Mission presque accomplie, descendez à La Verrière') && await has('Interdiction de l\'ouvrir avant'), 'consigne de fin absente');
-  assert((await page.locator('.f3 .f3-canvas').count()) === 1 && (await page.locator('.f3-card').count()) === 0, 'scène 3D absente ou encadrée');
-  assert(await has('la prime vacances qui nous attend') && await has('direction Pôle Emploi'), 'bulles de fin absentes');
+  assert(await has('Les Testeurs') && await has('Bravo Les Testeurs') && await has('Mission presque accomplie !') && await has('Rendez-vous à La Verrière (4ᵉ étage) avec votre colis non encore déballé'), 'consigne de fin absente');
+  assert((await page.locator('.fc-city .city-svg').count()) === 1 && (await page.locator('.fc-home[href="#/"]').count()) === 1, 'ville animée ou bouton de fin absents');
   const fete = await fetch(BASE + 'assets/audio/musique-fete.mp3');
   assert(fete.ok, 'musique de fin absente');
   assert((await page.locator('.topbar').count()) === 0, 'l\'écran de fin garde l\'en-tête du jeu');
   assert((await state()).finished, 'fin non enregistrée');
-  assert(mapSeen >= 4, `map plein écran non affichée à chaque étape franchie (${mapSeen})`);
   await reload();
   assert(await has('Mission presque accomplie'), 'fin perdue après rechargement');
-  assert((await page.locator('.f3-home[href="#/"]').count()) === 1, 'pas de retour à l\'accueil du site');
+  assert((await page.locator('.fc-home[href="#/"]').count()) === 1, 'pas de retour à l\'accueil du site');
   await noHorizontalScroll();
 });
 

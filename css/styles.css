@@ -1691,8 +1691,9 @@ body, body.tone-red { background: var(--bg); }
 body.tone-red { --bg: #0b1d45; }
 strong, b { font-weight: 700; }
 
-/* Illustrations : aplats, sans ombre portée. */
-.art3d, .quest-ico.art3d, .prog-ico.art3d, .theme-card .art3d, .rule-ico.art3d, .loader-star.art3d { filter: none !important; }
+/* Illustrations : relief 3D mesuré, ombre portée douce. */
+.art3d, .quest-ico.art3d, .prog-ico.art3d, .theme-card .art3d, .rule-ico.art3d, .loader-star.art3d { filter: drop-shadow(0 4px 6px rgba(3, 10, 30, .28)) !important; }
+.pix.art3d { filter: none !important; }
 .scene3d-snow { display: none; }
 
 /* Titres : couleurs pleines. */
@@ -2352,3 +2353,93 @@ html, body { overflow-x: hidden; }
 .pk-gift { display: block !important; width: var(--s) !important; height: var(--s) !important; }
 .pk-gift .g3-spin { display: block; }
 .time-alert-title { font-size: clamp(2.5rem, 13vw, 4.2rem); }
+
+/* Map : décor de Noël animé (neige, passants, sapins). */
+.m-snow circle { animation: m-fall linear infinite; }
+@keyframes m-fall { from { transform: translate(0, 0); } to { transform: translate(14px, 580px); } }
+.m-walk { animation: m-walk 22s linear infinite; }
+.m-walk-1 { animation-delay: 0s; } .m-walk-2 { animation-delay: -6s; }
+.m-walk-3 { animation-name: m-walk-back; animation-duration: 26s; } .m-walk-4 { animation-name: m-walk-back; animation-duration: 26s; animation-delay: -13s; }
+@keyframes m-walk { from { transform: translate(-20px, 528px); } to { transform: translate(380px, 528px); } }
+@keyframes m-walk-back { from { transform: translate(380px, 522px) scaleX(-1); } to { transform: translate(-20px, 522px) scaleX(-1); } }
+.m-step-bob { animation: m-bob-walk .5s ease-in-out infinite alternate; }
+@keyframes m-bob-walk { from { transform: translateY(0); } to { transform: translateY(-1.2px); } }
+.m-leg-a { animation: m-leg .5s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 0; }
+.m-leg-b { animation: m-leg .5s ease-in-out infinite alternate-reverse; transform-box: fill-box; transform-origin: 50% 0; }
+@keyframes m-leg { from { transform: rotate(-22deg); } to { transform: rotate(22deg); } }
+.m-tree-star { animation: twinkle 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .m-snow circle, .m-walk, .m-step-bob, .m-leg-a, .m-leg-b { animation: none; } .m-walk { transform: translate(60px, 528px); } }
+
+/* Écran d'arrivée : grande map puis un seul encadré pour débloquer. */
+.map-inline { margin: 4px -6px 14px; display: flex; justify-content: center; border: 0 !important; box-shadow: none !important; }
+.map-inline .map-svg { width: 100%; height: auto; max-height: 64vh; }
+.arrive-box { margin: 0 0 8px; padding: 18px 16px 16px; border-radius: 22px; text-align: center; color: #fff;
+  background: linear-gradient(155deg, rgba(47, 192, 238, .34), rgba(0, 173, 225, .12) 60%, rgba(158, 224, 245, .18));
+  -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4); }
+.arrive-title { margin: 0; font: 400 1.9rem/1 var(--font-pixel); letter-spacing: .06em; text-transform: uppercase; color: #fff; }
+.arrive-text { margin: 6px 0 12px; font-size: .95rem; color: rgba(255, 255, 255, .85); }
+.arrive-help { margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; background: rgba(228, 50, 58, .2); font-size: .85rem; text-align: left; }
+.arrive-box .answer-form label { color: #fff; }
+/* Intrusion de Barnabé (messagerie) après le quiz. */
+.chat-intrusion { border: 0; background: rgba(228, 50, 58, .14); }
+.chat-ava.is-masked img { filter: blur(6px) grayscale(1); transform: scale(1.5); }
+.chat-who small.is-alert { color: #ff8a8f; }
+.chat-who small.is-alert i { background: #e4323a; animation: twinkle 1s ease-in-out infinite; }
+.chat-msg-troll { background: #fff; border-left: 4px solid #e4323a; }
+.chat-answer[hidden] { display: none; }
+
+/* =====================================================================
+ * VERRE PARTOUT : même matière translucide que les cartes du programme
+ * pour tous les encadrés du jeu (les teintes peuvent varier). Les
+ * variables de couleur sont redéfinies à l'intérieur pour garder un texte
+ * lisible (clair sur verre).
+ * ===================================================================== */
+.frame, .rule, .roles-box, .team-card, .wq, .defi, .model-card, .theme-card, .notice, .rescue, .joker-hint, .bips, .terminal,
+.idscan-card, .id-card, .santa, .finale-card, .clue, .pig-card, .legend, .party-intro, .kpi, .admin-note {
+  --ink: #ffffff; --ink-soft: rgba(255, 255, 255, .82); --blue: #9ee0f5; --red: #ff7a7f; --paper: transparent; --card: transparent;
+  --line: rgba(255, 255, 255, .18); --cyan: #8fe3ff;
+  color: #fff !important;
+  background: linear-gradient(155deg, rgba(47, 192, 238, .30), rgba(0, 173, 225, .10) 60%, rgba(158, 224, 245, .16)) !important;
+  border: 0 !important; outline: 0 !important; box-shadow: none !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4);
+}
+/* Teintes : alerte en rouge, gel / secours en bleu plus soutenu. */
+.notice-warn, .alert-card, .rescue-answer { background: linear-gradient(155deg, rgba(228, 50, 58, .34), rgba(228, 50, 58, .12)) !important; }
+.alert-card { --ink: #fff; color: #fff !important; border: 0 !important; box-shadow: none !important; -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.theme-card.is-mystery { background: linear-gradient(155deg, rgba(228, 50, 58, .32), rgba(47, 192, 238, .16)) !important; }
+.theme-card .theme-title, .theme-card .theme-meta { color: #fff !important; }
+.theme-card .theme-meta { opacity: .75; }
+.theme-card .theme-icon { background: rgba(255, 255, 255, .12) !important; border-radius: 12px; }
+.frame p, .frame li, .rule p, .rule span, .team-card *, .wq legend, .defi *, .notice *, .rescue *, .joker-hint * { color: inherit; }
+.frame strong, .rule strong, .notice strong { color: #fff; }
+.wq textarea, .wq input, .frame input, .frame textarea { background: rgba(255, 255, 255, .92) !important; color: #0b1d45 !important; }
+/* Le carnet du briefing reste en papier (choix de DA). */
+.briefing.notebook { background: none !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* =====================================================================
+ * FIN ÉPURÉE : logo en haut, bloc centré, ville de Noël animée, bouton en bas.
+ * ===================================================================== */
+.finale-city { position: relative; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; overflow: hidden; text-align: center;
+  background: radial-gradient(120% 60% at 50% 0%, #17428c, transparent 70%), #0b1d45; }
+.finale-city .finale-sky { position: absolute; inset: 0; pointer-events: none; }
+.fc-top { position: relative; z-index: 3; padding: 30px 16px 0; }
+.fc-logo { width: 104px; margin: 0 auto; display: block; }
+.fc-center { position: relative; z-index: 3; width: 100%; max-width: 560px; margin: auto 0 0; padding: 28px 16px 8px; display: flex; flex-direction: column; align-items: center; }
+.fc-title { margin: 0; white-space: nowrap; font: 400 clamp(1.7rem, 8.4vw, 3.4rem)/1 var(--font-pixel); letter-spacing: .03em; text-transform: uppercase; color: #fff; animation: page-zoom .7s .2s cubic-bezier(.2, .8, .2, 1) both; }
+.fc-bravo { margin: 14px 0 0; font: 400 clamp(1.6rem, 7vw, 2.4rem)/1 var(--font-pixel); letter-spacing: .06em; text-transform: uppercase; color: #ff6b70; animation: fade-up .6s .6s ease-out both; }
+.fc-consigne { margin: 14px auto 0; max-width: 22em; padding: 12px 16px; border-radius: 16px; font-size: 1rem; font-weight: 600; line-height: 1.45; color: #fff;
+  background: linear-gradient(155deg, rgba(47, 192, 238, .30), rgba(0, 173, 225, .10)); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); animation: fade-up .6s .9s ease-out both; }
+.fc-city { position: relative; z-index: 1; width: 100%; flex: 0 0 auto; height: min(42vh, 380px); min-height: 240px; margin: 16px 0 0 !important; }
+.fc-car { position: absolute; bottom: 3%; width: 70px; z-index: 2; animation: fc-drive 13s linear infinite; }
+.fc-car-2 { width: 84px; bottom: 1%; animation-name: fc-drive-back; animation-duration: 16s; animation-delay: -5s; }
+.fc-car-img { width: 100%; animation: truck-bump .5s ease-in-out infinite; }
+@keyframes fc-drive { from { left: -100px; } to { left: 110%; } }
+@keyframes fc-drive-back { from { left: 110%; transform: scaleX(-1); } to { left: -120px; transform: scaleX(-1); } }
+.fc-bottom { position: relative; z-index: 3; width: 100%; max-width: 420px; padding: 14px 16px calc(22px + env(safe-area-inset-bottom)); background: #0e2a5e; }
+.fc-home { width: 100%; text-decoration: none; }
+@media (prefers-reduced-motion: reduce) { .fc-car { animation: none; left: 12%; } .fc-car-2 { left: 70%; } .fc-title, .fc-bravo, .fc-consigne { animation: none; } }
+.map-inline .map-svg { width: auto; max-width: 100%; height: min(50vh, 460px); max-height: none; }
+.role-card-where { background: rgba(255, 255, 255, .12) !important; color: #fff !important; border: 0 !important; }
+.role-card-where strong, .role-card-where b { color: #8fe3ff !important; }
+.prog-num-ico { display: inline-grid !important; place-items: center; }
+.prog-num-ico .icon { width: 14px; height: 14px; display: block; margin: 0; }

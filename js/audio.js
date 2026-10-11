@@ -188,6 +188,17 @@
       tone(c, out, 880, t, 0.05, 'square', 0.05, 1320);
       tone(c, out, 1760, t + 0.035, 0.05, 'triangle', 0.06);
     },
+    // Ascenseur : montée feutrée (souffle qui glisse vers l'aigu, léger
+    // trémolo) pendant 2,4 s, puis le « ding » d'arrivée à deux notes.
+    lift: function (c, out, t) {
+      tone(c, out, 110, t, 2.3, 'sine', 0.22, 220);
+      tone(c, out, 220, t, 2.3, 'triangle', 0.07, 440);
+      for (var k = 0; k < 8; k++) tone(c, out, 660 + k * 40, t + k * 0.28, 0.05, 'sine', 0.025);
+      tone(c, out, 1318.5, t + 2.4, 1.1, 'sine', 0.32);
+      tone(c, out, 2637, t + 2.4, 0.5, 'sine', 0.05);
+      tone(c, out, 1046.5, t + 2.75, 1.3, 'sine', 0.3);
+      tone(c, out, 2093, t + 2.75, 0.6, 'sine', 0.05);
+    },
     // Alerte de temps : sirène courte à deux tons.
     alarm: function (c, out, t) {
       for (var i = 0; i < 3; i++) {
@@ -197,9 +208,12 @@
     },
     // Notification (joker, Support 44, message) : double « ding » cristallin.
     notif: function (c, out, t) {
-      tone(c, out, 1318, t, 0.16, 'sine', 0.22);
-      tone(c, out, 1976, t + 0.11, 0.32, 'sine', 0.2);
-      tone(c, out, 3952, t + 0.11, 0.12, 'sine', 0.04);
+      // Trois notes franches et brillantes (type alerte smartphone).
+      [[1046.5, 0], [1568, 0.12], [2093, 0.24]].forEach(function (n) {
+        tone(c, out, n[0], t + n[1], 0.42, 'triangle', 0.5);
+        tone(c, out, n[0] * 2, t + n[1], 0.18, 'sine', 0.12);
+        tone(c, out, n[0] / 2, t + n[1], 0.12, 'square', 0.06);
+      });
     },
     // Raccrochage : le « clac » du combiné, puis la tonalité de fin de
     // ligne (« tu-tu-tu »), bien nette.
@@ -228,7 +242,7 @@
     var out = c.createGain();
     out.gain.value = Math.max(0, Math.min(1, Number(M.volumeEffets) || 0.5));
     // Le raccrochage doit s'entendre franchement.
-    if (name === 'hangup') out.gain.value = Math.max(out.gain.value, 0.9);
+    if (name === 'hangup' || name === 'lift' || name === 'notif' || name === 'alarm') out.gain.value = Math.max(out.gain.value, 0.9);
     out.connect(c.destination);
     SFX[name](c, out, c.currentTime + 0.01);
   }

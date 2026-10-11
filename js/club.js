@@ -80,7 +80,8 @@
       '<path d="M0 276H' + W + '" stroke="#ffffff" stroke-width="2" stroke-dasharray="14 14" opacity=".5"/>';
     return '<svg class="city-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMax meet" aria-hidden="true">' + out + '</svg>';
   }
-  // Le décor sert aussi à l'écran de fin (js/fin.js).
+  // Le décor sert aussi à l'écran de fin (js/q5-traque.js).
+  GQ.citySvg = function () { return cityScene(); };
   GQ.cityInner = function () { return cityScene().replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, ''); };
 
   /* Accueil : glisser vers le haut (ou toucher la flèche) pour découvrir. */
@@ -165,7 +166,7 @@
         '<ol class="prog">' + cards + '</ol>' +
         // Le Vlog : même carte que les temps forts, juste en dessous.
         (K.vlog ? '<a class="vlog-card" href="#/vlog">' +
-          '<span class="prog-num" aria-hidden="true">+</span>' +
+          '<span class="prog-num prog-num-ico" aria-hidden="true">' + GQ.icon('photo') + '</span>' +
           '<span class="prog-kicker">Photos &amp; vidéos</span>' +
           '<span class="prog-name">' + t(K.vlog.nom) + '</span>' +
           '<span class="prog-text">' + t(K.vlog.texte) + '</span>' +

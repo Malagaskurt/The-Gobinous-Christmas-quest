@@ -578,8 +578,15 @@
       GQ.completeQuest(1);
       return { ok: true };
     }
-    s.q1.floorBonus = true;
-    return Object.assign({ ok: false }, GQ.penalize('etage', 'etage'));
+    var res = GQ.penalize('etage', 'etage');
+    if (res.frozen) {
+      // 1er blocage : le calcul simplifié suivra. 2e blocage : à la fin,
+      // le Père Noël donne l'étage (filet de sécurité).
+      if (s.q1.floorEasy) GQ.state.gel.after = 'valider';
+      s.q1.floorEasy = true;
+      GQ.save();
+    }
+    return Object.assign({ ok: false }, res);
   };
 
   // Fin du gel après 2 erreurs sur l'étage : le lutin donne l'étage.

@@ -1,5 +1,5 @@
 /* Événements plein écran pendant le jeu :
- *  - le « hack » de Barnabé : il gèle l'écran 15 s (givre, message
+ *  - le « hack » de Barnabé : il gèle l'écran 30 s (givre, message
  *    sarcastique, compte à rebours), une fois par équipe, à un moment tiré
  *    au hasard mais toujours avant la salle Tokyo. Le même écran sert aux
  *    gels de la quête 5 (2 mauvais codes d'affilée) ;
@@ -44,7 +44,7 @@
       '<div class="hack-card">' +
       '<p class="hack-kicker">' + GQ.icon('cadenas') + esc(HK.kicker || 'Alerte intrusion') + '</p>' +
       '<div class="hack-ava"><img src="' + esc(GQ.art3d.photo()) + '" alt=""></div>' +
-      '<p class="hack-title">' + esc(HK.titre || 'Écran piraté') + '</p>' +
+      '<p class="hack-title">' + esc(opts.titre || HK.titre || 'Écran piraté') + '</p>' +
       '<p class="hack-text" data-hack-text>' + t(pick(opts.phrases || HK.phrases)) + '</p>' +
       '<p class="hack-count"><span data-hack-count>15</span><small>' + esc(HK.compteur || 'secondes') + '</small></p>' +
       '</div>';

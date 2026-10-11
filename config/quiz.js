@@ -81,27 +81,39 @@ window.GAME_CONFIG.quiz = {
     scanStatut: "Identité validée · Accès autorisé",
     reussiteApresGelTitre: "Le gel est levé !",
     reussiteApresGelTexte: "Le Père Noël a forcé l'accès : le premier signal vous attend.",
-    boutonIndice: "Voir le premier signal",
+    boutonIndice: "Continuer",
     revelationBouton: "C'est parti !",
   },
 
-  /* Après le quiz : deviner l'étage de la quête 2.
-   * Une mauvaise réponse gèle le jeu (parametres.penalites.etage), puis
-   * l'indice bonus apparaît. */
+  /* Après le quiz : intrusion de Barnabé (bulles de messagerie), qui
+   * impose un calcul dont le résultat est l'étage de la quête 2.
+   * 2 erreurs d'affilée → écran bloqué (parametres.penalites.etage), puis
+   * un calcul beaucoup plus simple. */
   etage: {
-    titre: "Premier signal",
-    indice:
-      "Barnabé a été repéré à l'étage du mur végétal Saint-Gobain, de la pause café avec vue sur la Tour Eiffel et de l'équipe Recrutement.",
-    question: "Quel est cet étage ?",
-    label: "Numéro de l'étage",
-    bouton: "Valider l'étage",
+    titre: "Intrusion",
+    chatNom: "Barnabé",
+    chatStatut: "a piraté votre écran",
+    bulles: [
+      "Attendez... C'est quoi ce délire ? On m'a fait galérer pendant des semaines pour valider mes accès, et vous, on vous laisse passer les quiz les doigts dans le nez ? Non mais vous rêvez !",
+      "Je refuse qu'on vous facilite la vie. Si vous voulez savoir à quel étage vous devez vous rendre pour la suite, résolvez ça : **50 - 25 + 10 - 15 + 8 - 12 + 7 - 18 = ?** (Le résultat indique l'étage).",
+    ],
+    /* Après le blocage : le calcul simplifié. */
+    bullesFacile: [
+      "Bon... visiblement c'était trop dur pour vous. Calcul de maternelle, alors : **2 + 3 = ?** (Le résultat indique l'étage).",
+    ],
+    question: "Votre réponse",
+    label: "Résultat du calcul (= l'étage)",
+    bouton: "Valider",
     reponses: ["5", "5e", "5eme", "5ieme", "cinq", "cinquieme"],
-    erreur: "Mauvaise réponse !",
-    gelTitre: "Givré !",
-    gelSuite: "Ensuite, le Père Noël vous donnera l'étage.",
+    erreur: "Mauvais calcul ! Encore une erreur et Barnabé bloque votre écran.",
+    gelTitre: "Bloqué par Barnabé",
+    /* Moqueries de Barnabé pendant le blocage (45 s). */
+    moqueries: [
+      "Deux erreurs ? Même mon grille-pain calcule mieux que vous. 45 secondes au coin !",
+      "Ha ha ! Les maths, c'est pas votre truc. Je bloque tout, le temps que vous révisiez.",
+    ],
+    gelSuite: "Ensuite, Barnabé vous proposera un calcul… beaucoup plus simple.",
     gelPasse: "Le Père Noël vous aide : c'était le **5ᵉ étage** !",
-    bonusTitre: "Indice bonus",
-    bonus: "Rendez-vous à l'étage 3 + 2 !",
   },
 
   themes: [

@@ -438,12 +438,14 @@
     };
   }
 
-  /* Écran de fin : scène 3D immersive (js/fin.js). En haut le titre et
-   * la consigne, au centre le Père Noël 3D dans sa carte de verre, en bas
-   * le temps et le retour à l'accueil. */
+  /* Écran de fin : épuré et centré, sur la ville de Noël animée (tours,
+   * maisons, sapins, camion de livraison, voitures, neige). */
   function end() {
     var s = GQ.state;
-    var c = GQ.clock();
+    var stars = '';
+    for (var i = 0; i < 26; i++) {
+      stars += '<i style="left:' + ((i * 37) % 100) + '%;top:' + ((i * 53) % 60) + '%;animation-delay:' + ((i % 7) * 0.45).toFixed(2) + 's"></i>';
+    }
     return {
       key: 'q5-end',
       bare: true,
@@ -451,21 +453,26 @@
       celebrate: 'big',
       music: 'fete',
       noFooter: true,
-      after: GQ.finTilt,
+      voice: null,
       html:
-        '<main class="finale finale-3d">' +
+        '<main class="finale finale-city">' +
         '<div class="garland" aria-hidden="true"></div>' +
-        '<header class="f3-top">' +
-        GQ.logo('clair', 'finale-logo') +
-        C.knitTitle(String(R.finBravo || 'Bravo {equipe} !').replace('{equipe}', s.team || ''), { cls: 'fin-bravo' }) +
-        '<p class="fin-mission">' + t(R.finTitre) + '</p>' +
-        (R.finConsigne ? '<p class="fin-consigne">' + t(R.finConsigne) + '</p>' : '') +
-        '</header>' +
-        GQ.finShow() +
-        '<footer class="f3-bottom">' +
-        (c ? '<p class="f3-time">' + icon('chrono') + '<span>Temps : <b class="nowrap">' + GQ.mmss(c.elapsed) + '</b></span></p>' : '') +
-        '<a class="btn btn-ghost f3-home" href="#/">' + icon('retour') + esc(R.boutonAccueil || 'Retour à l\'accueil') + '</a>' +
-        '</footer>' +
+        '<div class="finale-sky" aria-hidden="true">' + stars + '</div>' +
+        '<header class="fc-top">' + GQ.logo('clair', 'fc-logo') + '</header>' +
+        '<section class="fc-center">' +
+        '<h1 class="fc-title" tabindex="-1">' + t(R.finTitre) + '</h1>' +
+        '<p class="fc-bravo">' + esc(String(R.finBravo || 'Bravo {equipe} !').replace('{equipe}', s.team || '')) + '</p>' +
+        (R.finConsigne ? '<p class="fc-consigne">' + t(R.finConsigne) + '</p>' : '') +
+        '</section>' +
+        '<div class="club-city fc-city" aria-hidden="true">' + GQ.citySvg() +
+        '<span class="club-truck">' + GQ.knit.icon('truck', 'club-truck-img') + '</span>' +
+        '<span class="fc-car fc-car-1">' + GQ.knit.icon('car', 'fc-car-img') + '</span>' +
+        '<span class="fc-car fc-car-2">' + GQ.knit.icon('van', 'fc-car-img') + '</span>' +
+        '<span class="club-parcel p1">' + GQ.knit.icon('gift', 'club-parcel-img') + '</span>' +
+        '<span class="club-parcel p2">' + GQ.knit.icon('gift', 'club-parcel-img') + '</span>' +
+        '<span class="club-snow"></span>' +
+        '</div>' +
+        '<footer class="fc-bottom"><a class="btn btn-red fc-home" href="#/">' + icon('retour') + esc(R.boutonAccueil || 'Retour à l\'accueil') + '</a></footer>' +
         '</main>',
     };
   }
