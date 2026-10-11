@@ -503,6 +503,23 @@ async function api(req, res, path) {
     return send(res, 200, { ok: true, points: partyPoints(p), defis: Object.keys(p.defis) });
   }
 
+  // Christmas Party : défi validé automatiquement (ex. questionnaire envoyé).
+  if (path === '/api/party/auto' && req.method === 'POST') {
+    const b = await body(req);
+    const cfg = await partyConfig();
+    const n = Number(b.defi);
+    const defi = cfg.defis[n - 1];
+    if (!validId(b.id) || !defi || !defi.auto || defi.auto !== b.type) return send(res, 400, { erreur: 'défi invalide' });
+    const p = party[b.id] || { defis: {}, debut: now };
+    if (str(b.nom, 40).trim()) p.nom = str(b.nom, 40).trim();
+    if (!p.nom) return send(res, 400, { erreur: 'joueur inconnu' });
+    p.defis[n] = { at: now, points: Number(defi.points) || 0, auto: true, titre: str(defi.titre, 60) };
+    p.dernier = now;
+    party[b.id] = p;
+    await persistParty();
+    return send(res, 200, { ok: true, points: partyPoints(p), defis: Object.keys(p.defis) });
+  }
+
   // Christmas Party : preuve d'un défi (photo ou vidéo brute dans le corps).
   if (path === '/api/party/preuve' && req.method === 'POST') {
     const q = new URL(req.url, 'http://x').searchParams;
@@ -666,7 +683,7 @@ async function api(req, res, path) {
       now,
       joueurs: classement().map((c) => ({
         ...c,
-        preuves: Object.entries(party[c.id].defis || {}).map(([n, d]) => ({
+        preuves: Object.entries(party[c.id].defis || {}).filter(([, d]) => d.fichier).map(([n, d]) => ({
           defi: Number(n), titre: d.titre, points: d.points, type: d.type, at: d.at,
           url: `api/party/${c.id}/${d.fichier}`,
         })).sort((a, b) => a.defi - b.defi),
@@ -677,7 +694,7 @@ async function api(req, res, path) {
     const files = [];
     for (const c of classement()) {
       const folder = safeName(c.nom) + ' (' + c.id.slice(0, 4) + ')';
-      for (const d of Object.values(party[c.id].defis || {})) {
+      for (const d of Object.values(party[c.id].defis || {}).filter((x) => x.fichier)) {
         const fp = join(PARTY_DIR, c.id, d.fichier);
         let size = d.taille;
         let crc = d.crc;

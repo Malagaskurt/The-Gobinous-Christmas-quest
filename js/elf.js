@@ -38,11 +38,20 @@
     });
   }
 
-  // Portrait de Barnabé (flouté tant qu'il n'est pas démasqué).
+  /* Qui parle : le Père Noël (et ses lutins) guide et encourage l'équipe ;
+   * Barnabé, le troll, ne fait que provoquer. */
+  var BARNABE = { echec: 1, lieu: 1, accueil: 1, clic: 1 };
+  function who(key) { return BARNABE[key] ? 'barnabe' : 'santa'; }
+  var speaker = 'santa';
+
+  // Portrait de l'orateur : le Père Noël, ou Barnabé (flouté tant qu'il
+  // n'est pas démasqué).
   function frame() {
-    var m = GQ.art3d.unmasked();
-    sprite.src = GQ.art3d.photo();
+    var santa = speaker === 'santa';
+    var m = santa || GQ.art3d.unmasked();
+    sprite.src = santa ? GQ.art3d.santa : GQ.art3d.photo();
     root.classList.toggle('is-masked', !m);
+    root.classList.toggle('is-santa', santa);
   }
 
   function legs(on) {
@@ -128,7 +137,8 @@
   }
 
   /* Le lutin passe la tête sur le bord droit avec une bulle. */
-  function peek(text, ms) {
+  function peek(text, ms, by) {
+    speaker = by || 'santa';
     // Seulement sur les écrans de jeu (sous l'en-tête) : jamais par-dessus
     // un titre.
     if (!enabled() || busy() || !document.querySelector('.topbar')) return;
@@ -178,9 +188,10 @@
       var delay = document.getElementById('loader') ? 2900 : 700;
       reactTimer = setTimeout(function () {
         if (spec.walk) walk({ anchor: spec.walk, say: spec.say ? pick(TL[spec.say] || spec.say) : '' });
-        else if (spec.say) peek(pick(TL[spec.say] || spec.say));
+        else if (spec.say) peek(pick(TL[spec.say] || spec.say), null, who(spec.say));
       }, delay);
     },
     line: function (key) { return pick(TL[key]); },
+    who: who,
   };
 })();

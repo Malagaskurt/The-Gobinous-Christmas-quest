@@ -42,7 +42,7 @@ window.GAME_CONFIG.club = {
         id: "party",
         icone: "tree",
         nom: "Gobi'Christmas Party",
-        texte: "Goûter, atelier sapin et 20 défis à relever en autonomie.",
+        texte: "Goûter, atelier sapin et 15 défis à relever en autonomie.",
         badge: "Code secret",
         bouton: "Découvrir",
       },

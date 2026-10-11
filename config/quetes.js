@@ -42,7 +42,7 @@ window.GAME_CONFIG.quetes = {
     reussiteTexte: "« Barnabé a perdu le contrôle » : vous avez une longueur d'avance sur lui.",
     /* Bulle de Barnabé qui panique, après le cheat code. */
     paniqueBulle: "Quoi ?! Qui vous a filé ce code ?! Pas de panique… PAS. DE. PANIQUE.",
-    paniqueTexte: "Le troll panique : accélérez !",
+    paniqueTexte: "Ho ho ho ! Le troll panique : accélérez !",
     reussiteApresGelTitre: "Le gel est levé !",
     reussiteApresGelTexte: "La phrase secrète était : « BARNABÉ A PERDU LE CONTRÔLE ».",
     gelSuite: "Ensuite, Barnabé vous soufflera la solution.",
@@ -277,7 +277,7 @@ window.GAME_CONFIG.quetes = {
 
     /* Après TOKYO : le lutin démasqué, puis le faux appel. */
     trouve:
-      "Quoi ?! Vous m'avez retrouvé si vite ? OK, vous êtes des goats. Mon QG, c'est bien la SALLE TOKYO, au 33ᵉ étage. MAIS N'OUVREZ PAS LA PORTE ! Elle est piégée. Appelez-moi d'abord !",
+      "Bon OK, vous m'avez trouvé. Mais j'ai vraiment pas envie de finir à Pôle Emploi si le Père Noël le découvre, donc on fait alliance. Par contre, avant d'entrer dans la salle Tokyo, appelez-moi absolument : y a un système explosif à désamorcer, si vous entrez sans mon coup de fil, ça saute !",
     boutonAppel: "Appeler Barnabé",
 
     /* Message vocal de Barnabé (MP3 fourni, voix ElevenLabs) et ses
@@ -318,7 +318,8 @@ window.GAME_CONFIG.quetes = {
       { qui: "Un lutin", texte: "MERCI L'ÉQUIPE ! Colis sauvé, prime de vacances validée !" },
       { qui: "Le Père Noël", texte: "Et pour Barnabé... c'est direction Pôle Emploi sur le champ !" },
     ],
-    finTexte: "Bravo **{equipe}**",
-    finConsigne: "Retour à La Verrière (4ᵉ étage) avec le colis choisi pour découvrir ce qu'il contient.",
+    finTexte: "",
+    finBravo: "Bravo {equipe} !",
+    finConsigne: "Rendez-vous avec votre paquet à La Verrière le plus vite possible !",
   },
 };

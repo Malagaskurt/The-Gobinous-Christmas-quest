@@ -194,6 +194,10 @@
       if (!r.ok) throw new Error('http');
       me.envoye = true;
       save();
+      // Défi de la Party « Ton avis compte » : validé automatiquement.
+      if (GQ.party && GQ.party.auto) {
+        GQ.party.auto('avis').then(function (did) { if (did && GQ.cfg.party.autoValide) GQ.toast(GQ.cfg.party.autoValide, 'info'); });
+      }
       GQ.uiReset();
       GQ.render();
     }).catch(function () {

@@ -125,6 +125,12 @@
     });
   }
 
+  /* Petit son « gaming » à chaque clic sur un élément interactif. */
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest && e.target.closest('button, a[href], [data-action], .btn, label.btn-file, .prog-card, .vlog-card');
+    if (el && !el.disabled && GQ.audio && GQ.audio.sfx) GQ.audio.sfx('click');
+  }, true);
+
   GQ.render = function () {
     timers.forEach(clearInterval);
     timers = [];
@@ -182,8 +188,9 @@
     if (voice) {
       clearTimeout(GQ._voiceTimer);
       GQ._voiceTimer = setTimeout(function () {
-        var line = GQ.elf.line({ gel: 'blocage', reussite: 'reussite', echec: 'echec' }[voice] || voice);
-        if (line) GQ.elf.peek(line, 3200);
+        var key = { gel: 'blocage', reussite: 'reussite', echec: 'echec' }[voice] || voice;
+        var line = GQ.elf.line(key);
+        if (line) GQ.elf.peek(line, 3200, GQ.elf.who(key));
         else if (changed && scr.elf) GQ.elf.react(scr.elf);
       }, 450);
     } else if (changed && scr.elf) {

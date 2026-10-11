@@ -1,6 +1,6 @@
 /* Généré par tools/generer-hors-ligne.mjs : ne pas modifier à la main. */
 self.HORS_LIGNE = {
- "version": "404ff75b3691",
+ "version": "97e29436433b",
  "fichiers": [
   "index.html",
   "css/fonts.css",
@@ -53,6 +53,8 @@ self.HORS_LIGNE = {
   "assets/img/favicon.svg",
   "assets/img/logo-saint-gobain-blanc.png",
   "assets/img/logo-saint-gobain-bleu.png",
+  "assets/img/pere-noel-entier.jpg",
+  "assets/img/pere-noel.jpg",
   "assets/img/photos/modele-1.jpg",
   "assets/img/photos/modele-2.jpg",
   "assets/img/photos/modele-3.jpg",

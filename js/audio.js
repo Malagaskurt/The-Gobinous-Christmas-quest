@@ -183,6 +183,11 @@
       tone(c, out, 880, t, 0.8, 'triangle', 0.05, 440);
     },
     // Fin d'appel : « tu-tu-tu », comme sur un téléphone.
+    // Clic de bouton : petit « blip » de jeu vidéo, bref et discret.
+    click: function (c, out, t) {
+      tone(c, out, 880, t, 0.05, 'square', 0.05, 1320);
+      tone(c, out, 1760, t + 0.035, 0.05, 'triangle', 0.06);
+    },
     // Raccrochage : le « clac » du combiné, puis la tonalité de fin de
     // ligne (« tu-tu-tu »), bien nette.
     hangup: function (c, out, t) {

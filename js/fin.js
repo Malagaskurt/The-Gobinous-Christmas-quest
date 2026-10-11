@@ -74,12 +74,13 @@
     }
     return (
       '<div class="fin-show" aria-hidden="true">' +
-      '<svg class="fin-svg" viewBox="0 0 360 230">' +
+      '<svg class="fin-svg" viewBox="25 40 310 190" preserveAspectRatio="xMidYMax meet">' +
       '<defs><pattern id="f-stripes" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="3" fill="#e4323a"/><rect y="3" width="6" height="3" fill="#fff"/></pattern></defs>' +
+      // Décor : la même ville de Noël que la page d'accueil.
+      (GQ.cityInner ? '<g class="f-city" transform="translate(0 -19) scale(.9)">' + GQ.cityInner() + '</g>' : '<rect x="0" y="206" width="360" height="24" fill="#17428c"/>') +
       // Projecteurs de la fête.
       '<g class="f-lights"><path d="M40 0L-10 206H110Z" fill="#e4323a"/><path d="M320 0L250 206H370Z" fill="#00ade1"/><path d="M180 0L130 206H230Z" fill="#fff" opacity=".5"/></g>' +
       flakes +
-      '<rect x="0" y="206" width="360" height="24" fill="#17428c"/><path d="M0 206H360" stroke="#fff" stroke-width="3"/>' +
       '<g class="f-rig">' +
       SCOOTER +
       '<g class="f-pos f-pos2"><g class="f-hang f-hang2"><g class="f-twerk f-twerk2"><g transform="translate(133 196) scale(.9)">' + ELF + '</g></g></g></g>' +

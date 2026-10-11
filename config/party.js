@@ -23,7 +23,7 @@ window.GAME_CONFIG.party = {
   texte:
     "On se pose, on grignote et on décore ensemble le **sapin Gobinous** : polaroïds, kit déco et petits mots sont à votre disposition.",
   defiTexte:
-    "Et pour les plus motivés : **20 défis** à relever, en solo ou en équipe. Chaque défi rapporte des **Gobz**. Le plus riche à la fin de l'événement gagne une surprise !",
+    "Et pour les plus motivés : **15 défis** à relever, en solo ou en équipe. Chaque défi rapporte des **Gobz**. Le plus riche à la fin de l'événement gagne une surprise !",
 
   nomLabel: "Votre prénom ou nom d'équipe",
   nomPlaceholder: "Ex. : Camille, ou Les Givrés",
@@ -33,7 +33,7 @@ window.GAME_CONFIG.party = {
   /* La monnaie de l'événement. */
   monnaie: "Gobz",
   listeTitre: "Treats & Chill",
-  listeSousTitre: "La bucket list · 20 défis",
+  listeSousTitre: "La bucket list · 15 défis",
   classementTitre: "Classement",
   classementVide: "Personne n'a encore de Gobz. À vous de jouer !",
   classementHorsLigne: "Classement disponible quand le serveur de l'événement est en ligne.",
@@ -49,28 +49,28 @@ window.GAME_CONFIG.party = {
   tropLourd: "Fichier trop lourd (8 Go maximum).",
   defiValide: "Défi validé !",
   dejaValide: "Validé",
+  boutonAvis: "Répondre au questionnaire",
+  autoValide: "Défi « Ton avis compte » validé !",
 
-  /* Les 20 défis. video: true → la vidéo est proposée en premier. */
+  /* Les 15 défis officiels. video: true → la vidéo est proposée en premier.
+   * auto: "avis" → le défi se valide tout seul quand le questionnaire de
+   * satisfaction (Wrap-Up) est envoyé depuis ce téléphone. */
   defis: [
-    { titre: "Ambiance de folie", texte: "Prends une photo stylée de l'ambiance de l'événement.", points: 5 },
-    { titre: "Miroir, mon beau miroir", texte: "Fais un selfie de groupe dans un miroir avec un accessoire de Noël.", points: 5 },
-    { titre: "Main dans le goûter", texte: "Prends en photo ton équipe en train de piocher dans le goûter.", points: 10 },
-    { titre: "Nouveau pote", texte: "Fais un selfie avec quelqu'un que tu ne connaissais pas en arrivant.", points: 10 },
-    { titre: "Fashion Week", texte: "Prends une photo de ton équipe avec une pose de mannequins haute couture.", points: 10 },
-    { titre: "Cheers très sérieux", texte: "Immortalise un faux « cheers » avec des tasses, l'air hyper sérieux.", points: 10 },
-    { titre: "Lutin dans le sapin", texte: "Prends une photo d'un membre de l'équipe caché derrière les branches du sapin.", points: 15 },
-    { titre: "Déclaration dramatique", texte: "Fais une mini-vidéo ou une photo d'une déclaration d'amour (ou d'amitié) dramatique à un Gobinous.", points: 15, video: true },
-    { titre: "Trio absurde", texte: "Prends une photo de groupe exactement à trois, dans une pose totalement absurde.", points: 15 },
-    { titre: "Chef étoilé", texte: "Prends en photo quelqu'un en train de goûter un plat avec une concentration extrême.", points: 15 },
-    { titre: "Sieste générale", texte: "Prends une photo de tout le monde en train de faire semblant de s'endormir sur la table.", points: 15 },
-    { titre: "Trend de Noël", texte: "Fais une mini-vidéo d'une trend TikTok de Noël ou d'une danse improvisée.", points: 20, video: true },
-    { titre: "Panique chez Barnabé", texte: "Prends une photo de ton équipe faisant mine d'être en panique au téléphone avec Barnabé.", points: 20 },
-    { titre: "Zoom mystère", texte: "Prends en photo un détail banal de la pièce, de très près, façon devinette.", points: 20 },
-    { titre: "Clin d'œil collectif", texte: "Fais un selfie de groupe où tout le monde fait un clin d'œil.", points: 20 },
-    { titre: "Le Parrain", texte: "Mets la main sur l'épaule de quelqu'un d'une autre équipe, en mode parrain de la mafia.", points: 20 },
-    { titre: "Notre polaroïd", texte: "Prends en photo le polaroïd de ton équipe accroché sur le grand sapin.", points: 25 },
-    { titre: "Archi-goûter", texte: "Crée une mini-structure éphémère de Noël avec des objets du goûter et photographie-la.", points: 25 },
-    { titre: "Sosie de Barnabé", texte: "Trouve la personne qui ressemble le plus à un lutin (ou à Barnabé) et fais un selfie avec elle.", points: 30 },
-    { titre: "Menace signée Barnabé", texte: "Écris un mot de menace de la part de Barnabé et prends-le en photo sur le sapin.", points: 30 },
+    { titre: "Selfie ascenseur", texte: "Prends un selfie d'équipe dans l'ascenseur.", points: 10 },
+    { titre: "Objet random", texte: "Prends une photo avec un objet random.", points: 15 },
+    { titre: "Reporter d'un jour", texte: "Prends 10 belles photos de l'événement (dépose-les dans le Vlog) et envoie ici ta préférée.", points: 25 },
+    { titre: "J'accuse Barnabé", texte: "Enregistre une courte vidéo en équipe pour accuser publiquement Barnabé.", points: 20, video: true },
+    { titre: "Service VIP", texte: "Filme-toi en train de servir une personne que tu ne connais pas pendant le goûter.", points: 30, video: true },
+    { titre: "Team orga", texte: "Prends un selfie avec les organisatrices Gobinous.", points: 20 },
+    { titre: "Selfie goûter", texte: "Prends un selfie pendant le goûter.", points: 5 },
+    { titre: "Nouvelle rencontre", texte: "Prends une photo avec une personne que tu ne connaissais pas avant l'événement.", points: 15 },
+    { titre: "Déguisement de Noël", texte: "Trouve un déguisement de Noël et prends une photo.", points: 20 },
+    { titre: "Trend TikTok", texte: "Reproduis une trend de Noël TikTok, seul·e ou accompagné·e.", points: 100, video: true },
+    { titre: "Déclaration", texte: "Fais une petite déclaration d'amour ou d'amitié en vidéo à un Gobinou.", points: 50, video: true },
+    { titre: "Belle photo", texte: "Prends une belle photo de l'événement.", points: 5 },
+    { titre: "Mon Secret Santa", texte: "Prends un selfie avec le cadeau gagné au Secret Santa.", points: 25 },
+    { titre: "Chorale de Noël", texte: "Crée une chorale de Noël en vidéo.", points: 50, video: true },
+    { titre: "Ton avis compte", texte: "Laisse un avis sur l'événement avant de partir. Ce défi se valide tout seul dès que tu envoies le questionnaire du Wrap-Up.", points: 15, auto: "avis" },
   ],
+
 };

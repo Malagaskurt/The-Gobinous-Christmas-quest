@@ -610,7 +610,7 @@ await step('Appel de Barnabé puis écran de fin, conservé au rechargement', as
   await page.click('[data-action="paquet-validate"]');
   await settle();
   assert(await has('Mission presque accomplie'), 'écran de fin absent');
-  assert(await has('Les Testeurs') && await has('Retour à La Verrière (4ᵉ étage) avec le colis choisi'), 'consigne de fin absente');
+  assert(await has('Les Testeurs') && await has('Bravo Les Testeurs') && await has('Mission presque accomplie') && await has('Rendez-vous avec votre paquet à La Verrière le plus vite possible'), 'consigne de fin absente');
   assert((await page.locator('.fin-show .f-santa').count()) === 1 && (await page.locator('.fin-show .f-twerk').count()) === 2, 'Père Noël et lutins absents');
   assert(await has('Colis sauvé, prime de vacances validée') && await has('direction Pôle Emploi'), 'bulles de fin absentes');
   const fete = await fetch(BASE + 'assets/audio/musique-fete.mp3');
@@ -683,7 +683,7 @@ await step('Mode test : aller à une quête, simuler le mot secret, affichettes,
 
 console.log('\nChristmas Party et Wrap-Up');
 
-await step('Party : code 2020 obligatoire, nom, 20 défis avec appareil photo, vidéo et galerie', async () => {
+await step('Party : code 2020 obligatoire, nom, 15 défis avec appareil photo, vidéo et galerie', async () => {
   await go(BASE + '#/party');
   assert(await has('Code secret de la Party'), 'code non demandé');
   await answer('1234');
@@ -691,9 +691,9 @@ await step('Party : code 2020 obligatoire, nom, 20 défis avec appareil photo, v
   await answer(CFG.party.code);
   assert(await has("C'est l'heure du goûter") && await has('sapin Gobinous'), 'présentation absente');
   await answer('Les Givrés');
-  assert((await page.locator('.defi').count()) === 20, 'les 20 défis ne sont pas affichés');
+  assert((await page.locator('.defi').count()) === 15, 'les 15 défis ne sont pas affichés');
   assert(await has('Treats & Chill') || await has('Treats &amp; Chill'), 'titre de la liste absent');
-  await page.click('[data-action="defi-open"][data-n="12"]');
+  await page.click('[data-action="defi-open"][data-n="10"]');
   // Vidéo : caméra du téléphone ouverte directement en mode vidéo.
   assert((await page.locator('.modal input[type=file][accept="video/*"][capture="environment"]').count()) === 1, 'caméra vidéo non proposée');
   assert((await page.locator('.modal [data-action="defi-camera"][data-mode="photo"]').count()) === 1, 'appareil photo non proposé');
@@ -701,20 +701,21 @@ await step('Party : code 2020 obligatoire, nom, 20 défis avec appareil photo, v
   await page.click('[data-modal-cancel]');
 });
 
+let me2Points = 0;
 await step('Party : défi validé par photo → Gobz comptés par le serveur, classement en direct', async () => {
-  await page.click('[data-action="defi-open"][data-n="20"]');
+  await page.click('[data-action="defi-open"][data-n="13"]');
   await page.click('[data-action="defi-camera"]');
   await page.waitForFunction(() => { const v = document.querySelector('.cam video'); return v && v.videoWidth > 0; });
   await page.click('.cam-shutter');
   await page.waitForSelector('[data-action="defi-send"]');
   await page.click('[data-action="defi-send"]');
   await page.waitForSelector('.defi.is-done');
-  const pts = CFG.party.defis[19].points;
+  const pts = CFG.party.defis[12].points;
   const r = await (await fetch(BASE + 'api/party/classement')).json();
   const me = r.joueurs.find((x) => x.nom === 'Les Givrés');
   assert(me && me.points === pts, `points serveur inattendus : ${me && me.points}`);
   // Vidéo filmée avec la caméra du téléphone (capture native).
-  await page.click('[data-action="defi-open"][data-n="12"]');
+  await page.click('[data-action="defi-open"][data-n="10"]');
   await page.locator('.modal input[type=file][accept="video/*"][capture="environment"]').setInputFiles({
     name: 'video-defi.webm', mimeType: 'video/webm', buffer: readFileSync(join(root, 'assets/video/barnabe.webm')),
   });
@@ -737,11 +738,12 @@ await step('Party : défi validé par photo → Gobz comptés par le serveur, cl
   await page.waitForFunction(() => document.querySelectorAll('.defi.is-done').length === 3);
   const r2 = await (await fetch(BASE + 'api/party/classement')).json();
   const me2 = r2.joueurs.find((x) => x.nom === 'Les Givrés');
-  assert(me2.points === pts + CFG.party.defis[7].points + CFG.party.defis[11].points, `vidéos non comptées : ${me2.points}`);
+  me2Points = me2.points;
+  assert(me2.points === pts + CFG.party.defis[7].points + CFG.party.defis[9].points, `vidéos non comptées : ${me2.points}`);
   await page.waitForSelector('.ranking li.is-me');
   const d = await api('party');
   assert(d.joueurs[0].preuves.length === 3, 'preuves absentes côté organisateurs');
-  assert(d.joueurs[0].preuves.some((p) => p.defi === 12 && /^video\//.test(p.type)), 'vidéo filmée absente côté organisateurs');
+  assert(d.joueurs[0].preuves.some((p) => p.defi === 10 && /^video\//.test(p.type)), 'vidéo filmée absente côté organisateurs');
   await noHorizontalScroll();
 });
 
@@ -761,6 +763,12 @@ await step('Wrap-Up : anonyme, questions obligatoires, réponses et indicateurs 
   assert(await has('Merci'), 'remerciement absent');
   const a = await api('avis');
   assert(a.avis.length === 1 && a.avis[0].reponses.note === 4 && a.avis[0].reponses.mot === 'Bravo aux lutins', 'réponses non enregistrées');
+  // Défi « Ton avis compte » validé automatiquement à l'envoi du questionnaire.
+  const avisN = CFG.party.defis.findIndex((x) => x.auto === 'avis') + 1;
+  await page.waitForFunction(async (n) => { const r = await (await fetch('api/party/classement')).json(); const me = r.joueurs.find((x) => x.nom === 'Les Givrés'); return me && me.defis === 4; }, avisN).catch(() => {});
+  const cl = await (await fetch(BASE + 'api/party/classement')).json();
+  const giv = cl.joueurs.find((x) => x.nom === 'Les Givrés');
+  assert(giv && giv.defis === 4 && giv.points === me2Points + CFG.party.defis[avisN - 1].points, 'défi « Ton avis compte » non validé automatiquement');
   await go(BASE + '#/suivi/avis');
   await page.waitForSelector('.kpi-big');
   assert(await has('4,0') && await has('Bravo aux lutins') && await has('Exporter en CSV'), 'indicateurs absents');

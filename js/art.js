@@ -252,6 +252,9 @@
     var Q = GQ.cfg.quetes || {};
     return (Q.enquete && Q.enquete.fiche && Q.enquete.fiche.photo) || 'assets/img/suspects/c.jpg';
   }
+  /* Le Père Noël : le guide de l'équipe (bulles d'aide et d'encouragement). */
+  var SANTA = 'assets/img/pere-noel.jpg';
+
   /* Silhouette sombre du troll (oreilles pointues, bonnet), tant qu'il
    * n'est pas démasqué. */
   var SILHOUETTE = 'data:image/svg+xml,' + encodeURIComponent(
@@ -300,6 +303,7 @@
   var K = GQ.knit;
   var knitIcon = K.icon;
   K.icon = function (name, cls, alt) {
+    if (name === 'santa') return '<span class="barnabe is-pere-noel ' + (cls || '') + '" aria-hidden="true"><img src="' + SANTA + '" alt="" draggable="false"></span>';
     if (/^elf/.test(name)) return avatar(cls);
     if (uri(name)) return img(name, cls, alt);
     return knitIcon(name, cls, alt);
@@ -314,7 +318,7 @@
   K.title = ptext;
   K.scene = scene;
   GQ.pix = function (name, cls) { return img(name, 'pix ' + (cls || '')); };
-  GQ.art3d = { img: img, uri: uri, avatar: avatar, unmasked: unmasked, photo: photo, silhouette: SILHOUETTE };
+  GQ.art3d = { img: img, uri: uri, avatar: avatar, unmasked: unmasked, photo: photo, silhouette: SILHOUETTE, santa: SANTA };
 
   /* ------------------------------------------------------------------ */
   /* Guirlande lumineuse et skyline du pied de page                      */

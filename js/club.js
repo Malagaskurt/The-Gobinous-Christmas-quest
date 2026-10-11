@@ -80,6 +80,8 @@
       '<path d="M0 276H' + W + '" stroke="#ffffff" stroke-width="2" stroke-dasharray="14 14" opacity=".5"/>';
     return '<svg class="city-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMax meet" aria-hidden="true">' + out + '</svg>';
   }
+  // Le décor sert aussi à l'écran de fin (js/fin.js).
+  GQ.cityInner = function () { return cityScene().replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, ''); };
 
   /* Accueil : glisser vers le haut (ou toucher la flèche) pour découvrir. */
   function swipeToDiscover() {

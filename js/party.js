@@ -1,5 +1,5 @@
 /* Gobinous Christmas Party (#/party) : code secret, présentation du
- * goûter et du sapin, puis la bucket list « Treats & Chill » : 20 défis à
+ * goûter et du sapin, puis la bucket list « Treats & Chill » : 15 défis à
  * valider par une photo ou une vidéo (appareil photo, caméra ou galerie).
  * Chaque défi validé rapporte des Gobz ; le serveur du jeu les compte et
  * tient le classement en direct. Sans serveur, les défis sont validés sur
@@ -43,6 +43,20 @@
   GQ.party = {
     state: function () { return me; },
     reset: function () { me = { id: newId(), ok: false, nom: '', done: {} }; save(); },
+    /* Validation automatique (ex. questionnaire du Wrap-Up envoyé). */
+    auto: function (type) {
+      var list = [];
+      PC.defis.forEach(function (d, i) { if (d.auto === type && !me.done[i + 1]) list.push(i + 1); });
+      if (!list.length || !me.nom) return Promise.resolve(false);
+      return Promise.all(list.map(function (n) {
+        var mark = function () { me.done[n] = { at: Date.now(), auto: true }; save(); };
+        return fetch(GQ.apiUrl('party/auto'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: me.id, nom: me.nom, defi: n, type: type }),
+        }).then(function (r) { if (r.ok) mark(); else if (r.status === 404) mark(); }, mark);
+      })).then(function () { return true; });
+    },
   };
 
   function defi(n) { return PC.defis[n - 1]; }
@@ -318,6 +332,17 @@
       '<input type="file" accept="video/*" capture="environment" data-defi-file="' + n + '"></label>';
     var gallery = '<label class="btn btn-secondary btn-file">' + icon('galerie') + esc(PC.boutonGalerie) +
       '<input type="file" accept="image/*,video/*" data-defi-file="' + n + '"></label>';
+    // Défi validé automatiquement : pas de photo, un lien vers le Wrap-Up.
+    if (d.auto) {
+      GQ.modal({
+        title: d.titre,
+        html: '<p class="defi-modal-pts">+' + d.points + ' ' + esc(PC.monnaie) + (done ? ' · ' + esc(PC.dejaValide) : '') + '</p>' +
+          '<p>' + t(d.texte) + '</p>' +
+          (done ? '' : '<div class="defi-actions"><a class="btn btn-red" href="#/wrapup">' + icon('fleche') + esc(PC.boutonAvis) + '</a></div>'),
+        cancel: 'Fermer',
+      });
+      return;
+    }
     GQ.modal({
       title: d.titre,
       html: '<p class="defi-modal-pts">+' + d.points + ' ' + esc(PC.monnaie) + (done ? ' · ' + esc(PC.dejaValide) : '') + '</p>' +

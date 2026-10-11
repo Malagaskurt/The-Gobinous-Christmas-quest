@@ -135,7 +135,8 @@
           art: f ? GQ.knit.icon('flake', 'success-ico') : GQ.knit.icon('loupe', 'success-ico'),
           title: f ? M.reussiteApresGelTitre : M.reussiteTitre,
           html: (f ? '<p class="degel">' + t(GQ.phrase('degel', 'q2')) + '</p>' : '') + '<p>' + t(f ? M.reussiteApresGelTexte : M.reussiteTexte) + '</p>',
-          after: M.paniqueBulle ? '<div class="panic">' + GQ.elfTalk('<p class="elf-talk-big">' + t(M.paniqueBulle) + '</p><p>' + t(M.paniqueTexte) + '</p>') + '</div>' : '',
+          after: M.paniqueBulle ? '<div class="panic">' + GQ.elfTalk('<p class="elf-talk-big">' + t(M.paniqueBulle) + '</p>', 'elfWave') + '</div>' +
+            (M.paniqueTexte ? GQ.elfTalk('<p class="elf-talk-big">' + t(M.paniqueTexte) + '</p>') : '') : '',
           cta: C.btn(esc(M.bouton2) + icon('fleche'), 'complete-quest', ' data-n="2"', 'btn-red'),
         }),
       };

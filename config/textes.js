@@ -47,7 +47,7 @@ window.GAME_CONFIG.textes = {
   entree: {
     /* Contexte narratif : affiché à l'entrée du jeu (pas sur l'accueil du site). */
     contexteTitre: "Briefing",
-    contexte: "Bienvenue au Gobinous Christmas Club. Habituellement, c'est le moment où Barnabé gère les colis à **La Verrière** (située au 4ᵉ étage). Sauf qu'avec lui, ce gros troll a décidé d'en faire qu'à sa tête : un des colis a disparu. Comme le service client est aux abonnés absents, à vous de le retrouver dans la Tour Saint-Gobain. 30 minutes chrono, ruse et esprit d'équipe : que la Gobinous Christmas Quest commence !",
+    contexte: "Bienvenue au Gobinous Christmas Club. Habituellement, c'est le moment où Barnabé gère les colis à **La Verrière**. Sauf qu'avec lui, rien ne se passe jamais comme prévu et un des colis a disparu. Comme le service client est aux abonnés absents, c'est à vous de retrouver le colis dans la Tour Saint-Gobain. Vous avez 30 minutes chrono, ruse et esprit d'équipe. Que la Gobinous Christmas Quest commence !",
     bulle: "Le code ? Les organisateurs le donnent au top départ.",
     label: "Code secret du jeu",
     bouton: "Entrer dans le jeu",
@@ -57,30 +57,33 @@ window.GAME_CONFIG.textes = {
   /* Répliques du lutin (bulles). Une liste [ ] = une réplique tirée au
    * hasard. Laissez "" pour qu'il reste silencieux. */
   lutin: {
+    /* Le Père Noël (et ses lutins) guide l'équipe ; Barnabé, le troll, ne
+     * fait que provoquer (accueil, echec, lieu, clic). */
     accueil: "Psst… Le colis ? Quel colis ? Hi hi !",
-    equipe: "Un nom d'équipe, et que ça saute !",
-    reussite: ["GG la team !", "Vous êtes des goats !", "Validé, c'est carré !"],
+    equipe: "Ho ho ho ! Un nom d'équipe, et c'est parti !",
+    reussite: ["GG la team !", "Ho ho ho, bien joué !", "Validé, c'est carré !"],
     echec: ["MDR, raté !", "Vous pouvez faire mieux, les gars !"],
-    blocage: "Brrr… Tout est gelé !",
+    blocage: "Oh oh… vous êtes gelés ! Tenez bon.",
     lieu: "Vous êtes sur ma piste ? Même pas peur !",
-    fin: "Vous m'avez démasqué ! Bien joué !",
-    clic: ["Pas touche !", "Je ne dirai rien…", "Cherchez encore !", "Hi hi hi !", "Le cadeau ? Quel cadeau ?"],
-    /* Phrases affichées pendant un gel (tirées au hasard). */
+    fin: "Bravo, l'équipe ! Le colis est sauvé.",
+    clic: ["Pas touche !", "Je ne dirai rien…", "Cherchez encore !", "Hi hi hi !", "Le colis ? Quel colis ?"],
+    /* Phrases affichées pendant un gel (tirées au hasard) : c'est Barnabé
+     * qui bloque les accès. */
     gel: [
-      "Brrr… Même vos neurones sont en mode glaçon.",
-      "Pause forcée : le lutin est parti se faire un chocolat chaud.",
-      "Le lutin a appuyé sur « freeze ». Respirez, ce n'est que du givre.",
-      "Oups, gelé ! Le lutin trouve que vous allez trop vite.",
-      "Tout est figé ! Le lutin en profite pour danser dans votre dos.",
+      "Barnabé a piraté le système : tout est gelé.",
+      "Accès bloqués par Barnabé. Respirez, ça va repartir.",
+      "Barnabé a appuyé sur « freeze ». Ce n'est que du givre.",
+      "Gelé ! Barnabé trouve que vous allez trop vite.",
+      "Tout est figé… Barnabé en profite pour s'éloigner.",
     ],
-    /* Phrases affichées quand le lutin vous laisse passer après un gel. */
+    /* Phrases affichées quand le gel est levé : les lutins du Père Noël
+     * débloquent la situation. */
     degel: [
-      "Le lutin a eu pitié : il a tout dégelé. Respect, il est trop goat.",
-      "Le lutin valide. Pas parce que vous avez trouvé : juste parce qu'il est sympa.",
-      "Le lutin a fondu (de pitié). C'est cadeau !",
-      "Dégel express ! Le lutin a mieux à faire que de vous regarder grelotter.",
+      "Les lutins du Père Noël ont tout dégelé. Respect, ils sont trop goats.",
+      "Le Père Noël a forcé le passage : on continue !",
+      "Dégel express par les lutins : c'est cadeau !",
+      "Les lutins ont contourné le piratage de Barnabé. Foncez !",
     ],
-
   },
 
   /* Chrono global affiché en haut des écrans de jeu. */
@@ -92,6 +95,7 @@ window.GAME_CONFIG.textes = {
 
   /* Création de l'équipe, en deux temps : le nom, puis les deux rôles. */
   equipe: {
+    kicker: "Inscription · 1 / 2",
     titreCourt: "Votre équipe",
     label: "Nom de l'équipe",
     placeholder: "Ex. : Les Lutins de verre",
@@ -99,6 +103,7 @@ window.GAME_CONFIG.textes = {
     erreurVide: "Indiquez un nom d'équipe pour continuer.",
 
     /* Les rôles : réaction du lutin, puis l'encadré d'avertissement. */
+    rolesKicker: "Inscription · 2 / 2",
     rolesTitre: "Vos rôles",
     rolesBulle: "Oh, pas mal du tout ce nom d'équipe… **{equipe}**.",
     rolesBulleSuite: "Maintenant, un chef et un reporter.",

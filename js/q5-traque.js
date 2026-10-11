@@ -410,11 +410,13 @@
         '<div class="finale-sky" aria-hidden="true">' + stars + '</div>' +
         '<div class="finale-inner">' +
         GQ.logo('clair', 'finale-logo') +
-        C.knitTitle(R.finTitre, { color: '#E4323A' }) +
-        // Le Père Noël en trottinette et ses lutins, puis la fête.
+        C.knitTitle(String(R.finBravo || 'Bravo {equipe} !').replace('{equipe}', s.team || ''), { cls: 'fin-bravo' }) +
+        '<p class="fin-mission">' + t(R.finTitre) + '</p>' +
+        '<p class="fin-consigne">' + t(R.finConsigne) + '</p>' +
+        // Le Père Noël en trottinette et ses lutins, puis la fête, dans la
+        // ville de Noël de l'accueil.
         GQ.finShow() +
-        '<p class="finale-team">' + t(R.finTexte, { equipe: s.team || '' }) + (c ? ' · <span class="nowrap">' + GQ.mmss(c.elapsed) + '</span>' : '') + '</p>' +
-        '<p class="finale-next">' + t(R.finConsigne) + '</p>' +
+        (c ? '<p class="finale-team">Temps : <span class="nowrap">' + GQ.mmss(c.elapsed) + '</span></p>' : '') +
         '<p class="finale-home"><a class="btn btn-ghost" href="#/">' + icon('retour') + esc(R.boutonAccueil || 'Retour à l\'accueil') + '</a></p>' +
         '</div></main>',
     };

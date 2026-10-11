@@ -329,7 +329,7 @@
 
   /* Le lutin qui parle (bulle fixe dans la page). */
   function elfTalk(html, pose) {
-    return '<div class="elf-talk">' + GQ.knit.icon(pose || 'elfWave', 'elf-talk-img') +
+    return '<div class="elf-talk">' + GQ.knit.icon(pose || 'santa', 'elf-talk-img') +
       '<div class="elf-talk-bubble">' + html + '</div></div>';
   }
   GQ.elfTalk = elfTalk;
@@ -344,11 +344,10 @@
       return {
         key: 'team-roles',
         bare: true,
-        tone: 'red',
         html:
-          miniHeader() +
-          '<main class="screen screen-plain">' +
-          '<div class="center-head">' + knitTitle(E.rolesTitre) + '</div>' +
+          GQ.clubHeader({ href: 'equipe', label: 'Équipe' }) +
+          '<main class="screen screen-plain screen-team">' +
+          '<div class="center-head">' + GQ.knit.icon('star', 'head-ico') + '<p class="kicker">' + t(E.rolesKicker || '') + '</p>' + knitTitle(E.rolesTitre) + '</div>' +
           // Petite réaction de Barnabé sur le nom d'équipe (bulle animée).
           '<div class="talk-pop">' + elfTalk('<span class="typing" aria-hidden="true"><i></i><i></i><i></i></span><div class="talk-text"><p class="elf-talk-big">' + t(E.rolesBulle, { equipe: s.team }) + '</p>' +
             (E.rolesBulleSuite ? '<p>' + t(E.rolesBulleSuite) + '</p>' : '') + '</div>') + '</div>' +
@@ -364,7 +363,7 @@
           roleField('chef', E.chefLabel, E.chefPlaceholder, roles.chef, 'crown') +
           roleField('reporter', E.reporterLabel, E.reporterPlaceholder, roles.reporter, 'camera') +
           feedbackSlot() +
-          '<button class="btn btn-cream" type="submit">' + esc(E.rolesBouton) + icon('fleche') + '</button>' +
+          '<button class="btn btn-red" type="submit">' + esc(E.rolesBouton) + icon('fleche') + '</button>' +
           '</form>' +
           (E.rolesNote ? '<p class="roles-note">' + t(E.rolesNote) + '</p>' : '') +
           '</main>',
@@ -375,10 +374,10 @@
       key: 'team',
       bare: true,
       html:
-        miniHeader() +
-        '<main class="screen screen-plain">' +
-        '<a class="back-link" href="#/quest">' + icon('retour') + 'Accueil</a>' +
-        '<div class="center-head">' + knitTitle(E.titreCourt) + '</div>' +
+        // Même en-tête que les autres pages : retour tout en haut à gauche.
+        GQ.clubHeader({ href: 'quest', label: 'Accueil' }) +
+        '<main class="screen screen-plain screen-team">' +
+        '<div class="center-head">' + GQ.knit.icon('crown', 'head-ico') + '<p class="kicker">' + t(E.kicker || 'Inscription') + '</p>' + knitTitle(E.titreCourt) + '</div>' +
         elfTalk('<p>' + t(T.lutin.equipe) + '</p>') +
         textAnswer({ form: 'team', label: E.label, button: E.bouton, placeholder: E.placeholder, btnCls: 'btn-red' }) +
         '</main>',
