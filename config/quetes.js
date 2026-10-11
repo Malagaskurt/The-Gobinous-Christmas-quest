@@ -25,7 +25,7 @@ window.GAME_CONFIG.quetes = {
   message: {
     titre: "Cheat Code",
     intro:
-      "Le Père Noël n'a qu'une idée en tête, envoyer Barnabé tout droit à Pôle emploi ! Il vous a laissé un **message codé** sur le comptoir, avec sa grille. Barnabé ne peut pas le lire… mais vous, si. Déchiffrez-le vite !",
+      "Le Père Noël veut vous aider à retrouver le colis, et vite ! Il vient de vous envoyer un **message codé**, directement dans l'appli. Barnabé ne sait pas le lire… mais vous, si. À vous de le déchiffrer avec la grille !",
     boutonIntro: "Découvrir le message",
     consigne: "",
     /* Message chiffré, ligne par ligne (lettres A à Z et espaces). */
@@ -39,12 +39,12 @@ window.GAME_CONFIG.quetes = {
       "Chaque symbole reprend la forme des traits qui entourent la lettre dans la grille. Un point dans le symbole ? La lettre est dans une grille à points.",
 
     reussiteTitre: "Cheat code activé !",
-    reussiteTexte: "« Barnabé a perdu le contrôle ». Message du Père Noël bien reçu, vous avez une longueur d'avance !",
+    reussiteTexte: "Message décodé : « Barnabé a perdu le contrôle ». Grâce au Père Noël, vous avez une longueur d'avance !",
     /* Bulle de Barnabé qui panique, après le cheat code. */
     paniqueBulle: "Quoi ?! Qui vous a filé ce code ?! Pas de panique… PAS. DE. PANIQUE.",
     paniqueTexte: "Ho ho ho ! Le troll panique. Accélérez !",
     reussiteApresGelTitre: "Le gel est levé !",
-    reussiteApresGelTexte: "La phrase secrète était « BARNABÉ A PERDU LE CONTRÔLE ».",
+    reussiteApresGelTexte: "Le message du Père Noël disait « Barnabé a perdu le contrôle ». On continue !",
     gelSuite: "Ensuite, le Père Noël vous soufflera la solution.",
     bouton2: "Voir la progression",
   },
@@ -57,7 +57,7 @@ window.GAME_CONFIG.quetes = {
     avertissementTitre: "Attention !",
     avertissement: "Barnabé flaire parfois l'arnaque et refuse une photo.",
     intro:
-      "Saturez les caméras de Barnabé ! Reproduisez **3 photos sur 6**, avec toute l'équipe dans le cadre.",
+      "Faites diversion en saturant les caméras de Barnabé ! Choisissez **3 modèles sur 6** et reproduisez-les, avec toute l'équipe dans le cadre.",
     consentement:
       "Les photos validées sont envoyées aux organisateurs.",
     boutonIntro: "Relever le défi",
@@ -84,7 +84,7 @@ window.GAME_CONFIG.quetes = {
     envoiAttente: "Envoi dès que le réseau revient",
     rejetTitre: "Refusé !",
     rejetTexte:
-      "Barnabé n'y croit pas une seconde. Refaites-la… en encore plus absurde !",
+      "Barnabé n'y croit pas une seconde. Refaites-la, en encore plus absurde !",
     rejetBouton: "On la refait !",
     boutonQuete: "Lancer la diversion",
 
@@ -102,7 +102,7 @@ window.GAME_CONFIG.quetes = {
     titre: "ID Check",
     terminalTitre: "Support 44 · Analyse de badge",
     intro:
-      "Un badge inconnu a été scanné aujourd'hui. Décodez les **4 modules** pour identifier son propriétaire.",
+      "Un badge inconnu a été scanné aujourd'hui dans la Tour. Décodez les **4 modules** pour identifier son propriétaire.",
     boutonIntro: "Analyser le badge",
     erreur: "Données incorrectes. Encore {n} essai(s) avant le gel du système.",
     moduleValide: "Module validé",
@@ -146,7 +146,7 @@ window.GAME_CONFIG.quetes = {
         indices: [
           "Seuls le « Service Paillettes & Pression » et le « Bureau des Chocolats Chauds » utilisent du matériel brillant.",
           "Le « Bureau des Chocolats Chauds » est strictement réservé aux agents ayant un matricule PAIR.",
-          "Le lutin partage ses bureaux avec la « Cellule Sabotage & Guirlandes », or le « Service Paillettes & Pression » a une interdiction absolue de partager ses locaux.",
+          "Le suspect partage ses bureaux avec la « Cellule Sabotage & Guirlandes », or le « Service Paillettes & Pression » a une interdiction absolue de partager ses locaux.",
         ],
         choix: [
           { label: "Service Paillettes & Pression" },
@@ -248,7 +248,7 @@ window.GAME_CONFIG.quetes = {
     /* Rapport affiché après la vidéo : des indices à toucher pour les
      * analyser (recto : ce qu'on a vu ou entendu ; verso : la piste). */
     rapportTitre: "Rapport d'analyse",
-    rapport: "Barnabé s'est enfui, mais le colis est caché à cet étage, dans une pièce baptisée du nom de la ville où il se repose. Touchez chaque indice pour l'analyser.",
+    rapport: "Barnabé s'est enfui, mais le colis est caché à cet étage, dans une pièce baptisée du nom de la ville où il est parti se reposer. Touchez chaque indice pour l'analyser.",
     /* Anti-triche : rien n'est dévoilé avant le bon code. */
     regleEtage: "Restez groupés près de l'ascenseur. Interdit d'explorer l'étage tant que le code n'est pas validé !",
     indices: [
@@ -257,7 +257,7 @@ window.GAME_CONFIG.quetes = {
       { titre: "Le mot de la fin", recto: "« Matané, comme on dit chez moi ! »", verso: "Ce n'est pas du français… C'est « à plus ! » dans sa langue." },
       { titre: "Le pyjama", recto: "Barnabé est déjà en pyjama.", verso: "Ici, c'est l'après-midi. Chez lui, c'est déjà l'heure d'aller dormir." },
     ],
-    conclusion: "Croisez les indices. Le code, c'est le nom de la ville où il s'est enfui !",
+    conclusion: "Croisez les indices. Le code, c'est le nom de la ville où Barnabé s'est enfui !",
     label: "Code de la cachette (5 lettres)",
     bouton: "Valider le code",
     reponses: ["tokyo", "tokio"],
@@ -329,7 +329,7 @@ window.GAME_CONFIG.quetes = {
     /* Dans la salle : chaque équipe choisit UN paquet puis se photographie
      * avec lui (photo envoyée aux organisateurs). */
     paquetTitre: "Le colis mystère",
-    paquetTexte: "Entrez, choisissez **un seul colis** sans l'ouvrir… puis prenez une photo de toute l'équipe avec lui !",
+    paquetTexte: "Entrez et choisissez **un seul colis**, sans l'ouvrir. Puis prenez une photo de toute l'équipe avec lui !",
     boutonPhotoPaquet: "Photo avec notre colis",
     paquetValider: "Valider la photo",
     paquetReprendre: "Reprendre",

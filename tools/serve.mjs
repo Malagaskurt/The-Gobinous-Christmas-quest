@@ -598,12 +598,16 @@ async function api(req, res, path) {
     if (santa[b.id]) return send(res, 200, { numero: santa[b.id].numero });
     const cfg = (await siteConfig('wrapup')) || {};
     const total = Math.max(1, Math.min(9999, Math.round(num((cfg.santa || {}).total)) || 0));
+    // Numéro du cadeau APPORTÉ : unique, et on ne tire jamais le sien.
+    const apporte = Math.round(num(b.apporte)) || 0;
+    if (apporte && (apporte < 1 || apporte > total)) return send(res, 400, { erreur: 'numéro invalide' });
+    if (apporte && Object.values(santa).some((x) => x.apporte === apporte)) return send(res, 409, { erreur: 'apporte-pris' });
     const taken = new Set(Object.values(santa).map((x) => x.numero));
     const free = [];
-    for (let n = 1; n <= total; n++) if (!taken.has(n)) free.push(n);
+    for (let n = 1; n <= total; n++) if (!taken.has(n) && n !== apporte) free.push(n);
     if (!free.length) return send(res, 409, { erreur: 'complet' });
     const numero = free[Math.floor(Math.random() * free.length)];
-    santa[b.id] = { numero, at: now };
+    santa[b.id] = { numero, apporte: apporte || null, at: now };
     await persistSanta();
     return send(res, 200, { numero });
   }

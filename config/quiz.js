@@ -31,7 +31,7 @@ window.GAME_CONFIG = window.GAME_CONFIG || {};
 window.GAME_CONFIG.quiz = {
   titre: "Check-in",
   intro:
-    "Validez votre identité pour quitter La Verrière ! Choisissez un thème et visez le sans-faute, **8/8**. Deux thèmes maximum.",
+    "Validez votre identité pour quitter La Verrière ! Choisissez un thème et visez le sans-faute (**8/8**). Raté ? Vous avez droit à un second thème.",
   boutonIntro: "Choisir un thème",
 
   textes: {
@@ -72,7 +72,7 @@ window.GAME_CONFIG.quiz = {
     bloqueSuite: "Ensuite, le quiz sera validé d'office.",
     bloqueCompteur: "Suite de l'aventure dans",
     reussiteTitre: "Check-in réussi",
-    reussiteTexte: "Vous pouvez quitter La Verrière. Le premier signal vous attend.",
+    reussiteTexte: "Accès validé ! Vous pouvez quitter La Verrière.",
     /* Animation « scan de pièce d'identité » après le quiz. */
     scanTitre: "Scan d'identité",
     scanEquipe: "Équipe",
@@ -80,7 +80,7 @@ window.GAME_CONFIG.quiz = {
     scanNiveauValeur: "Gobinous · Niveau 1",
     scanStatut: "Identité vérifiée, accès autorisé",
     reussiteApresGelTitre: "Le gel est levé !",
-    reussiteApresGelTexte: "Le Père Noël a forcé l'accès. Le premier signal vous attend !",
+    reussiteApresGelTexte: "Le Père Noël a forcé l'accès. Vous pouvez quitter La Verrière !",
     boutonIndice: "Continuer",
     revelationBouton: "C'est parti !",
   },
@@ -95,11 +95,11 @@ window.GAME_CONFIG.quiz = {
     chatStatut: "a piraté votre écran",
     bulles: [
       "Attendez... C'est quoi ce délire ? On m'a fait galérer pendant des semaines pour valider mes accès, et vous, on vous laisse passer les quiz les doigts dans le nez ? Non mais vous rêvez !",
-      "Je refuse qu'on vous facilite la vie. Si vous voulez savoir à quel étage vous devez vous rendre pour la suite, résolvez ça : **50 - 25 + 10 - 15 + 8 - 12 + 7 - 18 = ?** (Le résultat indique l'étage).",
+      "Je refuse qu'on vous facilite la vie. Si vous voulez savoir à quel étage vous devez vous rendre pour la suite, résolvez ça : 50 - 25 + 10 - 15 + 8 - 12 + 7 - 18 = ?",
     ],
     /* Après le blocage : le calcul simplifié. */
     bullesFacile: [
-      "Bon... visiblement c'était trop dur pour vous. Calcul de maternelle, alors : **2 + 3 = ?** (Le résultat indique l'étage).",
+      "Bon... visiblement c'était trop dur pour vous. Calcul de maternelle, alors : 2 + 3 = ?",
     ],
     question: "Votre réponse",
     label: "Résultat du calcul (votre étage)",
@@ -113,7 +113,7 @@ window.GAME_CONFIG.quiz = {
       "Ha ha ! Les maths, c'est pas votre truc. Je bloque tout, le temps que vous révisiez.",
     ],
     gelSuite: "Ensuite, Barnabé vous proposera un calcul… beaucoup plus simple.",
-    gelPasse: "Le Père Noël vole à votre secours. Direction le **5ᵉ étage** !",
+    gelPasse: "Le Père Noël vole à votre secours. Direction le 5ᵉ étage !",
   },
 
   themes: [

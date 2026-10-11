@@ -2562,3 +2562,68 @@ input.field::placeholder, .field::placeholder, textarea::placeholder { color: #7
 .wq-chip.is-on, .wq-dot.is-on { background: #17428c !important; color: #fff !important; box-shadow: 0 0 0 3px #2fc0ee !important; }
 .id-head { background: #17428c !important; color: #fff !important; }
 .id-field dt { color: #9ee0f5 !important; opacity: 1 !important; margin-bottom: 1px; }
+
+/* =====================================================================
+ * RETOUCHES : sélection uniforme, navigation du quiz, gras, règles,
+ * accueil, Gobi'Hub, rôles, aération, Secret Santa.
+ * ===================================================================== */
+/* Un seul état de sélection sur tout le site : remplissage bleu ciel clair,
+ * texte bleu foncé, sans contour ni rouge. */
+.choice.is-selected, .wq-chip.is-on, .wq-dot.is-on {
+  background: #bfeefc !important; color: #0b1d45 !important; box-shadow: none !important; border: 0 !important; }
+.wq-star.is-on { background: #bfeefc !important; box-shadow: none !important; transform: none; }
+.wq-star.is-on .pix { filter: none !important; }
+/* Lettres des propositions : jamais de texte foncé sur fond foncé. */
+.choice .choice-letter, .choice .choice-key { background: #17428c !important; color: #fff !important; }
+.choice.is-selected .choice-letter, .choice.is-selected .choice-key { background: #0b1d45 !important; color: #fff !important; }
+
+/* Quiz : suivante (bleu Saint-Gobain), précédente (même bleu, plus clair),
+ * abandonner (contour discret). */
+.btn[data-action="quiz-move"][data-d="1"] { background: #17428c !important; color: #fff !important; }
+.btn[data-action="quiz-move"][data-d="-1"] { background: #4f7fcf !important; color: #fff !important; }
+.btn-abandon { background: transparent !important; color: #fff !important; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .45) !important; }
+
+/* Bulles et petits dialogues : pas de gras lourd. */
+.elf-talk-big, .elf-talk-bubble strong, .elf-talk-bubble b, .elf-bubble strong, .elf-bubble b, .chat-msg strong, .chat-msg b, .talk-text strong, .notif-text strong, .hack-text strong { font-weight: 600 !important; }
+.elf-talk-big { font-weight: 600 !important; }
+.notif-text { font-weight: 500 !important; }
+
+/* Règles du jeu (map et règles détaillées) : verre bleu foncé avec une
+ * subtile lueur rouge, comme le thème mystère. */
+.frame-legend, .rule {
+  background: radial-gradient(120% 90% at 0% 0%, rgba(228, 50, 58, .26), transparent 55%), linear-gradient(155deg, rgba(23, 66, 140, .55), rgba(11, 29, 69, .45)) !important;
+  box-shadow: 0 0 26px rgba(228, 50, 58, .16), inset 0 0 0 1px rgba(255, 120, 125, .22) !important;
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); color: #fff !important; }
+.legend-title { margin: 0 0 12px !important; font: 400 1.5rem/1 var(--font-pixel) !important; letter-spacing: .06em; text-transform: uppercase; color: #fff; text-align: left; }
+.rule strong, .rule b, .rule .rule-title { color: #fff !important; font-weight: 800; }
+
+/* Accueil : logo en haut, centré, aligné avec le bouton du son. */
+.club-top { display: flex !important; align-items: center; justify-content: center !important; min-height: 64px; padding-top: 14px; }
+.club-top .sound-btn { position: absolute; right: 0; top: 14px; }
+.club-logo-top .logo { width: 108px; margin: 0 !important; }
+
+/* The Gobi'Hub : appareil photo seul, sans fond carré, un peu plus haut. */
+.vlog-card .prog-art { background: none !important; box-shadow: none !important; margin-top: -14px; }
+.vlog-card .prog-art .prog-ico { filter: drop-shadow(0 6px 8px rgba(3, 10, 30, .3)) !important; }
+
+/* Rôles : bloc « dépôt » aligné avec les cartes Mastermind / Storyteller. */
+.roles-box .role-card-where { margin: 14px 0 0 !important; display: flex; gap: 10px; align-items: center; text-align: left; padding: 12px 14px; border-radius: 14px; }
+
+/* Aération : quête 4 (joker) et rapport de la quête 5. */
+.btn-joker { margin-top: 22px !important; margin-bottom: 10px !important; }
+.joker-hint { margin: 18px 0 !important; }
+.terminal { padding: 22px 18px !important; }
+.terminal-text { margin: 0 0 16px !important; line-height: 1.55; }
+.terminal-rule { margin: 0 0 18px !important; }
+.clues { display: grid; gap: 12px; margin: 0 0 18px !important; }
+.screen-quest .notice { margin: 18px 0 !important; }
+.screen-quest .answer-form { margin-top: 20px; }
+.rescue { margin: 20px 0 !important; }
+
+/* Secret Santa : étape « cadeau apporté », puis tirage. */
+.santa-step { margin: 6px 0 8px; font: 400 1.5rem/1.05 var(--font-pixel); letter-spacing: .05em; text-transform: uppercase; color: #fff; }
+.santa-chip { display: inline-block; margin: 0 0 10px; padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, .14); font-size: .85rem; font-weight: 700; }
+.santa-form { margin-top: 10px; text-align: left; }
+.santa-form .field-label { display: block; margin-bottom: 6px; font-weight: 700; }
+.club-hero { padding-top: 34px !important; }
+.elf-talk-big, .talk-text .elf-talk-big { font-weight: 500 !important; }

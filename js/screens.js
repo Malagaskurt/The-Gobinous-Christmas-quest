@@ -355,8 +355,11 @@
           '<p class="roles-box-title">' + GQ.pix('bell', 'roles-box-pix') + t(E.rolesAlerteTitre) + '</p>' +
           (E.rolesAlerte ? '<p class="roles-box-lead">' + t(E.rolesAlerte) + '</p>' : '') +
           E.roles.map(function (r) {
-            return '<div class="role-card"><span class="role-card-ico">' + GQ.pix(r.icone) + '</span><div><p class="role-card-name">' + t(r.nom) + '</p><p>' + t(r.texte) + '</p>' +
-              (r.ou ? '<p class="role-card-where">' + icon('pin') + '<span>' + t(r.ou) + '</span></p>' : '') + '</div></div>';
+            return '<div class="role-card"><span class="role-card-ico">' + GQ.pix(r.icone) + '</span><div><p class="role-card-name">' + t(r.nom) + '</p><p>' + t(r.texte) + '</p></div></div>';
+          }).join('') +
+          // Où déposer photos et vidéos : bloc aligné avec les rôles.
+          E.roles.filter(function (r) { return r.ou; }).map(function (r) {
+            return '<p class="role-card-where">' + icon('pin') + '<span>' + t(r.ou) + '</span></p>';
           }).join('') +
           '</section>' +
           '<form class="answer-form roles-form" data-form="roles" novalidate autocomplete="off">' +
@@ -402,7 +405,7 @@
         '<div class="center-head">' + knitTitle(PL.titre) +
         (PL.intro ? '<p class="map-intro">' + t(PL.intro) + '</p>' : '') + '</div>' +
         GQ.board.html() +
-        frame('<ul class="legend">' + PL.regles.map(function (r) {
+        frame((PL.reglesTitre ? '<p class="legend-title">' + t(PL.reglesTitre) + '</p>' : '') + '<ul class="legend">' + PL.regles.map(function (r) {
           return '<li>' + GQ.knit.icon(r.icone, 'legend-ico') + '<span>' + t(r.texte, GQ.ruleVars()) + '</span></li>';
         }).join('') + '</ul>', 'frame-legend') +
         '<button type="button" class="btn btn-ghost" data-action="show-rules">' + esc(PL.detail) + '</button>' +

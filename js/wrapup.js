@@ -66,16 +66,46 @@
     var n = me.santa;
     return '<section class="santa">' +
       '<p class="santa-title">' + GQ.pix('gift', 'santa-pix') + t(S.titre) + '</p>' +
-      (n
-        ? '<p class="santa-label">' + t(S.resultat) + '</p>' +
+      (!n && !me.apporte
+        // Étape 1 : le numéro du cadeau apporté, puis la zone disparaît.
+        ? '<p class="santa-step">' + t(S.apporteTitre || '') + '</p>' +
+          '<p class="santa-text">' + t(S.apporteTexte || '') + '</p>' +
+          '<form class="answer-form santa-form" data-form="santa-apporte" novalidate autocomplete="off">' +
+          '<label class="field-label" for="santa-apporte">' + esc(S.apporteLabel || '') + '</label>' +
+          '<input id="santa-apporte" class="field field-code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" value="' + esc(GQ.ui.santaVal || '') + '">' +
+          (GQ.ui.santaErr ? '<p class="feedback feedback-error shake">' + icon('croix') + '<span>' + t(GQ.ui.santaErr) + '</span></p>' : '') +
+          '<button class="btn btn-red" type="submit">' + esc(S.apporteBouton || 'Valider') + '</button></form>'
+        : n
+        ? (me.apporte ? '<p class="santa-chip">' + t(S.apporteRappel || '', { n: me.apporte }) + '</p>' : '') +
+          '<p class="santa-step">' + t(S.resultatTitre || S.resultat) + '</p>' +
           '<div class="santa-num">' + GQ.knit.text(String(n), { alt: '', color: '#E4323A', outline: true, cls: 'santa-img' }) + '</div>' +
           '<p class="santa-help">' + t(S.aide, { n: n }) + '</p>'
-        : '<p class="santa-text">' + t(S.texte) + '</p>' +
+        : '<p class="santa-chip">' + t(S.apporteRappel || '', { n: me.apporte }) + '</p>' +
+          '<p class="santa-text">' + t(S.texte) + '</p>' +
           '<div class="santa-num santa-roll" data-santa-roll hidden></div>' +
           (GQ.ui.santaErr ? '<p class="feedback feedback-error shake">' + icon('croix') + '<span>' + t(GQ.ui.santaErr) + '</span></p>' : '') +
           '<button type="button" class="btn btn-red" data-action="santa-draw"' + (drawing ? ' disabled' : '') + '>' + GQ.pix('star', 'btn-pix') + esc(S.bouton) + '</button>') +
       '</section>';
   }
+
+  // Étape 1 du Secret Santa : numéro du cadeau apporté.
+  GQ.forms['santa-apporte'] = function (form) {
+    var input = form.querySelector('input');
+    var v = Number(String(input.value || '').replace(/\D/g, ''));
+    var total = S.total || 40;
+    GQ.ui.santaVal = input.value;
+    if (!(v >= 1 && v <= total)) {
+      GQ.ui.santaErr = t(S.apporteErreur || '', { total: total });
+      GQ.audio.sfx('error');
+      return GQ.render();
+    }
+    me.apporte = v;
+    save();
+    GQ.ui.santaErr = null;
+    GQ.ui.santaVal = '';
+    GQ.audio.sfx('ok');
+    GQ.render();
+  };
 
   actions['santa-draw'] = function (el) {
     if (drawing || me.santa) return;
@@ -93,7 +123,7 @@
     fetch(GQ.apiUrl('santa/tirage'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: me.id }),
+      body: JSON.stringify({ id: me.id, apporte: me.apporte }),
     }).then(function (r) {
       return r.json().then(function (d) { if (!r.ok) throw new Error(d.erreur || 'http'); return d; });
     }).then(function (d) {
@@ -110,7 +140,8 @@
     }, function (e) {
       clearInterval(timer);
       drawing = false;
-      GQ.ui.santaErr = e.message === 'complet' ? S.complet : S.erreur;
+      if (e.message === 'apporte-pris') { me.apporte = null; save(); }
+      GQ.ui.santaErr = e.message === 'complet' ? S.complet : e.message === 'apporte-pris' ? S.apportePris : S.erreur;
       GQ.audio.sfx('error');
       GQ.render();
     });

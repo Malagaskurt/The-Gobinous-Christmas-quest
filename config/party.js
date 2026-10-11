@@ -21,12 +21,12 @@ window.GAME_CONFIG.party = {
   /* Présentation par le lutin. */
   bulle: "C'est l'heure du goûter !",
   texte:
-    "On se pose, on grignote et on décore ensemble le **sapin Gobinous**. Polaroïds, kit déco et petits mots vous attendent !",
+    "On se pose, on grignote et on décore ensemble le sapin Gobinous. Polaroïds, kit déco et petits mots vous attendent !",
   defiTexte:
-    "Envie de briller ? **15 défis** vous attendent sur le **Mission Board**, en solo ou en équipe. Chaque défi rapporte des **Gobz**, et le plus riche à la fin de l'événement gagne une surprise !",
+    "Envie de briller ? 15 défis vous attendent sur le Mission Board, en solo ou en équipe. Chaque défi rapporte des Gobz. À la fin de l'événement, le plus gros total gagne une surprise !",
 
   nomLabel: "Votre prénom ou nom d'équipe",
-  nomPlaceholder: "Ex. : Camille, ou Les Givrés",
+  nomPlaceholder: "Ex. : Camille ou Les Givrés",
   nomBouton: "Je participe",
   nomErreur: "Indiquez un prénom ou un nom d'équipe.",
 
@@ -64,9 +64,9 @@ window.GAME_CONFIG.party = {
     { titre: "Team orga", texte: "Prends un selfie avec les organisatrices Gobinous.", points: 20 },
     { titre: "Selfie goûter", texte: "Prends un selfie pendant le goûter.", points: 5 },
     { titre: "Nouvelle rencontre", texte: "Prends une photo avec une personne que tu ne connaissais pas avant l'événement.", points: 15 },
-    { titre: "Déguisement de Noël", texte: "Trouve un déguisement de Noël et prends une photo.", points: 20 },
-    { titre: "Trend TikTok", texte: "Reproduis une trend de Noël TikTok, seul·e ou accompagné·e.", points: 100, video: true },
-    { titre: "Déclaration", texte: "Fais une petite déclaration d'amour ou d'amitié en vidéo à un Gobinou.", points: 50, video: true },
+    { titre: "Déguisement de Noël", texte: "Trouve un déguisement de Noël et prends-toi en photo avec.", points: 20 },
+    { titre: "Trend TikTok", texte: "Reproduis une trend TikTok de Noël, seul ou à plusieurs.", points: 100, video: true },
+    { titre: "Déclaration", texte: "Fais une petite déclaration d'amour ou d'amitié à un Gobinou, en vidéo.", points: 50, video: true },
     { titre: "Belle photo", texte: "Prends une belle photo de l'événement.", points: 5 },
     { titre: "Mon Secret Santa", texte: "Prends un selfie avec le cadeau gagné au Secret Santa.", points: 25 },
     { titre: "Chorale de Noël", texte: "Crée une chorale de Noël en vidéo.", points: 50, video: true },

@@ -191,9 +191,24 @@
     // Ascenseur : montée feutrée (souffle qui glisse vers l'aigu, léger
     // trémolo) pendant 2,4 s, puis le « ding » d'arrivée à deux notes.
     lift: function (c, out, t) {
-      tone(c, out, 110, t, 2.3, 'sine', 0.22, 220);
-      tone(c, out, 220, t, 2.3, 'triangle', 0.07, 440);
-      for (var k = 0; k < 8; k++) tone(c, out, 660 + k * 40, t + k * 0.28, 0.05, 'sine', 0.025);
+      // Montée : souffle feutré (bruit filtré qui s'ouvre doucement) et
+      // nappe grave très douce, façon ascenseur moderne. Aucun bip.
+      var len = 2.4;
+      var buf = c.createBuffer(1, Math.floor(c.sampleRate * len), c.sampleRate);
+      var d = buf.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      var src = c.createBufferSource(); src.buffer = buf;
+      var lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 0.7;
+      lp.frequency.setValueAtTime(220, t); lp.frequency.exponentialRampToValueAtTime(900, t + 1.4); lp.frequency.exponentialRampToValueAtTime(300, t + len);
+      var g = c.createGain();
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16, t + 0.6); g.gain.setValueAtTime(0.16, t + 1.7); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+      src.connect(lp); lp.connect(g); g.connect(out); src.start(t); src.stop(t + len);
+      var o = c.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(82, t); o.frequency.linearRampToValueAtTime(98, t + len);
+      var og = c.createGain();
+      og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(0.12, t + 0.7); og.gain.setValueAtTime(0.12, t + 1.7); og.gain.exponentialRampToValueAtTime(0.0001, t + len);
+      o.connect(og); og.connect(out); o.start(t); o.stop(t + len + 0.05);
+      // Arrivée : le « ding » des portes qui s'ouvrent (conservé).
       tone(c, out, 1318.5, t + 2.4, 1.1, 'sine', 0.32);
       tone(c, out, 2637, t + 2.4, 0.5, 'sine', 0.05);
       tone(c, out, 1046.5, t + 2.75, 1.3, 'sine', 0.3);
@@ -231,11 +246,12 @@
     },
     // Notification (joker, Support 44, message) : double « ding » cristallin.
     notif: function (c, out, t) {
-      // Trois notes franches et brillantes (type alerte smartphone).
-      [[1046.5, 0], [1568, 0.12], [2093, 0.24]].forEach(function (n) {
-        tone(c, out, n[0], t + n[1], 0.42, 'triangle', 0.5);
-        tone(c, out, n[0] * 2, t + n[1], 0.18, 'sine', 0.12);
-        tone(c, out, n[0] / 2, t + n[1], 0.12, 'square', 0.06);
+      // Notification façon iPhone (« tri-tone ») : trois notes aiguës
+      // rapides, timbre de clochette (fondamentale + partiel inharmonique).
+      [[1567.98, 0], [1975.53, 0.11], [2349.32, 0.22]].forEach(function (n) {
+        tone(c, out, n[0], t + n[1], 0.32, 'sine', 0.42);
+        tone(c, out, n[0] * 2.76, t + n[1], 0.12, 'sine', 0.07);
+        tone(c, out, n[0] * 2, t + n[1], 0.2, 'sine', 0.06);
       });
     },
     // Raccrochage : le « clac » du combiné, puis la tonalité de fin de

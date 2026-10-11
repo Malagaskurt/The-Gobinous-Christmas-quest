@@ -42,7 +42,7 @@ window.GAME_CONFIG.club = {
         id: "party",
         icone: "tree",
         nom: "Gobi'Christmas Party",
-        texte: "Goûter, atelier sapin et Mission Board de 15 défis à relever.",
+        texte: "Goûter, atelier sapin et 15 défis à relever sur le Mission Board.",
         badge: "Code secret",
         bouton: "Découvrir",
       },
@@ -78,7 +78,7 @@ window.GAME_CONFIG.club = {
     bulle: "Le grand jeu final, c'est maintenant !",
     texte: "Un quiz interactif en équipes, animé par les organisateurs, avec classement en direct. Que la meilleure équipe gagne !",
     points: [
-      { icone: "bell", texte: "Ouvrez grand les oreilles, les organisateurs lancent chaque manche." },
+      { icone: "bell", texte: "Ouvrez grand les oreilles, chaque manche est lancée par les organisateurs." },
       { icone: "star", texte: "Chaque bonne réponse fait grimper votre équipe au classement." },
       { icone: "crown", texte: "L'équipe en tête à la fin remporte la Gobi'Christmas Battle !" },
     ],

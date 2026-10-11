@@ -24,7 +24,7 @@
  * par le mode test : #/organisateur → « Affichettes des mots secrets ».
  *
  * ⚠ Quête 5 : ne jamais écrire ici les mots « salle » ou « porte »
- *   (l'équipe doit trouver elle-même le repaire du lutin).
+ *   (l'équipe doit trouver elle-même la cachette du colis).
  * ===================================================================== */
 window.GAME_CONFIG = window.GAME_CONFIG || {};
 
@@ -44,7 +44,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "LUTIN",
     titre: "Cap sur l'étage 5",
     histoire:
-      "Accès autorisé ! Cap sur le coin café du 5ᵉ étage, près du mur végétal. Le mot secret vous attend sur place.",
+      "Accès autorisé ! Cap sur le coin café du 5ᵉ étage, près du mur végétal. Le mot secret affiché sur place débloque le message du Père Noël.",
   },
 
   3: {
@@ -53,7 +53,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "GUIRLANDE",
     titre: "Cap sur l'étage 23",
     histoire:
-      "Barnabé vous a repérés ! Lancez la diversion depuis l'espace matériaux du 23ᵉ étage.",
+      "Barnabé vous a repérés ! Filez à l'espace matériaux du 23ᵉ étage pour faire diversion.",
   },
 
   4: {

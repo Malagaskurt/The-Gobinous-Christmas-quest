@@ -28,6 +28,16 @@ window.GAME_CONFIG.wrapup = {
   santa: {
     titre: "Le tirage du Secret Santa",
     texte: "Tous les cadeaux sont numérotés. Tirez votre numéro au sort et repartez avec le cadeau qui porte le même !",
+    /* Étape 1 : le numéro du cadeau que la personne a APPORTÉ (on ne peut
+     * pas tirer son propre cadeau). */
+    apporteTitre: "Le cadeau que vous avez apporté",
+    apporteTexte: "Indiquez d'abord le numéro du cadeau que vous avez apporté. Vous ne pourrez pas tirer le vôtre !",
+    apporteLabel: "Numéro du cadeau apporté",
+    apporteBouton: "Valider",
+    apporteRappel: "Cadeau apporté : n° {n}",
+    apporteErreur: "Entrez un numéro entre 1 et {total}.",
+    apportePris: "Ce numéro de cadeau apporté est déjà enregistré. Vérifiez l'étiquette de votre cadeau.",
+    resultatTitre: "Le cadeau que vous recevez",
     total: 40,
     bouton: "Tirer mon numéro",
     resultat: "Votre numéro",
@@ -38,7 +48,7 @@ window.GAME_CONFIG.wrapup = {
 
   avisTitre: "Votre avis",
   bulle: "Alors, cet événement ?",
-  intro: "6 questions, 2 minutes. C'est **100 % anonyme**, aucun nom n'est demandé.",
+  intro: "5 questions, 1 minute. C'est **100 % anonyme**, aucun nom n'est demandé.",
   questions: [
     { id: "note", type: "etoiles", question: "Votre note pour l'événement ?", obligatoire: true },
     {
@@ -56,8 +66,7 @@ window.GAME_CONFIG.wrapup = {
       options: ["Oui, carrément !", "Peut-être", "Non merci"],
       obligatoire: true,
     },
-    { id: "message", type: "texte", question: "Quel message souhaitez-vous laisser à Soatiana et Yona ?", placeholder: "Votre message", obligatoire: true },
-    { id: "mot", type: "texte", question: "Un mot, une idée, un merci ?", placeholder: "Facultatif", obligatoire: false },
+    { id: "mot", type: "texte", question: "Avez-vous un mot à laisser ? (idée, un retour, un remerciement, etc.)", placeholder: "Facultatif", obligatoire: false },
   ],
   obligatoire: "Obligatoire",
   facultatif: "Facultatif",

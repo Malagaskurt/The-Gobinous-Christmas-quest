@@ -110,9 +110,9 @@
         '<main class="club">' +
         '<div class="garland" aria-hidden="true"></div>' +
         stars(30) +
-        '<div class="club-top">' + GQ.soundButton() + '</div>' +
+        // Logo en haut, centré, sur la même ligne que le bouton du son.
+        '<div class="club-top"><div class="club-logo club-logo-top">' + GQ.logo('clair') + '</div>' + GQ.soundButton() + '</div>' +
         '<div class="club-hero">' +
-        '<div class="club-logo">' + GQ.logo('clair') + '</div>' +
         '<h1 class="club-title" tabindex="-1"><span class="sr-only">' + t(A.surtitre) + ' ' + t(A.titre) + ' ' + t(A.sousTitre) + '</span>' +
         '<span class="club-the" aria-hidden="true">' + t(A.surtitre) + '</span>' +
         GQ.knit.text(String(A.titre).toUpperCase(), { alt: '', color: '#E4323A', outline: true, cls: 'club-knit' }) +

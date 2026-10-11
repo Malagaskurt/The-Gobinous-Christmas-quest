@@ -201,7 +201,7 @@ await step('Rôles : encadré « choisissez vos rôles avec soin », Mastermind 
   assert(await has('The Storyteller') && await has('The Mastermind') && await has('choisissez vos rôles avec soin'), 'encadré des rôles absent');
   await page.click('.roles-form button[type=submit]');
   await settle();
-  assert(await has('Indiquez le prénom'), 'rôles vides acceptés');
+  assert(await has('Indiquez un prénom pour chaque rôle'), 'rôles vides acceptés');
   await page.fill('[name="chef"]', 'Camille');
   await page.fill('[name="reporter"]', 'Yanis');
   await page.click('.roles-form button[type=submit]');
@@ -797,14 +797,10 @@ await step('Wrap-Up : anonyme, questions obligatoires, réponses et indicateurs 
   await page.click('[data-q="moment"][data-s="Gobi\'Christmas Party"]');
   await page.click('[data-q="encore"][data-s="Oui, carrément !"]');
   await page.click('[data-q="quest"][data-v="3"]');
-  // Le message à Soatiana et Yona est obligatoire, et peut être long.
-  await page.click('.wq-form button[type=submit]');
-  await settle();
-  assert(await has('Il manque une réponse obligatoire'), 'message à Soatiana et Yona non obligatoire');
-  assert(await has('Soatiana et Yona'), 'question pour Soatiana et Yona absente');
-  const long = 'Merci pour tout ! '.repeat(80);
-  await page.fill('[data-wq-text="message"]', long);
-  await page.fill('[data-wq-text="mot"]', 'Bravo aux lutins');
+  // 5 questions ; la dernière (mot libre) accepte un long texte.
+  assert(CFG.wrapup.questions.length === 5 && await has('Avez-vous un mot à laisser'), 'questionnaire non ramené à 5 questions');
+  const long = 'Bravo aux lutins ' + 'et merci pour tout ! '.repeat(70);
+  await page.fill('[data-wq-text="mot"]', long);
   await page.click('.wq-form button[type=submit]');
   await settle();
   assert(await has('Merci'), 'remerciement absent');
@@ -814,7 +810,7 @@ await step('Wrap-Up : anonyme, questions obligatoires, réponses et indicateurs 
   const again = await fetch(BASE + 'api/avis', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: (await page.evaluate(() => window.GQ.wrapup.state().id)), reponses: { note: 1 } }) });
   assert(again.status === 409, `double envoi accepté (${again.status})`);
   const a = await api('avis');
-  assert(a.avis.length === 1 && a.avis[0].reponses.note === 4 && a.avis[0].reponses.mot === 'Bravo aux lutins' && a.avis[0].reponses.message.length > 1000, 'réponses non enregistrées');
+  assert(a.avis.length === 1 && a.avis[0].reponses.note === 4 && a.avis[0].reponses.mot.startsWith('Bravo aux lutins') && a.avis[0].reponses.mot.length > 1000, 'réponses non enregistrées');
   // Défi « Ton avis compte » validé automatiquement à l'envoi du questionnaire.
   const avisN = CFG.party.defis.findIndex((x) => x.auto === 'avis') + 1;
   await page.waitForFunction(async (n) => { const r = await (await fetch('api/party/classement')).json(); const me = r.joueurs.find((x) => x.nom === 'Les Givrés'); return me && me.defis === 4; }, avisN).catch(() => {});
@@ -856,12 +852,24 @@ await step('Vlog : tous formats, vidéo lourde, plusieurs fichiers, archive ZIP 
   assert(await has('video-longue.mov'), 'fichier absent de l\'onglet Vlog');
 });
 
-await step('Wrap-Up : tirage du Secret Santa, un numéro unique par téléphone', async () => {
+await step('Wrap-Up : Secret Santa, numéro du cadeau apporté puis tirage d\'un autre numéro unique', async () => {
   await go(BASE + '#/wrapup');
+  // Étape 1 : le cadeau apporté (la zone disparaît ensuite).
+  assert((await page.locator('[data-action="santa-draw"]').count()) === 0, 'tirage proposé avant le numéro du cadeau apporté');
+  await page.fill('#santa-apporte', '99999');
+  await page.click('.santa-form button[type=submit]');
+  await settle();
+  assert(await has('Entrez un numéro entre 1 et'), 'numéro apporté invalide accepté');
+  await page.fill('#santa-apporte', '7');
+  await page.click('.santa-form button[type=submit]');
+  await settle();
+  assert((await page.locator('.santa-form').count()) === 0 && await has('n° 7'), 'zone du cadeau apporté toujours affichée');
   await page.click('[data-action="santa-draw"]');
   await page.waitForSelector('.santa-help', { timeout: 8000 });
   const mine = await page.evaluate(() => window.GQ.wrapup.state().santa);
-  assert(mine >= 1 && mine <= CFG.wrapup.santa.total, `numéro inattendu : ${mine}`);
+  assert(mine >= 1 && mine <= CFG.wrapup.santa.total && mine !== 7, `numéro inattendu : ${mine}`);
+  const dup = await fetch(BASE + 'api/santa/tirage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: 'doublonapporte1', apporte: 7 }) });
+  assert(dup.status === 409, 'deux personnes ont déclaré le même cadeau apporté');
   await reload();
   assert((await page.evaluate(() => window.GQ.wrapup.state().santa)) === mine && await has('Allez chercher le cadeau'), 'numéro perdu au rechargement');
   const again = await (await fetch(BASE + 'api/santa/tirage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: await page.evaluate(() => window.GQ.wrapup.state().id) }) })).json();

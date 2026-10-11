@@ -1,5 +1,5 @@
 /* =====================================================================
- * THE GOBI' HUB — PHOTOS ET VIDÉOS DE L'ÉVÉNEMENT
+ * THE GOBI'HUB — PHOTOS ET VIDÉOS DE L'ÉVÉNEMENT
  * ---------------------------------------------------------------------
  * Rubrique indépendante du programme (#/vlog) : le Storyteller (et
  * tous les membres) y déposent leurs photos et vidéos. Tous les formats
@@ -13,7 +13,7 @@ window.GAME_CONFIG = window.GAME_CONFIG || {};
 window.GAME_CONFIG.vlog = {
   titre: "The Gobi'Hub",
   bouton: "The Gobi'Hub",
-  accroche: "Photos et vidéos de l'événement, déposez tout ici !",
+  accroche: "Vos photos et vidéos de l'événement, c'est ici !",
   bulle: "Storytellers… et tous les autres, à vous de jouer !",
   texte: "Pas besoin d'être Storyteller pour participer ! Déposez ici vos photos et vidéos de l'événement, même les plus longues. Tous les formats sont acceptés.",
   nomLabel: "Votre prénom ou nom d'équipe",
