@@ -67,27 +67,28 @@ window.GAME_CONFIG.textes = {
     lieu: "Vous êtes sur la bonne piste, continuez !",
     fin: "Bravo la team ! Le colis est entre vos mains.",
     clic: ["Ho ho ho !", "Je compte sur vous !", "Le colis vous attend !", "Allez, la team !"],
-    /* Phrases affichées pendant un gel (tirées au hasard). C'est Barnabé
-     * qui bloque les accès. */
+    /* Phrases affichées pendant un gel (2 essais ratés). C'est le système
+     * de sécurité qui se gèle, pas Barnabé : lui ne pirate qu'une fois,
+     * au hasard (voir hack). */
     gel: [
-      "Barnabé a piraté le système. Tout est gelé !",
-      "Accès bloqués par Barnabé. Respirez, ça va repartir.",
-      "Barnabé a tout gelé. Pas de panique, ce n'est que du givre !",
-      "Gelé ! Barnabé trouve que vous allez trop vite.",
-      "Tout est figé… et Barnabé se frotte les mains.",
+      "Deux erreurs : le système de sécurité se met en pause. Respirez, ça va repartir.",
+      "Trop d'essais ratés, le système est gelé. Profitez-en pour réfléchir ensemble !",
+      "Sécurité activée après deux erreurs. Pas de panique, ce n'est que du givre !",
+      "Système gelé. Relisez bien les indices pendant ce temps.",
     ],
     /* Phrases affichées quand le gel est levé. Les lutins du Père Noël
      * débloquent la situation. */
     degel: [
       "Les lutins du Père Noël ont tout dégelé. On repart !",
-      "Le Père Noël a forcé le passage. On continue !",
+      "Le système est reparti. On continue !",
       "Dégel express signé les lutins. C'est cadeau !",
-      "Les lutins ont déjoué le piratage de Barnabé. Foncez !",
+      "C'est reparti, foncez !",
     ],
   },
 
   /* Le hack de Barnabé. Piratage surprise : téléphone gelé 30 s, une seule
-   * fois dans la partie. Quête 5 : gel de 45 s après 2 mauvais codes. */
+   * fois dans la partie, au hasard. (Les gels après 2 erreurs ne sont pas
+   * de lui : c'est le système, voir lutin.gel.) */
   hack: {
     kicker: "Alerte intrusion",
     titre: "Écran piraté par Barnabé",
@@ -97,11 +98,6 @@ window.GAME_CONFIG.textes = {
       "Je pirate, vous patientez. Chacun son métier.",
       "30 secondes de pause offertes par Barnabé. De rien !",
       "Pas touche à mon colis ! Je gèle tout.",
-    ],
-    /* Quête 5 : après 2 mauvais codes d'affilée. */
-    tokyo: [
-      "Raté ! Je gèle tout, ça vous apprendra.",
-      "Encore faux ? Allez, au frigo pour 45 secondes !",
     ],
     /* Petite pique de Barnabé quand l'écran se débloque. */
     fin: [

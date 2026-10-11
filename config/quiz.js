@@ -87,8 +87,8 @@ window.GAME_CONFIG.quiz = {
 
   /* Après le quiz : intrusion de Barnabé (bulles de messagerie), qui
    * impose un calcul dont le résultat est l'étage de la quête 2.
-   * 2 erreurs d'affilée → écran bloqué (parametres.penalites.etage), puis
-   * un calcul beaucoup plus simple. */
+   * 2 erreurs d'affilée → le système se gèle 45 s (parametres.penalites.etage) ;
+   * 2 nouvelles erreurs → nouveau gel, puis un calcul beaucoup plus simple. */
   etage: {
     titre: "Intrusion",
     chatNom: "Barnabé",
@@ -106,12 +106,7 @@ window.GAME_CONFIG.quiz = {
     bouton: "Valider",
     reponses: ["5", "5e", "5eme", "5ieme", "cinq", "cinquieme"],
     erreur: "Mauvais calcul ! Réessayez, Barnabé vous surveille…",
-    gelTitre: "Bloqué par Barnabé",
-    /* Moqueries de Barnabé pendant le blocage (45 s). */
-    moqueries: [
-      "Deux erreurs ? Même mon grille-pain calcule mieux que vous. 15 secondes au coin !",
-      "Ha ha ! Les maths, c'est pas votre truc. Je bloque tout, le temps que vous révisiez.",
-    ],
+    gelTitre: "Système gelé",
     gelSuite: "Ensuite, vous pourrez retenter le calcul.",
     gelPasse: "Le Père Noël vole à votre secours. Direction le 5ᵉ étage !",
   },

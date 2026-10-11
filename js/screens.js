@@ -248,7 +248,7 @@
   /* Message d'erreur selon les essais restants. */
   function wrongText(left, custom) {
     if (custom) return custom.replace('{n}', left);
-    return left === 1 ? T.general.mauvaiseReponseDernierEssai.replace('{duree}', GQ.ruleVars().duree) : T.general.mauvaiseReponse;
+    return left === 1 ? T.general.mauvaiseReponseDernierEssai.replace('{duree}', GQ.ruleVars().duree).replace('{gel}', GQ.ruleVars().gel) : T.general.mauvaiseReponse;
   }
 
   function formError(value, text, extra) {
@@ -661,7 +661,7 @@
     })();
   }
 
-  /* Après le quiz : Barnabé pirate l'écran et impose un calcul dont le
+  /* Après le quiz : Barnabé s'invite dans la messagerie et impose un calcul dont le
    * résultat est l'étage de la quête 2. */
   function floorScreen() {
     var F = QZ.etage;
@@ -689,10 +689,7 @@
           var box = document.querySelector('[data-chat-answer]');
           if (box) box.hidden = false;
         });
-        if (gel) {
-          freezeAfter();
-          if (GQ.hack) GQ.hack.show(s.gel.until, { phrases: F.moqueries, titre: F.gelTitre });
-        }
+        if (gel) freezeAfter();
       },
       html: html,
     };

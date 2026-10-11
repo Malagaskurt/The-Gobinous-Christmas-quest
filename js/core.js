@@ -568,8 +568,8 @@
     return res;
   };
 
-  /* Après le quiz : deviner l'étage de la quête 2. Une erreur gèle le jeu
-   * quelques secondes, puis l'indice bonus apparaît. */
+  /* Après le quiz : deviner l'étage de la quête 2. 2 erreurs gèlent le
+   * système 45 s ; au 2e gel, le calcul simplifié apparaît. */
   GQ.floorAnswer = function (input) {
     var s = GQ.state;
     var F = (CFG.quiz && CFG.quiz.etage) || {};
@@ -578,25 +578,13 @@
       GQ.completeQuest(1);
       return { ok: true };
     }
-    // Après le 1er gel (15 s) : 2 nouvelles erreurs → indice, le calcul
-    // est simplifié (sans nouveau gel).
-    if (s.q1.floorRound === 1) {
-      s.q1.floorFails2 = (s.q1.floorFails2 || 0) + 1;
-      if (s.q1.floorFails2 >= 2) {
-        s.q1.floorRound = 2;
-        s.q1.floorEasy = true;
-        GQ.save();
-        return { ok: false, easy: true };
-      }
-      GQ.save();
-      return { ok: false, frozen: false, left: 1 };
-    }
+    // Chaque série de 2 erreurs gèle le système 45 s. Après le 2e gel, le
+    // calcul est simplifié ; un gel sur le calcul simplifié valide l'étape.
     var res = GQ.penalize('etage', 'etage');
     if (res.frozen) {
-      // 1er gel : on retente le même calcul. Gel sur le calcul simplifié :
-      // à la fin, le Père Noël donne l'étage (filet de sécurité).
-      if (s.q1.floorRound === 2) GQ.state.gel.after = 'valider';
-      else s.q1.floorRound = 1;
+      s.q1.floorRound = (s.q1.floorRound || 0) + 1;
+      if (s.q1.floorRound >= 2) s.q1.floorEasy = true;
+      if (s.q1.floorRound >= 3) GQ.state.gel.after = 'valider';
       GQ.save();
     }
     return Object.assign({ ok: false }, res);

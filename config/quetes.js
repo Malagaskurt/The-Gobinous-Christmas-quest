@@ -261,7 +261,7 @@ window.GAME_CONFIG.quetes = {
     label: "Code de la cachette (5 lettres)",
     bouton: "Valider le code",
     reponses: ["tokyo", "tokio"],
-    unEssai: "Attention, 2 erreurs d'affilée et Barnabé gèle votre écran pendant {duree} !",
+    unEssai: "Attention, 2 erreurs d'affilée et le système se gèle pendant {duree} !",
     gelSuite: "Ensuite, vous pourrez retenter votre chance.",
     indiceJoker: "La tour de 634 m s'appelle la Sky Tree. Dans quelle ville se trouve-t-elle ?",
 

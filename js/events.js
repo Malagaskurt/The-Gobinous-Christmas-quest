@@ -1,8 +1,8 @@
 /* Événements plein écran pendant le jeu :
  *  - le « hack » de Barnabé : il gèle l'écran 30 s (givre, message
  *    sarcastique, compte à rebours), une fois par équipe, à un moment tiré
- *    au hasard mais toujours avant la salle Tokyo. Le même écran sert aux
- *    gels de la quête 5 (2 mauvais codes d'affilée) ;
+ *    au hasard mais toujours avant la salle Tokyo. Les gels après 2 essais
+ *    ratés ne passent pas par ici : c'est le système qui se gèle ;
  *  - les alertes de temps : écran rouge clignotant à 10, 5 et 1 minute(s)
  *    restantes, puis « Temps écoulé » (on peut continuer).
  * Réglages : config/parametres.js (hack, chrono) ; textes : config/textes.js

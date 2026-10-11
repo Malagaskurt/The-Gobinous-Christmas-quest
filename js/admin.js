@@ -38,7 +38,7 @@
       s.opts[k] = !!v;
       write(s);
     },
-    enter: function () { write({ on: true, opts: { showAnswers: true, shortLock: true } }); },
+    enter: function () { write({ on: true, opts: { showAnswers: true, shortLock: false } }); },
     exit: function () { write(null); },
   };
 
@@ -156,7 +156,7 @@
 
         '<section class="admin-card"><h2>Options de test</h2>' +
         '<label class="check"><input type="checkbox" data-action="test-opt" data-opt="showAnswers"' + (GQ.test.opt('showAnswers') ? ' checked' : '') + '> Afficher les bonnes réponses</label>' +
-        '<label class="check"><input type="checkbox" data-action="test-opt" data-opt="shortLock"' + (GQ.test.opt('shortLock') ? ' checked' : '') + '> Blocage court du quiz et des gels (' + (MT.dureeBlocageCourtSecondes || 15) + ' s au lieu de ' + P.quiz.dureeBlocageSecondes + ' s)</label>' +
+        '<label class="check"><input type="checkbox" data-action="test-opt" data-opt="shortLock"' + (GQ.test.opt('shortLock') ? ' checked' : '') + '> Raccourcir les gels pour tester (' + (MT.dureeBlocageCourtSecondes || 15) + ' s au lieu de ' + P.quiz.dureeBlocageSecondes + ' s)</label>' +
         '</section>' +
 
         '<section class="admin-card"><h2>Quiz</h2><div class="btn-row">' +

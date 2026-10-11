@@ -259,11 +259,8 @@
       key: 'q5-report' + (gel ? '-gel' : ''),
       frozen: !!gel,
       elf: gel ? { say: 'blocage' } : null,
-      // Gel de la dernière étape : c'est Barnabé qui pirate l'écran.
-      after: gel ? function () {
-        C.freezeAfter();
-        if (GQ.hack) GQ.hack.show(GQ.state.gel.until, { phrases: (T.hack || {}).tokyo });
-      } : null,
+      // Gel du système (2 mauvais codes) : ce n'est pas un piratage.
+      after: gel ? C.freezeAfter : null,
       html: html,
     };
   }

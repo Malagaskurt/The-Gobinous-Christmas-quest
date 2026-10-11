@@ -377,6 +377,9 @@ await step('Mode test : accès caché par 5 appuis sur le logo, code vérifié',
   assert(await has('Code incorrect'), 'code incorrect accepté');
   await answer(CFG.parametres.modeTest.code);
   assert(await has('Mode test organisateur') && await has('État de la partie'), 'panneau absent');
+  // Gels réels (45 s) par défaut ; on les raccourcit pour la suite des tests.
+  assert(!(await page.locator('[data-opt="shortLock"]').isChecked()), 'gels raccourcis par défaut en mode test');
+  await page.click('[data-opt="shortLock"]');
 });
 
 await step('Fin du gel du quiz → quiz validé d\'office, premier indice débloqué', async () => {
@@ -402,26 +405,32 @@ await step('Quiz réussi à 8/8 (thème « La Tour »), correction consultable',
   assert(await has('Voir la correction'), 'correction absente');
 });
 
-await step('Intrusion de Barnabé : calcul, 2 erreurs → gel 15 s, 2 nouvelles erreurs → calcul simplifié, 5 accepté', async () => {
+await step('Intrusion de Barnabé : calcul, 2 erreurs → gel système de 45 s, 2 de plus → nouveau gel puis calcul simplifié', async () => {
   await page.click('[data-action="to-floor"]');
   await settle();
   assert(await has('C\'est quoi ce délire') && await has('50 - 25 + 10 - 15 + 8 - 12 + 7 - 18'), 'messages de Barnabé absents');
   await answer('3');
   assert(!(await frozen()), 'gel dès la 1re erreur');
   assert(await has('Mauvais calcul'), 'erreur non signalée');
+  // Durée réelle : gels raccourcis désactivés le temps de cette erreur.
+  await page.evaluate(() => window.GQ.test.setOpt('shortLock', false));
   await answer('4');
+  await page.evaluate(() => window.GQ.test.setOpt('shortLock', true));
   assert(await frozen(), 'pas de gel après 2 erreurs');
-  await page.waitForSelector('#hack .hack-title');
   const ms = await gelMs();
-  assert(ms > 0 && ms <= 15000, `gel inattendu : ${ms} ms`);
-  // Fin du gel simulée : on retente le même calcul.
-  await page.evaluate(() => { const g = window.GQ.state.gel; g.until = 0; g.key = null; g.after = null; window.GQ.save(); const h = document.getElementById('hack'); if (h) h.remove(); document.body.classList.remove('has-hack'); window.GQ.render(); });
+  assert(ms > 40000 && ms <= 45000, `gel de l'étage ≠ 45 s : ${ms} ms`);
+  assert((await page.locator('#hack').count()) === 0, 'le gel système ne doit pas être un piratage de Barnabé');
+  const endGel = () => page.evaluate(() => { const g = window.GQ.state.gel; g.until = 0; g.key = null; g.after = null; window.GQ.save(); window.GQ.render(); });
+  await endGel();
   await settle();
   assert(!(await has('2 + 3')), 'indice donné trop tôt');
   await answer('6');
-  assert(!(await frozen()) && !(await has('2 + 3')), 'indice ou gel après une seule nouvelle erreur');
+  assert(!(await frozen()), 'gel après une seule nouvelle erreur');
   await answer('7');
-  assert(!(await frozen()), 'gel au lieu de l\'indice');
+  assert(await frozen(), 'pas de 2e gel après 2 nouvelles erreurs');
+  assert((await gelMs()) <= SHORT, 'gel court inattendu');
+  await endGel();
+  await settle();
   assert(await has('2 + 3'), 'calcul simplifié absent');
   await answer('5');
   assert((await state()).quest === 2 && (await hash()) === '#/quete/2', 'quête 2 non atteinte');
@@ -602,15 +611,14 @@ await step('Mot secret CADEAU → transmission à usage unique, jamais « salle 
   assert(!(await forbidden()), '« salle » ou « porte » affiché trop tôt');
 });
 
-await step('Code de la cachette : 2 erreurs → Barnabé pirate l\'écran, 2 de plus → re-piratage', async () => {
+await step('Code de la cachette : 2 erreurs → gel système, 2 de plus → nouveau gel', async () => {
   assert(await has('le colis est caché à cet étage') && !(await has('Barnabé se cache')), 'on cherche le colis, pas Barnabé');
   const hackCycle = async () => {
     assert(await frozen(), 'pas de gel après 2 erreurs');
-    await page.waitForSelector('#hack .hack-title');
-    assert(norm(await page.locator('#hack').innerText()).includes('piraté'), 'écran de piratage absent');
+    assert((await page.locator('#hack').count()) === 0, 'le gel système ne doit pas être un piratage de Barnabé');
     const ms = await gelMs();
-    assert(ms > 0 && ms <= CFG.parametres.penalites.repaire.gelSecondes * 1000, `gel inattendu : ${ms} ms`);
-    await page.waitForSelector('#hack', { state: 'detached', timeout: ms + 6000 });
+    assert(ms > 0 && ms <= SHORT, `gel inattendu : ${ms} ms`);
+    await page.waitForSelector('.answer-form', { timeout: ms + 6000 });
     await settle();
     assert((await page.locator('.answer-form').count()) === 1, 'saisie non rétablie');
   };

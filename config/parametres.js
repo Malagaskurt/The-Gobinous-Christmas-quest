@@ -37,17 +37,19 @@ window.GAME_CONFIG.parametres = {
    * apresGel     : "valider"   → l'étape est validée d'office
    *                "reessayer" → l'équipe peut retenter */
   penalites: {
-    /* Exception : l'énigme de l'étage après le quiz. 2 erreurs → gel de
-     * 15 s ; 2 nouvelles erreurs → indice (calcul simplifié). */
-    etage: { essais: 2, gelSecondes: 15, apresGel: "reessayer" },
+    /* Règle universelle : 2 essais ratés = le système se gèle 45 s
+     * (gel du système, ce n'est pas Barnabé ; son piratage, c'est le
+     * « hack » plus bas, une seule fois au hasard).
+     * L'énigme de l'étage après le quiz : 2 erreurs → gel 45 s ; 2 nouvelles
+     * erreurs → gel 45 s puis calcul simplifié (indice). */
+    etage: { essais: 2, gelSecondes: 45, apresGel: "reessayer" },
     /* Quête 2 : le message codé (la solution s'affiche après le gel). */
     message: { essais: 2, gelSecondes: 45, apresGel: "valider" },
     /* Quête 4 : chacun des 4 modules de l'enquête. */
     enquete: { essais: 2, gelSecondes: 45, apresGel: "valider" },
-    /* Quête 5 : le code de la pièce (TOKYO). 2 erreurs d'affilée →
-     * Barnabé pirate l'écran 45 s ; 2 nouvelles erreurs → encore 45 s ;
-     * à la 5e erreur, le Père Noël envoie une aide (voir quetes.js).
-     * Règle universelle : 2 essais ratés = 45 s de gel, partout. */
+    /* Quête 5 : le code de la cachette (TOKYO). 2 erreurs d'affilée →
+     * gel 45 s ; 2 nouvelles erreurs → encore 45 s ; à la 5e erreur, le
+     * Père Noël envoie une aide (voir quetes.js). */
     repaire: { essais: 2, gelSecondes: 45, apresGel: "reessayer" },
   },
 
