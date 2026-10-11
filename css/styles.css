@@ -2524,3 +2524,41 @@ input.field::placeholder, .field::placeholder, textarea::placeholder { color: #7
 .fc-title { max-width: none !important; font-size: clamp(2.1rem, 10.5vw, 3.8rem) !important; }
 .fc-line { display: block; white-space: nowrap; }
 .pig circle { fill: #ff6b70; }
+
+/* Quiz : réponse sélectionnée en bleu Saint-Gobain (le rouge reste réservé
+ * aux erreurs). */
+.choice.is-selected { background: #17428c !important; color: #fff !important; box-shadow: 0 0 0 3px #2fc0ee !important; }
+.choice.is-selected .choice-letter, .choice.is-selected .choice-key { background: #2fc0ee !important; color: #0b1d45 !important; }
+
+/* Satisfaction : étoiles sélectionnées bien franches. */
+.wq-star { background: rgba(255, 255, 255, .12) !important; }
+.wq-star .pix { filter: grayscale(1) brightness(1.6) opacity(.35) !important; }
+.wq-star.is-on { background: #ffd34d !important; box-shadow: 0 0 0 2px #fff, 0 0 18px rgba(255, 211, 77, .6) !important; transform: scale(1.06); }
+.wq-star.is-on .pix { filter: none !important; }
+.wq-locked { margin-top: 14px; }
+
+/* Scan d'identité : validation en vert (exception à la palette = succès),
+ * badge encore plus grand. */
+.idscan-card { max-width: 420px; padding: 26px 22px; }
+.idscan-photo { width: 124px; height: 148px; }
+.idscan-ico.art3d { width: 86px; }
+.idscan-fields dd { font-size: 1.25rem; }
+.idscan-status { background: #1fae63 !important; color: #fff !important; }
+.idscan-beam { background: #3ee08a !important; box-shadow: 0 0 16px 6px rgba(62, 224, 138, .5) !important; }
+
+/* Fenêtres de choix : bouton principal rouge, secondaire rouge adouci. */
+.modal [data-modal-ok] + [data-modal-cancel], .modal .btn-secondary[data-modal-cancel] { background: #ef9a9e !important; color: #fff !important; }
+
+/* Quête 4 : badge d'identité, photo et textes parfaitement alignés. */
+.id-body { display: grid !important; grid-template-columns: 84px 1fr; align-items: center; gap: 14px; padding: 14px 16px; }
+.id-photo { width: 84px; height: 104px; align-self: center; }
+.id-fields { align-content: center; gap: 8px; margin: 0; }
+.id-field { display: grid; gap: 2px; margin: 0; }
+.id-field dt, .id-field dd { margin: 0; text-align: left; }
+.id-field dt { font: 800 .62rem/1 var(--font-head); letter-spacing: .12em; text-transform: uppercase; opacity: .7; }
+.id-field dd { font-weight: 700; font-size: .98rem; line-height: 1.2; }
+/* Questionnaire : choix et échelle toujours lisibles, sélection franche. */
+.wq-chip, .wq-dot { background: #fff !important; color: #0b1d45 !important; border: 0 !important; }
+.wq-chip.is-on, .wq-dot.is-on { background: #17428c !important; color: #fff !important; box-shadow: 0 0 0 3px #2fc0ee !important; }
+.id-head { background: #17428c !important; color: #fff !important; }
+.id-field dt { color: #9ee0f5 !important; opacity: 1 !important; margin-bottom: 1px; }

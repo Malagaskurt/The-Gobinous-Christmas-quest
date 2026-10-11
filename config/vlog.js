@@ -11,8 +11,8 @@
 window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.vlog = {
-  titre: "The Gobi' Hub",
-  bouton: "The Gobi' Hub",
+  titre: "The Gobi'Hub",
+  bouton: "The Gobi'Hub",
   accroche: "Photos et vidéos de l'événement, déposez tout ici !",
   bulle: "Storytellers… et tous les autres, à vous de jouer !",
   texte: "Pas besoin d'être Storyteller pour participer ! Déposez ici vos photos et vidéos de l'événement, même les plus longues. Tous les formats sont acceptés.",

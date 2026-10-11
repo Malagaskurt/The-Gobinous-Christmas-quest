@@ -2,7 +2,8 @@
  * GOBINOUS CHRISTMAS WRAP-UP — QUESTIONNAIRE DE SATISFACTION
  * ---------------------------------------------------------------------
  * Page #/wrapup : le tirage au sort du Secret Santa, puis le
- * questionnaire (5 questions maximum, anonymes, sans code d'accès).
+ * questionnaire (anonyme, sans code d'accès). Une seule réponse par
+ * téléphone : une fois envoyée, elle est définitive.
  * Les réponses sont envoyées au serveur du jeu (npm start) et consultables
  * par les organisateurs dans le tableau de bord (#/suivi → Avis), avec
  * les indicateurs (moyennes, répartitions) et un export CSV.
@@ -37,7 +38,7 @@ window.GAME_CONFIG.wrapup = {
 
   avisTitre: "Votre avis",
   bulle: "Alors, cet événement ?",
-  intro: "5 questions, 1 minute. C'est **100 % anonyme**, aucun nom n'est demandé.",
+  intro: "6 questions, 2 minutes. C'est **100 % anonyme**, aucun nom n'est demandé.",
   questions: [
     { id: "note", type: "etoiles", question: "Votre note pour l'événement ?", obligatoire: true },
     {
@@ -47,7 +48,7 @@ window.GAME_CONFIG.wrapup = {
       options: ["Gobi'Christmas Quest", "Gobi'Christmas Party", "Gobi'Christmas Battle", "Secret Santa"],
       obligatoire: true,
     },
-    { id: "quest", type: "echelle", question: "La Gobi'Christmas Quest, c'était…", min: "Trop facile", max: "Trop dur", obligatoire: false },
+    { id: "quest", type: "echelle", question: "La Gobi'Christmas Quest, c'était…", min: "Trop facile", max: "Trop dur", obligatoire: true },
     {
       id: "encore",
       type: "choix",
@@ -55,6 +56,7 @@ window.GAME_CONFIG.wrapup = {
       options: ["Oui, carrément !", "Peut-être", "Non merci"],
       obligatoire: true,
     },
+    { id: "message", type: "texte", question: "Quel message souhaitez-vous laisser à Soatiana et Yona ?", placeholder: "Votre message", obligatoire: true },
     { id: "mot", type: "texte", question: "Un mot, une idée, un merci ?", placeholder: "Facultatif", obligatoire: false },
   ],
   obligatoire: "Obligatoire",
@@ -64,5 +66,6 @@ window.GAME_CONFIG.wrapup = {
   erreurEnvoi: "L'envoi a échoué (réseau ?). Réessayez dans un instant.",
   merciTitre: "Merci !",
   merciTexte: "Votre avis est bien arrivé. Joyeux Noël, et à l'année prochaine !",
-  modifier: "Modifier mes réponses",
+  /* Déjà répondu : la réponse est définitive. */
+  dejaRepondu: "Vous avez déjà répondu à ce questionnaire. Merci pour votre avis !",
 };

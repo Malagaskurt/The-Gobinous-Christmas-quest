@@ -158,7 +158,7 @@ window.GAME_CONFIG.textes = {
         icone: "camera",
         nom: "The Storyteller",
         texte: "Documente la quête en photos et vidéos.",
-        ou: "Photos et vidéos à déposer sur **The Gobi' Hub**, depuis le programme.",
+        ou: "Photos et vidéos à déposer sur **The Gobi'Hub**, depuis le programme.",
       },
     ],
     rolesNote: "",

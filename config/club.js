@@ -65,9 +65,9 @@ window.GAME_CONFIG.club = {
     ],
   },
 
-  /* Rubrique indépendante du programme : The Gobi' Hub (photos et vidéos). */
+  /* Rubrique indépendante du programme : The Gobi'Hub (photos et vidéos). */
   vlog: {
-    nom: "The Gobi' Hub",
+    nom: "The Gobi'Hub",
     texte: "Déposez ici vos photos et vidéos de l'événement. Ouvert à tous !",
     bouton: "Découvrir",
   },

@@ -58,7 +58,7 @@ window.GAME_CONFIG.party = {
   defis: [
     { titre: "Selfie ascenseur", texte: "Prends un selfie d'équipe dans l'ascenseur.", points: 10 },
     { titre: "Objet random", texte: "Prends une photo avec un objet random.", points: 15 },
-    { titre: "Reporter d'un jour", texte: "Prends 10 belles photos de l'événement (dépose-les sur The Gobi' Hub) et envoie ici ta préférée.", points: 25 },
+    { titre: "Reporter d'un jour", texte: "Prends 10 belles photos de l'événement (dépose-les sur The Gobi'Hub) et envoie ici ta préférée.", points: 25 },
     { titre: "J'accuse Barnabé", texte: "Enregistre une courte vidéo en équipe pour accuser publiquement Barnabé.", points: 20, video: true },
     { titre: "Service VIP", texte: "Filme-toi en train de servir une personne que tu ne connais pas pendant le goûter.", points: 30, video: true },
     { titre: "Team orga", texte: "Prends un selfie avec les organisatrices Gobinous.", points: 20 },

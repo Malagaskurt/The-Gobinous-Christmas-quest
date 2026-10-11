@@ -613,15 +613,16 @@ async function api(req, res, path) {
     return send(res, 200, { now, joueurs: classement().map(({ id, nom, points, defis }) => ({ id, nom, points, defis })) });
   }
 
-  // Christmas Wrap-Up : réponses anonymes (une par téléphone, modifiable).
+  // Christmas Wrap-Up : réponses anonymes, une seule par téléphone (définitive).
   if (path === '/api/avis' && req.method === 'POST') {
-    const b = await body(req, 16384);
+    const b = await body(req, 65536);
     if (!validId(b.id) || !b.reponses || typeof b.reponses !== 'object') return send(res, 400, { erreur: 'réponses invalides' });
+    if (avis[b.id]) return send(res, 409, { erreur: 'déjà répondu' });
     if (!avis[b.id] && Object.keys(avis).length >= 5000) return send(res, 503, { erreur: 'trop de réponses' });
     const reponses = {};
     for (const [k, v] of Object.entries(b.reponses).slice(0, 10)) {
       if (!/^[a-z0-9_-]{1,30}$/i.test(k)) continue;
-      reponses[k] = typeof v === 'number' ? Math.max(0, Math.min(10, Math.round(v))) : str(v, 1000);
+      reponses[k] = typeof v === 'number' ? Math.max(0, Math.min(10, Math.round(v))) : str(v, 2000);
     }
     avis[b.id] = { at: now, reponses };
     await persistAvis();

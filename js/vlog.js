@@ -135,7 +135,7 @@
   GQ.screens.vlog = function () {
     var head = GQ.clubHeader({ href: 'programme', label: 'Programme' }) +
       '<main class="screen screen-plain screen-vlog">' +
-      '<div class="center-head">' + GQ.knit.icon('camera', 'head-ico') + '<p class="kicker">Gobinous</p>' + C.knitTitle('Le Vlog') + '</div>';
+      '<div class="center-head">' + GQ.knit.icon('camera', 'head-ico') + '<p class="kicker">Photos & vidéos</p>' + C.knitTitle(V.titre || 'The Gobi\'Hub') + '</div>';
     if (!me.nom || GQ.ui.rename) {
       if (GQ.ui.value == null && me.nom) GQ.ui.value = me.nom;
       return {

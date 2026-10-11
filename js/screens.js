@@ -1011,8 +1011,7 @@
     }
     GQ.audio.sfx('unlock');
     GQ.uiReset();
-    // Étape débloquée : 3, 2, 1… puis la quête commence.
-    GQ.countdown(function () { GQ.render(); });
+    GQ.render();
   };
 
   forms.floor = function (form, value) {

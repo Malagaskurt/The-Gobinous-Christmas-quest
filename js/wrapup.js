@@ -53,7 +53,7 @@
         return '<button type="button" role="radio" aria-checked="' + (v === o) + '" class="wq-chip' + (v === o ? ' is-on' : '') + '" data-action="wq-set" data-q="' + q.id + '" data-s="' + esc(o) + '">' + t(o) + '</button>';
       }).join('') + '</div>';
     } else {
-      body = '<textarea class="field wq-text" rows="3" maxlength="600" data-wq-text="' + q.id + '" placeholder="' + esc(q.placeholder || '') + '">' + esc(v || '') + '</textarea>';
+      body = '<textarea class="field wq-text" rows="3" maxlength="2000" data-wq-text="' + q.id + '" placeholder="' + esc(q.placeholder || '') + '">' + esc(v || '') + '</textarea>';
     }
     return '<div class="wq" role="group" aria-labelledby="wq-' + q.id + '">' + head + body + '</div>';
   }
@@ -120,7 +120,8 @@
     var head = GQ.clubHeader({ href: 'programme', label: 'Programme' }) +
       '<main class="screen screen-plain screen-wrapup">' +
       '<div class="center-head">' + GQ.knit.icon('gift', 'head-ico') + '<p class="kicker">Gobi\'Christmas</p>' + C.knitTitle(W.titre.replace(/^(Gobi'|Gobi’)?Christmas\s+/i, '')) + '</div>';
-    if (me.envoye && !GQ.ui.edit) {
+    // Réponse envoyée : définitive, plus de modification possible.
+    if (me.envoye) {
       return {
         key: 'wrapup-merci',
         bare: true,
@@ -130,7 +131,7 @@
           '<section class="success"><div class="success-art">' + GQ.knit.icon('check', 'success-ico') + '</div>' +
           '<h2 class="success-title" tabindex="-1">' + t(W.merciTitre) + '</h2>' +
           C.frame('<p>' + t(W.merciTexte) + '</p>', 'frame-center') + '</section>' +
-          '<p class="center"><button type="button" class="btn btn-ghost" data-action="wq-edit">' + esc(W.modifier) + '</button></p>' +
+          (W.dejaRepondu ? '<p class="notice wq-locked">' + icon('cadenas') + '<span>' + t(W.dejaRepondu) + '</span></p>' : '') +
           C.cta('<a class="btn btn-red" href="#/programme">' + icon('retour') + 'Retour au programme</a>') +
           '</main>',
       };
@@ -168,12 +169,6 @@
     if (e.target.closest && e.target.closest('[data-wq-text]')) keepText();
   });
 
-  actions['wq-edit'] = function () {
-    GQ.uiReset();
-    GQ.ui.edit = true;
-    GQ.render();
-  };
-
   GQ.forms.wrapup = function () {
     keepText();
     var missing = W.questions.filter(function (q) { return q.obligatoire && !answered(q); });
@@ -191,7 +186,8 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: me.id, reponses: reponses }),
     }).then(function (r) {
-      if (!r.ok) throw new Error('http');
+      // 409 : ce téléphone a déjà répondu, la réponse reste définitive.
+      if (!r.ok && r.status !== 409) throw new Error('http');
       me.envoye = true;
       save();
       // Défi de la Party « Ton avis compte » : validé automatiquement.

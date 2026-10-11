@@ -152,7 +152,7 @@ await step('Accueil « The Gobinous Christmas Club » → programme des 5 temps 
   await page.click('.club-down');
   await settle();
   assert((await hash()) === '#/programme', 'programme non affiché');
-  for (const n of ["Gobi'Christmas", 'Quest', 'Party', 'Battle', 'Wrap-Up', "The Gobi' Hub"]) {
+  for (const n of ["Gobi'Christmas", 'Quest', 'Party', 'Battle', 'Wrap-Up', "The Gobi'Hub"]) {
     assert(await has(n), `temps fort absent : ${n}`);
   }
   assert((await page.locator('.prog-card').count()) === 4, '4 temps forts attendus');
@@ -789,19 +789,32 @@ await step('Party : défi validé par photo → Gobz comptés par le serveur, cl
 await step('Wrap-Up : anonyme, questions obligatoires, réponses et indicateurs côté organisateurs', async () => {
   await go(BASE + '#/wrapup');
   assert(await has('100 % anonyme'), 'mention anonyme absente');
-  assert((await page.locator('.wq').count()) === CFG.wrapup.questions.length && CFG.wrapup.questions.length <= 5, 'plus de 5 questions');
+  assert((await page.locator('.wq').count()) === CFG.wrapup.questions.length && CFG.wrapup.questions.filter((q) => !q.obligatoire).length === 1 && !CFG.wrapup.questions[CFG.wrapup.questions.length - 1].obligatoire, 'seule la dernière question doit être facultative');
   await page.click('.wq-form button[type=submit]');
   await settle();
   assert(await has('Il manque une réponse obligatoire'), 'questionnaire incomplet accepté');
   await page.click('[data-q="note"][data-v="4"]');
   await page.click('[data-q="moment"][data-s="Gobi\'Christmas Party"]');
   await page.click('[data-q="encore"][data-s="Oui, carrément !"]');
+  await page.click('[data-q="quest"][data-v="3"]');
+  // Le message à Soatiana et Yona est obligatoire, et peut être long.
+  await page.click('.wq-form button[type=submit]');
+  await settle();
+  assert(await has('Il manque une réponse obligatoire'), 'message à Soatiana et Yona non obligatoire');
+  assert(await has('Soatiana et Yona'), 'question pour Soatiana et Yona absente');
+  const long = 'Merci pour tout ! '.repeat(80);
+  await page.fill('[data-wq-text="message"]', long);
   await page.fill('[data-wq-text="mot"]', 'Bravo aux lutins');
   await page.click('.wq-form button[type=submit]');
   await settle();
   assert(await has('Merci'), 'remerciement absent');
+  // Réponse définitive : plus de modification, message « déjà répondu ».
+  await reload();
+  assert(await has('déjà répondu') && (await page.locator('.wq-form').count()) === 0, 'le questionnaire peut être modifié');
+  const again = await fetch(BASE + 'api/avis', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: (await page.evaluate(() => window.GQ.wrapup.state().id)), reponses: { note: 1 } }) });
+  assert(again.status === 409, `double envoi accepté (${again.status})`);
   const a = await api('avis');
-  assert(a.avis.length === 1 && a.avis[0].reponses.note === 4 && a.avis[0].reponses.mot === 'Bravo aux lutins', 'réponses non enregistrées');
+  assert(a.avis.length === 1 && a.avis[0].reponses.note === 4 && a.avis[0].reponses.mot === 'Bravo aux lutins' && a.avis[0].reponses.message.length > 1000, 'réponses non enregistrées');
   // Défi « Ton avis compte » validé automatiquement à l'envoi du questionnaire.
   const avisN = CFG.party.defis.findIndex((x) => x.auto === 'avis') + 1;
   await page.waitForFunction(async (n) => { const r = await (await fetch('api/party/classement')).json(); const me = r.joueurs.find((x) => x.nom === 'Les Givrés'); return me && me.defis === 4; }, avisN).catch(() => {});

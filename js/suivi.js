@@ -330,7 +330,7 @@
   function loadVlog() {
     return request('GET', 'vlog').then(function (d) { vlogData = d; error = ''; }).catch(function (e) {
       if (e.code === 401) { setCode(''); error = 'Code incorrect.'; throw e; }
-      error = 'Serveur injoignable. Le Vlog nécessite le serveur du jeu (npm start, voir README).';
+      error = 'Serveur injoignable. The Gobi\'Hub nécessite le serveur du jeu (npm start, voir README).';
     });
   }
   function bytes(n) {
@@ -375,7 +375,7 @@
     { id: '', label: 'Christmas Quest', title: 'Suivi des équipes' },
     { id: 'party', label: 'Christmas Party', title: 'Défis de la Party' },
     { id: 'avis', label: 'Wrap-Up', title: 'Secret Santa et avis' },
-    { id: 'vlog', label: 'Gobi\' Hub', title: 'The Gobi\' Hub' },
+    { id: 'vlog', label: 'Gobi\'Hub', title: 'The Gobi\'Hub' },
   ];
   var tab = '';
 
@@ -399,7 +399,7 @@
         '<div id="suivi-list">' + listHtml() + '</div>' +
         '<div id="suivi-gallery">' + (lastGallery = galleryHtml()) + '</div>' +
         '<section class="admin-card danger-zone"><h2>Tout remettre à zéro</h2>' +
-        '<p class="small">Efface <b>tout</b> : équipes et progression, photos, défis et Gobz de la Party, avis, tirage du Secret Santa, Vlog. ' +
+        '<p class="small">Efface <b>tout</b> : équipes et progression, photos, défis et Gobz de la Party, avis, tirage du Secret Santa, The Gobi\'Hub. ' +
         'Chaque téléphone efface aussi ses données à sa prochaine connexion et repart de l\'accueil. Définitif.</p>' +
         '<button type="button" class="btn btn-small btn-danger" data-action="suivi-reset-all">Tout réinitialiser</button></section>'
       : '<div id="suivi-tab">' + (tab === 'party' ? partyHtml() : tab === 'vlog' ? vlogHtml() : avisHtml()) + '</div>';
@@ -451,7 +451,7 @@
   actions['suivi-reset-all'] = function () {
     GQ.modal({
       title: 'Tout réinitialiser ?',
-      text: 'Équipes, photos, Party, avis, Secret Santa et Vlog seront effacés, sur le serveur et sur tous les téléphones.',
+      text: 'Équipes, photos, Party, avis, Secret Santa et The Gobi\'Hub seront effacés, sur le serveur et sur tous les téléphones.',
       confirm: 'Oui, tout effacer',
       cancel: 'Annuler',
       icon: 'cadenas',
