@@ -110,9 +110,11 @@
         '<main class="club">' +
         '<div class="garland" aria-hidden="true"></div>' +
         stars(30) +
-        // Logo en haut, centré, sur la même ligne que le bouton du son.
-        '<div class="club-top"><div class="club-logo club-logo-top">' + GQ.logo('clair') + '</div>' + GQ.soundButton() + '</div>' +
+        // Neige sur toute la page, depuis le haut de l'écran.
+        '<span class="club-snow club-snow-full" aria-hidden="true"></span>' +
+        '<div class="club-top">' + GQ.soundButton() + '</div>' +
         '<div class="club-hero">' +
+        '<div class="club-logo">' + GQ.logo('clair') + '</div>' +
         '<h1 class="club-title" tabindex="-1"><span class="sr-only">' + t(A.surtitre) + ' ' + t(A.titre) + ' ' + t(A.sousTitre) + '</span>' +
         '<span class="club-the" aria-hidden="true">' + t(A.surtitre) + '</span>' +
         GQ.knit.text(String(A.titre).toUpperCase(), { alt: '', color: '#E4323A', outline: true, cls: 'club-knit' }) +
@@ -124,7 +126,6 @@
         '<span class="club-truck">' + GQ.knit.icon('truck', 'club-truck-img') + '</span>' +
         '<span class="club-parcel p1">' + GQ.knit.icon('gift', 'club-parcel-img') + '</span>' +
         '<span class="club-parcel p2">' + GQ.knit.icon('gift', 'club-parcel-img') + '</span>' +
-        '<span class="club-snow"></span>' +
         '</div>' +
         '<button type="button" class="club-down" data-action="to-programme" aria-label="' + esc(A.appel) + '">' +
         '<span>' + esc(A.appel) + '</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button>' +

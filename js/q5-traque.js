@@ -600,7 +600,7 @@
     GQ.uiReset();
     // 5e erreur : le Père Noël envoie son aide (notification).
     if (res && !res.ok && R.indiceNotif && GQ.state.q5.errors === R.indiceApres) {
-      setTimeout(function () { GQ.notify({ app: R.santaNom || 'Le Père Noël', icon: 'santa', text: R.indiceNotif, ms: 9000 }); }, 300);
+      setTimeout(function () { GQ.notify({ app: R.santaNom || 'Le Père Noël', icon: 'santa', text: R.indiceNotif, ms: 9000, force: true }); }, 300);
     }
     if (!res || res.ok || res.frozen || res.revealed) return GQ.render();
     C.formError(value, T.general.mauvaiseReponse);

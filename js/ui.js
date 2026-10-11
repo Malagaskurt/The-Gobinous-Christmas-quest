@@ -189,7 +189,16 @@
    * glisse du haut de l'écran, avec un petit « ding ». Touchez-la (ou
    * glissez vers le haut) pour la fermer. opts : { app, text, icon, time }. */
   var notifTimer;
+  // Pas trop de notifications : 3 au maximum sur toute la partie (sauf
+  // celles marquées force, comme l'aide du Père Noël à l'étape 5).
+  var NOTIF_MAX = 3;
   GQ.notify = function (opts) {
+    var st = GQ.state || {};
+    if (!opts.force) {
+      if ((st.notifs || 0) >= NOTIF_MAX) return;
+      st.notifs = (st.notifs || 0) + 1;
+      if (GQ.save) GQ.save();
+    }
     var el = document.getElementById('notif-banner');
     if (!el) {
       el = document.createElement('div');

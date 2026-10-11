@@ -221,6 +221,17 @@
     GQ.updateClocks();
     if (scr.after) scr.after();
     if (changed) GQ.elf.hide();
+    // Bulles du Père Noël : 4 au maximum sur toute la partie, pour ne pas
+    // lasser (les gels et écrans importants restent signalés à l'écran).
+    var PEEK_MAX = 4;
+    var budget = function () {
+      var st = GQ.state;
+      if ((st.peeks || 0) >= PEEK_MAX) return false;
+      st.peeks = (st.peeks || 0) + 1;
+      GQ.save();
+      return true;
+    };
+    if ((voice || (changed && scr.elf)) && !budget()) { voice = null; scr = Object.assign({}, scr, { elf: null }); }
     if (voice) {
       clearTimeout(GQ._voiceTimer);
       GQ._voiceTimer = setTimeout(function () {

@@ -182,13 +182,22 @@
     };
   }
 
+  // Choix d'une réponse : mise à jour sur place (pas de nouveau rendu de la
+  // page), pour un clic fluide, sans clignotement ni saut.
   actions['wq-set'] = function (el) {
     var q = el.dataset.q;
-    me.reponses[q] = el.dataset.v ? Number(el.dataset.v) : el.dataset.s;
+    var val = el.dataset.v ? Number(el.dataset.v) : el.dataset.s;
+    me.reponses[q] = val;
     save();
     keepText();
-    GQ.ui.msg = null;
-    GQ.render();
+    var group = el.parentNode;
+    group.querySelectorAll('[data-action="wq-set"]').forEach(function (b) {
+      var on = el.classList.contains('wq-star') ? Number(b.dataset.v) <= val : b === el;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-checked', String(b === el));
+    });
+    var fb = document.querySelector('.wq-form .feedback');
+    if (fb && GQ.ui.msg) { GQ.ui.msg = null; fb.remove(); }
   };
 
   // Les réponses libres sont conservées à chaque frappe.

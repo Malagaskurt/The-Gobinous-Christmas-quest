@@ -246,13 +246,22 @@
     },
     // Notification (joker, Support 44, message) : double « ding » cristallin.
     notif: function (c, out, t) {
-      // Notification façon iPhone (« tri-tone ») : trois notes aiguës
-      // rapides, timbre de clochette (fondamentale + partiel inharmonique).
-      [[1567.98, 0], [1975.53, 0.11], [2349.32, 0.22]].forEach(function (n) {
-        tone(c, out, n[0], t + n[1], 0.32, 'sine', 0.42);
-        tone(c, out, n[0] * 2.76, t + n[1], 0.12, 'sine', 0.07);
-        tone(c, out, n[0] * 2, t + n[1], 0.2, 'sine', 0.06);
+      // Notification façon WhatsApp : deux « pop » très aigus et brefs.
+      [[2349.3, 0], [3135.9, 0.13]].forEach(function (n) {
+        tone(c, out, n[0], t + n[1], 0.16, 'sine', 0.5, n[0] * 1.02);
+        tone(c, out, n[0] * 2, t + n[1], 0.06, 'sine', 0.08);
+        tone(c, out, n[0] / 2, t + n[1], 0.05, 'triangle', 0.12);
       });
+    },
+    // Piratage de Barnabé : vraie alarme (sirène à deux tons, grave et
+    // insistante, ~2,4 s).
+    hackAlarm: function (c, out, t) {
+      for (var k = 0; k < 6; k++) {
+        var s0 = t + k * 0.4;
+        tone(c, out, 520, s0, 0.2, 'sawtooth', 0.22, 760);
+        tone(c, out, 760, s0 + 0.2, 0.2, 'sawtooth', 0.22, 520);
+        tone(c, out, 260, s0, 0.4, 'square', 0.12);
+      }
     },
     // Raccrochage : le « clac » du combiné, puis la tonalité de fin de
     // ligne (« tu-tu-tu »), bien nette.
@@ -281,7 +290,7 @@
     var out = c.createGain();
     out.gain.value = Math.max(0, Math.min(1, Number(M.volumeEffets) || 0.5));
     // Le raccrochage doit s'entendre franchement.
-    if (name === 'hangup' || name === 'lift' || name === 'notif' || name === 'alarm' || name === 'scan' || name === 'count' || name === 'go') out.gain.value = Math.max(out.gain.value, 0.9);
+    if (name === 'hangup' || name === 'lift' || name === 'notif' || name === 'alarm' || name === 'scan' || name === 'count' || name === 'go' || name === 'hackAlarm') out.gain.value = Math.max(out.gain.value, 0.9);
     out.connect(c.destination);
     SFX[name](c, out, c.currentTime + 0.01);
   }

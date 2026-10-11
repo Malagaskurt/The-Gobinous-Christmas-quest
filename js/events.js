@@ -50,8 +50,8 @@
       '</div>';
     document.body.appendChild(el);
     document.body.classList.add('has-hack');
-    if (GQ.audio) GQ.audio.sfx('freeze');
-    if (navigator.vibrate) { try { navigator.vibrate([120, 60, 120]); } catch (e) { /* pas de vibreur */ } }
+    if (GQ.audio) GQ.audio.sfx('hackAlarm');
+    if (navigator.vibrate) { try { navigator.vibrate([400, 150, 400, 150, 400]); } catch (e) { /* pas de vibreur */ } }
     requestAnimationFrame(function () { el.classList.add('is-in'); });
     var count = el.querySelector('[data-hack-count]');
     function tick() {

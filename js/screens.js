@@ -406,7 +406,7 @@
         (PL.intro ? '<p class="map-intro">' + t(PL.intro) + '</p>' : '') + '</div>' +
         GQ.board.html() +
         frame((PL.reglesTitre ? '<p class="legend-title">' + t(PL.reglesTitre) + '</p>' : '') + '<ul class="legend">' + PL.regles.map(function (r) {
-          return '<li>' + GQ.knit.icon(r.icone, 'legend-ico') + '<span>' + t(r.texte, GQ.ruleVars()) + '</span></li>';
+          return '<li>' + GQ.knit.icon(r.icone, 'legend-ico') + '<span class="legend-body">' + (r.titre ? '<b class="legend-rule-title">' + t(r.titre) + '</b>' : '') + '<span>' + t(r.texte, GQ.ruleVars()) + '</span></span></li>';
         }).join('') + '</ul>', 'frame-legend') +
         '<button type="button" class="btn btn-ghost" data-action="show-rules">' + esc(PL.detail) + '</button>' +
         cta(btn(esc(T.regles.bouton) + icon('fleche'), 'accept-rules', '', 'btn-red btn-start')) +

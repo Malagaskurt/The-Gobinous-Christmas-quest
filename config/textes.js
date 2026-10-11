@@ -188,9 +188,9 @@ window.GAME_CONFIG.textes = {
     reglesTitre: "Les règles du jeu",
     /* Légende de la map : 3 repères. */
     regles: [
-      { icone: "pin", texte: "Un mot secret par étage pour déverrouiller la suite de l'aventure." },
-      { icone: "flake", texte: "2 erreurs au compteur et c'est le gel du système pendant 45 secondes !" },
-      { icone: "star", texte: "Chaque équipe dispose d'un unique joker de secours pour souffler un coup." },
+      { icone: "pin", titre: "Mot secret", texte: "Un mot secret par étage pour déverrouiller la suite de l'aventure." },
+      { icone: "flake", titre: "Gel du système", texte: "2 erreurs au compteur et c'est le gel du système pendant 45 secondes !" },
+      { icone: "star", titre: "Joker", texte: "Chaque équipe dispose d'un unique joker de secours pour souffler un coup." },
     ],
     detail: "Toutes les règles",
   },
