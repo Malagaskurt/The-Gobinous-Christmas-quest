@@ -38,9 +38,10 @@
     });
   }
 
-  /* Qui parle : le Père Noël (et ses lutins) guide et encourage l'équipe ;
-   * Barnabé, le troll, ne fait que provoquer. */
-  var BARNABE = { echec: 1, lieu: 1, accueil: 1, clic: 1 };
+  /* Qui parle : toutes les bulles de feedback (bravo, raté, gel, indices…)
+   * viennent du Père Noël. Barnabé n'apparaît que dans ses intrusions
+   * (vidéo, piratage de l'écran, bulle de panique de l'étape 2). */
+  var BARNABE = {};
   function who(key) { return BARNABE[key] ? 'barnabe' : 'santa'; }
   var speaker = 'santa';
 

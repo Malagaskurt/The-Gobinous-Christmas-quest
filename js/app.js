@@ -129,7 +129,36 @@
   document.addEventListener('click', function (e) {
     var el = e.target.closest && e.target.closest('button, a[href], [data-action], .btn, label.btn-file, .prog-card, .vlog-card');
     if (el && !el.disabled && GQ.audio && GQ.audio.sfx) GQ.audio.sfx('click');
+    // Sens de la transition : un lien « retour » fait glisser vers la droite.
+    if (el && (el.classList.contains('back-link') || el.getAttribute('data-action') === 'quiz-move' && el.getAttribute('data-d') === '-1')) {
+      navBack = Date.now();
+    }
   }, true);
+  var navBack = 0;
+  window.addEventListener('popstate', function () { navBack = Date.now(); });
+  var motionOk = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  /* Transition entre deux écrans : l'ancien écran glisse et s'efface
+   * (copie figée par-dessus) pendant que le nouveau arrive. Rapide et
+   * légère : uniquement transform et opacity. */
+  function leave(back, keepHead) {
+    var nodes = Array.prototype.slice.call(app.childNodes);
+    if (!nodes.length) return;
+    var r = app.getBoundingClientRect();
+    var ghost = document.createElement('div');
+    ghost.className = 'page-ghost' + (back ? ' is-back' : '');
+    ghost.setAttribute('aria-hidden', 'true');
+    ghost.style.left = r.left + 'px';
+    ghost.style.width = r.width + 'px';
+    ghost.style.top = r.top + 'px';
+    nodes.forEach(function (n) {
+      if (keepHead && n.classList && (n.classList.contains('topbar') || n.classList.contains('garland'))) return;
+      ghost.appendChild(n);
+    });
+    ghost.querySelectorAll('video, audio').forEach(function (v) { try { v.pause(); } catch (err) { /* déjà arrêté */ } });
+    document.body.appendChild(ghost);
+    setTimeout(function () { ghost.remove(); }, 420);
+  }
 
   GQ.render = function () {
     timers.forEach(clearInterval);
@@ -146,7 +175,14 @@
     if (GQ.test.isActive() && parseRoute().name !== 'organisateur') {
       html += '<a class="test-bar" href="#/organisateur">Mode test</a>';
     }
+    var willChange = scr.key !== lastKey;
+    var back = Date.now() - navBack < 800;
+    var keepHead = !scr.bare && !!app.querySelector(':scope > .topbar');
+    if (willChange && lastKey && motionOk) leave(back, keepHead);
     app.innerHTML = html;
+    app.classList.toggle('is-back', back);
+    app.classList.toggle('keep-head', keepHead);
+    app.classList.toggle('is-zoom', !!scr.celebrate || scr.key === 'q5-end');
     document.body.classList.toggle('is-testing', GQ.test.isActive());
     document.body.classList.toggle('is-wide', !!scr.wide);
     document.body.classList.toggle('is-frozen', !!scr.frozen);

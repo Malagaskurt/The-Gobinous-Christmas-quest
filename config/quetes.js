@@ -248,7 +248,7 @@ window.GAME_CONFIG.quetes = {
     /* Rapport affiché après la vidéo : des indices à toucher pour les
      * analyser (recto : ce qu'on a vu ou entendu ; verso : la piste). */
     rapportTitre: "Rapport d'analyse",
-    rapport: "Barnabé se cache à cet étage, dans une pièce qui a le nom de sa ville. Touchez chaque indice pour l'analyser.",
+    rapport: "Barnabé s'est enfui, mais le colis est caché à cet étage, dans une pièce qui a le nom de la ville où il se repose. Touchez chaque indice pour l'analyser.",
     /* Anti-triche : rien n'est dévoilé avant le bon code. */
     regleEtage: "Restez groupés près de l'ascenseur : interdit d'explorer l'étage tant que le code n'est pas validé.",
     indices: [
@@ -257,23 +257,25 @@ window.GAME_CONFIG.quetes = {
       { titre: "Le mot de la fin", recto: "« Matané, comme on dit chez moi ! »", verso: "Ce n'est pas du français… C'est « à plus ! » dans sa langue." },
       { titre: "Le pyjama", recto: "Barnabé est déjà en pyjama.", verso: "Ici c'est l'après-midi ; chez lui, c'est déjà l'heure d'aller dormir." },
     ],
-    conclusion: "Croisez les indices : le nom de sa ville est le code.",
-    label: "Code du repaire (5 lettres)",
+    conclusion: "Croisez les indices : le nom de la ville où il s'est enfui est le code.",
+    label: "Code de la cachette du colis (5 lettres)",
     bouton: "Valider le code",
     reponses: ["tokyo", "tokio"],
-    unEssai: "Attention : plus de 2 erreurs d'affilée et c'est le gel du système ({duree}).",
+    unEssai: "Attention : 2 erreurs d'affilée et Barnabé pirate votre écran ({duree}).",
     gelSuite: "Ensuite, vous pourrez retenter votre chance.",
     indiceJoker: "La tour de 634 m s'appelle la Skytree. Dans quelle ville se trouve-t-elle ?",
 
-    /* Sortie de secours : après `indiceApres` mauvais codes, un indice de
-     * secours s'affiche ; après `reponseApres` mauvais codes, la réponse
-     * est donnée (plus de gel). Mettre 0 pour désactiver. */
-    indiceApres: 3,
-    indiceSecoursTitre: "Indice de secours",
-    indiceSecours: "La tour géante, c'est la Skytree (634 m). « Matané ! » veut dire « à plus ! » en japonais. Et sa ville s'appelait autrefois Edo…",
-    reponseApres: 4,
+    /* Aide du Père Noël : à la `indiceApres`-ième erreur (5e), une
+     * notification arrive et l'aide reste affichée. Filet ultime : après
+     * `reponseApres` erreurs, la réponse est donnée. Mettre 0 pour
+     * désactiver. */
+    indiceApres: 5,
+    indiceSecoursTitre: "Le Père Noël vous aide",
+    indiceSecours: "Prenez votre téléphone et cherchez ce qu'est la **Sky Tree** : ça vous mènera droit à la solution !",
+    indiceNotif: "Ho ho ho ! Prenez votre téléphone et cherchez ce qu'est la Sky Tree : ça vous mènera droit à la solution.",
+    reponseApres: 8,
     reponseSecoursTitre: "Le Père Noël vous aide",
-    reponseSecours: "Le code du repaire est **TOKYO**. Saisissez-le pour le démasquer !",
+    reponseSecours: "Le code de la cachette est **TOKYO**. Saisissez-le vite !",
 
     /* Après TOKYO : le Père Noël écrit à l'équipe (bulles de messagerie,
      * avec « … » de frappe entre deux messages), puis l'appel. */
@@ -311,6 +313,19 @@ window.GAME_CONFIG.quetes = {
       "C'est bon… vous pouvez entrer. Mais restez sur le fil avec moi… Ah… merde. En fait… je viens de me rendre compte que Barnabé a été vicieux. Il a dissimulé le colis parmi plusieurs paquets ! Ne bougez surtout pas. Bon, écoutez : vous choisissez un paquet au hasard. Interdiction absolue de les tâter ou de tricher. Vous le prenez, vous redescendez en vitesse à La Verrière, et on découvrira ce qu'il y a dedans… Pourvu que ce soit le bon ! Et interdiction formelle de l'ouvrir avant d'être revenus à La Verrière. Bon, je vous laisse, j'ai un rencard amoureux. Hop hop hop !",
     boutonRaccrocher: "Raccrocher",
 
+    /* Aperçu organisateurs (mode test) : les paquets de la salle Tokyo. */
+    paquets: {
+      nombre: 6,
+      couleur: "red",
+      vrai: 4,
+      texte: "**6 paquets identiques** (même papier rouge, même ruban blanc, même taille) sont posés dans la salle Tokyo. **Un seul** contient le vrai colis.",
+      consignes: [
+        "Marquez le vrai colis discrètement (par exemple sous le paquet) : les équipes ne doivent pas pouvoir le repérer.",
+        "Prévoyez au moins un paquet par équipe, plus quelques-uns en réserve.",
+        "Les équipes redescendent à La Verrière avec leur paquet sans l'ouvrir : l'ouverture se fait tous ensemble.",
+      ],
+    },
+
     /* Dans la salle : chaque équipe choisit UN paquet puis se photographie
      * avec lui (photo envoyée aux organisateurs). */
     paquetTitre: "Le colis mystère",
@@ -327,8 +342,8 @@ window.GAME_CONFIG.quetes = {
     finTitre: "Mission presque accomplie, descendez à La Verrière !",
     /* Bulles du spectacle de fin (Père Noël et lutins). */
     finBulles: [
-      { qui: "Les lutins", texte: "MERCI L'ÉQUIPE ! Colis sauvé, prime de vacances validée !" },
-      { qui: "Le Père Noël", texte: "Et pour Barnabé... c'est direction Pôle Emploi sur le champ !" },
+      { qui: "Le Père Noël", texte: "Et pour Barnabé… c'est direction Pôle Emploi, sur-le-champ !" },
+      { qui: "Un lutin", texte: "Et pour nous, c'est la prime vacances qui nous attend !" },
     ],
     finTexte: "",
     finBravo: "Bravo {equipe} !",

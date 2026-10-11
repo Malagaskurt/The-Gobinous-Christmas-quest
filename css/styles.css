@@ -2049,7 +2049,7 @@ html { scroll-behavior: smooth; }
 .finale-team { margin: 10px 0 0; font: 400 1.2rem/1 var(--font-pixel); letter-spacing: 0.08em; color: #9ee0f5; }
 .barnabe img { width: 100% !important; height: 100% !important; max-width: none !important; object-fit: cover; }
 .barnabe.is-pere-noel { background: #e4323a; }
-.barnabe.is-pere-noel img { object-position: 50% 35%; }
+.barnabe.is-pere-noel img { object-position: 50% 50%; }
 .elf.is-santa .elf-sprite { filter: none !important; transform: none !important; }
 .elf.is-santa .elf-face::before { content: none !important; }
 
@@ -2066,7 +2066,7 @@ html { scroll-behavior: smooth; }
 .chat-app { margin: 8px 0 18px; border-radius: 22px; overflow: hidden; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
 .chat-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(255,255,255,.08); border-bottom: 1px solid rgba(255,255,255,.14); }
 .chat-ava { width: 46px; height: 46px; border-radius: 50%; overflow: hidden; border: 2px solid #fff; background: #e4323a; flex: none; }
-.chat-ava img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; }
+.chat-ava img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; }
 .chat-who { display: flex; flex-direction: column; color: #fff; line-height: 1.2; }
 .chat-who b { font-size: 1rem; }
 .chat-who small { font-size: .78rem; color: #8fdcff; display: flex; align-items: center; gap: 6px; }
@@ -2245,3 +2245,110 @@ body.has-map-full { overflow: hidden; }
 .map-full-cta .btn { width: 100%; }
 .map-full.is-moving .map-full-cta { opacity: 0; transform: translateY(12px); pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .m-team, .m-trail { transition: none !important; } .map-full.is-moving .map-full-cta { opacity: 1; transform: none; pointer-events: auto; } }
+
+/* Fin 3D vivante (three.js) : pas de cadre, la scène se fond dans la page. */
+.f3 { padding: 0; }
+.f3-scene { position: relative; width: 100vw; max-width: 760px; height: min(56vh, 520px); min-height: 330px; margin: 0 auto; }
+.f3-canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity .8s ease; }
+.f3-scene.is-3d .f3-canvas { opacity: 1; }
+.f3-fallback { position: absolute; left: 50%; bottom: 4%; height: 88%; width: auto; max-width: none; transform: translateX(-50%); animation: f3-bob 2.4s ease-in-out infinite; }
+.f3-fallback[hidden] { display: none; }
+.f3-bubble { max-width: 58%; }
+.f3-bubble-1 { left: var(--gutter); top: 4px; }
+.f3-bubble-2 { right: var(--gutter); left: auto; top: 26%; }
+@media (min-width: 700px) { .f3-bubble { max-width: 300px; } .f3-bubble-1 { left: 8%; } .f3-bubble-2 { right: 8%; } }
+.f3-scene { width: 100%; height: min(62vh, 560px); }
+.finale-3d .f3 { max-width: 760px; }
+.f3-scene { height: min(52vh, 500px); min-height: 300px; }
+
+/* =====================================================================
+ * HACK DE BARNABÉ (js/events.js) : écran givré et figé 15 s.
+ * ===================================================================== */
+.hack { position: fixed; inset: 0; z-index: 9500; display: grid; place-items: center; padding: 24px 16px; opacity: 0; transition: opacity .35s ease;
+  background: rgba(11, 29, 69, .55); -webkit-backdrop-filter: blur(6px) saturate(.6); backdrop-filter: blur(6px) saturate(.6); }
+.hack.is-in { opacity: 1; }
+body.has-hack { overflow: hidden; }
+.hack-frost { position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(120% 60% at 0% 0%, rgba(227, 246, 252, .85), transparent 55%),
+    radial-gradient(110% 55% at 100% 100%, rgba(227, 246, 252, .8), transparent 55%),
+    radial-gradient(70% 40% at 100% 0%, rgba(158, 224, 245, .6), transparent 60%),
+    radial-gradient(70% 40% at 0% 100%, rgba(158, 224, 245, .55), transparent 60%);
+  animation: hack-frost 15s linear both; }
+.hack-frost::after { content: ""; position: absolute; inset: 0; opacity: .5;
+  background-image: radial-gradient(circle at 20% 30%, #fff 0 1.5px, transparent 2px), radial-gradient(circle at 70% 60%, #fff 0 1px, transparent 1.5px), radial-gradient(circle at 40% 80%, #fff 0 1.5px, transparent 2px);
+  background-size: 60px 60px, 44px 44px, 80px 80px; }
+@keyframes hack-frost { from { opacity: .55; } to { opacity: 1; } }
+.hack-glitch { position: absolute; inset: 0; pointer-events: none; opacity: .18; background: repeating-linear-gradient(0deg, rgba(255,255,255,.5) 0 1px, transparent 1px 4px); animation: hack-scan 1.2s steps(6) infinite; }
+@keyframes hack-scan { 0% { transform: translateY(0); } 100% { transform: translateY(8px); } }
+.hack-card { position: relative; width: min(100%, 360px); padding: 22px 20px 20px; border-radius: 24px; text-align: center; color: #fff;
+  background: rgba(11, 29, 69, .62); border: 1px solid rgba(255, 255, 255, .3); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  animation: hack-shake .5s ease-in-out 2; }
+@keyframes hack-shake { 0%, 100% { transform: none; } 20% { transform: translateX(-6px) rotate(-1deg); } 40% { transform: translateX(6px) rotate(1deg); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+.hack-kicker { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px; padding: 5px 10px; border-radius: 999px; background: #e4323a; font: 800 .68rem/1 var(--font-head); letter-spacing: .14em; text-transform: uppercase; }
+.hack-kicker .icon { width: 14px; height: 14px; }
+.hack-ava { width: 84px; height: 84px; margin: 0 auto 10px; border-radius: 50%; overflow: hidden; border: 3px solid #fff; background: #17428c; }
+.hack-ava img { width: 100%; height: 100%; object-fit: cover; filter: blur(9px) grayscale(1); transform: scale(1.5); }
+.hack-title { margin: 0; font: 400 1.7rem/1.05 var(--font-pixel); letter-spacing: .05em; text-transform: uppercase; }
+.hack-text { margin: 10px 0 14px; font-size: 1rem; font-weight: 600; line-height: 1.45; color: #e3f6fc; }
+.hack-count { margin: 0; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+.hack-count span { font: 400 3.6rem/1 var(--font-pixel); color: #8fe3ff; }
+.hack-count small { font-size: .8rem; text-transform: uppercase; letter-spacing: .12em; color: rgba(255, 255, 255, .7); }
+.hack.is-thaw .hack-frost { animation: none; opacity: 0; transition: opacity 1.2s ease; }
+.hack.is-thaw .hack-count { opacity: .3; }
+
+/* Alertes de temps : plein écran rouge clignotant. */
+.time-alert { position: fixed; inset: 0; z-index: 9600; display: grid; place-items: center; padding: 24px 16px; opacity: 0; transition: opacity .3s ease; background: #e4323a; animation: alert-blink .7s steps(1) infinite; }
+.time-alert.is-in { opacity: 1; }
+.time-alert.is-end { animation: alert-blink 1.2s steps(1) 4; }
+@keyframes alert-blink { 0% { background: #e4323a; } 50% { background: #9e1a22; } }
+.time-alert-inner { width: min(100%, 380px); text-align: center; color: #fff; }
+.time-alert-kicker { display: inline-flex; align-items: center; gap: 6px; margin: 0; font: 800 .75rem/1 var(--font-head); letter-spacing: .2em; text-transform: uppercase; opacity: .9; }
+.time-alert-title { margin: 14px 0 10px; font: 400 clamp(3rem, 16vw, 4.6rem)/.95 var(--font-pixel); letter-spacing: .04em; text-transform: uppercase; }
+.time-alert-text { margin: 0 auto 26px; max-width: 22em; font-size: 1.05rem; font-weight: 600; line-height: 1.45; }
+.time-alert .btn { width: 100%; background: #0b1d45 !important; color: #fff !important; }
+@media (prefers-reduced-motion: reduce) { .time-alert, .hack-card, .hack-glitch, .hack-frost { animation: none; } }
+
+/* Transitions entre écrans : l'ancien glisse et s'efface, le nouveau
+ * arrive en glissant (sens inversé pour un retour, zoom doux pour les
+ * grands moments). Uniquement transform/opacity : fluide sur mobile. */
+html, body { overflow-x: hidden; }
+.page-ghost { position: fixed; z-index: 40; pointer-events: none; animation: page-out .26s cubic-bezier(.4, 0, .2, 1) both; will-change: transform, opacity; }
+.page-ghost.is-back { animation-name: page-out-back; }
+@keyframes page-out { to { opacity: 0; transform: translate3d(-36px, 0, 0) scale(.985); } }
+@keyframes page-out-back { to { opacity: 0; transform: translate3d(36px, 0, 0) scale(.985); } }
+#app.page-enter > * { animation: page-slide .42s cubic-bezier(.2, .8, .2, 1) .08s both !important; }
+#app.page-enter.is-back > * { animation-name: page-slide-back !important; }
+#app.page-enter.is-zoom > * { animation-name: page-zoom !important; animation-duration: .55s !important; }
+#app.page-enter.keep-head > .topbar, #app.page-enter.keep-head > .garland { animation: none !important; }
+@keyframes page-slide { from { opacity: 0; transform: translate3d(40px, 0, 0); } to { opacity: 1; transform: none; } }
+@keyframes page-slide-back { from { opacity: 0; transform: translate3d(-40px, 0, 0); } to { opacity: 1; transform: none; } }
+@keyframes page-zoom { from { opacity: 0; transform: scale(.94); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+@media (prefers-reduced-motion: reduce) { .page-ghost { display: none; } #app.page-enter > * { animation: none !important; } }
+/* Cartes du programme et du Vlog : verre sans contour. */
+.prog > li .prog-card, .prog > li:nth-child(n) .prog-card, .vlog-card { border: 0 !important; outline: 0 !important; box-shadow: none !important; }
+/* Briefing : titre plus grand que le texte, icône alignée. */
+.briefing.notebook .nb-title { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font: 400 1.7rem/1 var(--font-pixel) !important; letter-spacing: .08em; text-transform: uppercase; color: #e4323a !important; }
+.briefing.notebook .nb-title .briefing-pix { width: 26px; height: 26px; flex: none; display: block; }
+.briefing.notebook .nb-text { font-size: .9rem; }
+
+/* Affichettes : le mot secret toujours sur une seule ligne. */
+.poster-word { white-space: nowrap; word-break: normal; overflow: hidden; font-size: min(calc(78vw / (var(--len, 6) * 0.68)), 6rem); letter-spacing: .08em; }
+@media print { .poster-word { font-size: min(calc(17cm / (var(--len, 6) * 0.68)), 7rem) !important; } }
+
+/* QR code du site et aperçu des paquets (mode organisateur). */
+.site-qr { width: 200px; max-width: 70%; margin: 10px auto 6px; padding: 10px; background: #fff; border-radius: 14px; }
+.site-qr svg { display: block; width: 100%; height: auto; }
+.site-qr-big { width: min(80vw, 420px); max-width: none; }
+.qr-url { margin: 4px 0 10px; text-align: center; font-size: .85rem; word-break: break-all; color: inherit; opacity: .8; }
+.qr-big-title { margin: 8px 0 4px; font: 400 2.2rem/1 var(--font-pixel); letter-spacing: .06em; text-transform: uppercase; color: var(--red); text-align: center; }
+.qr-site { text-align: center; }
+@media print { .site-qr-big { width: 13cm; } }
+.pk-row { list-style: none; margin: 14px 0 6px; padding: 18px 6px 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 26px 22px; }
+.pk-row li { position: relative; width: 46px; height: 46px; }
+.pk-gift { position: relative !important; left: auto !important; right: auto !important; top: auto !important; bottom: auto !important; transform: none !important; }
+.pk-tag { position: absolute; left: 50%; top: calc(100% + 8px); transform: translateX(-50%); white-space: nowrap; padding: 2px 7px; border-radius: 999px; background: #17428c; color: #fff; font-size: .65rem; text-transform: uppercase; letter-spacing: .06em; }
+.pk-list { margin: 6px 0 0; padding-left: 1.1em; font-size: .85rem; line-height: 1.5; }
+.pk-gift { display: block !important; width: var(--s) !important; height: var(--s) !important; }
+.pk-gift .g3-spin { display: block; }
+.time-alert-title { font-size: clamp(2.5rem, 13vw, 4.2rem); }

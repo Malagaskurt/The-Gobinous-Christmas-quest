@@ -259,7 +259,11 @@
       key: 'q5-report' + (gel ? '-gel' : ''),
       frozen: !!gel,
       elf: gel ? { say: 'blocage' } : null,
-      after: gel ? C.freezeAfter : null,
+      // Gel de la dernière étape : c'est Barnabé qui pirate l'écran.
+      after: gel ? function () {
+        C.freezeAfter();
+        if (GQ.hack) GQ.hack.show(GQ.state.gel.until, { phrases: (T.hack || {}).tokyo });
+      } : null,
       html: html,
     };
   }
@@ -571,6 +575,10 @@
     if (!value.trim()) return C.formError(value, T.general.reponseVide);
     var res = GQ.lairAnswer(value);
     GQ.uiReset();
+    // 5e erreur : le Père Noël envoie son aide (notification).
+    if (res && !res.ok && R.indiceNotif && GQ.state.q5.errors === R.indiceApres) {
+      setTimeout(function () { GQ.notify({ app: R.santaNom || 'Le Père Noël', icon: 'santa', text: R.indiceNotif, ms: 9000 }); }, 300);
+    }
     if (!res || res.ok || res.frozen || res.revealed) return GQ.render();
     C.formError(value, T.general.mauvaiseReponse);
   };

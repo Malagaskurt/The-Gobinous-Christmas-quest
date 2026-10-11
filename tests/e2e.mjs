@@ -59,6 +59,8 @@ const browser = await chromium.launch({
   args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
 });
 const ctx = await browser.newContext({ viewport: { width: 375, height: 740 }, isMobile: true, hasTouch: true, permissions: ['camera'], reducedMotion: 'reduce' });
+// Le hack surprise et les alertes de temps sont testés à part (étape dédiée).
+await ctx.addInitScript(() => { window.GQ_EVENTS_OFF = true; });
 const page = await ctx.newPage();
 page.setDefaultTimeout(8000);
 const jsErrors = [];
@@ -343,6 +345,29 @@ await step('Chrono global de 30 minutes affiché pendant le jeu', async () => {
   assert(/^(29|30):\d\d$/.test(txt), `chrono inattendu : ${txt}`);
 });
 
+await step('Hack surprise de Barnabé (15 s) puis alertes rouges 5 min et temps écoulé', async () => {
+  const cs = await page.evaluate(() => GQ.state.clockStart);
+  await page.evaluate(() => { GQ.state.hack = { plan: 0, until: 0, done: false }; GQ.save(); window.GQ_EVENTS_OFF = false; });
+  await page.waitForSelector('#hack .hack-title', { timeout: 5000 });
+  const h = (await state()).hack;
+  const left = h.until - Date.now();
+  assert(h.done && left > 8000 && left <= 15000, `hack de 15 s non déclenché (${left} ms)`);
+  assert(norm(await page.locator('#hack').innerText()).includes('barnab'), 'message de Barnabé absent');
+  await page.evaluate(() => { GQ.state.hack.until = 0; GQ.save(); document.getElementById('hack').remove(); document.body.classList.remove('has-hack'); });
+  await page.evaluate(() => { GQ.state.clockStart = Date.now() - 25.5 * 60000; GQ.state.alertes = {}; GQ.save(); });
+  await page.waitForSelector('#time-alert.is-warn', { timeout: 5000 });
+  assert(norm(await page.locator('#time-alert').innerText()).includes('plus que 5 min'), 'alerte des 5 minutes absente');
+  await page.click('#time-alert [data-alert-close]');
+  await page.waitForSelector('#time-alert', { state: 'detached' });
+  await page.evaluate(() => { GQ.state.clockStart = Date.now() - 31 * 60000; GQ.save(); });
+  await page.waitForSelector('#time-alert.is-end', { timeout: 5000 });
+  const fin = norm(await page.locator('#time-alert').innerText());
+  assert(fin.includes('temps écoulé') && fin.includes('faire diversion'), 'alerte de fin de temps absente');
+  await page.click('#time-alert [data-alert-close]');
+  await page.waitForSelector('#time-alert', { state: 'detached' });
+  await page.evaluate((c) => { window.GQ_EVENTS_OFF = true; GQ.state.clockStart = c; GQ.state.alertes = {}; GQ.save(); }, cs);
+});
+
 await step('Mode test : accès caché par 5 appuis sur le logo, code vérifié', async () => {
   await go(BASE + '#/quest');
   for (let i = 0; i < 5; i++) await page.click('[data-action="logo-tap"]');
@@ -574,24 +599,35 @@ await step('Mot secret CADEAU → transmission à usage unique, jamais « salle 
   assert(!(await forbidden()), '« salle » ou « porte » affiché trop tôt');
 });
 
-await step('Code du repaire : 3 erreurs d\'affilée → gel, puis indice de secours', async () => {
+await step('Code de la cachette : 2 erreurs → Barnabé pirate l\'écran, 2 de plus → re-piratage', async () => {
+  assert(await has('le colis est caché à cet étage') && !(await has('Barnabé se cache')), 'on cherche le colis, pas Barnabé');
+  const hackCycle = async () => {
+    assert(await frozen(), 'pas de gel après 2 erreurs');
+    await page.waitForSelector('#hack .hack-title');
+    assert(norm(await page.locator('#hack').innerText()).includes('piraté'), 'écran de piratage absent');
+    const ms = await gelMs();
+    assert(ms > 0 && ms <= 15000, `gel inattendu : ${ms} ms`);
+    await page.waitForSelector('#hack', { state: 'detached', timeout: ms + 6000 });
+    await settle();
+    assert((await page.locator('.answer-form').count()) === 1, 'saisie non rétablie');
+  };
   await answer('kyoto');
+  assert(!(await frozen()), 'gel dès la 1re erreur');
   await answer('osaka');
-  assert(!(await frozen()), 'gel avant la 3e erreur');
-  assert(!(await has('Indice de secours')), 'indice de secours trop tôt');
+  await hackCycle();
   await answer('nagoya');
-  assert(await frozen(), 'pas de gel après 3 erreurs');
-  const ms = await gelMs();
-  assert(ms > 0 && ms <= SHORT, `gel inattendu : ${ms} ms`);
-  await page.waitForTimeout(ms + 1200);
-  assert((await page.locator('.answer-form').count()) === 1, 'saisie non rétablie');
-  assert(await has('Indice de secours') && await has('Edo'), 'indice de secours absent');
+  assert(!(await frozen()), 'gel trop tôt');
+  await answer('pekin');
+  await hackCycle();
 });
 
-await step('Sortie de secours : au 4e mauvais code, la réponse est donnée', async () => {
-  await answer('kyoto');
-  assert(!(await frozen()), 'gel alors que la réponse doit être donnée');
-  assert(await has('Le code du repaire est TOKYO'), 'réponse non donnée après 4 erreurs');
+await step('5e erreur : notification d\'aide du Père Noël (Sky Tree), puis TOKYO', async () => {
+  await answer('seoul');
+  await page.waitForSelector('#notif-banner.is-visible', { timeout: 4000 });
+  assert(norm(await page.locator('#notif-banner').innerText()).includes('sky tree'), 'aide Sky Tree absente');
+  assert(await has('Le Père Noël vous aide') && await has('Sky Tree'), 'aide du Père Noël non affichée');
+  await page.waitForSelector('#notif-banner.is-visible', { state: 'detached', timeout: 1 }).catch(() => {});
+  await page.evaluate(() => document.getElementById('notif-banner').classList.remove('is-visible'));
   await answer('Tokyo');
   // Messagerie du Père Noël : les deux bulles, puis le bouton « Appeler ».
   await page.waitForSelector('.chat-msg >> nth=1');
@@ -617,8 +653,8 @@ await step('Appel du Père Noël puis écran de fin 3D, conservé au rechargemen
   // Fin de l'appel : directement l'écran de fin.
   assert(await has('Mission presque accomplie'), 'écran de fin absent');
   assert(await has('Les Testeurs') && await has('Bravo Les Testeurs') && await has('Mission presque accomplie, descendez à La Verrière') && await has('Interdiction de l\'ouvrir avant'), 'consigne de fin absente');
-  assert((await page.locator('.f3 .f3-santa').count()) === 1 && (await page.locator('.f3 .g3').count()) === 3, 'Père Noël 3D et cadeaux absents');
-  assert(await has('Colis sauvé, prime de vacances validée') && await has('direction Pôle Emploi'), 'bulles de fin absentes');
+  assert((await page.locator('.f3 .f3-canvas').count()) === 1 && (await page.locator('.f3-card').count()) === 0, 'scène 3D absente ou encadrée');
+  assert(await has('la prime vacances qui nous attend') && await has('direction Pôle Emploi'), 'bulles de fin absentes');
   const fete = await fetch(BASE + 'assets/audio/musique-fete.mp3');
   assert(fete.ok, 'musique de fin absente');
   assert((await page.locator('.topbar').count()) === 0, 'l\'écran de fin garde l\'en-tête du jeu');

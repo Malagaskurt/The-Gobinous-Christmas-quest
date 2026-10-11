@@ -58,7 +58,7 @@
       return { key: 'redirect', html: '' };
     }
     if (!GQ.test.isActive()) return login();
-    return sub === 'affiches' ? posters() : panel();
+    return sub === 'affiches' ? posters() : sub === 'qr' ? qrPage() : panel();
   };
 
   function suiviLink() {
@@ -88,8 +88,8 @@
   function phaseLabel(n, ph) {
     return ({
       access: 'en route : saisie du mot secret de l\'étage', intro: 'introduction', themes: 'choix du thème', play: 'en jeu',
-      result: 'résultat (thème raté)', success: 'réussite', floor: 'deviner l\'étage', video: 'vidéo', report: 'rapport (code du repaire)',
-      found: 'lutin démasqué', call: 'appel de Barnabé', end: 'écran de fin', done: 'terminée',
+      result: 'résultat (thème raté)', success: 'réussite', floor: 'deviner l\'étage', video: 'vidéo', report: 'rapport (code de la cachette)',
+      found: 'cachette trouvée (message du Père Noël)', call: 'appel du Père Noël', end: 'écran de fin', done: 'terminée',
     })[ph] || ph;
   }
 
@@ -125,6 +125,7 @@
     return {
       key: 'org-panel',
       bare: true,
+      after: fillQr,
       html:
         '<main class="screen screen-admin">' +
         '<p class="eyebrow">Gobinous Christmas Quest</p>' +
@@ -165,7 +166,7 @@
         '</div></section>' +
 
         '<section class="admin-card"><h2>Gel des autres étapes</h2>' +
-        '<p class="small muted">Étage à deviner, message codé, modules de l\'enquête, code du repaire.</p><div class="btn-row">' +
+        '<p class="small muted">Étage à deviner, message codé, modules de l\'enquête, code de la cachette.</p><div class="btn-row">' +
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-unfreeze">Lever le gel</button>' +
         '</div></section>' +
 
@@ -178,6 +179,13 @@
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-joker" data-v="0">Rendre le joker</button>' +
         '<button type="button" class="btn btn-small btn-secondary" data-action="test-joker" data-v="1">Marquer comme utilisé</button>' +
         '</div></section>' +
+
+        '<section class="admin-card"><h2>QR code du site</h2>' +
+        '<p class="small muted">À afficher ou à projeter pour que les participants ouvrent le site en un scan.</p>' +
+        '<div class="site-qr" data-site-qr></div><p class="qr-url">' + esc(siteUrl()) + '</p>' +
+        '<div class="btn-row"><a class="btn btn-small btn-primary" href="#/organisateur/qr">' + icon('fleche') + 'Afficher en grand / imprimer</a></div></section>' +
+
+        '<section class="admin-card"><h2>Aperçu des paquets (salle Tokyo)</h2>' + packagesPreview() + '</section>' +
 
         '<section class="admin-card"><h2>Étages et mots secrets</h2>' +
         '<p class="small muted">Chaque quête démarre quand l\'équipe saisit le mot secret affiché à son étage (config/etapes.js).</p>' +
@@ -204,6 +212,79 @@
     };
   }
 
+  /* Adresse du site (sans la route), pour le QR code. */
+  function siteUrl() { return location.origin + location.pathname.replace(/index\.html$/, ''); }
+
+  var qrLoading = null;
+  function loadQr() {
+    if (window.qrcode) return Promise.resolve(window.qrcode);
+    if (!qrLoading) {
+      qrLoading = new Promise(function (resolve, reject) {
+        var sc = document.createElement('script');
+        sc.src = 'assets/vendor/qrcode.js';
+        sc.onload = function () { window.qrcode ? resolve(window.qrcode) : reject(); };
+        sc.onerror = reject;
+        document.head.appendChild(sc);
+      });
+    }
+    return qrLoading;
+  }
+
+  /* Dessine le QR code du site dans chaque [data-site-qr] de la page. */
+  function fillQr() {
+    var boxes = document.querySelectorAll('[data-site-qr]');
+    if (!boxes.length) return;
+    loadQr().then(function (qrcode) {
+      var qr = qrcode(0, 'M');
+      qr.addData(siteUrl());
+      qr.make();
+      var svg = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true, alt: 'QR code du site' });
+      boxes.forEach(function (b) { b.innerHTML = svg; });
+    }, function () {
+      boxes.forEach(function (b) { b.textContent = 'QR code indisponible : partagez l\'adresse ci-dessous.'; });
+    });
+  }
+
+  /* Page à imprimer ou à projeter : le QR code du site en grand. */
+  function qrPage() {
+    return {
+      key: 'org-qr',
+      bare: true,
+      after: fillQr,
+      html:
+        '<main class="screen screen-qr">' +
+        '<div class="no-print">' +
+        '<a class="back-link" href="#/organisateur">' + icon('retour') + 'Mode test</a>' +
+        '<h1 class="page-title" tabindex="-1">QR code du site</h1>' +
+        '<button type="button" class="btn btn-primary" data-action="print">Imprimer</button></div>' +
+        '<article class="qr-card qr-site">' +
+        GQ.logo('fonce', 'qr-logo') +
+        '<p class="qr-kicker">The Gobinous Christmas Club</p>' +
+        '<p class="qr-big-title">Scannez pour nous rejoindre</p>' +
+        '<div class="site-qr site-qr-big" data-site-qr></div>' +
+        '<p class="qr-url">' + esc(siteUrl()) + '</p>' +
+        '</article>' +
+        '</main>',
+    };
+  }
+
+  /* Aperçu des paquets que les équipes trouvent dans la salle Tokyo :
+   * des paquets identiques, un seul est le vrai colis. */
+  function packagesPreview() {
+    var PK = (GQ.cfg.quetes.traque || {}).paquets || {};
+    var n = Math.max(2, Math.min(12, Number(PK.nombre) || 6));
+    var faces = ['f', 'b', 'l', 'r', 't', 'u'].map(function (f) { return '<i class="g3-face g3x-' + f + '"></i>'; }).join('');
+    var gifts = '';
+    for (var i = 0; i < n; i++) {
+      gifts += '<li><span class="g3 g3-' + (PK.couleur || 'red') + ' pk-gift" style="--s:46px;animation-delay:-' + (i * 0.4).toFixed(1) + 's"><span class="g3-spin" style="animation-delay:-' + (i * 0.9).toFixed(1) + 's">' + faces +
+        '<span class="g3-bow"><i></i><i></i></span></span></span>' +
+        (i === (PK.vrai || 1) - 1 ? '<b class="pk-tag">Le vrai</b>' : '') + '</li>';
+    }
+    return '<ul class="pk-row">' + gifts + '</ul>' +
+      '<p class="small">' + GQ.t(PK.texte || '') + '</p>' +
+      (PK.consignes ? '<ul class="pk-list">' + PK.consignes.map(function (c) { return '<li>' + GQ.t(c) + '</li>'; }).join('') + '</ul>' : '');
+  }
+
   /* Affichettes A4 : une par étage, avec le mot secret en grand. */
   function posters() {
     var cards = '';
@@ -213,7 +294,8 @@
         '<article class="qr-card poster">' +
         '<p class="qr-kicker">Gobinous Christmas Quest · ' + esc(st.etage) + '</p>' +
         '<p class="poster-label">Mot secret de l\'étage</p>' +
-        '<p class="poster-word">' + esc(String(st.motSecret).toUpperCase()) + '</p>' +
+        // Le mot tient toujours sur une seule ligne : taille selon sa longueur.
+        '<p class="poster-word" style="--len:' + String(st.motSecret).length + '">' + esc(String(st.motSecret).toUpperCase()) + '</p>' +
         '<p class="qr-help">Saisissez ce mot dans l\'application pour débloquer la quête ' + k + '.</p>' +
         GQ.logo('fonce', 'qr-logo') +
         '</article>';

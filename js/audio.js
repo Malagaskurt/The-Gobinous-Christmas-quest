@@ -188,6 +188,13 @@
       tone(c, out, 880, t, 0.05, 'square', 0.05, 1320);
       tone(c, out, 1760, t + 0.035, 0.05, 'triangle', 0.06);
     },
+    // Alerte de temps : sirène courte à deux tons.
+    alarm: function (c, out, t) {
+      for (var i = 0; i < 3; i++) {
+        tone(c, out, 880, t + i * 0.36, 0.17, 'square', 0.14);
+        tone(c, out, 660, t + i * 0.36 + 0.18, 0.17, 'square', 0.14);
+      }
+    },
     // Notification (joker, Support 44, message) : double « ding » cristallin.
     notif: function (c, out, t) {
       tone(c, out, 1318, t, 0.16, 'sine', 0.22);

@@ -172,10 +172,10 @@
       verriere() +
       '<path d="' + route() + '" class="m-route-glow"/>' +
       '<path d="' + route() + '" class="m-route" pathLength="100"/>' +
-      [0, 1, 2, 3, 4].map(marker).join('') +
-      // Traînée lumineuse : de La Verrière jusqu'à l'étape atteinte.
+      // Sous les étapes et leurs textes : traînée lumineuse : de La Verrière jusqu'à l'étape atteinte.
       '<rect class="m-trail" data-trail x="' + (a0.x - 2.5) + '" y="' + to.y + '" width="5" height="' + Math.max(0.1, a0.y - to.y) + '" rx="2.5"' +
       ' style="transform:scaleY(' + (a0.y - to.y > 0 ? ((a0.y - here.y) / (a0.y - to.y)).toFixed(3) : 1) + ')"/>' +
+      [0, 1, 2, 3, 4].map(marker).join('') +
       // La cabine d'ascenseur : capsule de verre lumineuse.
       '<g class="m-team" data-team style="transform:translate(' + here.x + 'px,' + here.y + 'px)" data-to="translate(' + to.x + 'px,' + to.y + 'px)">' +
       '<circle r="22" class="m-lift-halo"/>' +

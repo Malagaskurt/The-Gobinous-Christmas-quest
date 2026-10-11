@@ -45,7 +45,7 @@
       var mods = (CFG.quetes.enquete.modules || []).length;
       label = ph === 'success' ? 'Suspect identifié' : ph === 'play' ? 'Enquête : module ' + (s.q4.step + 1) + '/' + mods : 'Enquête : introduction';
     } else {
-      label = { intro: 'Traque : avant la vidéo', video: 'Regarde la vidéo', report: 'Cherche le repaire', found: 'Repaire trouvé', call: 'Appel de Barnabé', paquet: 'Photo avec le paquet', end: 'Écran de fin' }[ph] || 'Traque';
+      label = { intro: 'Traque : avant la vidéo', video: 'Regarde la vidéo', report: 'Cherche la cachette du colis', found: 'Cachette trouvée', call: 'Appel du Père Noël', paquet: 'Photo avec le paquet', end: 'Écran de fin' }[ph] || 'Traque';
     }
     return label + (gel ? ' (gelée)' : '');
   }

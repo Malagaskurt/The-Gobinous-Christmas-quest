@@ -44,9 +44,18 @@ window.GAME_CONFIG.parametres = {
     message: { essais: 3, gelSecondes: 45, apresGel: "valider" },
     /* Quête 4 : chacun des 4 modules de l'enquête. */
     enquete: { essais: 3, gelSecondes: 45, apresGel: "valider" },
-    /* Quête 5 : le code du repaire (un seul essai à chaque fois). */
-    repaire: { essais: 3, gelSecondes: 45, apresGel: "reessayer" },
+    /* Quête 5 : le code de la pièce (TOKYO). 2 erreurs d'affilée →
+     * Barnabé pirate l'écran 15 s ; 2 nouvelles erreurs → encore 15 s ;
+     * à la 5e erreur, le Père Noël envoie une aide (voir quetes.js). */
+    repaire: { essais: 2, gelSecondes: 15, apresGel: "reessayer" },
   },
+
+  /* ---- Le hack de Barnabé ----------------------------------------
+   * Une fois par équipe, Barnabé gèle l'écran du téléphone `secondes`
+   * secondes, à un moment tiré au hasard entre `entrePourcent` du chrono
+   * (ex. [10, 65] : entre 10 % et 65 % des 30 minutes). Toujours avant la
+   * salle Tokyo : au plus tard en arrivant à la dernière étape. */
+  hack: { actif: true, secondes: 15, entrePourcent: [10, 65] },
 
   /* ---- Son : fond musical, voix et effets sonores -------------------
    * noel  : deux petits airs de Noël (boîte à musique) qui s'enchaînent

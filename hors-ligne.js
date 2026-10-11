@@ -1,6 +1,6 @@
 /* Généré par tools/generer-hors-ligne.mjs : ne pas modifier à la main. */
 self.HORS_LIGNE = {
- "version": "1feb5bef120d",
+ "version": "75d024148027",
  "fichiers": [
   "index.html",
   "css/fonts.css",
@@ -14,6 +14,7 @@ self.HORS_LIGNE = {
   "js/club.js",
   "js/core.js",
   "js/elf.js",
+  "js/events.js",
   "js/fin.js",
   "js/knit.js",
   "js/party.js",
@@ -67,6 +68,8 @@ self.HORS_LIGNE = {
   "assets/img/suspects/b.jpg",
   "assets/img/suspects/c.jpg",
   "assets/img/suspects/d.jpg",
+  "assets/vendor/qrcode.js",
+  "assets/vendor/three.min.js",
   "assets/video/barnabe-sous-titres.json",
   "assets/video/barnabe.mp4",
   "assets/video/barnabe.webm"

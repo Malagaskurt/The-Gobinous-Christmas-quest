@@ -57,16 +57,16 @@ window.GAME_CONFIG.textes = {
   /* Répliques du lutin (bulles). Une liste [ ] = une réplique tirée au
    * hasard. Laissez "" pour qu'il reste silencieux. */
   lutin: {
-    /* Le Père Noël (et ses lutins) guide l'équipe ; Barnabé, le troll, ne
-     * fait que provoquer (accueil, echec, lieu, clic). */
-    accueil: "Psst… Le colis ? Quel colis ? Hi hi !",
+    /* Toutes ces bulles sont du Père Noël : il guide, encourage et
+     * félicite. Barnabé, le troll, n'y intervient jamais. */
+    accueil: "Ho ho ho ! Bienvenue au Gobinous Christmas Club !",
     equipe: "Ho ho ho ! Un nom d'équipe, et c'est parti !",
     reussite: ["GG la team !", "Ho ho ho, bien joué !", "Validé, c'est carré !"],
-    echec: ["MDR, raté !", "Vous pouvez faire mieux, les gars !"],
+    echec: ["Presque ! Encore un petit effort.", "Pas tout à fait… Réfléchissez ensemble !"],
     blocage: "Oh oh… vous êtes gelés ! Tenez bon.",
-    lieu: "Vous êtes sur ma piste ? Même pas peur !",
+    lieu: "Vous êtes sur la bonne piste, continuez !",
     fin: "Bravo, l'équipe ! Le colis est sauvé.",
-    clic: ["Pas touche !", "Je ne dirai rien…", "Cherchez encore !", "Hi hi hi !", "Le colis ? Quel colis ?"],
+    clic: ["Ho ho ho !", "Je compte sur vous !", "Le colis vous attend !", "Allez, la team !"],
     /* Phrases affichées pendant un gel (tirées au hasard) : c'est Barnabé
      * qui bloque les accès. */
     gel: [
@@ -84,6 +84,43 @@ window.GAME_CONFIG.textes = {
       "Dégel express par les lutins : c'est cadeau !",
       "Les lutins ont contourné le piratage de Barnabé. Foncez !",
     ],
+  },
+
+  /* Le hack de Barnabé : écran gelé 15 s (et gels de la dernière étape). */
+  hack: {
+    kicker: "Alerte intrusion",
+    titre: "Écran piraté par Barnabé",
+    compteur: "secondes",
+    phrases: [
+      "Oups… j'ai gelé votre téléphone. Pas de chance, hein ?",
+      "Je pirate, vous patientez. Chacun son métier.",
+      "15 secondes de pause offertes par Barnabé. De rien !",
+      "Touchez pas à mon colis. Je gèle tout, voilà.",
+    ],
+    /* Quête 5 : après 2 mauvais codes d'affilée. */
+    tokyo: [
+      "Raté ! Je gèle tout, ça vous apprendra.",
+      "Encore faux ? Allez, au frigo pour 15 secondes.",
+    ],
+    /* Petite pique quand l'écran se débloque. */
+    fin: [
+      "Bon, je vous rends la main… pour l'instant.",
+      "Allez, filez. Vous ne trouverez rien de toute façon.",
+      "Profitez-en, ça ne durera pas !",
+    ],
+  },
+
+  /* Alertes de temps : plein écran rouge clignotant. */
+  alertes: {
+    kicker: "Chrono",
+    titre: "Plus que {n} min !",
+    texte10: "Gardez le rythme : le colis vous attend.",
+    texte5: "Accélérez, la team : on y est presque !",
+    texte1: "Dernière minute : tout donner, maintenant !",
+    ok: "On fonce !",
+    finTitre: "Temps écoulé !",
+    finTexte: "Barnabé a découvert ce qui se mijotait… Mais rien n'est perdu : avec un peu de chance, vous pouvez encore faire diversion et terminer la mission !",
+    finBouton: "On continue !",
   },
 
   /* Chrono global affiché en haut des écrans de jeu. */
