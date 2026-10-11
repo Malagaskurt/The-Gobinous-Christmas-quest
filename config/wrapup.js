@@ -26,18 +26,18 @@ window.GAME_CONFIG.wrapup = {
    * est fait par le serveur : jamais deux fois le même numéro. */
   santa: {
     titre: "Le tirage du Secret Santa",
-    texte: "Tous les cadeaux sont numérotés. Tirez votre numéro au sort : vous repartirez avec le cadeau qui porte le même !",
+    texte: "Tous les cadeaux sont numérotés. Tirez votre numéro au sort et repartez avec le cadeau qui porte le même !",
     total: 40,
     bouton: "Tirer mon numéro",
     resultat: "Votre numéro",
     aide: "Allez chercher le cadeau n° {n} !",
-    complet: "Tous les numéros ont déjà été tirés : voyez avec les organisateurs.",
+    complet: "Tous les numéros ont déjà été tirés. Voyez avec les organisateurs !",
     erreur: "Le tirage n'a pas pu se faire (réseau ?). Réessayez.",
   },
 
   avisTitre: "Votre avis",
   bulle: "Alors, cet événement ?",
-  intro: "5 questions, 1 minute. C'est **100 % anonyme** : aucun nom n'est demandé.",
+  intro: "5 questions, 1 minute. C'est **100 % anonyme**, aucun nom n'est demandé.",
   questions: [
     { id: "note", type: "etoiles", question: "Votre note pour l'événement ?", obligatoire: true },
     {

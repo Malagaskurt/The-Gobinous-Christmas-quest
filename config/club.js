@@ -42,7 +42,7 @@ window.GAME_CONFIG.club = {
         id: "party",
         icone: "tree",
         nom: "Gobi'Christmas Party",
-        texte: "Goûter, atelier sapin et 15 défis à relever en autonomie.",
+        texte: "Goûter, atelier sapin et Mission Board de 15 défis à relever.",
         badge: "Code secret",
         bouton: "Découvrir",
       },
@@ -50,7 +50,7 @@ window.GAME_CONFIG.club = {
         id: "battle",
         icone: "star",
         nom: "Gobi'Christmas Battle",
-        texte: "Le grand jeu final : quiz interactif et classement en direct.",
+        texte: "Le grand jeu final, avec quiz interactif et classement en direct.",
         badge: "En équipes",
         bouton: "Découvrir",
       },
@@ -58,17 +58,17 @@ window.GAME_CONFIG.club = {
         id: "wrapup",
         icone: "gift",
         nom: "Gobi'Christmas Wrap-Up",
-        texte: "Le tirage du Secret Santa et votre avis en 1 minute.",
+        texte: "Le tirage du Secret Santa, puis votre avis en 1 minute.",
         badge: "Secret Santa",
         bouton: "Découvrir",
       },
     ],
   },
 
-  /* Rubrique indépendante du programme : les photos et vidéos. */
+  /* Rubrique indépendante du programme : The Gobi' Hub (photos et vidéos). */
   vlog: {
-    nom: "Le Vlog des Gobinous",
-    texte: "Photos et vidéos de l'événement : tout le monde peut déposer.",
+    nom: "The Gobi' Hub",
+    texte: "Déposez ici vos photos et vidéos de l'événement. Ouvert à tous !",
     bouton: "Découvrir",
   },
 
@@ -76,11 +76,11 @@ window.GAME_CONFIG.club = {
   battle: {
     titre: "Gobi'Christmas Battle",
     bulle: "Le grand jeu final, c'est maintenant !",
-    texte: "Un quiz interactif en équipes, animé par les organisateurs, avec le classement en temps réel. Que la meilleure équipe gagne !",
+    texte: "Un quiz interactif en équipes, animé par les organisateurs, avec classement en direct. Que la meilleure équipe gagne !",
     points: [
-      { icone: "bell", texte: "Écoutez bien les organisateurs : ils lancent chaque manche du quiz." },
-      { icone: "star", texte: "Chaque bonne réponse fait grimper votre équipe au classement, en direct." },
-      { icone: "crown", texte: "L'équipe en tête à la fin remporte la Christmas Battle !" },
+      { icone: "bell", texte: "Ouvrez grand les oreilles, les organisateurs lancent chaque manche." },
+      { icone: "star", texte: "Chaque bonne réponse fait grimper votre équipe au classement." },
+      { icone: "crown", texte: "L'équipe en tête à la fin remporte la Gobi'Christmas Battle !" },
     ],
   },
 };

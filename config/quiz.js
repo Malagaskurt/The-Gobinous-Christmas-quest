@@ -31,15 +31,15 @@ window.GAME_CONFIG = window.GAME_CONFIG || {};
 window.GAME_CONFIG.quiz = {
   titre: "Check-in",
   intro:
-    "Validez votre identité pour quitter La Verrière : un thème, 8 questions, **8/8** exigé. 2 thèmes maximum.",
+    "Validez votre identité pour quitter La Verrière ! Choisissez un thème et visez le sans-faute, **8/8**. Deux thèmes maximum.",
   boutonIntro: "Choisir un thème",
 
   textes: {
     choixTitre: "Choisissez votre thème",
     choixAide: "Score et correction à la fin des 8 questions.",
     /* Après un thème raté ou abandonné : il est fermé, on en choisit un autre. */
-    choixAutre: "Thème fermé : le Père Noël vous en propose un autre.",
-    tentatives: "Thèmes ratés : {n} sur {max}. Dernière chance !",
+    choixAutre: "Thème fermé. Le Père Noël vous en propose un autre !",
+    tentatives: "{n} thème raté sur {max}. Dernière chance !",
     themeEchoue: "Fermé",
     themeJoue: "Joué",
     voirCorrection: "Voir la correction",
@@ -57,15 +57,15 @@ window.GAME_CONFIG.quiz = {
     abandonTitre: "Abandonner ce thème ?",
     abandonTexte: "Il comptera comme un thème raté.",
     abandonTexteBlocage:
-      "Il comptera comme un thème raté : tout gèlera pendant {minutes}, puis vous passerez à la suite.",
+      "Il comptera comme un thème raté. Tout gèlera pendant {minutes}, puis vous passerez à la suite.",
     abandonConfirmer: "Abandonner le thème",
     abandonAnnuler: "Continuer ce thème",
-    resultatScore: "{score} bonne(s) réponse(s) sur {total}",
+    resultatScore: "{score}/{total} bonnes réponses",
     echecTitre: "Raté, de peu !", // 6 ou 7 bonnes réponses
     echecTitreLoin: "Pas cette fois !", // 5 bonnes réponses ou moins
-    echecTexte: "Ce thème est fermé. Deuxième chance : choisissez-en un autre !",
+    echecTexte: "Ce thème est fermé. Deuxième chance, choisissez-en un autre !",
     echecAvertissement: "Si le prochain est raté, tout gèle pendant {minutes}.",
-    echecBlocage: "Deuxième thème raté : tout gèle pendant {minutes}, puis le Père Noël vous ouvre le passage.",
+    echecBlocage: "Deuxième thème raté ! Tout gèle pendant {minutes}, puis le Père Noël vous ouvre le passage.",
     boutonAutreTheme: "Choisir un autre thème",
     boutonMinuteur: "Voir le minuteur",
     bloqueTitre: "Tout est gelé !",
@@ -78,9 +78,9 @@ window.GAME_CONFIG.quiz = {
     scanEquipe: "Équipe",
     scanNiveau: "Accréditation",
     scanNiveauValeur: "Gobinous · Niveau 1",
-    scanStatut: "Identité validée · Accès autorisé",
+    scanStatut: "Identité vérifiée, accès autorisé",
     reussiteApresGelTitre: "Le gel est levé !",
-    reussiteApresGelTexte: "Le Père Noël a forcé l'accès : le premier signal vous attend.",
+    reussiteApresGelTexte: "Le Père Noël a forcé l'accès. Le premier signal vous attend !",
     boutonIndice: "Continuer",
     revelationBouton: "C'est parti !",
   },
@@ -102,7 +102,7 @@ window.GAME_CONFIG.quiz = {
       "Bon... visiblement c'était trop dur pour vous. Calcul de maternelle, alors : **2 + 3 = ?** (Le résultat indique l'étage).",
     ],
     question: "Votre réponse",
-    label: "Résultat du calcul (= l'étage)",
+    label: "Résultat du calcul (votre étage)",
     bouton: "Valider",
     reponses: ["5", "5e", "5eme", "5ieme", "cinq", "cinquieme"],
     erreur: "Mauvais calcul ! Encore une erreur et Barnabé bloque votre écran.",
@@ -113,7 +113,7 @@ window.GAME_CONFIG.quiz = {
       "Ha ha ! Les maths, c'est pas votre truc. Je bloque tout, le temps que vous révisiez.",
     ],
     gelSuite: "Ensuite, Barnabé vous proposera un calcul… beaucoup plus simple.",
-    gelPasse: "Le Père Noël vous aide : c'était le **5ᵉ étage** !",
+    gelPasse: "Le Père Noël vole à votre secours. Direction le **5ᵉ étage** !",
   },
 
   themes: [
@@ -234,31 +234,31 @@ window.GAME_CONFIG.quiz = {
       questions: [
         {
           question:
-            "Quelle est la hauteur de la tour Saint-Gobain ?",
+            "Quelle est la hauteur de la Tour Saint-Gobain ?",
           choix: ["135 mètres", "165 mètres", "195 mètres"],
           reponse: "B",
         },
         {
           question:
-            "Quel cabinet d'architectes a conçu la tour Saint-Gobain ?",
+            "Quel cabinet d'architectes a conçu la Tour Saint-Gobain ?",
           choix: ["Valode & Pistre", "Jean Nouvel", "Renzo Piano"],
           reponse: "A",
         },
         {
           question:
-            "En quelle année la tour Saint-Gobain a-t-elle été livrée ?",
+            "En quelle année la Tour Saint-Gobain a-t-elle été livrée ?",
           choix: ["2016", "2018", "2020"],
           reponse: "C",
         },
         {
           question:
-            "Dans quelle commune se trouve la tour Saint-Gobain ?",
+            "Dans quelle commune se trouve la Tour Saint-Gobain ?",
           choix: ["Puteaux", "Courbevoie", "Nanterre"],
           reponse: "B",
         },
         {
           question:
-            "Combien de niveaux la tour Saint-Gobain compte-t-elle au total ?",
+            "Combien de niveaux la Tour Saint-Gobain compte-t-elle au total ?",
           choix: ["32", "38", "44", "52"],
           reponse: "C",
         },
@@ -270,13 +270,13 @@ window.GAME_CONFIG.quiz = {
         },
         {
           question:
-            "Quel élément géométrique a inspiré la silhouette de la tour Saint-Gobain ?",
+            "Quel élément géométrique a inspiré la silhouette de la Tour Saint-Gobain ?",
           choix: ["Le prisme hexagonal", "Le rhomboèdre", "Le dodécaèdre", "Le cylindre elliptique"],
           reponse: "B",
         },
         {
           question:
-            "Quelle particularité possède une partie du vitrage de la tour Saint-Gobain ?",
+            "Quelle particularité possède une partie du vitrage de la Tour Saint-Gobain ?",
           choix: ["Il peut changer de teinte pour contribuer à protéger du soleil", "Il produit de l'électricité grâce à chaque rayon lumineux", "Il se transforme en écran opaque la nuit", "Il récupère l'eau de pluie directement à travers les vitres"],
           reponse: "A",
         },

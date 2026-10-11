@@ -1,5 +1,5 @@
 /* =====================================================================
- * GOBINOUS CHRISTMAS PARTY — GOÛTER, SAPIN ET BUCKET LIST
+ * GOBINOUS CHRISTMAS PARTY — GOÛTER, SAPIN ET MISSION BOARD
  * ---------------------------------------------------------------------
  * Page #/party, protégée par un code secret donné par les organisateurs
  * au moment de la Party. Les joueurs (solo ou en équipe) valident des
@@ -21,9 +21,9 @@ window.GAME_CONFIG.party = {
   /* Présentation par le lutin. */
   bulle: "C'est l'heure du goûter !",
   texte:
-    "On se pose, on grignote et on décore ensemble le **sapin Gobinous** : polaroïds, kit déco et petits mots sont à votre disposition.",
+    "On se pose, on grignote et on décore ensemble le **sapin Gobinous**. Polaroïds, kit déco et petits mots vous attendent !",
   defiTexte:
-    "Et pour les plus motivés : **15 défis** à relever, en solo ou en équipe. Chaque défi rapporte des **Gobz**. Le plus riche à la fin de l'événement gagne une surprise !",
+    "Envie de briller ? **15 défis** vous attendent sur le **Mission Board**, en solo ou en équipe. Chaque défi rapporte des **Gobz**, et le plus riche à la fin de l'événement gagne une surprise !",
 
   nomLabel: "Votre prénom ou nom d'équipe",
   nomPlaceholder: "Ex. : Camille, ou Les Givrés",
@@ -32,11 +32,11 @@ window.GAME_CONFIG.party = {
 
   /* La monnaie de l'événement. */
   monnaie: "Gobz",
-  listeTitre: "Treats & Chill",
-  listeSousTitre: "La bucket list · 15 défis",
+  listeTitre: "Mission Board",
+  listeSousTitre: "Treats & Chill · 15 défis",
   classementTitre: "Classement",
   classementVide: "Personne n'a encore de Gobz. À vous de jouer !",
-  classementHorsLigne: "Classement disponible quand le serveur de l'événement est en ligne.",
+  classementHorsLigne: "Le classement s'affiche dès que le serveur de l'événement est en ligne.",
 
   /* Fenêtre d'un défi. */
   boutonPhoto: "Prendre une photo",
@@ -58,7 +58,7 @@ window.GAME_CONFIG.party = {
   defis: [
     { titre: "Selfie ascenseur", texte: "Prends un selfie d'équipe dans l'ascenseur.", points: 10 },
     { titre: "Objet random", texte: "Prends une photo avec un objet random.", points: 15 },
-    { titre: "Reporter d'un jour", texte: "Prends 10 belles photos de l'événement (dépose-les dans le Vlog) et envoie ici ta préférée.", points: 25 },
+    { titre: "Reporter d'un jour", texte: "Prends 10 belles photos de l'événement (dépose-les sur The Gobi' Hub) et envoie ici ta préférée.", points: 25 },
     { titre: "J'accuse Barnabé", texte: "Enregistre une courte vidéo en équipe pour accuser publiquement Barnabé.", points: 20, video: true },
     { titre: "Service VIP", texte: "Filme-toi en train de servir une personne que tu ne connais pas pendant le goûter.", points: 30, video: true },
     { titre: "Team orga", texte: "Prends un selfie avec les organisatrices Gobinous.", points: 20 },

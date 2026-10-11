@@ -31,11 +31,11 @@ window.GAME_CONFIG = window.GAME_CONFIG || {};
 window.GAME_CONFIG.etapes = {
   1: {
     etage: "La Verrière, 4ᵉ étage",
-    lieu: "Point de base",
+    lieu: "Point de départ",
     motSecret: "SAPIN",
     titre: "Check-in à La Verrière",
     histoire:
-      "Point de base : La Verrière. Le code vous sera donné au top départ.",
+      "Tout commence à La Verrière. Le code vous sera donné au top départ !",
   },
 
   2: {
@@ -44,7 +44,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "LUTIN",
     titre: "Cap sur l'étage 5",
     histoire:
-      "Accès autorisé ! Premier signal de Barnabé : le coin café du 5ᵉ étage, près du mur végétal. Le mot secret est sur place.",
+      "Accès autorisé ! Cap sur le coin café du 5ᵉ étage, près du mur végétal. Le mot secret vous attend sur place.",
   },
 
   3: {
@@ -62,7 +62,7 @@ window.GAME_CONFIG.etapes = {
     motSecret: "ETOILE",
     titre: "Cap sur l'étage 20",
     histoire:
-      "Alerte : un badge inconnu a été scanné dans la Tour. Le Support 44 (20ᵉ étage) a besoin de vous.",
+      "Alerte ! Un badge inconnu a été scanné dans la Tour. Le Support 44 a besoin de vous au 20ᵉ étage.",
   },
 
   5: {
@@ -71,6 +71,6 @@ window.GAME_CONFIG.etapes = {
     motSecret: "CADEAU",
     titre: "Cap sur l'étage 33",
     histoire:
-      "Dernier bip du badge : 33ᵉ étage. Le colis est là-haut. Foncez !",
+      "Le badge a bipé pour la dernière fois au 33ᵉ étage. Le colis est là-haut, foncez !",
   },
 };

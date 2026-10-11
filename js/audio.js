@@ -199,6 +199,29 @@
       tone(c, out, 1046.5, t + 2.75, 1.3, 'sine', 0.3);
       tone(c, out, 2093, t + 2.75, 0.6, 'sine', 0.05);
     },
+    // Scan de badge : trois balayages électroniques, puis le « bip-bip »
+    // de validation (calé sur l'animation, 3,4 s).
+    scan: function (c, out, t) {
+      for (var k = 0; k < 3; k++) {
+        var s0 = t + 0.3 + k * 1.0;
+        tone(c, out, 520, s0, 0.5, 'sawtooth', 0.05, 1560);
+        tone(c, out, 1560, s0 + 0.5, 0.45, 'sawtooth', 0.04, 520);
+        tone(c, out, 2400, s0, 0.9, 'sine', 0.02);
+      }
+      tone(c, out, 1318.5, t + 3.4, 0.14, 'square', 0.12);
+      tone(c, out, 1975.5, t + 3.56, 0.32, 'square', 0.12);
+      tone(c, out, 3951, t + 3.56, 0.25, 'sine', 0.05);
+    },
+    // Compte à rebours : bip court (3, 2, 1) puis « GO » plus aigu.
+    count: function (c, out, t) {
+      tone(c, out, 880, t, 0.16, 'square', 0.14);
+      tone(c, out, 440, t, 0.16, 'triangle', 0.1);
+    },
+    go: function (c, out, t) {
+      tone(c, out, 1760, t, 0.5, 'square', 0.14);
+      tone(c, out, 880, t, 0.5, 'triangle', 0.12);
+      tone(c, out, 2637, t + 0.05, 0.4, 'sine', 0.06);
+    },
     // Alerte de temps : sirène courte à deux tons.
     alarm: function (c, out, t) {
       for (var i = 0; i < 3; i++) {
@@ -242,7 +265,7 @@
     var out = c.createGain();
     out.gain.value = Math.max(0, Math.min(1, Number(M.volumeEffets) || 0.5));
     // Le raccrochage doit s'entendre franchement.
-    if (name === 'hangup' || name === 'lift' || name === 'notif' || name === 'alarm') out.gain.value = Math.max(out.gain.value, 0.9);
+    if (name === 'hangup' || name === 'lift' || name === 'notif' || name === 'alarm' || name === 'scan' || name === 'count' || name === 'go') out.gain.value = Math.max(out.gain.value, 0.9);
     out.connect(c.destination);
     SFX[name](c, out, c.currentTime + 0.01);
   }

@@ -34,7 +34,9 @@
       if (r < 2) p += 'M' + a + ' ' + b + 'H' + b;          // trait du bas
       if (c > 0) p += 'M' + a + ' ' + a + 'V' + b;          // trait de gauche
       if (c < 2) p += 'M' + b + ' ' + a + 'V' + b;          // trait de droite
-      return '<path d="' + p + '"/>' + (g.dot ? '<circle cx="' + mid + '" cy="' + mid + '" r="3.2"/>' : '');
+      // J à R : le point est dans le coin (en bas à droite) de la case,
+      // exactement comme dans la grille de décodage.
+      return '<path d="' + p + '"/>' + (g.dot ? '<circle cx="27" cy="27" r="3.2"/>' : '');
     }
     // Croix : deux branches qui se rejoignent vers le centre de la croix.
     var shapes = [
@@ -68,9 +70,10 @@
       '<path class="key-line" d="M40 4V116M80 4V116M4 40H116M4 80H116"/>';
     for (var i = 0; i < 9; i++) {
       var x = (i % 3) * 40 + 20, y = Math.floor(i / 3) * 40 + 20;
-      // Point centré sous la lettre, à l'intérieur de sa case.
-      s += '<text x="' + x + '" y="' + (dot ? y + 3 : y + 7) + '">' + letters[i] + '</text>';
-      if (dot) s += '<circle cx="' + x + '" cy="' + (y + 12) + '" r="3"/>';
+      // Lettre au centre ; pour J à R, le point dans le coin de la case
+      // (en bas à droite), comme dans le message chiffré.
+      s += '<text x="' + x + '" y="' + (y + 7) + '">' + letters[i] + '</text>';
+      if (dot) s += '<circle cx="' + (x + 12) + '" cy="' + (y + 12) + '" r="3"/>';
     }
     return s + '</svg>';
   }

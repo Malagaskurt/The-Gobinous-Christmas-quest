@@ -25,7 +25,7 @@ window.GAME_CONFIG.quetes = {
   message: {
     titre: "Cheat Code",
     intro:
-      "Le Père Noël veut absolument vous aider : son grand objectif, c'est d'envoyer Barnabé tout droit à Pôle Emploi ! Il vous a donc laissé exprès un **message codé** sur le comptoir, avec sa grille, formulé pour que Barnabé ne puisse pas le décoder. Déchiffrez-le vite pour comprendre la suite et avancer.",
+      "Le Père Noël n'a qu'une idée en tête, envoyer Barnabé tout droit à Pôle emploi ! Il vous a laissé un **message codé** sur le comptoir, avec sa grille. Barnabé ne peut pas le lire… mais vous, si. Déchiffrez-le vite !",
     boutonIntro: "Découvrir le message",
     consigne: "",
     /* Message chiffré, ligne par ligne (lettres A à Z et espaces). */
@@ -34,17 +34,17 @@ window.GAME_CONFIG.quetes = {
     label: "Le message déchiffré",
     bouton: "Valider le message",
     reponses: ["barnabe a perdu le controle"],
-    erreur: "Phrase incorrecte. Encore {n} essai(s) avant le gel du système !",
+    erreur: "Pas tout à fait ! Encore {n} essai(s) avant le gel du système.",
     indiceJoker:
       "Chaque symbole reprend la forme des traits qui entourent la lettre dans la grille. Un point dans le symbole ? La lettre est dans une grille à points.",
 
     reussiteTitre: "Cheat code activé !",
-    reussiteTexte: "Le message secret du Père Noël : « Barnabé a perdu le contrôle ». Vous avez une longueur d'avance sur lui.",
+    reussiteTexte: "« Barnabé a perdu le contrôle ». Message du Père Noël bien reçu, vous avez une longueur d'avance !",
     /* Bulle de Barnabé qui panique, après le cheat code. */
     paniqueBulle: "Quoi ?! Qui vous a filé ce code ?! Pas de panique… PAS. DE. PANIQUE.",
-    paniqueTexte: "Ho ho ho ! Le troll panique : accélérez !",
+    paniqueTexte: "Ho ho ho ! Le troll panique. Accélérez !",
     reussiteApresGelTitre: "Le gel est levé !",
-    reussiteApresGelTexte: "La phrase secrète était : « BARNABÉ A PERDU LE CONTRÔLE ».",
+    reussiteApresGelTexte: "La phrase secrète était « BARNABÉ A PERDU LE CONTRÔLE ».",
     gelSuite: "Ensuite, le Père Noël vous soufflera la solution.",
     bouton2: "Voir la progression",
   },
@@ -57,7 +57,7 @@ window.GAME_CONFIG.quetes = {
     avertissementTitre: "Attention !",
     avertissement: "Barnabé flaire parfois l'arnaque et refuse une photo.",
     intro:
-      "Saturez les caméras de Barnabé : reproduisez **3 photos sur 6**, avec toute l'équipe.",
+      "Saturez les caméras de Barnabé ! Reproduisez **3 photos sur 6**, avec toute l'équipe dans le cadre.",
     consentement:
       "Les photos validées sont envoyées aux organisateurs.",
     boutonIntro: "Relever le défi",
@@ -81,7 +81,7 @@ window.GAME_CONFIG.quetes = {
     photoValidee: "Photo validée",
     erreurPhoto: "Impossible de lire cette photo. Réessayez.",
     envoiOk: "Envoyée aux organisateurs",
-    envoiAttente: "Sera envoyée dès que le réseau le permet",
+    envoiAttente: "Envoi dès que le réseau revient",
     rejetTitre: "Refusé !",
     rejetTexte:
       "Barnabé n'y croit pas une seconde. Refaites-la… en encore plus absurde !",
@@ -104,7 +104,7 @@ window.GAME_CONFIG.quetes = {
     intro:
       "Un badge inconnu a été scanné aujourd'hui. Décodez les **4 modules** pour identifier son propriétaire.",
     boutonIntro: "Analyser le badge",
-    erreur: "Données incorrectes. Encore {n} essai(s) avant le gel du système !",
+    erreur: "Données incorrectes. Encore {n} essai(s) avant le gel du système.",
     moduleValide: "Module validé",
     moduleForce: "Le terminal a validé ce module automatiquement.",
     gelSuite: "Ensuite, le terminal validera ce module tout seul.",
@@ -134,15 +134,15 @@ window.GAME_CONFIG.quetes = {
           "**C** = somme des deux premiers chiffres (A + B)",
           "**D** = dernier chiffre de l'année qui précède l'année en cours",
         ],
-        label: "Matricule (4 chiffres : ABCD)",
+        label: "Matricule à 4 chiffres (ABCD)",
         chiffres: 4,
         reponses: ["2575"],
-        indiceJoker: "Pour D : en quelle année étions-nous l'an dernier ?",
+        indiceJoker: "Pour trouver D, demandez-vous en quelle année nous étions l'an dernier.",
       },
       {
         titre: "Le service d'origine",
         sousTitre: "Affectation clandestine",
-        intro: "Rapports d'audit croisés :",
+        intro: "Croisez ces rapports d'audit.",
         indices: [
           "Seuls le « Service Paillettes & Pression » et le « Bureau des Chocolats Chauds » utilisent du matériel brillant.",
           "Le « Bureau des Chocolats Chauds » est strictement réservé aux agents ayant un matricule PAIR.",
@@ -160,7 +160,7 @@ window.GAME_CONFIG.quetes = {
       {
         titre: "Le nom de famille",
         sousTitre: "Cryptogramme de sécurité",
-        intro: "Le nom du suspect est caché dans ces 8 équations :",
+        intro: "Le nom du suspect se cache dans ces 8 équations.",
         equations: [
           "[[tree]] + [[tree]] = 38",
           "[[star]] + [[tree]] = 28",
@@ -196,7 +196,7 @@ window.GAME_CONFIG.quetes = {
       dernierBip: "Dernier bip",
     },
     reussiteTitre: "Badge analysé !",
-    reussiteTexte: "Propriétaire identifié. Dernier étage où il a sévi : 33ᵉ étage.",
+    reussiteTexte: "Propriétaire identifié ! Son badge a bipé pour la dernière fois au 33ᵉ étage.",
     bouton: "Voir la progression",
   },
 
@@ -210,10 +210,10 @@ window.GAME_CONFIG.quetes = {
     /* Notification d'alerte reçue en arrivant au 33ᵉ étage. */
     notifApp: "Support 44",
     notifHeure: "maintenant",
-    notif: "Attendez, on vient de trouver une vidéo qu'il a laissée derrière lui !",
+    notif: "Attendez, on vient de trouver une vidéo laissée par Barnabé !",
     avertissementTitre: "Vidéo à usage unique",
     avertissement:
-      "Regroupez-vous, montez le son : elle ne se lit **qu'une seule fois**.",
+      "Regroupez-vous et montez le son. Elle ne se lit **qu'une seule fois** !",
     boutonVideo: "Lancer la vidéo",
 
     /* Vidéo animée de Barnabé (MP4, voix et musique incluses), générée
@@ -248,31 +248,31 @@ window.GAME_CONFIG.quetes = {
     /* Rapport affiché après la vidéo : des indices à toucher pour les
      * analyser (recto : ce qu'on a vu ou entendu ; verso : la piste). */
     rapportTitre: "Rapport d'analyse",
-    rapport: "Barnabé s'est enfui, mais le colis est caché à cet étage, dans une pièce qui a le nom de la ville où il se repose. Touchez chaque indice pour l'analyser.",
+    rapport: "Barnabé s'est enfui, mais le colis est caché à cet étage, dans une pièce baptisée du nom de la ville où il se repose. Touchez chaque indice pour l'analyser.",
     /* Anti-triche : rien n'est dévoilé avant le bon code. */
-    regleEtage: "Restez groupés près de l'ascenseur : interdit d'explorer l'étage tant que le code n'est pas validé.",
+    regleEtage: "Restez groupés près de l'ascenseur. Interdit d'explorer l'étage tant que le code n'est pas validé !",
     indices: [
-      { titre: "Le décalage horaire", recto: "« Un décalage horaire de 7 heures. »", verso: "Chez lui, il est 7 heures de plus qu'ici : direction l'Est, très loin." },
-      { titre: "La tour géante", recto: "Derrière lui, une tour immense et très fine domine la ville.", verso: "Plus de 600 mètres : une des plus hautes tours du monde. Zoomez sur sa silhouette." },
+      { titre: "Le décalage horaire", recto: "« Un décalage horaire de 7 heures. »", verso: "Chez lui, il est 7 heures de plus qu'ici. Direction l'Est, très loin !" },
+      { titre: "La tour géante", recto: "Derrière lui, une tour immense et très fine domine la ville.", verso: "Plus de 600 mètres, l'une des plus hautes tours du monde. Zoomez sur sa silhouette !" },
       { titre: "Le mot de la fin", recto: "« Matané, comme on dit chez moi ! »", verso: "Ce n'est pas du français… C'est « à plus ! » dans sa langue." },
-      { titre: "Le pyjama", recto: "Barnabé est déjà en pyjama.", verso: "Ici c'est l'après-midi ; chez lui, c'est déjà l'heure d'aller dormir." },
+      { titre: "Le pyjama", recto: "Barnabé est déjà en pyjama.", verso: "Ici, c'est l'après-midi. Chez lui, c'est déjà l'heure d'aller dormir." },
     ],
-    conclusion: "Croisez les indices : le nom de la ville où il s'est enfui est le code.",
-    label: "Code de la cachette du colis (5 lettres)",
+    conclusion: "Croisez les indices. Le code, c'est le nom de la ville où il s'est enfui !",
+    label: "Code de la cachette (5 lettres)",
     bouton: "Valider le code",
     reponses: ["tokyo", "tokio"],
-    unEssai: "Attention : 2 erreurs d'affilée et Barnabé pirate votre écran ({duree}).",
+    unEssai: "Attention, 2 erreurs d'affilée et Barnabé gèle votre écran pendant {duree} !",
     gelSuite: "Ensuite, vous pourrez retenter votre chance.",
-    indiceJoker: "La tour de 634 m s'appelle la Skytree. Dans quelle ville se trouve-t-elle ?",
+    indiceJoker: "La tour de 634 m s'appelle la Sky Tree. Dans quelle ville se trouve-t-elle ?",
 
-    /* Aide du Père Noël : à la `indiceApres`-ième erreur (5e), une
+    /* Aide du Père Noël : à la `indiceApres`-ième erreur (5ᵉ), une
      * notification arrive et l'aide reste affichée. Filet ultime : après
      * `reponseApres` erreurs, la réponse est donnée. Mettre 0 pour
      * désactiver. */
     indiceApres: 5,
     indiceSecoursTitre: "Le Père Noël vous aide",
-    indiceSecours: "Prenez votre téléphone et cherchez ce qu'est la **Sky Tree** : ça vous mènera droit à la solution !",
-    indiceNotif: "Ho ho ho ! Prenez votre téléphone et cherchez ce qu'est la Sky Tree : ça vous mènera droit à la solution.",
+    indiceSecours: "Dégainez vos téléphones et cherchez la **Sky Tree** sur Internet. Elle vous mènera droit à la solution !",
+    indiceNotif: "Ho ho ho ! Cherchez la Sky Tree sur vos téléphones, elle vous mènera droit à la solution.",
     reponseApres: 8,
     reponseSecoursTitre: "Le Père Noël vous aide",
     reponseSecours: "Le code de la cachette est **TOKYO**. Saisissez-le vite !",
@@ -333,7 +333,7 @@ window.GAME_CONFIG.quetes = {
     boutonPhotoPaquet: "Photo avec notre colis",
     paquetValider: "Valider la photo",
     paquetReprendre: "Reprendre",
-    paquetSansPhoto: "Impossible de prendre la photo ? Continuer",
+    paquetSansPhoto: "Pas de photo possible ? Continuer",
     paquetModele: "Le colis choisi",
 
     boutonAccueil: "Retour à l'accueil",
@@ -341,6 +341,6 @@ window.GAME_CONFIG.quetes = {
     /* Écran de fin : épuré et centré sur la ville de Noël animée. */
     finTitre: "Mission presque accomplie !",
     finBravo: "Bravo {equipe} !",
-    finConsigne: "Rendez-vous à La Verrière (4ᵉ étage) avec votre colis non encore déballé !",
+    finConsigne: "Rejoignez La Verrière (4ᵉ étage) avec votre colis mystère encore emballé !",
   },
 };

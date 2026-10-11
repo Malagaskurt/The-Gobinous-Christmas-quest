@@ -2443,3 +2443,84 @@ html, body { overflow-x: hidden; }
 .role-card-where strong, .role-card-where b { color: #8fe3ff !important; }
 .prog-num-ico { display: inline-grid !important; place-items: center; }
 .prog-num-ico .icon { width: 14px; height: 14px; display: block; margin: 0; }
+
+/* Thème mystère et badge : aucun contour, la teinte suffit. */
+.theme-card.is-mystery, .theme-card.is-mystery:focus, .idscan-card { border: 0 !important; outline: 0 !important; box-shadow: none !important; }
+
+/* Scan d'identité (quiz réussi) : badge plus grand, balayage, validation. */
+.idscan { margin: 4px 0 10px; }
+.idscan-kicker { font-size: .8rem; }
+.idscan-card { max-width: 380px; gap: 18px; padding: 22px 20px; border-radius: 22px; }
+.idscan-photo { width: 104px; height: 124px; border-radius: 16px; }
+.idscan-ico.art3d { width: 72px; }
+.idscan-fields { gap: 10px; }
+.idscan-fields dt { color: rgba(255, 255, 255, .65) !important; font-size: .66rem; }
+.idscan-fields dd { color: #fff !important; font-size: 1.12rem; }
+.idscan-beam { height: 4px; animation: scan 1s ease-in-out .3s 3 both; }
+.idscan-grid { animation: fade .3s ease-out 3.4s reverse both; }
+.idscan-status { margin-top: 16px; padding: 12px 18px; font-size: .82rem; background: #e4323a !important; color: #fff !important; box-shadow: none !important; animation: idscan-ok .5s cubic-bezier(.2, 1.4, .4, 1) 3.4s both; }
+@keyframes idscan-ok { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .idscan-status { animation: none; } }
+
+/* Compte à rebours 3, 2, 1, GO ! */
+.countdown { position: fixed; inset: 0; z-index: 9700; display: grid; place-items: center; pointer-events: all;
+  background: rgba(11, 29, 69, .72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: opacity .3s ease; }
+.countdown.is-out { opacity: 0; }
+.countdown-n { font: 400 min(42vw, 220px)/1 var(--font-pixel); color: #fff; animation: countdown-pop .8s cubic-bezier(.2, 1.4, .4, 1) both; }
+.countdown-n.is-go { color: #ff6b70; font-size: min(30vw, 170px); }
+@keyframes countdown-pop { 0% { opacity: 0; transform: scale(2.2); } 30% { opacity: 1; transform: scale(1); } 85% { opacity: 1; transform: scale(.92); } 100% { opacity: 0; transform: scale(.8); } }
+
+/* Règles de la map : un seul encadré en verre, icônes intégrées au texte. */
+.frame .legend, .frame-legend .frame-in { background: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; box-shadow: none !important; border: 0 !important; }
+.frame-legend .legend-ico, .frame-legend .legend-ico.art3d { background: none !important; padding: 0 !important; width: 36px; border-radius: 0; }
+.frame-legend .legend li { gap: 14px; text-align: left; font-size: .95rem; }
+.frame-legend .legend li + li { padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, .14); }
+
+/* Rôles : hiérarchie claire. L'alerte devient une petite étiquette rouge,
+ * les noms de rôles sont les vrais titres, les descriptions sont discrètes. */
+.roles-box-title { display: inline-flex !important; align-items: center; gap: 6px; margin: 0 auto 6px !important; padding: 6px 12px; border-radius: 999px;
+  background: #e4323a; color: #fff !important; font: 800 .68rem/1.2 var(--font-head) !important; letter-spacing: .08em; text-transform: uppercase; }
+.roles-box { text-align: center; }
+.roles-box .role-card { text-align: left; border-top: 1px solid rgba(255, 255, 255, .14) !important; padding-top: 14px; }
+.roles-box .role-card-name { font: 400 1.55rem/1 var(--font-pixel) !important; letter-spacing: .05em; color: #fff !important; margin-bottom: 4px !important; text-transform: none; }
+.roles-box .role-card p:not(.role-card-name):not(.role-card-where) { font-size: .9rem; color: rgba(255, 255, 255, .78) !important; }
+.roles-box-lead { font-size: .88rem; color: rgba(255, 255, 255, .8) !important; }
+.nb-ch { opacity: 0; animation: nb-type .4s ease-out both; }
+@keyframes nb-type { from { opacity: 0; filter: blur(5px); } to { opacity: 1; filter: none; } }
+@media (prefers-reduced-motion: reduce) { .nb-ch { animation: none; opacity: 1; } }
+
+/* Fenêtres de confirmation : « Oui » en rouge plein, « Fermer / Non »
+ * nettement plus clair (bleu ciel), jamais blanc. */
+.modal [data-modal-ok] { background: #e4323a !important; color: #fff !important; }
+.modal [data-modal-ok] + [data-modal-cancel], .modal .btn-secondary[data-modal-cancel] { background: #9ee0f5 !important; color: #0b1d45 !important; }
+
+/* Champs de saisie : le texte tapé est toujours foncé sur fond clair. */
+input.field, textarea.field, .field, .answer-form input, .answer-form textarea, .wq input, .wq textarea, select {
+  background: #fff !important; color: #0b1d45 !important; -webkit-text-fill-color: #0b1d45 !important; caret-color: #e4323a; }
+input.field::placeholder, .field::placeholder, textarea::placeholder { color: #7f8db0 !important; -webkit-text-fill-color: #7f8db0 !important; }
+
+/* Fin : titre réparti sur deux lignes bien centrées. */
+.fc-title { white-space: normal !important; max-width: 11ch; margin: 0 auto !important; font-size: clamp(2.4rem, 12vw, 4rem) !important; line-height: .95 !important; text-wrap: balance; }
+
+/* Intrusion de Barnabé : exactement le même modèle de messagerie que le
+ * Père Noël (seul l'avatar flouté change). */
+.chat-intrusion { background: rgba(255, 255, 255, .08) !important; border: 1px solid rgba(255, 255, 255, .2) !important; }
+.chat-msg-troll { border-left: 0 !important; }
+.chat-who small.is-alert { color: #8fe3ff !important; }
+.chat-who small.is-alert i { background: #2fc0ee !important; animation: none; }
+
+/* Map de progression plus grande. */
+.map-inline { margin-left: calc(-1 * var(--gutter)) !important; margin-right: calc(-1 * var(--gutter)) !important; }
+.map-inline .map-svg { width: 100% !important; height: auto !important; max-height: 72vh !important; }
+
+/* Choix de réponse : toujours une carte claire bien lisible, jamais ton sur
+ * ton avec le fond (ex. quête 4, choix de la division). */
+.choice { --ink: #0b1d45; background: #fff !important; color: #0b1d45 !important; }
+.choice * { color: inherit; }
+.choice.is-selected { background: #e4323a !important; color: #fff !important; }
+.choice.is-selected .choice-letter, .choice.is-selected .choice-key { background: #fff !important; color: #e4323a !important; }
+/* Joker : bleu foncé avec un liseré bleu ciel pour se détacher du verre. */
+.btn-joker { box-shadow: inset 0 0 0 2px #2fc0ee !important; }
+.fc-title { max-width: none !important; font-size: clamp(2.1rem, 10.5vw, 3.8rem) !important; }
+.fc-line { display: block; white-space: nowrap; }
+.pig circle { fill: #ff6b70; }

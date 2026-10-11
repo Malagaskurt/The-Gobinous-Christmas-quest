@@ -440,6 +440,22 @@
 
   /* Écran de fin : épuré et centré, sur la ville de Noël animée (tours,
    * maisons, sapins, camion de livraison, voitures, neige). */
+  /* Titre réparti sur deux lignes équilibrées (coupure au mot le plus
+   * proche du milieu). */
+  function twoLines(text) {
+    var words = String(text || '').split(/\s+/).filter(Boolean);
+    if (words.length < 2) return t(text);
+    var total = words.join(' ').length, best = 1, gap = Infinity, run = 0;
+    for (var i = 1; i < words.length; i++) {
+      run += words[i - 1].length + (i > 1 ? 1 : 0);
+      var d = Math.abs(run - (total - run - 1));
+      // « ! » ou « ? » isolé : on le garde avec le mot précédent.
+      if (/^[!?:;]$/.test(words[i])) continue;
+      if (d < gap) { gap = d; best = i; }
+    }
+    return '<span class="fc-line">' + t(words.slice(0, best).join(' ')) + '</span><span class="fc-line">' + t(words.slice(best).join(' ').replace(/ ([!?])/g, '\u00a0$1')) + '</span>';
+  }
+
   function end() {
     var s = GQ.state;
     var stars = '';
@@ -460,7 +476,7 @@
         '<div class="finale-sky" aria-hidden="true">' + stars + '</div>' +
         '<header class="fc-top">' + GQ.logo('clair', 'fc-logo') + '</header>' +
         '<section class="fc-center">' +
-        '<h1 class="fc-title" tabindex="-1">' + t(R.finTitre) + '</h1>' +
+        '<h1 class="fc-title" tabindex="-1">' + twoLines(R.finTitre) + '</h1>' +
         '<p class="fc-bravo">' + esc(String(R.finBravo || 'Bravo {equipe} !').replace('{equipe}', s.team || '')) + '</p>' +
         (R.finConsigne ? '<p class="fc-consigne">' + t(R.finConsigne) + '</p>' : '') +
         '</section>' +

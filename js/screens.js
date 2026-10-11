@@ -448,6 +448,20 @@
 
   /* Briefing en carnet de notes : reliure à spirale, papier ligné, et
    * les phrases qui s'inscrivent l'une après l'autre. */
+  /* Machine à écrire lettre par lettre avec flou progressif : chaque
+   * caractère du texte (balises HTML conservées) apparaît à son tour. */
+  function typeLetters(html, start, step) {
+    var k = 0;
+    return String(html).split(/(<[^>]+>)/).map(function (part) {
+      if (!part || part.charAt(0) === '<') return part;
+      return part.replace(/&[a-z#0-9]+;|[\s\S]/gi, function (ch) {
+        if (ch === ' ') { k += 1; return ' '; }
+        var d = (start + (k++) * step).toFixed(3);
+        return '<span class="nb-ch" style="animation-delay:' + d + 's">' + ch + '</span>';
+      });
+    }).join('');
+  }
+
   function notebook(title, text) {
     var lines = String(text).split(/(?<=[.!?…])\s+/);
     var rings = '';
@@ -456,9 +470,7 @@
       '<div class="nb-rings" aria-hidden="true">' + rings + '</div>' +
       '<div class="nb-page">' +
       (title ? '<p class="nb-title">' + GQ.pix('gift', 'briefing-pix') + t(title) + '</p>' : '') +
-      '<p class="nb-text">' + lines.map(function (l, k) {
-        return '<span class="nb-line" style="animation-delay:' + (0.5 + k * 0.9).toFixed(1) + 's">' + t(l) + '</span>';
-      }).join(' ') + '</p>' +
+      '<p class="nb-text">' + typeLetters(lines.map(function (l) { return t(l); }).join(' '), 0.5, 0.018) + '</p>' +
       '</div></section>';
   }
 
@@ -642,7 +654,7 @@
         bubble(msgs[n++]);
         GQ.audio.sfx('notif');
         setTimeout(next, 900);
-      }, n ? 2400 : 1300);
+      }, n ? 2200 : 1400);
     })();
   }
 
@@ -722,6 +734,8 @@
       return {
         key: 'q1-success',
         celebrate: true,
+        // Son du scan de badge, calé sur l'animation.
+        after: function () { GQ.audio.sfx('scan'); },
         elf: { say: 'reussite' },
         html: idScan() + successBlock({
           art: '',
@@ -812,8 +826,11 @@
       cancel: R.confirmNon,
     }).then(function (ok) {
       if (!ok) return;
-      GQ.acceptRules();
-      goQuest();
+      // 3, 2, 1… le chrono démarre au « GO ! ».
+      GQ.countdown(function () {
+        GQ.acceptRules();
+        goQuest();
+      });
     });
   };
 
@@ -994,7 +1011,8 @@
     }
     GQ.audio.sfx('unlock');
     GQ.uiReset();
-    GQ.render();
+    // Étape débloquée : 3, 2, 1… puis la quête commence.
+    GQ.countdown(function () { GQ.render(); });
   };
 
   forms.floor = function (form, value) {

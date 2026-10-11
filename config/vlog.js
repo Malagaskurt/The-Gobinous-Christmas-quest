@@ -1,7 +1,7 @@
 /* =====================================================================
- * LE VLOG DES GOBINOUS — PHOTOS ET VIDÉOS DE L'ÉVÉNEMENT
+ * THE GOBI' HUB — PHOTOS ET VIDÉOS DE L'ÉVÉNEMENT
  * ---------------------------------------------------------------------
- * Rubrique indépendante du programme (#/vlog) : le Gobinous Reporter (et
+ * Rubrique indépendante du programme (#/vlog) : le Storyteller (et
  * tous les membres) y déposent leurs photos et vidéos. Tous les formats
  * de photos et de vidéos sont acceptés, y compris les vidéos longues.
  * Les fichiers sont stockés par le serveur du jeu (npm start) et
@@ -11,11 +11,11 @@
 window.GAME_CONFIG = window.GAME_CONFIG || {};
 
 window.GAME_CONFIG.vlog = {
-  titre: "Le Vlog des Gobinous",
-  bouton: "Le Vlog",
-  accroche: "Photos et vidéos de l'événement : déposez tout ici !",
-  bulle: "Reporters… et tous les autres, à vous de jouer !",
-  texte: "Pas besoin d'être Gobinous Reporter : tout le monde peut déposer ici ses photos et vidéos de l'événement, même les vidéos longues. Tous les formats sont acceptés.",
+  titre: "The Gobi' Hub",
+  bouton: "The Gobi' Hub",
+  accroche: "Photos et vidéos de l'événement, déposez tout ici !",
+  bulle: "Storytellers… et tous les autres, à vous de jouer !",
+  texte: "Pas besoin d'être Storyteller pour participer ! Déposez ici vos photos et vidéos de l'événement, même les plus longues. Tous les formats sont acceptés.",
   nomLabel: "Votre prénom ou nom d'équipe",
   nomPlaceholder: "Ex. : Les Givrés",
   nomErreur: "Indiquez votre prénom ou votre nom d'équipe.",
@@ -30,6 +30,6 @@ window.GAME_CONFIG.vlog = {
   reessayer: "Réessayer",
   mesEnvois: "Vos envois",
   aucun: "Rien pour l'instant. À vous de filmer !",
-  horsLigne: "Le Vlog a besoin du serveur de l'événement : il n'est pas joignable pour le moment.",
+  horsLigne: "Le serveur de l'événement est injoignable pour le moment. Réessayez dans un instant !",
   changerNom: "Changer de nom",
 };

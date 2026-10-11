@@ -16,7 +16,7 @@ window.GAME_CONFIG = window.GAME_CONFIG || {};
 window.GAME_CONFIG.textes = {
   /* Écran de chargement (au tout premier affichage). */
   chargement: {
-    texte: "Chargement de la quête",
+    texte: "Chargement de la quête…",
   },
 
   /* Accueil volontairement épuré : logo, titre, bouton.
@@ -31,7 +31,7 @@ window.GAME_CONFIG.textes = {
     titreSuite: "Gobi'Christmas Quest",
     bouton: "Lancer la partie",
     boutonReprendre: "Reprendre la partie",
-    partieEnCours: "Partie en cours : **{equipe}**",
+    partieEnCours: "Partie en cours pour **{equipe}**",
     annee: "",
     surtitre: "",
     sousTitre: "",
@@ -48,10 +48,10 @@ window.GAME_CONFIG.textes = {
     /* Contexte narratif : affiché à l'entrée du jeu (pas sur l'accueil du site). */
     contexteTitre: "Briefing",
     contexte: "Bienvenue au Gobinous Christmas Club. Habituellement, c'est le moment où Barnabé gère les colis à **La Verrière**. Sauf qu'avec lui, rien ne se passe jamais comme prévu et un des colis a disparu. Comme le service client est aux abonnés absents, c'est à vous de retrouver le colis dans la Tour Saint-Gobain. Vous avez 30 minutes chrono, ruse et esprit d'équipe. Que la Gobinous Christmas Quest commence !",
-    bulle: "Le code ? Les organisateurs le donnent au top départ.",
+    bulle: "Le code secret ? Les organisateurs le révèlent au top départ !",
     label: "Code secret du jeu",
     bouton: "Entrer dans le jeu",
-    erreur: "Ce n'est pas le bon code. Attendez le top départ des organisateurs !",
+    erreur: "Ce n'est pas le bon code. Attendez le top départ !",
   },
 
   /* Répliques du lutin (bulles). Une liste [ ] = une réplique tirée au
@@ -60,33 +60,34 @@ window.GAME_CONFIG.textes = {
     /* Toutes ces bulles sont du Père Noël : il guide, encourage et
      * félicite. Barnabé, le troll, n'y intervient jamais. */
     accueil: "Ho ho ho ! Bienvenue au Gobinous Christmas Club !",
-    equipe: "Ho ho ho ! Un nom d'équipe, et c'est parti !",
+    equipe: "Ho ho ho ! Choisissez un nom d'équipe, et c'est parti !",
     reussite: ["GG la team !", "Ho ho ho, bien joué !", "Validé, c'est carré !"],
     echec: ["Presque ! Encore un petit effort.", "Pas tout à fait… Réfléchissez ensemble !"],
     blocage: "Oh oh… vous êtes gelés ! Tenez bon.",
     lieu: "Vous êtes sur la bonne piste, continuez !",
-    fin: "Bravo, l'équipe ! Le colis est sauvé.",
+    fin: "Bravo la team ! Le colis est entre vos mains.",
     clic: ["Ho ho ho !", "Je compte sur vous !", "Le colis vous attend !", "Allez, la team !"],
-    /* Phrases affichées pendant un gel (tirées au hasard) : c'est Barnabé
+    /* Phrases affichées pendant un gel (tirées au hasard). C'est Barnabé
      * qui bloque les accès. */
     gel: [
-      "Barnabé a piraté le système : tout est gelé.",
+      "Barnabé a piraté le système. Tout est gelé !",
       "Accès bloqués par Barnabé. Respirez, ça va repartir.",
       "Barnabé a appuyé sur « freeze ». Ce n'est que du givre.",
       "Gelé ! Barnabé trouve que vous allez trop vite.",
-      "Tout est figé… Barnabé en profite pour s'éloigner.",
+      "Tout est figé… et Barnabé se frotte les mains.",
     ],
-    /* Phrases affichées quand le gel est levé : les lutins du Père Noël
+    /* Phrases affichées quand le gel est levé. Les lutins du Père Noël
      * débloquent la situation. */
     degel: [
-      "Les lutins du Père Noël ont tout dégelé. Respect, ils sont trop goats.",
-      "Le Père Noël a forcé le passage : on continue !",
-      "Dégel express par les lutins : c'est cadeau !",
-      "Les lutins ont contourné le piratage de Barnabé. Foncez !",
+      "Les lutins du Père Noël ont tout dégelé. Trop goats !",
+      "Le Père Noël a forcé le passage. On continue !",
+      "Dégel express signé les lutins. C'est cadeau !",
+      "Les lutins ont déjoué le piratage de Barnabé. Foncez !",
     ],
   },
 
-  /* Le hack de Barnabé : écran gelé 15 s (et gels de la dernière étape). */
+  /* Le hack de Barnabé. Piratage surprise : téléphone gelé 30 s, une seule
+   * fois dans la partie. Quête 5 : gel de 45 s après 2 mauvais codes. */
   hack: {
     kicker: "Alerte intrusion",
     titre: "Écran piraté par Barnabé",
@@ -95,14 +96,14 @@ window.GAME_CONFIG.textes = {
       "Oups… j'ai gelé votre téléphone. Pas de chance, hein ?",
       "Je pirate, vous patientez. Chacun son métier.",
       "30 secondes de pause offertes par Barnabé. De rien !",
-      "Touchez pas à mon colis. Je gèle tout, voilà.",
+      "Touchez pas à mon colis ! Je gèle tout.",
     ],
     /* Quête 5 : après 2 mauvais codes d'affilée. */
     tokyo: [
       "Raté ! Je gèle tout, ça vous apprendra.",
-      "Encore faux ? Allez, au frigo pour 15 secondes.",
+      "Encore faux ? Allez, au frigo pour 45 secondes !",
     ],
-    /* Petite pique quand l'écran se débloque. */
+    /* Petite pique de Barnabé quand l'écran se débloque. */
     fin: [
       "Bon, je vous rends la main… pour l'instant.",
       "Allez, filez. Vous ne trouverez rien de toute façon.",
@@ -114,12 +115,12 @@ window.GAME_CONFIG.textes = {
   alertes: {
     kicker: "Chrono",
     titre: "Plus que {n} min !",
-    texte10: "Gardez le rythme : le colis vous attend.",
-    texte5: "Accélérez, la team : on y est presque !",
-    texte1: "Dernière minute : tout donner, maintenant !",
+    texte10: "Gardez le rythme, le colis vous attend !",
+    texte5: "Accélérez la team, on y est presque !",
+    texte1: "Dernière minute ! On donne tout, maintenant !",
     ok: "On fonce !",
     finTitre: "Temps écoulé !",
-    finTexte: "Barnabé a découvert ce qui se mijotait… Mais rien n'est perdu : avec un peu de chance, vous pouvez encore faire diversion et terminer la mission !",
+    finTexte: "Barnabé a flairé votre plan… Mais rien n'est perdu ! Il est encore temps de faire diversion et de finir la mission.",
     finBouton: "On continue !",
   },
 
@@ -127,7 +128,7 @@ window.GAME_CONFIG.textes = {
   chrono: {
     restant: "Temps restant",
     depasse: "Temps dépassé",
-    tempsFinal: "Votre temps : **{temps}**",
+    tempsFinal: "Mission bouclée en **{temps}**",
   },
 
   /* Création de l'équipe, en deux temps : le nom, puis les deux rôles. */
@@ -139,34 +140,34 @@ window.GAME_CONFIG.textes = {
     bouton: "Valider",
     erreurVide: "Indiquez un nom d'équipe pour continuer.",
 
-    /* Les rôles : réaction du lutin, puis l'encadré d'avertissement. */
+    /* Les rôles : réaction du Père Noël, puis l'encadré des deux rôles. */
     rolesKicker: "Inscription · 2 / 2",
     rolesTitre: "Vos rôles",
-    rolesBulle: "Oh, pas mal du tout ce nom d'équipe… **{equipe}**.",
-    rolesBulleSuite: "Maintenant, un chef et un reporter.",
-    rolesAlerteTitre: "Attention : choisissez vos rôles avec soin !",
+    rolesBulle: "Ho ho ho, pas mal du tout ce nom d'équipe ! Bienvenue, **{equipe}**.",
+    rolesBulleSuite: "Maintenant, désignez votre Mastermind et votre Storyteller.",
+    rolesAlerteTitre: "Choisissez vos rôles avec soin !",
     rolesAlerte:
       "",
     roles: [
       {
         icone: "crown",
-        nom: "Le Gobinous Capitaine",
-        texte: "Il mène la team.",
+        nom: "The Mastermind",
+        texte: "Mène l'équipe à la victoire.",
       },
       {
         icone: "camera",
-        nom: "Le Gobinous Reporter",
-        texte: "Il filme tout, façon vlog.",
-        ou: "Dépôt : **Le Vlog des Gobinous**, dans le programme.",
+        nom: "The Storyteller",
+        texte: "Documente la quête en photos et vidéos.",
+        ou: "Photos et vidéos à déposer sur **The Gobi' Hub**, depuis le programme.",
       },
     ],
     rolesNote: "",
-    chefLabel: "Gobinous Capitaine",
+    chefLabel: "The Mastermind",
     chefPlaceholder: "Prénom",
-    reporterLabel: "Gobinous Reporter",
+    reporterLabel: "The Storyteller",
     reporterPlaceholder: "Prénom",
     rolesBouton: "C'est noté !",
-    rolesErreur: "Indiquez le prénom du Gobinous Capitaine et du Gobinous Reporter.",
+    rolesErreur: "Indiquez le prénom du Mastermind et celui du Storyteller.",
   },
 
   /* Écran « Comment jouer ? » : carte du parcours + 3 règles clés.
@@ -174,8 +175,8 @@ window.GAME_CONFIG.textes = {
    * le bouton « Règles » en haut des écrans de jeu. */
   plateau: {
     titre: "La map",
-    description: "La map de la quête : de La Verrière jusqu'au sommet de la Tour Saint-Gobain, en 5 étapes.",
-    intro: "Point de base : **La Verrière**. Suivez la map, étape par étape.",
+    description: "De La Verrière au sommet de la Tour Saint-Gobain, 5 étapes à franchir.",
+    intro: "Tout part de **La Verrière**. Suivez la map, étape par étape !",
     depart: "BASE",
     /* Une étiquette courte par étape, affichée sur la map. */
     etapes: ["Check-in", "Cheat Code", "Fake Stream", "ID Check", "Ultimate Signal"],
@@ -185,9 +186,9 @@ window.GAME_CONFIG.textes = {
     continuer: "Continuer",
     /* Légende de la map : 3 repères. */
     regles: [
-      { icone: "pin", texte: "Un **mot secret** par étage pour débloquer l'étape." },
-      { icone: "flake", texte: "Plus de **2 erreurs** : gel du système." },
-      { icone: "star", texte: "**1 joker** de secours par équipe." },
+      { icone: "pin", texte: "Un mot secret par étage pour déverrouiller la suite de l'aventure." },
+      { icone: "flake", texte: "2 erreurs au compteur et c'est le gel du système pendant 45 secondes !" },
+      { icone: "star", texte: "Chaque équipe dispose d'un unique joker de secours pour souffler un coup." },
     ],
     detail: "Toutes les règles",
   },
@@ -202,22 +203,23 @@ window.GAME_CONFIG.textes = {
     intro: "",
     liste: [
       { icone: "clock", titre: "{chrono} chrono", texte: "Pas une de plus pour retrouver le colis." },
-      { icone: "star", titre: "Joker unique", texte: "Un seul bonus de secours par équipe." },
-      { icone: "flake", titre: "Gel du système", texte: "Plus de 2 erreurs d'affilée : accès bloqués ({gel})." },
-      { icone: "crown", titre: "Esprit d'équipe", texte: "Tout le monde avance ensemble." },
-      { icone: "check", titre: "Fair-play", texte: "Zéro triche, bonne foi absolue." },
+      { icone: "star", titre: "Joker unique", texte: "Un seul indice de secours par équipe. Gardez-le pour un vrai blocage !" },
+      { icone: "flake", titre: "Gel du système", texte: "2 erreurs sur une étape et tout gèle pendant {gel}." },
+      { icone: "lock", titre: "Piratage surprise", texte: "Une fois dans la partie, Barnabé pirate votre téléphone et le gèle 30 secondes." },
+      { icone: "crown", titre: "Esprit d'équipe", texte: "On avance tous ensemble, personne ne reste derrière." },
+      { icone: "check", titre: "Fair-play", texte: "Zéro triche, 100 % bonne foi." },
     ],
     objectif: "",
     bouton: "C'est parti !",
     boutonFermer: "J'ai compris",
     /* Confirmation avant le départ du chrono (une seule fois). */
     confirmTitre: "Prêts à commencer ?",
-    confirmTexte: "Le chrono de **{chrono}** démarre dès que vous validez, et il ne s'arrête plus. Toute l'équipe est là ?",
+    confirmTexte: "Le chrono de **{chrono}** démarre dès votre feu vert et ne s'arrête plus. Toute l'équipe est là ?",
     confirmOui: "Lancer le chrono",
     confirmNon: "Pas encore",
   },
 
-  /* Bouton « Aide » (en haut de chaque écran) : appelle l'organisation.
+  /* Lien « Un souci ? » (en bas de chaque écran) : appelle l'organisation.
    * contacts : un bouton d'appel par personne (numéro au format libre). */
   aide: {
     bouton: "Aide",
@@ -240,15 +242,15 @@ window.GAME_CONFIG.textes = {
     questionSuivante: "Question suivante",
     terminer: "Terminer",
     bonneReponse: "Bonne réponse !",
-    mauvaiseReponse: "Ce n'est pas la bonne réponse. Réessayez !",
-    mauvaiseReponseDernierEssai: "Raté ! Encore une erreur et tout gèle ({gel}).",
+    mauvaiseReponse: "Mauvaise réponse. Réessayez !",
+    mauvaiseReponseDernierEssai: "Raté ! Encore une erreur et tout gèle pendant {gel}.",
     reponseVide: "Saisissez une réponse avant de valider.",
     choixVide: "Sélectionnez une réponse avant de valider.",
     votreReponse: "Votre réponse",
     indice: "Indice",
     queteVerrouillee:
-      "Cette étape n'est pas encore débloquée. Terminez d'abord l'étape en cours.",
-    queteTerminee: "Cette étape est déjà terminée. Voici votre étape en cours.",
+      "Pas si vite ! Terminez d'abord l'étape en cours.",
+    queteTerminee: "Étape déjà terminée. Retour à votre étape en cours.",
     commencer: "Commencer",
     continuer: "Continuer",
     partieReinitialisee: "Votre partie a été réinitialisée par les organisateurs.",
@@ -256,13 +258,13 @@ window.GAME_CONFIG.textes = {
     gelLeve: "Le gel est levé !",
     gelCompteur: "Dégel dans",
     stockageIndisponible:
-      "Ce navigateur bloque la sauvegarde (navigation privée ?). Votre progression sera perdue si la page est fermée ou rechargée.",
+      "Sauvegarde impossible sur ce navigateur (navigation privée ?). Ne fermez pas la page, sinon votre progression sera perdue.",
   },
 
   joker: {
     bouton: "Utiliser mon joker",
     confirmationTitre: "Utiliser votre joker ?",
-    confirmationTexte: "Un seul joker pour toute l'aventure : il ne reviendra pas.",
+    confirmationTexte: "Un seul joker pour toute l'aventure. Une fois utilisé, il ne revient pas !",
     confirmer: "Oui, utiliser mon joker",
     annuler: "Non, je le garde",
     conserve: "Votre joker est conservé.",
@@ -270,11 +272,11 @@ window.GAME_CONFIG.textes = {
     dejaUtilise: "Joker déjà utilisé",
     statutDisponible: "Joker disponible",
     statutUtilise: "Joker utilisé",
-    /* Rappel discret si le joker n'a pas servi après 3 étapes. */
-    /* Notifications (bannière en haut de l'écran). */
+    /* Notifications (bannière en haut de l'écran) et rappel discret si
+     * le joker n'a pas servi après 3 étapes. */
     notifApp: "Joker",
-    notifUtilise: "Indice débloqué par le Père Noël : il s'affiche juste en dessous.",
-    rappel: "Petit rappel : votre joker est toujours dispo. À garder pour un vrai blocage !",
+    notifUtilise: "Le Père Noël vous souffle un indice. Il s'affiche juste en dessous !",
+    rappel: "Psst… votre joker est toujours dispo. Gardez-le pour un vrai blocage !",
   },
 
   /* Écran de saisie du mot secret d'un étage (début de chaque quête). */
@@ -282,14 +284,14 @@ window.GAME_CONFIG.textes = {
     kicker: "Étape {n} / 5",
     consigne: "",
     /* Sous la map : l'encadré pour débloquer l'étape. */
-    arriveTitre: "Arrivé à l'étage ?",
-    arriveTexte: "Saisissez le code secret.",
-    label: "Code secret de l'étage",
+    arriveTitre: "Arrivés à l'étage ?",
+    arriveTexte: "Saisissez le mot secret affiché sur place.",
+    label: "Mot secret de l'étage",
     bouton: "Débloquer l'étape",
     erreur: "Ce n'est pas le mot secret de cet étage. Cherchez bien autour de vous !",
     /* Sortie de secours : affichée après `secoursApres` mauvais mots. */
     secoursApres: 3,
-    secours: "Vous ne trouvez pas le mot secret ? Il est sur une affichette, à l'étage indiqué ci-dessus. Toujours bloqués ? Touchez « Un souci ? » en bas de l'écran : l'organisation vous le donnera.",
+    secours: "Le mot secret est sur une affichette, à l'étage indiqué. Toujours bloqués ? Touchez « Un souci ? » en bas de l'écran, l'organisation vous le donnera.",
   },
 
   fin: {

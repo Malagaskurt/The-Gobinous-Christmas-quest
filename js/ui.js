@@ -158,6 +158,33 @@
     toastTimer = setTimeout(function () { el.className = 'toast'; }, 4200);
   };
 
+  /* Compte à rebours plein écran « 3, 2, 1, GO ! » avant le lancement du
+   * chrono ou d'une étape. Instantané si l'utilisateur réduit les
+   * animations. */
+  GQ.countdown = function (done) {
+    var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still || document.getElementById('countdown')) { done(); return; }
+    var el = document.createElement('div');
+    el.id = 'countdown';
+    el.className = 'countdown';
+    el.setAttribute('aria-live', 'assertive');
+    document.body.appendChild(el);
+    var steps = ['3', '2', '1', 'GO !'];
+    var i = 0;
+    (function next() {
+      if (i >= steps.length) {
+        el.classList.add('is-out');
+        setTimeout(function () { el.remove(); }, 300);
+        done();
+        return;
+      }
+      el.innerHTML = '<span class="countdown-n' + (i === 3 ? ' is-go' : '') + '">' + steps[i] + '</span>';
+      if (GQ.audio) GQ.audio.sfx(i === 3 ? 'go' : 'count');
+      i += 1;
+      setTimeout(next, i === 4 ? 650 : 800);
+    })();
+  };
+
   /* Notification façon smartphone : bannière en verre translucide qui
    * glisse du haut de l'écran, avec un petit « ding ». Touchez-la (ou
    * glissez vers le haut) pour la fermer. opts : { app, text, icon, time }. */
