@@ -65,10 +65,15 @@ window.GAME_CONFIG.parametres = {
     volume: 0.05,
     volumeVideo: 0.12,
     volumeVoix: 1,
-    noel: ["assets/audio/musique-noel-1.mp3", "assets/audio/musique-noel-2.mp3"],
+    /* Fond sonore du jeu : « Dance of The Sugar Plum Fairy » (version libre
+     * de droit fournie par l'organisation), à déposer sous ce nom. Tant que
+     * le fichier est absent, les deux airs de secours prennent le relais. */
+    noel: ["assets/audio/musique-fond.mp3"],
+    noelSecours: ["assets/audio/musique-noel-1.mp3", "assets/audio/musique-noel-2.mp3"],
     japon: "assets/audio/musique-japon.mp3",
     /* Écran de fin : musique pop-électro dansante (le lutin danse). */
-    fete: "assets/audio/musique-fete.mp3",
+    /* Écran de fin : pop rétro de Noël, cuivrée (tools/generer-musique.py). */
+    fete: "assets/audio/musique-fin.mp3",
     volumeFete: 0.4,
     effets: true,
     volumeEffets: 0.45,

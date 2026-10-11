@@ -34,11 +34,75 @@
   /* Accueil : « The Gobinous Christmas Club »                           */
   /* ------------------------------------------------------------------ */
 
+  /* Grande scène 2D de l'accueil : ville de Noël de nuit (tours de La
+   * Défense, Tour Saint-Gobain, maisons enneigées, sapins, réverbères) et le
+   * camion de livraison des colis qui la traverse. Aplats, couleurs de la
+   * charte uniquement. */
+  function cityScene() {
+    var W = 400, H = 300, out = '';
+    var win = function (x, y, w, h, seed) {
+      var s = '';
+      for (var yy = y + 8; yy < h - 6; yy += 10) {
+        for (var xx = x + 5; xx < x + w - 6; xx += 8) {
+          var k = (xx * 7 + yy * 13 + seed) % 9;
+          if (k < 3) s += '<rect x="' + xx + '" y="' + yy + '" width="4" height="5" fill="' + (k ? '#ffffff' : '#00ade1') + '" class="cw" style="animation-delay:' + ((k + yy) % 5) * 0.7 + 's"/>';
+        }
+      }
+      return s;
+    };
+    // Tours du fond (La Défense).
+    [[0, 120, 46], [50, 90, 34], [88, 140, 40], [290, 110, 38], [332, 70, 30], [366, 130, 40]].forEach(function (b, i) {
+      out += '<rect x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + (230 - b[1]) + '" fill="#12306b"/>' + win(b[0], b[1], b[2], 230, i * 11);
+    });
+    // Tour Saint-Gobain.
+    out += '<path d="M200 230V46Q200 38 208 37L238 30V230Z" fill="#00ade1"/><path d="M238 30L248 36V230H238Z" fill="#17428c"/>';
+    for (var y = 52; y < 228; y += 10) out += '<path d="M200 ' + y + 'H238" stroke="#ffffff" stroke-width=".7" opacity=".35"/>';
+    out += '<circle cx="243" cy="27" r="2.5" fill="#e4323a" class="cb"/>';
+    // Maisons enneigées et guirlandes.
+    [[24, 196, 58], [128, 204, 56], [262, 198, 60]].forEach(function (h, i) {
+      var x = h[0], y = h[1], w = h[2];
+      out += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + (250 - y) + '" fill="#17428c"/>' +
+        '<path d="M' + (x - 6) + ' ' + y + 'L' + (x + w / 2) + ' ' + (y - 24) + 'L' + (x + w + 6) + ' ' + y + 'Z" fill="#ffffff"/>' +
+        '<rect x="' + (x + 10) + '" y="' + (y + 12) + '" width="12" height="12" fill="#00ade1"/><rect x="' + (x + w - 22) + '" y="' + (y + 12) + '" width="12" height="12" fill="#00ade1"/>' +
+        '<rect x="' + (x + w / 2 - 7) + '" y="' + (y + 30) + '" width="14" height="' + (220 - y) + '" fill="#0b1d45"/>';
+      for (var g = 0; g < 6; g++) out += '<circle cx="' + (x + 4 + g * (w - 8) / 5) + '" cy="' + (y + 3) + '" r="2" fill="' + (g % 2 ? '#e4323a' : '#ffffff') + '" class="cl" style="animation-delay:' + g * 0.3 + 's"/>';
+    });
+    // Sapins et réverbères.
+    [[100, 250, 26], [196, 252, 22], [340, 250, 28]].forEach(function (s) {
+      out += '<path d="M' + s[0] + ' ' + (s[1] - s[2] * 2) + 'L' + (s[0] + s[2] * 0.6) + ' ' + s[1] + 'H' + (s[0] - s[2] * 0.6) + 'Z" fill="#00ade1"/>' +
+        '<path d="M' + s[0] + ' ' + (s[1] - s[2] * 2.3) + 'l3 6h-6z" fill="#ffffff"/>';
+    });
+    [[60], [236], [330]].forEach(function (l) {
+      out += '<rect x="' + l[0] + '" y="214" width="2.5" height="40" fill="#0b1d45"/><circle cx="' + (l[0] + 1.2) + '" cy="212" r="5" fill="#ffffff"/><circle cx="' + (l[0] + 1.2) + '" cy="212" r="12" fill="#ffffff" opacity=".12"/>';
+    });
+    // Chaussée enneigée.
+    out += '<rect x="0" y="250" width="' + W + '" height="50" fill="#0e2a5e"/><path d="M0 250H' + W + '" stroke="#ffffff" stroke-width="5"/>' +
+      '<path d="M0 276H' + W + '" stroke="#ffffff" stroke-width="2" stroke-dasharray="14 14" opacity=".5"/>';
+    return '<svg class="city-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMax meet" aria-hidden="true">' + out + '</svg>';
+  }
+
+  /* Accueil : glisser vers le haut (ou toucher la flèche) pour découvrir. */
+  function swipeToDiscover() {
+    var root = document.querySelector('.club');
+    if (!root) return;
+    var y0 = null;
+    root.addEventListener('touchstart', function (e) { y0 = e.touches[0].clientY; }, { passive: true });
+    root.addEventListener('touchend', function (e) {
+      if (y0 == null) return;
+      var dy = e.changedTouches[0].clientY - y0;
+      y0 = null;
+      if (dy < -50) GQ.go('programme');
+    }, { passive: true });
+    root.addEventListener('wheel', function (e) { if (e.deltaY > 40) GQ.go('programme'); }, { passive: true });
+  }
+
   screens.club = function () {
     var A = K.accueil;
     return {
       key: 'club',
       bare: true,
+      noFooter: true,
+      after: swipeToDiscover,
       html:
         '<main class="club">' +
         '<div class="garland" aria-hidden="true"></div>' +
@@ -52,14 +116,15 @@
         '<span class="club-sub" aria-hidden="true">' + t(A.sousTitre) + '</span></h1>' +
         (A.edition ? '<p class="club-edition">' + GQ.pix('star') + t(A.edition) + GQ.pix('star') + '</p>' : '') +
         '</div>' +
-        // Ville de Noël : le camion de Barnabé livre ses colis.
-        '<div class="club-city" aria-hidden="true">' +
-        '<span class="club-city-skyline"></span>' +
+        // Ville de Noël : le camion de Barnabé traverse et livre ses colis.
+        '<div class="club-city" aria-hidden="true">' + cityScene() +
         '<span class="club-truck">' + GQ.knit.icon('truck', 'club-truck-img') + '</span>' +
         '<span class="club-parcel p1">' + GQ.knit.icon('gift', 'club-parcel-img') + '</span>' +
         '<span class="club-parcel p2">' + GQ.knit.icon('gift', 'club-parcel-img') + '</span>' +
+        '<span class="club-snow"></span>' +
         '</div>' +
-        '<div class="club-cta"><button type="button" class="club-tap" data-action="to-programme">' + esc(A.appel) + icon('fleche') + '</button></div>' +
+        '<button type="button" class="club-down" data-action="to-programme" aria-label="' + esc(A.appel) + '">' +
+        '<span>' + esc(A.appel) + '</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button>' +
         '</main>',
     };
   };
@@ -96,8 +161,13 @@
         '<div class="center-head">' + C.knitTitle(P.titre) +
         (P.intro ? '<p class="prog-intro">' + t(P.intro) + '</p>' : '') + '</div>' +
         '<ol class="prog">' + cards + '</ol>' +
-        (K.vlog ? '<a class="vlog-card" href="#/vlog">' + GQ.knit.icon('camera', 'vlog-card-ico') +
-          '<span class="vlog-card-body"><span class="vlog-card-name">' + t(K.vlog.nom) + '</span><span class="vlog-card-text">' + t(K.vlog.texte) + '</span></span>' +
+        // Le Vlog : même carte que les temps forts, juste en dessous.
+        (K.vlog ? '<a class="vlog-card" href="#/vlog">' +
+          '<span class="prog-num" aria-hidden="true">+</span>' +
+          '<span class="prog-kicker">Photos &amp; vidéos</span>' +
+          '<span class="prog-name">' + t(K.vlog.nom) + '</span>' +
+          '<span class="prog-text">' + t(K.vlog.texte) + '</span>' +
+          '<span class="prog-art">' + GQ.knit.icon('camera', 'prog-ico') + '</span>' +
           '<span class="prog-go">' + t(K.vlog.bouton) + icon('fleche') + '</span></a>' : '') +
         '</main>',
     };

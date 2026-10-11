@@ -137,10 +137,11 @@ const SHORT = CFG.parametres.modeTest.dureeBlocageCourtSecondes * 1000;
 console.log('\nDépart');
 
 await step('Accueil « The Gobinous Christmas Club » → programme des 5 temps forts', async () => {
-  assert(await has('Christmas Club') && await has('Appuyer pour découvrir'), 'accueil du Club absent');
+  assert(await has('Christmas Club') && (await page.locator('.club-down[data-action="to-programme"]').count()) === 1, 'accueil du Club absent');
+  assert(!(await has('Un souci')), 'bouton « Un souci ? » encore sur l\'accueil');
   assert((await page.locator('.club-truck').count()) === 1, 'camion de livraison absent');
   await noHorizontalScroll();
-  await page.click('.club-cta [data-action="to-programme"]');
+  await page.click('.club-down');
   await settle();
   assert((await hash()) === '#/programme', 'programme non affiché');
   for (const n of ["Gobi'Christmas", 'Quest', 'Party', 'Battle', 'Wrap-Up', 'Le Vlog des Gobinous']) {
@@ -258,7 +259,7 @@ await step('Bouton « Règles » explicite et bouton du son dans l\'en-tête, mu
   assert((await page.locator('.topbar .sound-btn').getAttribute('aria-pressed')) === 'false', 'le son ne se coupe pas');
   await page.locator('.topbar .sound-btn').click();
   await settle();
-  for (const f of ['musique-noel-1.mp3', 'musique-noel-2.mp3', 'musique-japon.mp3', 'barnabe-appel.mp3', 'barnabe-video.mp3']) {
+  for (const f of ['musique-noel-1.mp3', 'musique-noel-2.mp3', 'musique-japon.mp3', 'musique-fin.mp3', 'barnabe-appel.mp3', 'barnabe-video.mp3']) {
     const r = await fetch(BASE + 'assets/audio/' + f);
     assert(r.ok && r.headers.get('content-type') === 'audio/mpeg', `musique absente : ${f}`);
   }
@@ -610,7 +611,8 @@ await step('Appel de Barnabé puis écran de fin, conservé au rechargement', as
   await settle();
   assert(await has('Mission presque accomplie'), 'écran de fin absent');
   assert(await has('Les Testeurs') && await has('Retour à La Verrière (4ᵉ étage) avec le colis choisi'), 'consigne de fin absente');
-  assert((await page.locator('.dance-elf .dance-face.barnabe:not(.is-masked)').count()) === 1, 'Barnabé démasqué ne danse pas');
+  assert((await page.locator('.fin-show .f-santa').count()) === 1 && (await page.locator('.fin-show .f-twerk').count()) === 2, 'Père Noël et lutins absents');
+  assert(await has('Colis sauvé, prime de vacances validée') && await has('direction Pôle Emploi'), 'bulles de fin absentes');
   const fete = await fetch(BASE + 'assets/audio/musique-fete.mp3');
   assert(fete.ok, 'musique de fin absente');
   assert((await page.locator('.topbar').count()) === 0, 'l\'écran de fin garde l\'en-tête du jeu');

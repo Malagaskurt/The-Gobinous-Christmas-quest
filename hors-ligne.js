@@ -1,6 +1,6 @@
 /* Généré par tools/generer-hors-ligne.mjs : ne pas modifier à la main. */
 self.HORS_LIGNE = {
- "version": "9432e408a590",
+ "version": "404ff75b3691",
  "fichiers": [
   "index.html",
   "css/fonts.css",
@@ -14,6 +14,7 @@ self.HORS_LIGNE = {
   "js/club.js",
   "js/core.js",
   "js/elf.js",
+  "js/fin.js",
   "js/knit.js",
   "js/party.js",
   "js/pixel.js",
@@ -40,6 +41,7 @@ self.HORS_LIGNE = {
   "assets/audio/barnabe-appel.mp3",
   "assets/audio/barnabe-video.mp3",
   "assets/audio/musique-fete.mp3",
+  "assets/audio/musique-fin.mp3",
   "assets/audio/musique-japon.mp3",
   "assets/audio/musique-noel-1.mp3",
   "assets/audio/musique-noel-2.mp3",

@@ -136,7 +136,7 @@
       html += '<div class="storage-warning" role="alert">' + GQ.t(T.general.stockageIndisponible) + '</div>';
     }
     html += scr.bare ? scr.html : GQ.header(GQ.state.quest) + '<main class="screen screen-quest">' + scr.html + '</main>';
-    html += GQ.footer();
+    if (!scr.noFooter) html += GQ.footer();
     if (GQ.test.isActive() && parseRoute().name !== 'organisateur') {
       html += '<a class="test-bar" href="#/organisateur">Mode test</a>';
     }

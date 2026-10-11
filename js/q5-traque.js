@@ -398,8 +398,6 @@
     for (var i = 0; i < 22; i++) {
       stars += '<i style="left:' + ((i * 37) % 100) + '%;top:' + ((i * 53) % 70) + '%;animation-delay:' + ((i % 7) * 0.45).toFixed(2) + 's"></i>';
     }
-    // Barnabé démasqué danse sur la musique de fin.
-    var frames = GQ.knit.icon('elfWave', 'dance-face');
     return {
       key: 'q5-end',
       bare: true,
@@ -413,8 +411,8 @@
         '<div class="finale-inner">' +
         GQ.logo('clair', 'finale-logo') +
         C.knitTitle(R.finTitre, { color: '#E4323A' }) +
-        '<div class="dance" aria-hidden="true"><span class="dance-spot dance-spot-a"></span><span class="dance-spot dance-spot-b"></span>' +
-        '<div class="dance-elf">' + frames + '</div><span class="dance-floor"></span></div>' +
+        // Le Père Noël en trottinette et ses lutins, puis la fête.
+        GQ.finShow() +
         '<p class="finale-team">' + t(R.finTexte, { equipe: s.team || '' }) + (c ? ' · <span class="nowrap">' + GQ.mmss(c.elapsed) + '</span>' : '') + '</p>' +
         '<p class="finale-next">' + t(R.finConsigne) + '</p>' +
         '<p class="finale-home"><a class="btn btn-ghost" href="#/">' + icon('retour') + esc(R.boutonAccueil || 'Retour à l\'accueil') + '</a></p>' +

@@ -57,6 +57,19 @@
     el.loop = files.length === 1;
     var p = { el: el, list: files, index: 0, gain: null };
     el.src = files[0];
+    // Fichier absent ou illisible (ex. musique de fond pas encore déposée) :
+    // on passe sur la liste de secours.
+    el.addEventListener('error', function () {
+      var spare = name === 'noel' ? M.noelSecours : null;
+      spare = (Array.isArray(spare) ? spare : [spare]).filter(Boolean);
+      if (!spare.length || p.list === spare || p.spare) return;
+      p.spare = true;
+      p.list = spare;
+      p.index = 0;
+      el.loop = spare.length === 1;
+      el.src = spare[0];
+      if (current === name && enabled && unlocked) el.play().catch(function () { /* geste requis */ });
+    });
     el.addEventListener('ended', function () {
       p.index = (p.index + 1) % p.list.length;
       el.src = p.list[p.index];

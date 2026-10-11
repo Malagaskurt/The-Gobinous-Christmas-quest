@@ -7,7 +7,9 @@ Produit :
   assets/audio/musique-noel-1.mp3  « Douce nuit », boîte à musique et nappe
   assets/audio/musique-noel-2.mp3  « Deck the Halls », boîte à musique, tout doux
   assets/audio/musique-japon.mp3   koto et nappe (mixée dans la vidéo de Barnabé)
-  assets/audio/musique-fete.mp3    pop-électro dansante (écran de fin, le lutin danse)
+  assets/audio/musique-fete.mp3    pop-électro dansante (ancien écran de fin)
+  assets/audio/musique-fin.mp3     pop rétro de Noël, cuivres, grelots et sabots
+                                   (écran de fin : le Père Noël en trottinette)
 
 Ambiance très discrète : une boîte à musique, une nappe et une basse
 douce, sans batterie. Les accords sont écrits mesure par mesure sur la
@@ -452,8 +454,121 @@ def fete():
     os.replace(tmp, out)
 
 
+# ---------------------------------------------------------------------------
+# Écran de fin : pop rétro de Noël, cuivrée et entraînante (composition
+# originale, dans l'esprit des grands classiques des années 60 : cuivres,
+# grelots de traîneau, sabots de cheval en woodblock, coup de fouet).
+# ---------------------------------------------------------------------------
+
+def brass(f, dur, vel=1.0):
+    """Section de cuivres : dents de scie désaccordées, attaque franche."""
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    vib = 1 + 0.004 * np.sin(2 * np.pi * 5.5 * t) * np.clip((t - 0.12) * 5, 0, 1)
+    saw = lambda fr: 2 * ((np.cumsum(fr * vib) / SR) % 1) - 1
+    sig = saw(f * 0.996) + saw(f) + saw(f * 1.004)
+    env = np.minimum(1, t / 0.025) * (0.75 + 0.25 * np.exp(-t * 9))
+    r = min(n, int(SR * 0.06))
+    env[-r:] *= np.linspace(1, 0, r)
+    return lowpass_fast(sig * env / 3, 2600) * vel
+
+
+def sleigh_bells(vel=1.0):
+    n = int(SR * 0.12)
+    t = np.arange(n) / SR
+    metal = sum(np.sin(2 * np.pi * fr * t) for fr in (5200, 6900, 8300, 9700)) / 4
+    noise = np.diff(rng.standard_normal(n + 1))
+    return (metal * 0.7 + noise * 0.3) * np.exp(-t * 38) * 0.22 * vel
+
+
+def woodblock(f, vel=1.0):
+    n = int(SR * 0.08)
+    t = np.arange(n) / SR
+    sig = (np.sin(2 * np.pi * f * t) + 0.4 * np.sin(2 * np.pi * f * 2.7 * t)) * np.exp(-t * 60)
+    return attack(sig * 0.5 * vel, 1)
+
+
+def whip(vel=1.0):
+    n = int(SR * 0.25)
+    t = np.arange(n) / SR
+    noise = np.diff(np.diff(rng.standard_normal(n + 2)))
+    return noise * np.exp(-t * 22) * np.minimum(1, t / 0.004) * 0.25 * vel
+
+
+def walking_bass(f, dur, vel=1.0):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    sig = np.sin(2 * np.pi * f * t) + 0.3 * np.sin(2 * np.pi * f * 2 * t)
+    return attack(sig * np.exp(-t * 3.5) * vel, 4)
+
+
+FIN_CHORDS = [  # (voicing, basse)
+    (["C4", "E4", "G4"], ["C2", "G2"]), (["A3", "C4", "E4"], ["A1", "E2"]),
+    (["D4", "F4", "A4"], ["D2", "A2"]), (["G3", "B3", "F4"], ["G1", "D2"]),
+    (["C4", "E4", "G4"], ["C2", "G2"]), (["A3", "C#4", "G4"], ["A1", "E2"]),
+    (["D4", "F4", "A4"], ["D2", "G1"]), (["C4", "E4", "G4"], ["C2", "G2"]),
+]
+FIN_MELODY = [
+    [("E5", 1), ("G5", 0.5), ("E5", 0.5), ("C5", 1), ("D5", 0.5), ("E5", 0.5)],
+    [("A5", 1), ("G5", 0.5), ("E5", 0.5), ("C5", 2)],
+    [("D5", 0.5), ("E5", 0.5), ("F5", 1), ("A5", 1), ("F5", 1)],
+    [("G5", 1.5), ("F5", 0.5), ("E5", 0.5), ("D5", 0.5), ("B4", 1)],
+    [("E5", 1), ("G5", 0.5), ("E5", 0.5), ("C6", 1), ("B5", 0.5), ("A5", 0.5)],
+    [("G5", 1), ("E5", 0.5), ("C#5", 0.5), ("A4", 2)],
+    [("F5", 1), ("A5", 1), ("G5", 0.5), ("F5", 0.5), ("D5", 1)],
+    [("C5", 1), ("E5", 0.5), ("G5", 0.5), ("C6", 2)],
+]
+
+
+def traineau():
+    beat = 60 / 152
+    bar = beat * 4
+    plan = ["intro"] * 2 + ["a"] * 8 + ["b"] * 8
+    tr = Track(len(plan) * bar + 4)
+    for b, part in enumerate(plan):
+        t0 = 0.15 + b * bar
+        voicing, bass = FIN_CHORDS[(b - 2) % 8] if part != "intro" else FIN_CHORDS[0 if b == 0 else 3]
+        # Grelots et sabots (croches), coup de fouet en début de phrase.
+        for k in range(8):
+            tr.add(t0 + k * beat / 2, sleigh_bells(1.0 if k % 2 == 0 else 0.6), 0.9)
+            tr.add(t0 + k * beat / 2, woodblock(820 if k % 2 == 0 else 1040, 0.8 if k % 2 == 0 else 0.55), 0.55)
+        if part != "intro" and (b - 2) % 8 == 0:
+            tr.add(t0 - 0.05, whip(), 0.9)
+        if part == "intro":
+            if b == 1:
+                tr.add(t0 + 3 * beat, whip(), 1.0)
+            continue
+        # Batterie légère, basse qui marche, cuivres « pah » sur 2 et 4.
+        for k in range(4):
+            tr.add(t0 + k * beat, kick(0.7), 0.55 if k % 2 == 0 else 0.0)
+            if k % 2 == 1:
+                tr.add(t0 + k * beat, clap(0.8), 0.6)
+            tr.add(t0 + k * beat, walking_bass(freq(bass[k % 2]), beat * 0.9), 0.32)
+            if k % 2 == 1:
+                tr.add(t0 + k * beat, sum(brass(freq(n), beat * 0.35) for n in voicing), 0.12)
+        # Mélodie aux trompettes (et glockenspiel en reprise).
+        t = t0
+        for n, d in FIN_MELODY[(b - 2) % 8]:
+            if part == "b":
+                tr.add(t, brass(freq(n), d * beat * 0.92), 0.2)
+                tr.add(t, bell(freq(n) * 2, 1.2, 0.8), 0.07)
+            else:
+                tr.add(t, brass(freq(n), d * beat * 0.92), 0.17)
+            t += d * beat
+    sig = tr.buf[: int(SR * (len(plan) * bar + 0.3))]
+    sig = reverb(sig, 1.4, 0.16)
+    sig = normalize(crossfade_loop(sig, 0.2), 0.6)
+    save_mp3(stereo(sig), "musique-fin.mp3", kbps=128)
+    out = os.path.join(OUT, "musique-fin.mp3")
+    tmp = out + ".tmp.mp3"
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-af", "loudnorm=I=-15:TP=-1.5:LRA=8",
+                    "-codec:a", "libmp3lame", "-b:a", "128k", tmp], check=True)
+    os.replace(tmp, out)
+
+
 if __name__ == "__main__":
-    noel1()
-    noel2()
-    japon()
-    fete()
+    import sys
+    only = sys.argv[1:]
+    for fn in (noel1, noel2, japon, fete, traineau):
+        if not only or fn.__name__ in only:
+            fn()

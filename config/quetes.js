@@ -313,6 +313,11 @@ window.GAME_CONFIG.quetes = {
 
     /* Écran de fin : grand titre, lutin qui danse, consigne en petit. */
     finTitre: "Mission presque accomplie",
+    /* Bulles du spectacle de fin (Père Noël et lutins). */
+    finBulles: [
+      { qui: "Un lutin", texte: "MERCI L'ÉQUIPE ! Colis sauvé, prime de vacances validée !" },
+      { qui: "Le Père Noël", texte: "Et pour Barnabé... c'est direction Pôle Emploi sur le champ !" },
+    ],
     finTexte: "Bravo **{equipe}**",
     finConsigne: "Retour à La Verrière (4ᵉ étage) avec le colis choisi pour découvrir ce qu'il contient.",
   },
