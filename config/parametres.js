@@ -37,9 +37,9 @@ window.GAME_CONFIG.parametres = {
    * apresGel     : "valider"   → l'étape est validée d'office
    *                "reessayer" → l'équipe peut retenter */
   penalites: {
-    /* Après le quiz : le calcul de Barnabé (après le gel, un calcul
-     * plus simple). */
-    etage: { essais: 2, gelSecondes: 45, apresGel: "reessayer" },
+    /* Exception : l'énigme de l'étage après le quiz. 2 erreurs → gel de
+     * 15 s ; 2 nouvelles erreurs → indice (calcul simplifié). */
+    etage: { essais: 2, gelSecondes: 15, apresGel: "reessayer" },
     /* Quête 2 : le message codé (la solution s'affiche après le gel). */
     message: { essais: 2, gelSecondes: 45, apresGel: "valider" },
     /* Quête 4 : chacun des 4 modules de l'enquête. */

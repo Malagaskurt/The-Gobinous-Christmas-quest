@@ -340,7 +340,8 @@ window.GAME_CONFIG.quetes = {
 
     /* Écran de fin : épuré et centré sur la ville de Noël animée. */
     finTitre: "Mission presque accomplie !",
-    finBravo: "Bravo {equipe} !",
+    /* Fin : 2 lignes seulement. Le titre, puis une phrase (bravo + consigne). */
+    finBravo: "Bravo à l'équipe {equipe} !",
     finConsigne: "Rejoignez La Verrière (4ᵉ étage) avec votre colis mystère encore emballé !",
   },
 };

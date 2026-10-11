@@ -402,7 +402,7 @@ await step('Quiz réussi à 8/8 (thème « La Tour »), correction consultable',
   assert(await has('Voir la correction'), 'correction absente');
 });
 
-await step('Intrusion de Barnabé : calcul, 2 erreurs → écran bloqué 45 s, puis calcul simple, 5 accepté', async () => {
+await step('Intrusion de Barnabé : calcul, 2 erreurs → gel 15 s, 2 nouvelles erreurs → calcul simplifié, 5 accepté', async () => {
   await page.click('[data-action="to-floor"]');
   await settle();
   assert(await has('C\'est quoi ce délire') && await has('50 - 25 + 10 - 15 + 8 - 12 + 7 - 18'), 'messages de Barnabé absents');
@@ -410,14 +410,18 @@ await step('Intrusion de Barnabé : calcul, 2 erreurs → écran bloqué 45 s, p
   assert(!(await frozen()), 'gel dès la 1re erreur');
   assert(await has('Mauvais calcul'), 'erreur non signalée');
   await answer('4');
-  assert(await frozen(), 'pas de blocage après 2 erreurs');
+  assert(await frozen(), 'pas de gel après 2 erreurs');
   await page.waitForSelector('#hack .hack-title');
-  assert(norm(await page.locator('#hack').innerText()).includes('bloqué par barnab'), 'moquerie de Barnabé absente');
   const ms = await gelMs();
-  assert(ms > 0 && ms <= 45000, `blocage inattendu : ${ms} ms`);
-  // Fin du blocage simulée : un calcul beaucoup plus simple apparaît.
+  assert(ms > 0 && ms <= 15000, `gel inattendu : ${ms} ms`);
+  // Fin du gel simulée : on retente le même calcul.
   await page.evaluate(() => { const g = window.GQ.state.gel; g.until = 0; g.key = null; g.after = null; window.GQ.save(); const h = document.getElementById('hack'); if (h) h.remove(); document.body.classList.remove('has-hack'); window.GQ.render(); });
   await settle();
+  assert(!(await has('2 + 3')), 'indice donné trop tôt');
+  await answer('6');
+  assert(!(await frozen()) && !(await has('2 + 3')), 'indice ou gel après une seule nouvelle erreur');
+  await answer('7');
+  assert(!(await frozen()), 'gel au lieu de l\'indice');
   assert(await has('2 + 3'), 'calcul simplifié absent');
   await answer('5');
   assert((await state()).quest === 2 && (await hash()) === '#/quete/2', 'quête 2 non atteinte');
@@ -651,7 +655,7 @@ await step('Appel du Père Noël puis écran de fin 3D, conservé au rechargemen
   assert((await page.evaluate(() => window.__sfx)).includes('hangup'), 'pas de son de fin d\'appel');
   // Fin de l'appel : directement l'écran de fin.
   assert((norm(await text()).replace(/\s+/g, ' ').includes('mission presque accomplie')), 'écran de fin absent');
-  assert(await has('Les Testeurs') && await has('Bravo Les Testeurs') && (norm(await text()).replace(/\s+/g, ' ').includes('mission presque accomplie')) && await has('Rejoignez La Verrière (4ᵉ étage) avec votre colis mystère encore emballé'), 'consigne de fin absente');
+  assert(await has('Les Testeurs') && await has('Bravo à l\'équipe Les Testeurs') && (norm(await text()).replace(/\s+/g, ' ').includes('mission presque accomplie')) && await has('Rejoignez La Verrière (4ᵉ étage) avec votre colis mystère encore emballé'), 'consigne de fin absente');
   assert((await page.locator('.fc-city .city-svg').count()) === 1 && (await page.locator('.fc-home[href="#/"]').count()) === 1, 'ville animée ou bouton de fin absents');
   const fete = await fetch(BASE + 'assets/audio/musique-fete.mp3');
   assert(fete.ok, 'musique de fin absente');

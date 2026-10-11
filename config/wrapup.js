@@ -50,7 +50,7 @@ window.GAME_CONFIG.wrapup = {
   bulle: "Alors, cet événement ?",
   intro: "5 questions, 1 minute. C'est **100 % anonyme**, aucun nom n'est demandé.",
   questions: [
-    { id: "note", type: "etoiles", question: "Votre note pour l'événement ?", obligatoire: true },
+    { id: "note", type: "etoiles", question: "Qu'avez-vous pensé de l'événement ?", obligatoire: true },
     {
       id: "moment",
       type: "choix",
@@ -58,7 +58,7 @@ window.GAME_CONFIG.wrapup = {
       options: ["Gobi'Christmas Quest", "Gobi'Christmas Party", "Gobi'Christmas Battle", "Secret Santa"],
       obligatoire: true,
     },
-    { id: "quest", type: "echelle", question: "La Gobi'Christmas Quest, c'était…", min: "Trop facile", max: "Trop dur", obligatoire: true },
+    { id: "quest", type: "echelle", question: "La Christmas Quest, c'était plutôt…", min: "Trop facile", max: "Trop dur", obligatoire: true },
     {
       id: "encore",
       type: "choix",
@@ -66,7 +66,7 @@ window.GAME_CONFIG.wrapup = {
       options: ["Oui, carrément !", "Peut-être", "Non merci"],
       obligatoire: true,
     },
-    { id: "mot", type: "texte", question: "Avez-vous un mot à laisser ? (idée, un retour, un remerciement, etc.)", placeholder: "Facultatif", obligatoire: false },
+    { id: "mot", type: "texte", question: "Avez-vous un mot à laisser ? (Une idée, un retour, un remerciement, etc.)", placeholder: "Facultatif", obligatoire: false },
   ],
   obligatoire: "Obligatoire",
   facultatif: "Facultatif",

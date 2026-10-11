@@ -193,11 +193,15 @@
       "<text x='32' y='42' text-anchor='middle' font-family='Arial Black,Arial' font-weight='900' font-size='32' fill='url(#c)'>?</text>"],
     car: [['r', 's'],
       "<ellipse cx='32' cy='56' rx='28' ry='3' fill='#000' opacity='.3'/>" +
+      // Carrosserie retournée : le capot (long) est devant, à droite, dans le
+      // sens où la voiture roule ; phare blanc devant, feu rouge derrière.
+      "<g transform='matrix(-1 0 0 1 64 0)'>" +
       "<path d='M6 48V40Q6 35 11 34L19 33L26 25Q28 23 31 23H43Q46 23 48 26L53 33Q59 34 59 40V48Z' fill='url(#r)'/>" +
       "<path d='M23 33L29 27H36V33Z M39 27H44L48 33H39Z' fill='url(#s)'/>" +
       "<circle cx='18' cy='49' r='6.5' fill='#0C1834'/><circle cx='47' cy='49' r='6.5' fill='#0C1834'/>" +
       "<circle cx='18' cy='49' r='2.5' fill='#c4d6ee'/><circle cx='47' cy='49' r='2.5' fill='#c4d6ee'/>" +
-      "<rect x='55' y='37' width='4' height='3' rx='1.5' fill='#fff'/>"],
+      "</g>" +
+      "<rect x='55' y='37' width='4' height='3' rx='1.5' fill='#fff'/><rect x='5' y='37' width='3' height='3' rx='1.2' fill='#7a0f1c'/>"],
     truck: [['r', 'c', 's', 'n'],
       "<rect x='3' y='18' width='38' height='30' rx='4' fill='url(#r)'/>" +
       "<rect x='19' y='18' width='6' height='30' fill='url(#c)'/><rect x='3' y='30' width='38' height='6' fill='url(#c)'/>" +

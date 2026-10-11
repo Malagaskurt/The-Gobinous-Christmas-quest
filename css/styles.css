@@ -2667,3 +2667,13 @@ input.field::placeholder, .field::placeholder, textarea::placeholder { color: #7
 .club-down { left: 0 !important; right: 0 !important; margin: 0 auto !important; width: max-content; transform: none !important; }
 .club-down { background: none !important; box-shadow: none !important; }
 .club-down { bottom: calc(2px + env(safe-area-inset-bottom)) !important; }
+/* Fin : deux lignes de lecture. Titre bleu ciel un peu plus petit, puis la
+ * phrase (bravo + consigne) en blanc, sans boîte. */
+.fc-title, .fc-title .fc-line { color: #8fe3ff !important; font-size: clamp(1.9rem, 9vw, 3.2rem) !important; }
+.fc-consigne { margin-top: 18px !important; max-width: 22em; color: #fff !important; font-size: 1.05rem !important; line-height: 1.5; animation: fade-up .6s .6s ease-out both; }
+/* Questionnaire : libellés de l'échelle (trop facile / trop dur) en blanc vif. */
+.wq-ends, .wq-ends span { color: #fff !important; font-weight: 700; opacity: 1 !important; }
+/* Neige plus légère et aérée (accueil et décor), depuis le haut de l'écran. */
+.club-snow { background-size: 130px 130px, 95px 95px !important; opacity: .8; }
+.club-snow-full { top: 0 !important; }
+@keyframes snowfall { from { background-position: 0 0, 40px 0; } to { background-position: 40px 520px, 0 380px; } }

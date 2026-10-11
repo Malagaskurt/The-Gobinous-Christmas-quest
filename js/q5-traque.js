@@ -477,8 +477,8 @@
         '<header class="fc-top">' + GQ.logo('clair', 'fc-logo') + '</header>' +
         '<section class="fc-center">' +
         '<h1 class="fc-title" tabindex="-1">' + twoLines(R.finTitre) + '</h1>' +
-        '<p class="fc-bravo">' + esc(String(R.finBravo || 'Bravo {equipe} !').replace('{equipe}', s.team || '')) + '</p>' +
-        (R.finConsigne ? '<p class="fc-consigne">' + t(R.finConsigne) + '</p>' : '') +
+        // Deuxième et dernière ligne : bravo à l'équipe + consigne, en blanc.
+        '<p class="fc-consigne">' + esc(String(R.finBravo || 'Bravo {equipe} !').replace('{equipe}', s.team || '')) + ' ' + t(R.finConsigne || '') + '</p>' +
         '</section>' +
         '<div class="club-city fc-city" aria-hidden="true">' + GQ.citySvg() +
         '<span class="club-truck">' + GQ.knit.icon('truck', 'club-truck-img') + '</span>' +

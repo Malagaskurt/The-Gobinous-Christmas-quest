@@ -578,12 +578,25 @@
       GQ.completeQuest(1);
       return { ok: true };
     }
+    // Après le 1er gel (15 s) : 2 nouvelles erreurs → indice, le calcul
+    // est simplifié (sans nouveau gel).
+    if (s.q1.floorRound === 1) {
+      s.q1.floorFails2 = (s.q1.floorFails2 || 0) + 1;
+      if (s.q1.floorFails2 >= 2) {
+        s.q1.floorRound = 2;
+        s.q1.floorEasy = true;
+        GQ.save();
+        return { ok: false, easy: true };
+      }
+      GQ.save();
+      return { ok: false, frozen: false, left: 1 };
+    }
     var res = GQ.penalize('etage', 'etage');
     if (res.frozen) {
-      // 1er blocage : le calcul simplifié suivra. 2e blocage : à la fin,
-      // le Père Noël donne l'étage (filet de sécurité).
-      if (s.q1.floorEasy) GQ.state.gel.after = 'valider';
-      s.q1.floorEasy = true;
+      // 1er gel : on retente le même calcul. Gel sur le calcul simplifié :
+      // à la fin, le Père Noël donne l'étage (filet de sécurité).
+      if (s.q1.floorRound === 2) GQ.state.gel.after = 'valider';
+      else s.q1.floorRound = 1;
       GQ.save();
     }
     return Object.assign({ ok: false }, res);

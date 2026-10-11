@@ -8,7 +8,7 @@ Produit :
   assets/audio/musique-noel-2.mp3  « Deck the Halls », boîte à musique, tout doux
   assets/audio/musique-japon.mp3   koto et nappe (mixée dans la vidéo de Barnabé)
   assets/audio/musique-fete.mp3    pop-électro dansante (ancien écran de fin)
-  assets/audio/musique-fin.mp3     R&B de Noël festif (écran de fin) : arrangement
+  assets/audio/musique-fin.mp3     funk de Noël dansant (écran de fin) : arrangement
                                    original de « Jingle Bells » (domaine public)
 
 Ambiance très discrète : une boîte à musique, une nappe et une basse
@@ -702,10 +702,149 @@ def rnb():
     os.replace(tmp, out)
 
 
+# ---------------------------------------------------------------------------
+# Écran de fin : funk de Noël (arrangement original de « Jingle Bells »,
+# domaine public) : 112 BPM, batterie syncopée, basse slap en octaves,
+# guitare rythmique « chicken scratch » en doubles croches, accords de clavinet,
+# cuivres qui ponctuent, grelots.
+# ---------------------------------------------------------------------------
+
+def slap_bass(f, dur, vel=1.0, pop=False):
+    """Basse slap : attaque percussive brillante, corps rond et court."""
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    ph = np.cumsum(f * (1 + 0.03 * np.exp(-t * 60))) / SR
+    body = np.tanh(2.2 * (np.sin(2 * np.pi * ph) + 0.35 * np.sin(4 * np.pi * ph)))
+    bright = 2 * (ph % 1) - 1
+    cut = 900 if not pop else 2400
+    sig = body * 0.8 + lowpass_fast(bright, cut) * np.exp(-t * (30 if not pop else 18)) * 0.6
+    env = np.exp(-t * (5 if not pop else 9))
+    r = min(n, int(SR * 0.02))
+    env[-r:] *= np.linspace(1, 0, r)
+    return attack(sig * env * vel, 1)
+
+
+def clav(freqs, dur, vel=1.0):
+    """Clavinet : impulsion riche et sèche (dents de scie filtrées, déclin court)."""
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    sig = np.zeros(n)
+    for f in freqs:
+        ph = f * t
+        sig += (2 * (ph % 1) - 1) * 0.6 + np.sign(np.sin(2 * np.pi * ph)) * 0.25
+    sig = lowpass_fast(sig / len(freqs), 3000) * np.exp(-t * 14)
+    r = min(n, int(SR * 0.015))
+    sig[-r:] *= np.linspace(1, 0, r)
+    return attack(sig * vel, 1)
+
+
+def scratch(vel=1.0):
+    """Guitare étouffée « chicken scratch » : bruit coloré très bref."""
+    n = int(SR * 0.05)
+    t = np.arange(n) / SR
+    noise = np.diff(rng.standard_normal(n + 1))
+    tone = np.sin(2 * np.pi * 820 * t) + 0.5 * np.sin(2 * np.pi * 1240 * t)
+    return (noise * 0.35 + tone * 0.4) * np.exp(-t * 80) * vel
+
+
+FUNK_CH = {
+    "C9": (["E3", "A#3", "D4"], "C2"), "F9": (["A3", "D#4", "G4"], "F1"),
+    "G9": (["B3", "F4", "A4"], "G1"), "Dm7": (["F3", "A3", "C4"], "D2"),
+    "A7": (["C#4", "G4", "B4"], "A1"),
+}
+FUNK_A = [
+    ("C9", [("E5", 1), ("E5", 1), ("E5", 2)]),
+    ("C9", [("E5", 1), ("E5", 1), ("E5", 2)]),
+    ("C9", [("E5", 1), ("G5", 1), ("C5", 1.5), ("D5", 0.5)]),
+    ("C9", [("E5", 4)]),
+    ("F9", [("F5", 1), ("F5", 1), ("F5", 1.5), ("F5", 0.5)]),
+    ("C9", [("F5", 1), ("E5", 1), ("E5", 1), ("E5", 0.5), ("E5", 0.5)]),
+    ("G9", [("E5", 1), ("D5", 1), ("D5", 1), ("E5", 1)]),
+    ("G9", [("D5", 2), ("G5", 2)]),
+]
+FUNK_B = FUNK_A[:6] + [
+    ("G9", [("G5", 1), ("G5", 1), ("F5", 1), ("D5", 1)]),
+    ("C9", [("C5", 4)]),
+]
+# Motif de basse (temps, durée, octave haute = « pop ») sur une mesure.
+FUNK_BASS = [(0, 0.4, False), (0.75, 0.2, False), (1.0, 0.2, True), (1.5, 0.3, False),
+             (2.25, 0.2, False), (2.5, 0.2, True), (3.0, 0.3, False), (3.5, 0.2, True), (3.75, 0.2, False)]
+
+
+def funk():
+    beat = 60 / 112
+    bar = beat * 4
+    plan = ([("intro", ch) for ch in ["C9", "C9", "F9", "G9"]] +
+            [("A", m) for m in FUNK_A] + [("B", m) for m in FUNK_B] +
+            [("break", ch) for ch in ["F9", "F9", "C9", "A7", "Dm7", "G9", "C9", "G9"]] +
+            [("A", m) for m in FUNK_A] + [("B", m) for m in FUNK_B])
+    tr = Track(len(plan) * bar + 4)
+    for b, (part, item) in enumerate(plan):
+        t0 = 0.12 + b * bar
+        ch, mel = (item, None) if isinstance(item, str) else item
+        notes, root = FUNK_CH[ch]
+        fs = [freq(x) for x in notes]
+        fr = freq(root)
+        full = part in ("A", "B")
+        # Batterie syncopée : grosse caisse sur 1, « a » du 1, « et » du 2 et du 3.
+        if part != "intro" or b >= 2:
+            for off in (0, 0.75, 1.5, 2.5, 3.25):
+                tr.add(t0 + off * beat, kick(), 0.9 if off == 0 else 0.7)
+            for off in (1, 3):
+                tr.add(t0 + off * beat, snare(), 0.62)
+                tr.add(t0 + off * beat + 0.01, clap(), 0.55)
+            for off in (1.75, 3.75):  # notes fantômes
+                tr.add(t0 + off * beat, snare(), 0.14)
+            for k in range(16):
+                v = 0.3 if k % 4 == 2 else 0.2 if k % 2 == 0 else 0.12
+                tr.add(t0 + k * beat / 4, hat(open_=(k == 14)), v)
+        # Basse slap.
+        if part != "intro" or b >= 1:
+            for off, d, pop in FUNK_BASS:
+                tr.add(t0 + off * beat, slap_bass(fr * (2 if pop else 1), d * beat, pop=pop), 0.5)
+        # Guitare « chicken scratch » en doubles croches, accent sur les contretemps.
+        for k in range(16):
+            if k % 4 in (1, 3) or k % 8 == 6:
+                tr.add(t0 + k * beat / 4, scratch(), 0.26 if k % 2 else 0.18)
+        # Clavinet : accords piqués syncopés.
+        for off in (0.5, 1.25, 2.0, 2.75, 3.5):
+            tr.add(t0 + off * beat, clav(fs, 0.22 * beat), 0.16)
+        # Cuivres : ponctuations en fin de phrase et pendant le pont.
+        if part == "break" or b % 4 == 3:
+            for off, d in ((2.5, 0.4), (3.0, 0.4), (3.5, 0.45)):
+                for f in fs:
+                    tr.add(t0 + off * beat, brass(f, d * beat), 0.1)
+        if part == "break" and b % 2 == 0:
+            for f in fs:
+                tr.add(t0, brass(f * 2, 0.9 * beat), 0.08)
+        # Grelots.
+        if part != "intro":
+            for k in range(8):
+                tr.add(t0 + k * beat / 2, sleigh_bells(), 0.24 if full else 0.15)
+        # Mélodie aux cuivres + lead.
+        if mel:
+            t = t0
+            for n, d in mel:
+                f = freq(n) / 2
+                tr.add(t, lead(f, d * beat * 0.9), 0.2)
+                tr.add(t, brass(f, min(d, 1.5) * beat * 0.9), 0.12)
+                t += d * beat
+    sig = tr.buf[: int(SR * (len(plan) * bar + 0.25))]
+    sig = reverb(sig, 1.2, 0.12)
+    sig = normalize(crossfade_loop(sig, 0.25), 0.6)
+    save_mp3(stereo(sig), "musique-fin.mp3", kbps=128)
+    out = os.path.join(OUT, "musique-fin.mp3")
+    tmp = out + ".tmp.mp3"
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-af", "loudnorm=I=-15:TP=-1.5:LRA=8",
+                    "-codec:a", "libmp3lame", "-b:a", "128k", tmp], check=True)
+    os.replace(tmp, out)
+
+
 if __name__ == "__main__":
     import sys
     only = sys.argv[1:]
-    # traineau (ancien écran de fin) n'est plus lancé par défaut : rnb le remplace.
-    for fn in (noel1, noel2, japon, fete, rnb):
+    # traineau et rnb (anciens écrans de fin) ne sont plus lancés par défaut :
+    # funk les remplace.
+    for fn in (noel1, noel2, japon, fete, funk):
         if not only or fn.__name__ in only:
             fn()

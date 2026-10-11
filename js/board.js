@@ -129,8 +129,8 @@
 
   function snow() {
     var out = '<g class="m-snow">';
-    for (var i = 0; i < 36; i++) {
-      out += '<circle cx="' + ((i * 53) % W) + '" cy="-8" r="' + (i % 3 ? 1.3 : 2) + '" fill="#fff" opacity="' + (i % 4 ? 0.7 : 0.95) + '" style="animation-duration:' + (7 + (i % 6)) + 's;animation-delay:-' + ((i * 0.77) % 12).toFixed(2) + 's"/>';
+    for (var i = 0; i < 20; i++) {
+      out += '<circle cx="' + ((i * 71) % W) + '" cy="-8" r="' + (i % 3 ? 1.3 : 2) + '" fill="#fff" opacity="' + (i % 4 ? 0.7 : 0.95) + '" style="animation-duration:' + (7 + (i % 6)) + 's;animation-delay:-' + ((i * 0.77) % 12).toFixed(2) + 's"/>';
     }
     return out + '</g>';
   }

@@ -1022,7 +1022,7 @@
     var res = GQ.floorAnswer(value);
     if (!res) return GQ.render();
     if (res.ok) { GQ.uiReset(); return goQuest(); }
-    if (res.frozen) { GQ.uiReset(); return GQ.render(); }
+    if (res.frozen || res.easy) { GQ.uiReset(); return GQ.render(); }
     return formError(value, QZ.etage.erreur);
   };
 })();

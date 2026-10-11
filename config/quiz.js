@@ -105,14 +105,14 @@ window.GAME_CONFIG.quiz = {
     label: "Résultat du calcul (votre étage)",
     bouton: "Valider",
     reponses: ["5", "5e", "5eme", "5ieme", "cinq", "cinquieme"],
-    erreur: "Mauvais calcul ! Encore une erreur et Barnabé bloque votre écran.",
+    erreur: "Mauvais calcul ! Réessayez, Barnabé vous surveille…",
     gelTitre: "Bloqué par Barnabé",
     /* Moqueries de Barnabé pendant le blocage (45 s). */
     moqueries: [
-      "Deux erreurs ? Même mon grille-pain calcule mieux que vous. 45 secondes au coin !",
+      "Deux erreurs ? Même mon grille-pain calcule mieux que vous. 15 secondes au coin !",
       "Ha ha ! Les maths, c'est pas votre truc. Je bloque tout, le temps que vous révisiez.",
     ],
-    gelSuite: "Ensuite, Barnabé vous proposera un calcul… beaucoup plus simple.",
+    gelSuite: "Ensuite, vous pourrez retenter le calcul.",
     gelPasse: "Le Père Noël vole à votre secours. Direction le 5ᵉ étage !",
   },
 
