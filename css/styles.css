@@ -2175,13 +2175,11 @@ html { scroll-behavior: smooth; }
 
 /* Quiz : thème fermé (grisé, non cliquable) et thème proposé. */
 .theme-card:disabled, .theme-card[aria-disabled="true"] { opacity: 0.38; filter: grayscale(1); pointer-events: none; }
-.theme-card.is-suggested { box-shadow: 0 0 0 3px #e4323a !important; animation: suggest 1.6s ease-in-out infinite; }
-@keyframes suggest { 0%, 100% { box-shadow: 0 0 0 3px #e4323a; } 50% { box-shadow: 0 0 0 7px rgba(228, 50, 58, .35); } }
 /* Thème mystère : le « ? » puis le vrai thème qui se retourne. */
 .theme-reveal .k-title { animation: theme-flip .7s .35s cubic-bezier(.2,.9,.3,1.2) both; }
 .theme-reveal .frame { animation: fade-up .5s .8s ease-out both; }
 @keyframes theme-flip { from { opacity: 0; transform: perspective(500px) rotateX(-90deg); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .theme-card.is-suggested, .theme-reveal .k-title, .theme-reveal .frame { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .theme-reveal .k-title, .theme-reveal .frame { animation: none; } }
 .rules-btn { background: #e4323a !important; color: #fff !important; box-shadow: none !important; border: 0 !important; }
 .rules-btn .icon { color: #fff; fill: currentColor; }
 .theme-reveal .success-art .ptext, .theme-reveal .success-art .theme-knit { font-size: 5rem !important; line-height: 1; }

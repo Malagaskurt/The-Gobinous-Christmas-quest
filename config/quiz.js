@@ -38,7 +38,7 @@ window.GAME_CONFIG.quiz = {
     choixTitre: "Choisissez votre thème",
     choixAide: "Score et correction à la fin des 8 questions.",
     /* Après un thème raté ou abandonné : il est fermé, on en choisit un autre. */
-    choixAutre: "Thème fermé. Le Père Noël vous en propose un autre !",
+    choixAutre: "Ce thème est fermé. Choisissez librement parmi les autres !",
     tentatives: "{n} thème raté sur {max}. Dernière chance !",
     themeEchoue: "Fermé",
     themeJoue: "Joué",

@@ -505,23 +505,16 @@
     } else if (q.failedSinceLock > 0) {
       html += '<p class="attempts">' + icon('cadenas') + t(X.tentatives, { n: q.failedSinceLock, max: maxFail }) + '</p>';
     }
-    // Un thème déjà choisi (raté ou abandonné) n'est plus cliquable : on
-    // oriente l'équipe vers le premier thème encore disponible.
+    // Un thème déjà choisi (raté ou abandonné) n'est plus cliquable ;
+    // l'équipe choisit librement parmi les autres (aucun mis en avant).
     var anyPlayed = Object.keys(played).length > 0;
-    var suggest = null;
-    if (!lock && anyPlayed) {
-      QZ.themes.some(function (th) {
-        if (GQ.themeAvailable(th.id) && !played[th.id]) { suggest = th.id; return true; }
-        return false;
-      });
-    }
     html += (lock ? '' : '<p class="muted small center">' + t(anyPlayed && X.choixAutre ? X.choixAutre : X.choixAide) + '</p>') + '<ul class="themes">';
     QZ.themes.forEach(function (th) {
       var available = GQ.themeAvailable(th.id) && !(played[th.id] && !failed[th.id]);
       var disabled = lock || !available;
       var hidden = th.mystere && !played[th.id];
       html +=
-        '<li><button type="button" class="theme-card' + (failed[th.id] ? ' is-failed' : '') + (hidden ? ' is-mystery' : '') + (suggest === th.id ? ' is-suggested' : '') + '" data-action="start-theme" data-id="' + esc(th.id) + '"' + (disabled ? ' disabled aria-disabled="true"' : '') + '>' +
+        '<li><button type="button" class="theme-card' + (failed[th.id] ? ' is-failed' : '') + (hidden ? ' is-mystery' : '') + '" data-action="start-theme" data-id="' + esc(th.id) + '"' + (disabled ? ' disabled aria-disabled="true"' : '') + '>' +
         '<span class="theme-icon">' + themeIcon(th, hidden) + '</span>' +
         '<span class="theme-body"><span class="theme-title">' + t(hidden ? th.titreMystere : th.titre) + '</span>' +
         '<span class="theme-meta">' + (hidden && th.sousTitreMystere ? t(th.sousTitreMystere) : th.questions.length + ' questions') + '</span></span>' +

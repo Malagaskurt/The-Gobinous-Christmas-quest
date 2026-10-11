@@ -1,6 +1,6 @@
 /* Généré par tools/generer-hors-ligne.mjs : ne pas modifier à la main. */
 self.HORS_LIGNE = {
- "version": "175b63210dd1",
+ "version": "53b94dec0903",
  "fichiers": [
   "index.html",
   "css/fonts.css",
