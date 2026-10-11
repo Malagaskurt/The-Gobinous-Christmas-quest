@@ -334,8 +334,8 @@
   }
   GQ.elfTalk = elfTalk;
 
-  /* Équipe, étape 1 : le nom. Étape 2 (#/equipe/roles) : Gobinous Capitaine
-   * et Gobinous Reporter. */
+  /* Équipe, étape 1 : le nom. Étape 2 (#/equipe/roles) : The Mastermind
+   * et The Storyteller. */
   screens.team = function (step) {
     var E = T.equipe;
     var s = GQ.state;
@@ -706,7 +706,7 @@
       '<dl class="idscan-fields">' +
       '<div><dt>' + esc(X.scanEquipe) + '</dt><dd>' + esc(s.team || '') + '</dd></div>' +
       '<div><dt>' + esc(X.scanNiveau) + '</dt><dd>' + esc(X.scanNiveauValeur) + '</dd></div>' +
-      '<div><dt>Capitaine</dt><dd>' + esc((s.roles && s.roles.chef) || '—') + '</dd></div>' +
+      '<div><dt>Mastermind</dt><dd>' + esc((s.roles && s.roles.chef) || '—') + '</dd></div>' +
       '</dl>' +
       '<span class="idscan-beam" aria-hidden="true"></span><span class="idscan-grid" aria-hidden="true"></span>' +
       '</div>' +

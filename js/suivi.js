@@ -89,7 +89,7 @@
       '<article class="team-card' + (t.termine ? ' is-done' : '') + '">' +
       '<div class="team-head"><h3 class="team-name">' + esc(t.equipe || 'Sans nom') + '</h3>' +
       '<span class="team-quest">' + (t.termine ? '5/5' : 'Quête ' + t.quete + '/5') + '</span></div>' +
-      (t.chef || t.reporter ? '<p class="team-roles">' + (t.chef ? 'Capitaine : <b>' + esc(t.chef) + '</b>' : '') + (t.chef && t.reporter ? ' · ' : '') + (t.reporter ? 'Reporter : <b>' + esc(t.reporter) + '</b>' : '') + '</p>' : '') +
+      (t.chef || t.reporter ? '<p class="team-roles">' + (t.chef ? 'Mastermind : <b>' + esc(t.chef) + '</b>' : '') + (t.chef && t.reporter ? ' · ' : '') + (t.reporter ? 'Storyteller : <b>' + esc(t.reporter) + '</b>' : '') + '</p>' : '') +
       '<div class="pips" aria-hidden="true">' + pips + '</div>' +
       '<p class="team-step">' + esc(t.etape) + '</p>' +
       (badges ? '<p class="tags">' + badges + '</p>' : '') +
@@ -357,7 +357,7 @@
             return '<li>' + media + '<span>' + esc(f.fichier) + ' · ' + bytes(f.taille) + '</span>' +
               '<button type="button" class="link-del" data-action="vlog-del" data-cle="' + esc(f.cle) + '">Supprimer</button></li>';
           }).join('') + '</ul></section>';
-      }).join('') : '<p class="admin-card muted">Aucun fichier pour l\'instant. Ils arrivent ici dès qu\'un Gobinous Reporter dépose une photo ou une vidéo.</p>');
+      }).join('') : '<p class="admin-card muted">Aucun fichier pour l\'instant. Ils arrivent ici dès qu\'un Storyteller dépose une photo ou une vidéo.</p>');
   }
   actions['vlog-del'] = function (el) {
     GQ.modal({ title: 'Supprimer ce fichier ?', text: 'Il sera définitivement effacé du serveur.', confirm: 'Supprimer', cancel: 'Annuler', icon: 'croix' }).then(function (ok) {
@@ -375,7 +375,7 @@
     { id: '', label: 'Christmas Quest', title: 'Suivi des équipes' },
     { id: 'party', label: 'Christmas Party', title: 'Défis de la Party' },
     { id: 'avis', label: 'Wrap-Up', title: 'Secret Santa et avis' },
-    { id: 'vlog', label: 'Vlog', title: 'Le Vlog des Gobinous' },
+    { id: 'vlog', label: 'Gobi\' Hub', title: 'The Gobi\' Hub' },
   ];
   var tab = '';
 

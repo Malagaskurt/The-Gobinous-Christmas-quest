@@ -152,7 +152,7 @@ await step('Accueil « The Gobinous Christmas Club » → programme des 5 temps 
   await page.click('.club-down');
   await settle();
   assert((await hash()) === '#/programme', 'programme non affiché');
-  for (const n of ["Gobi'Christmas", 'Quest', 'Party', 'Battle', 'Wrap-Up', 'Le Vlog des Gobinous']) {
+  for (const n of ["Gobi'Christmas", 'Quest', 'Party', 'Battle', 'Wrap-Up', "The Gobi' Hub"]) {
     assert(await has(n), `temps fort absent : ${n}`);
   }
   assert((await page.locator('.prog-card').count()) === 4, '4 temps forts attendus');
@@ -195,10 +195,10 @@ await step('Nom d\'équipe vide refusé, puis accepté', async () => {
   assert((await hash()) === '#/equipe/roles', 'pas redirigé vers les rôles');
 });
 
-await step('Rôles : encadré « choisissez vos rôles avec soin », Capitaine et Reporter obligatoires', async () => {
+await step('Rôles : encadré « choisissez vos rôles avec soin », Mastermind et Storyteller obligatoires', async () => {
   await page.waitForTimeout(1400);
   assert(await has('pas mal du tout ce nom'), 'réaction de Barnabé absente');
-  assert(await has('Le Gobinous Reporter') && await has('Le Gobinous Capitaine') && await has('choisissez vos rôles avec soin'), 'encadré des rôles absent');
+  assert(await has('The Storyteller') && await has('The Mastermind') && await has('choisissez vos rôles avec soin'), 'encadré des rôles absent');
   await page.click('.roles-form button[type=submit]');
   await settle();
   assert(await has('Indiquez le prénom'), 'rôles vides acceptés');
@@ -220,16 +220,16 @@ await step('Suivi : la progression de l\'équipe est envoyée au serveur', async
   assert(r.status === 401, 'liste accessible sans le bon code');
 });
 
-await step('La map (La Verrière, Tour Saint-Gobain, 5 étapes) et les 5 règles', async () => {
+await step('La map (La Verrière, Tour Saint-Gobain, 5 étapes) et les 6 règles', async () => {
   assert((await page.locator('.map-svg').count()) === 1, 'map absente');
   assert((await page.locator('.map .m-step').count()) === 5, 'étapes de la map absentes');
   assert(await has('La Verrière'), 'point de base absent');
   await clickText('Toutes les règles');
   const modal = norm(await page.locator('.modal').innerText());
-  for (const s of ['Les règles', '30 minutes chrono', 'Joker unique', 'Gel du système', "Plus de 2 erreurs d'affilée", "Esprit d'équipe", 'Fair-play']) {
+  for (const s of ['Les règles', '30 minutes chrono', 'Joker unique', 'Gel du système', '2 erreurs sur une étape', 'Piratage surprise', "Esprit d'équipe", 'Fair-play']) {
     assert(modal.includes(norm(s)), `texte manquant dans les règles : ${s}`);
   }
-  assert((await page.locator('.modal-sheet .rule').count()) === 5, 'règles illustrées absentes');
+  assert((await page.locator('.modal-sheet .rule').count()) === 6, 'règles illustrées absentes');
   await page.click('[data-modal-cancel]');
   // Le chrono ne part qu'après confirmation.
   await page.click('[data-action="accept-rules"]');
@@ -310,14 +310,14 @@ await step('Rechargement en cours de thème → reprise à la même question', a
 
 await step('Thème raté → score, correction affichée après les 8 réponses, thème fermé', async () => {
   await finishTheme(theme('noel'), (q, i) => (i < 7 ? idx(q) : wrongOf(q)));
-  assert(await has('6 bonne(s) réponse(s) sur 8'), 'score 6/8 absent');
+  assert(await has('6/8 bonnes réponses'), 'score 6/8 absent');
   await clickText('Voir la correction');
   assert(await has('Bonne réponse :'), 'correction absente');
   assert((await page.locator('.correction-list li').count()) === 8, 'correction incomplète');
   assert(await has('Si le prochain est raté'), 'avertissement absent');
   await clickText('Choisir un autre thème');
   assert(await page.locator('[data-id="noel"]').isDisabled(), 'thème raté encore disponible');
-  assert(await has('Thèmes ratés : 1 sur 2'), 'compteur de tentatives absent');
+  assert(await has('1 thème raté sur 2'), 'compteur de tentatives absent');
 });
 
 await step('Thème mystère : révélation, 2e thème raté → tout gelé 45 s (persistant)', async () => {
@@ -398,7 +398,7 @@ await step('Quiz réussi à 8/8 (thème « La Tour »), correction consultable',
   assert((await page.locator('.test-badge').count()) === 1, 'badge « bonne réponse » du mode test absent');
   await finishTheme(theme('tour'), (q) => idx(q));
   assert(await has('Check-in réussi') && await has('8/8'), 'réussite absente');
-  assert(await has('Les Testeurs') && await has('Identité validée'), 'scan d\'identité absent');
+  assert(await has('Les Testeurs') && await has('Identité vérifiée, accès autorisé'), 'scan d\'identité absent');
   assert(await has('Voir la correction'), 'correction absente');
 });
 
@@ -422,7 +422,7 @@ await step('Intrusion de Barnabé : calcul, 2 erreurs → écran bloqué 45 s, p
   await answer('5');
   assert((await state()).quest === 2 && (await hash()) === '#/quete/2', 'quête 2 non atteinte');
   assert(await has('5ᵉ étage'), 'destination absente');
-  assert((await page.locator('.map-inline').count()) === 1 && await has('Arrivé à l\'étage') && await has('Saisissez le code secret'), 'map et encadré d\'arrivée absents');
+  assert((await page.locator('.map-inline').count()) === 1 && await has('Arrivés à l\'étage') && await has('Saisissez le mot secret'), 'map et encadré d\'arrivée absents');
 });
 
 console.log('\nQuête 2 : le message codé');
@@ -450,7 +450,7 @@ await step('Joker : refus → conservé ; confirmation → indice affiché et m�
 
 await step('Erreur → essais restants, puis « Barnabé a perdu le contrôle » → Barnabé panique', async () => {
   await answer('barnabe a gagne');
-  assert(await has('Encore 2 essai'), 'avertissement absent');
+  assert(await has('Encore ' + (CFG.parametres.penalites.message.essais - 1) + ' essai'), 'avertissement absent');
   assert(!(await frozen()), 'gel dès la première erreur');
   await answer('BARNABÉ a perdu   le CONTRÔLE');
   assert(await has('Cheat code activé'), 'bonne réponse refusée');
@@ -533,19 +533,16 @@ await step('Joker déjà utilisé : bouton désactivé et règle côté logique'
   assert((await page.evaluate(() => window.GQ.useJoker('q4-0'))) === false, 'le joker a pu être réutilisé');
 });
 
-await step('Module 1 : 3 erreurs d\'affilée → gel, puis module validé d\'office', async () => {
+await step('Module 1 : 2 erreurs d\'affilée → gel de 45 s, puis module validé d\'office', async () => {
   await page.click('.portrait[data-i="0"]');
   await page.click('[data-action="module-choice"]');
   await settle();
-  assert(await has('Encore 2 essai'), 'avertissement absent');
+  assert(await has('Encore ' + (CFG.parametres.penalites.enquete.essais - 1) + ' essai'), 'avertissement absent');
+  assert(!(await frozen()), 'gel dès la 1re erreur');
   await page.click('.portrait[data-i="3"]');
   await page.click('[data-action="module-choice"]');
   await settle();
-  assert(!(await frozen()), 'gel dès la 2e erreur');
-  await page.click('.portrait[data-i="1"]');
-  await page.click('[data-action="module-choice"]');
-  await settle();
-  assert(await frozen(), 'pas de gel après la 3e erreur');
+  assert(await frozen(), 'pas de gel après la 2e erreur');
   await admin('Lever le gel');
   assert(await has('validé ce module automatiquement') && await has('Module 2/4'), 'module non validé d\'office');
 });
@@ -561,7 +558,7 @@ await step('Modules 2 à 4 : matricule, service, nom → badge de Barnabé SIX-S
   assert(await has('Badge analysé') && await has('Barnabé SIX-SEVEN') && await has('2575'), 'badge absent');
   assert(await has('Passages du badge') && await has('Dernier bip'), 'passages du badge absents');
   await clickText('Voir la progression');
-  assert(await has('33ᵉ étage') && await has('Arrivé à l\'étage'), 'dernier étage absent');
+  assert(await has('33ᵉ étage') && await has('Arrivés à l\'étage'), 'dernier étage absent');
 });
 
 console.log('\nQuête 5 : la traque finale');
@@ -608,7 +605,7 @@ await step('Code de la cachette : 2 erreurs → Barnabé pirate l\'écran, 2 de 
     await page.waitForSelector('#hack .hack-title');
     assert(norm(await page.locator('#hack').innerText()).includes('piraté'), 'écran de piratage absent');
     const ms = await gelMs();
-    assert(ms > 0 && ms <= 15000, `gel inattendu : ${ms} ms`);
+    assert(ms > 0 && ms <= CFG.parametres.penalites.repaire.gelSecondes * 1000, `gel inattendu : ${ms} ms`);
     await page.waitForSelector('#hack', { state: 'detached', timeout: ms + 6000 });
     await settle();
     assert((await page.locator('.answer-form').count()) === 1, 'saisie non rétablie');
@@ -653,15 +650,15 @@ await step('Appel du Père Noël puis écran de fin 3D, conservé au rechargemen
   await settle();
   assert((await page.evaluate(() => window.__sfx)).includes('hangup'), 'pas de son de fin d\'appel');
   // Fin de l'appel : directement l'écran de fin.
-  assert(await has('Mission presque accomplie'), 'écran de fin absent');
-  assert(await has('Les Testeurs') && await has('Bravo Les Testeurs') && await has('Mission presque accomplie !') && await has('Rendez-vous à La Verrière (4ᵉ étage) avec votre colis non encore déballé'), 'consigne de fin absente');
+  assert((norm(await text()).replace(/\s+/g, ' ').includes('mission presque accomplie')), 'écran de fin absent');
+  assert(await has('Les Testeurs') && await has('Bravo Les Testeurs') && (norm(await text()).replace(/\s+/g, ' ').includes('mission presque accomplie')) && await has('Rejoignez La Verrière (4ᵉ étage) avec votre colis mystère encore emballé'), 'consigne de fin absente');
   assert((await page.locator('.fc-city .city-svg').count()) === 1 && (await page.locator('.fc-home[href="#/"]').count()) === 1, 'ville animée ou bouton de fin absents');
   const fete = await fetch(BASE + 'assets/audio/musique-fete.mp3');
   assert(fete.ok, 'musique de fin absente');
   assert((await page.locator('.topbar').count()) === 0, 'l\'écran de fin garde l\'en-tête du jeu');
   assert((await state()).finished, 'fin non enregistrée');
   await reload();
-  assert(await has('Mission presque accomplie'), 'fin perdue après rechargement');
+  assert((norm(await text()).replace(/\s+/g, ' ').includes('mission presque accomplie')), 'fin perdue après rechargement');
   assert((await page.locator('.fc-home[href="#/"]').count()) === 1, 'pas de retour à l\'accueil du site');
   await noHorizontalScroll();
 });
@@ -734,7 +731,7 @@ await step('Party : code 2020 obligatoire, nom, 15 défis avec appareil photo, v
   assert(await has("C'est l'heure du goûter") && await has('sapin Gobinous'), 'présentation absente');
   await answer('Les Givrés');
   assert((await page.locator('.defi').count()) === 15, 'les 15 défis ne sont pas affichés');
-  assert(await has('Treats & Chill') || await has('Treats &amp; Chill'), 'titre de la liste absent');
+  assert(await has('Mission Board') && await has('Treats & Chill'), 'titre de la liste absent');
   await page.click('[data-action="defi-open"][data-n="10"]');
   // Vidéo : caméra du téléphone ouverte directement en mode vidéo.
   assert((await page.locator('.modal input[type=file][accept="video/*"][capture="environment"]').count()) === 1, 'caméra vidéo non proposée');
